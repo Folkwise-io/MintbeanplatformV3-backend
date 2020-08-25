@@ -8,6 +8,7 @@
     "start": "ts-node src/index.ts",
     "build": "tsc",
     "dev": "nodemon -x ts-node ./src/index.ts",
+    "knex": "node -r dotenv/config ./node_modules/knex/bin/cli.js --knexfile ./src/db/knexfile.ts --knexpath ./src/db/",
     "postgres": "docker-compose -f ./db/docker-compose.yml up",
     "psql": "docker exec -it db-mintbean-v3 psql -U mintbean -d mintbean_development_v3",
     "test": "echo \"Error: no test specified\" && exit 1"

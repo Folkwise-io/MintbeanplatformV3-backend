@@ -126,3 +126,6 @@ $RECYCLE.BIN/
 
 # tsc --incremental output file
 tsconfig.tsbuildinfo
+
+# ENV files
+.env
