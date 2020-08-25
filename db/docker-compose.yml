@@ -4,7 +4,7 @@ services:
     image: postgres:12.3
     container_name: db-mintbean-v3
     volumes:
-      - "./.postgresql:/var/lib/postgresql"
+      - "./.postgresql:/var/lib/postgresql/"
       - "./init:/docker-entrypoint-initdb.d/"
     ports:
       - "5433:5432"

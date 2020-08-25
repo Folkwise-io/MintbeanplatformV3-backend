@@ -127,5 +127,8 @@ $RECYCLE.BIN/
 # tsc --incremental output file
 tsconfig.tsbuildinfo
 
+# Docker persistent data
+.postgresql
+
 # ENV files
 .env
