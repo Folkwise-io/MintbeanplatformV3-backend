@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 const CONVERTERS = {
   toNumber<T>(val: T): number {
     return +val;
