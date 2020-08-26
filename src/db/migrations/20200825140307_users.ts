@@ -8,9 +8,9 @@ export async function up(knex: Knex): Promise<void> {
       .unique()
       .notNullable();
     table.text("username").unique().notNullable();
-    table.text("first_name").notNullable();
-    table.text("last_name").notNullable();
-    table.timestamp("created_at").notNullable().defaultTo(knex.fn.now());
+    table.text("firstName").notNullable();
+    table.text("lastName").notNullable();
+    table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
 
     // constraints and indices
     table.primary(["id"]);
