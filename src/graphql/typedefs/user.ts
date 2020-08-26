@@ -1,6 +1,7 @@
 import { gql } from "apollo-server-express";
+import { DocumentNode } from "graphql";
 
-export default gql`
+const user: DocumentNode = gql`
   type User {
     "ID in UUID"
     id: ID!
@@ -15,7 +16,7 @@ export default gql`
     createdAt: String
   }
 
-  extend type Query {
+  type Query {
     "Search for users by first or last name"
     users(firstName: String, lastName: String): [User]
 
@@ -23,3 +24,5 @@ export default gql`
     user(id: ID, username: String): User
   }
 `;
+
+export default user;
