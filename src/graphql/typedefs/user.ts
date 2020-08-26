@@ -16,10 +16,10 @@ export default gql`
   }
 
   extend type Query {
-    "Get all the users"
-    users: [User]
+    "Search for users by first or last name"
+    users(firstName: String, lastName: String): [User]
 
-    "Get user by ID"
-    user(id: ID!): User
+    "Get a single user by ID or username"
+    user(id: ID, username: String): User
   }
 `;
