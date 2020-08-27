@@ -3,14 +3,20 @@ import { Resolvers } from "../generated/tsTypes";
 
 const userResolver: Resolvers = {
   Query: {
-    users: (_parent, args) => {
+    users: (_root, args) => {
       return knex("users").where({ ...args });
     },
 
-    user: (_parent, args) => {
+    user: (_root, args) => {
       return knex("users")
         .where({ ...args })
         .first();
+    },
+  },
+
+  User: {
+    posts: (user) => {
+      return knex("posts").where({ userId: user.id });
     },
   },
 };

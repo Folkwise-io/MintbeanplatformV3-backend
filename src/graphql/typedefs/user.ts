@@ -3,7 +3,7 @@ import { DocumentNode } from "graphql";
 
 const user: DocumentNode = gql`
   type User {
-    "ID in UUID"
+    "User's ID in UUID"
     id: ID!
 
     "Unique username"
@@ -14,6 +14,8 @@ const user: DocumentNode = gql`
 
     "Date that the user registered"
     createdAt: String
+
+    posts: [Post]
   }
 
   type Query {

@@ -13,7 +13,7 @@ export type Scalars = {
 
 export type User = {
   __typename?: 'User';
-  /** ID in UUID */
+  /** User's ID in UUID */
   id: Scalars['ID'];
   /** Unique username */
   username?: Maybe<Scalars['String']>;
@@ -21,6 +21,7 @@ export type User = {
   lastName?: Maybe<Scalars['String']>;
   /** Date that the user registered */
   createdAt?: Maybe<Scalars['String']>;
+  posts?: Maybe<Array<Maybe<Post>>>;
 };
 
 export type Query = {
@@ -29,6 +30,10 @@ export type Query = {
   users?: Maybe<Array<Maybe<User>>>;
   /** Get a single user by ID or username */
   user?: Maybe<User>;
+  /** Search for posts by userId */
+  posts?: Maybe<Array<Maybe<Post>>>;
+  /** Get a single post by ID */
+  post?: Maybe<Post>;
 };
 
 
@@ -41,6 +46,32 @@ export type QueryUsersArgs = {
 export type QueryUserArgs = {
   id?: Maybe<Scalars['ID']>;
   username?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryPostsArgs = {
+  userId?: Maybe<Scalars['ID']>;
+};
+
+
+export type QueryPostArgs = {
+  id: Scalars['ID'];
+};
+
+export type Post = {
+  __typename?: 'Post';
+  /** Post's ID in UUID */
+  id: Scalars['ID'];
+  /** ID of the user who created the posted */
+  userId: Scalars['ID'];
+  /** Unique username */
+  body?: Maybe<Scalars['String']>;
+  /** Date that the post was made */
+  createdAt?: Maybe<Scalars['String']>;
+  /** Date that the post was edited */
+  updatedAt?: Maybe<Scalars['String']>;
+  /** User who created the post */
+  user?: Maybe<User>;
 };
 
 
@@ -125,6 +156,7 @@ export type ResolversTypes = {
   ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Query: ResolverTypeWrapper<{}>;
+  Post: ResolverTypeWrapper<Post>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
 
@@ -134,6 +166,7 @@ export type ResolversParentTypes = {
   ID: Scalars['ID'];
   String: Scalars['String'];
   Query: {};
+  Post: Post;
   Boolean: Scalars['Boolean'];
 };
 
@@ -143,17 +176,31 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, never>>;
+  posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
+  post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
+};
+
+export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  body?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
 export type Resolvers<ContextType = any> = {
   User?: UserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Post?: PostResolvers<ContextType>;
 };
 
 
