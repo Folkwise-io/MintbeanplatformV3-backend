@@ -7,10 +7,10 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc",
-    "gen-types": "graphql-codegen --config codegen.yml",
     "predev": "yarn gen-types",
     "dev": "nodemon -x ts-node ./src/index.ts",
     "knex": "node -r dotenv/config ./node_modules/knex/bin/cli.js --knexfile ./src/db/knexfile.ts --knexpath ./src/db/",
+    "gen-types": "graphql-codegen --config codegen.yml",
     "postgres": "docker-compose -f ./db/docker-compose.yml up",
     "psql": "docker exec -it db-mintbean-v3 psql -U mintbean -d mintbean_development_v3",
     "test": "echo \"Error: no test specified\" && exit 1"
