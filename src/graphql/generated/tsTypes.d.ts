@@ -32,7 +32,7 @@ export type Query = {
   user?: Maybe<User>;
   /** Search for posts by userId */
   posts?: Maybe<Array<Maybe<Post>>>;
-  /** Get a single post by ID */
+  /** Get a single post by its ID */
   post?: Maybe<Post>;
 };
 
@@ -60,7 +60,7 @@ export type QueryPostArgs = {
 
 export type Post = {
   __typename?: 'Post';
-  /** Post's ID in UUID */
+  /** ID of post in UUID */
   id: Scalars['ID'];
   /** ID of the user who created the posted */
   userId: Scalars['ID'];
