@@ -41,7 +41,7 @@ Roll back all migrations with `yarn knex migrate:rollback --all`.
 
 Access the PostgreSQL CLI with `yarn psql`. All column names that are in camelCase need double quotation marks when used in raw SQL queries (i.e. `SELECT body, "userId" from posts;`).
 
-### Developing
+### Development workflow
 
 1. [Setting up the local database](#setting-up-the-local-database)
 2. Run `yarn dev` to start a GraphQL endpoint at `localhost:4000/graphql`.
@@ -67,7 +67,7 @@ const postResolver: Resolvers = {
 };
 ```
 
-Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` is up to date.
+Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` is up to date. The command is automatically run if you're in hot-reload/watch mode with `yarn dev`.
 
 #### Adding new schemas
 
