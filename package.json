@@ -6,7 +6,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "build": "tsc",    
+    "build": "tsc",
     "dev": "concurrently \"nodemon -x ts-node ./src/index.ts -w ./src\" \"graphql-codegen -w ./src/graphql/**/*.ts\"",
     "knex": "node -r dotenv/config ./node_modules/knex/bin/cli.js --knexfile ./src/db/knexfile.ts --knexpath ./src/db/",
     "knex:test": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config ./node_modules/knex/bin/cli.js --knexfile ./src/db/knexfile.ts --knexpath ./src/db/",
