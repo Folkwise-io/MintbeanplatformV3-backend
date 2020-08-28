@@ -4,17 +4,17 @@ import { knex } from "../src/db/knex";
 
 const testManager = new TestManager();
 
+const GET_ALL_USERS = gql`
+  query getAllUsers {
+    users {
+      firstName
+    }
+  }
+`;
+
 describe("Querying users", () => {
-  it("does something", async () => {
-    const GET_ALL_USERS = gql`
-      query getAllUsers {
-        users {
-          firstName
-        }
-      }
-    `;
-    const result = await testManager.query({ query: GET_ALL_USERS });
-    console.log(JSON.stringify(result.data, null, 2));
+  it("gets all users", async () => {
+    await testManager.printQueryResults({ query: GET_ALL_USERS });
   });
 });
 

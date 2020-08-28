@@ -1,5 +1,5 @@
 import { DocumentNode } from "graphql";
-type StringOrAst = string | DocumentNode;
+export type StringOrAst = string | DocumentNode;
 
 export type Query = {
   query: StringOrAst;
