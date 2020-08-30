@@ -11,7 +11,7 @@
     "knex": "node -r dotenv/config ./node_modules/knex/bin/cli.js --knexfile ./src/db/knexfile.ts --knexpath ./src/db/",
     "knex:test": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config ./node_modules/knex/bin/cli.js --knexfile ./src/db/knexfile.ts --knexpath ./src/db/",
     "gen-types": "graphql-codegen",
-    "postgres": "docker-compose -f ./db/docker-compose.yml up",
+    "postgres": "docker-compose -f ./db/docker-compose.yml up -d",
     "psql": "docker exec -it db-mintbean-v3 psql -U mintbean -d mintbean_development_v3",
     "tdd": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --watch --runInBand",
     "test": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --runInBand"
