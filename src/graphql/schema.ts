@@ -4,13 +4,20 @@ import user from "./typedefs/user";
 import userResolver from "./resolvers/userResolver";
 import post from "./typedefs/post";
 import postResolver from "./resolvers/postResolver";
+import customScalarsResolver from "./resolvers/customScalarsResolver";
+import customScalar from "./typedefs/customScalars";
 
 const schema: GraphQLSchema = makeExecutableSchema({
-  typeDefs: [user, post],
+  typeDefs: [customScalar, user, post],
 
   // Unfortunately we must cast our nicely typed Resolvers as "any" to be
   // accepted by the makeExecutableSchema fn
-  resolvers: [userResolver as any, postResolver as any],
+  resolvers: [
+    // Define resolver (i.e. validation) for custom scalars
+    customScalarsResolver as any,
+    userResolver as any,
+    postResolver as any,
+  ],
 });
 
 export default schema;

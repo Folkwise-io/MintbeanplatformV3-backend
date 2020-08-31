@@ -4,7 +4,7 @@ import { DocumentNode } from "graphql";
 const user: DocumentNode = gql`
   type User {
     "User's ID in UUID"
-    id: ID!
+    id: UUID!
 
     "Unique username"
     username: String
@@ -23,7 +23,7 @@ const user: DocumentNode = gql`
     users(firstName: String, lastName: String): [User]
 
     "Get a single user by ID or username"
-    user(id: ID, username: String): User
+    user(id: UUID, username: String): User
   }
 `;
 

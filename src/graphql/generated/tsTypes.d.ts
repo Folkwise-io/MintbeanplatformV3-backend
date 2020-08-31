@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
@@ -9,12 +9,15 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `UUID` scalar type represents UUID values as specified by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
+  UUID: any;
 };
+
 
 export type User = {
   __typename?: 'User';
   /** User's ID in UUID */
-  id: Scalars['ID'];
+  id: Scalars['UUID'];
   /** Unique username */
   username?: Maybe<Scalars['String']>;
   firstName?: Maybe<Scalars['String']>;
@@ -44,26 +47,26 @@ export type QueryUsersArgs = {
 
 
 export type QueryUserArgs = {
-  id?: Maybe<Scalars['ID']>;
+  id?: Maybe<Scalars['UUID']>;
   username?: Maybe<Scalars['String']>;
 };
 
 
 export type QueryPostsArgs = {
-  userId?: Maybe<Scalars['ID']>;
+  userId?: Maybe<Scalars['UUID']>;
 };
 
 
 export type QueryPostArgs = {
-  id: Scalars['ID'];
+  id: Scalars['UUID'];
 };
 
 export type Post = {
   __typename?: 'Post';
   /** ID of post in UUID */
-  id: Scalars['ID'];
+  id: Scalars['UUID'];
   /** ID of the user who created the posted */
-  userId: Scalars['ID'];
+  userId: Scalars['UUID'];
   /** Unique username */
   body?: Maybe<Scalars['String']>;
   /** Date that the post was made */
@@ -152,8 +155,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  UUID: ResolverTypeWrapper<Scalars['UUID']>;
   User: ResolverTypeWrapper<User>;
-  ID: ResolverTypeWrapper<Scalars['ID']>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Query: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
@@ -162,16 +165,20 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  UUID: Scalars['UUID'];
   User: User;
-  ID: Scalars['ID'];
   String: Scalars['String'];
   Query: {};
   Post: Post;
   Boolean: Scalars['Boolean'];
 };
 
+export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
+  name: 'UUID';
+}
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -188,8 +195,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   body?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -198,6 +205,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type Resolvers<ContextType = any> = {
+  UUID?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
