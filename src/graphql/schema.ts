@@ -1,14 +1,14 @@
 import { makeExecutableSchema } from "apollo-server-express";
 import { GraphQLSchema } from "graphql/type";
-import user from "./typedefs/user";
-import userResolver from "./resolvers/userResolver";
-import post from "./typedefs/post";
-import postResolver from "./resolvers/postResolver";
-import customScalarsResolver from "./resolvers/customScalarsResolver";
-import customScalar from "./typedefs/customScalars";
+import user from "./typedef/user";
+import userResolver from "./resolver/userResolver";
+import post from "./typedef/post";
+import postResolver from "./resolver/postResolver";
+import customScalarsResolver from "./resolver/customScalarsResolver";
+import customScalars from "./typedef/customScalars";
 
 const schema: GraphQLSchema = makeExecutableSchema({
-  typeDefs: [customScalar, user, post],
+  typeDefs: [customScalars, user, post],
 
   // Unfortunately we must cast our nicely typed Resolvers as "any" to be
   // accepted by the makeExecutableSchema fn
