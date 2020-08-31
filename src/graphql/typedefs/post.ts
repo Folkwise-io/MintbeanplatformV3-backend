@@ -4,10 +4,10 @@ import { DocumentNode } from "graphql";
 const post: DocumentNode = gql`
   type Post {
     "ID of post in UUID"
-    id: ID!
+    id: UUID!
 
     "ID of the user who created the posted"
-    userId: ID!
+    userId: UUID!
 
     "Unique username"
     body: String
@@ -24,10 +24,10 @@ const post: DocumentNode = gql`
 
   extend type Query {
     "Search for posts by userId"
-    posts(userId: ID): [Post]
+    posts(userId: UUID): [Post]
 
     "Get a single post by its ID"
-    post(id: ID!): Post
+    post(id: UUID!): Post
   }
 `;
 
