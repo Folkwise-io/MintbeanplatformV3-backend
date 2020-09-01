@@ -14,6 +14,12 @@ const postResolver: Resolvers = {
     },
   },
 
+  User: {
+    posts: (user) => {
+      return knex("posts").where({ userId: user.id });
+    },
+  },
+
   Post: {
     user: (post) => {
       return knex("users").where({ id: post.userId }).first();

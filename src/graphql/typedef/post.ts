@@ -22,6 +22,10 @@ const post: DocumentNode = gql`
     user: User
   }
 
+  extend type User {
+    posts: [Post] # Keep everything related to posts in this schema.
+  }
+
   extend type Query {
     "Search for posts by userId"
     posts(userId: UUID): [Post]
