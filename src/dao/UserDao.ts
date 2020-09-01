@@ -3,15 +3,16 @@ import {
   User,
   QueryUserArgs,
 } from "../graphql/generated/tsTypes";
-import { knex } from "../db/knex";
+import Knex from "knex";
 
 export default class UserDao {
-  getUsers(args: QueryUsersArgs) {
-    return knex<User>("users").where({ ...args });
+  constructor(private knex: Knex) {}
+  getMany(args: QueryUsersArgs) {
+    return this.knex<User>("users").where({ ...args });
   }
 
-  getUser(args: QueryUserArgs) {
-    return knex<User>("users")
+  getOne(args: QueryUserArgs) {
+    return this.knex<User>("users")
       .where({ ...args })
       .first();
   }
