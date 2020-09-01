@@ -13,12 +13,6 @@ const userResolver = (userResolverService: UserResolverService): Resolvers => {
         return userResolverService.getOne(args);
       },
     },
-
-    User: {
-      posts: (user) => {
-        return knex("posts").where({ userId: user.id });
-      },
-    },
   };
 };
 
