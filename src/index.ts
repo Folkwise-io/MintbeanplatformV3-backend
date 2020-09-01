@@ -1,11 +1,12 @@
-import buildServerContext from "./buildServerContext";
+import { buildPersistenceContext, buildServiceContext, buildSchema, buildServer } from "./buildContext";
 import express from "express";
 
-const { server } = buildServerContext();
+const persistenceContext = buildPersistenceContext();
+const serviceContext = buildServiceContext(persistenceContext);
+const schema = buildSchema(serviceContext);
+const server = buildServer(schema);
 const app = express();
 
 server.applyMiddleware({ app });
 
-app.listen({ port: 4000 }, () =>
-  console.log(`Server ready at http://localhost:4000${server.graphqlPath}`)
-);
+app.listen({ port: 4000 }, () => console.log(`Server ready at http://localhost:4000${server.graphqlPath}`));

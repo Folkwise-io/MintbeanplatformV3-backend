@@ -4,14 +4,7 @@ import {
   QueryUserArgs,
 } from "../graphql/generated/tsTypes";
 
-interface Args {
-  [key: string]: string;
-}
-
-interface ResolverService<T> {
-  getMany: (args: Args) => T[];
-  getOne: (args: Args) => T;
-}
+import { ResolverService } from "./ResolverService";
 
 export default class UserResolverService implements ResolverService<User> {
   constructor(private userDao: any) {}
