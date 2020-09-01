@@ -11,21 +11,34 @@ import customScalars from "./graphql/typedef/customScalars";
 import UserResolverService from "./service/UserResolverService";
 import UserDao from "./dao/UserDao";
 
-export interface ServerContext {
-  server: ApolloServer;
-  schema: GraphQLSchema;
+export interface PersistenceContext {
+  userDao: UserDao;
 }
 
-function buildPersistenceContext() {
+export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
   const userDao = new UserDao(knex);
-  return { userDao };
+
+  return {
+    userDao,
+  };
 }
 
-export default function buildServerContext(): ServerContext {
-  const { userDao } = buildPersistenceContext();
+export interface ServiceContext {
+  userResolverService: UserResolverService;
+}
+
+export function buildServiceContext(persistenceContext: PersistenceContext): ServiceContext {
+  const { userDao } = persistenceContext;
   const userResolverService = new UserResolverService(userDao);
 
+  return {
+    userResolverService,
+  };
+}
+
+export function buildSchema(serviceContext: ServiceContext): GraphQLSchema {
+  const { userResolverService } = serviceContext;
   const typeDefs = [customScalars, user, post];
   const resolvers = [
     customScalarsResolver, // Defines resolver (i.e. validation) for custom scalars
@@ -33,18 +46,17 @@ export default function buildServerContext(): ServerContext {
     postResolver, // TODO: pass in postResolverService
   ];
 
-  const schema = makeExecutableSchema({
+  return makeExecutableSchema({
     typeDefs,
     resolvers: resolvers as any,
   });
+}
 
+export function buildServer(schema: GraphQLSchema): ApolloServer {
   const apolloServer = new ApolloServer({
     schema,
     tracing: true,
   });
 
-  return {
-    server: apolloServer,
-    schema,
-  };
+  return apolloServer;
 }

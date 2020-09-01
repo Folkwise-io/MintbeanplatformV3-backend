@@ -5,7 +5,7 @@ import UserResolverService from "../../service/UserResolverService";
 const userResolver = (userResolverService: UserResolverService): Resolvers => {
   return {
     Query: {
-      users: (_root, args) => {
+      users: (_root, args, context) => {
         return userResolverService.getMany(args);
       },
 
