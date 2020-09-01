@@ -10,39 +10,47 @@ import post from "./graphql/typedef/post";
 import customScalars from "./graphql/typedef/customScalars";
 import UserResolverService from "./service/UserResolverService";
 import UserDao from "./dao/UserDao";
+import ValidatorDao from "./dao/ValidatorDao";
+import UserValidator from "./validator/UserValidator";
 
-export interface PersistenceContext {
+interface PersistenceContext {
   userDao: UserDao;
+  validatorDao: ValidatorDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
   const userDao = new UserDao(knex);
+  const validatorDao = new ValidatorDao(knex);
 
   return {
     userDao,
+    validatorDao,
   };
 }
 
-export interface ServiceContext {
+interface ResolverContext {
   userResolverService: UserResolverService;
+  userValidator: UserValidator;
 }
 
-export function buildServiceContext(persistenceContext: PersistenceContext): ServiceContext {
-  const { userDao } = persistenceContext;
+export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
+  const { userDao, validatorDao } = persistenceContext;
   const userResolverService = new UserResolverService(userDao);
+  const userValidator = new UserValidator(validatorDao);
 
   return {
     userResolverService,
+    userValidator,
   };
 }
 
-export function buildSchema(serviceContext: ServiceContext): GraphQLSchema {
-  const { userResolverService } = serviceContext;
+export function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
+  const { userResolverService, userValidator } = resolverContext;
   const typeDefs = [customScalars, user, post];
   const resolvers = [
     customScalarsResolver, // Defines resolver (i.e. validation) for custom scalars
-    userResolver(userResolverService),
+    userResolver(userResolverService, userValidator),
     postResolver, // TODO: pass in postResolverService
   ];
 

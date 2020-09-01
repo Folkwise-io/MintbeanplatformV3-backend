@@ -1,9 +1,9 @@
-import { buildPersistenceContext, buildServiceContext, buildSchema, buildServer } from "./buildContext";
+import { buildPersistenceContext, buildResolverContext, buildSchema, buildServer } from "./buildContext";
 import express from "express";
 
 const persistenceContext = buildPersistenceContext();
-const serviceContext = buildServiceContext(persistenceContext);
-const schema = buildSchema(serviceContext);
+const resolverContext = buildResolverContext(persistenceContext);
+const schema = buildSchema(resolverContext);
 const server = buildServer(schema);
 const app = express();
 
