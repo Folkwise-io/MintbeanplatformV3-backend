@@ -14,10 +14,10 @@ const schema: GraphQLSchema = makeExecutableSchema({
   // accepted by the makeExecutableSchema fn
   resolvers: [
     // Define resolver (i.e. validation) for custom scalars
-    customScalarsResolver as any,
-    userResolver as any,
-    postResolver as any,
-  ],
+    customScalarsResolver,
+    userResolver,
+    postResolver,
+  ] as any,
 });
 
 export default schema;

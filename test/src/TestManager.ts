@@ -1,8 +1,10 @@
 import { createTestClient } from "apollo-server-testing";
-import server from "../../src/server";
+import buildServerContext from "../../src/buildServerContext";
 import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
-const { query, mutate } = createTestClient(server);
+
+const { server: testServer } = buildServerContext(); // TODO: call buildTestServerContext to generate a test server with mocked daos
+const { query, mutate } = createTestClient(testServer);
 
 export default class TestManager {
   /**

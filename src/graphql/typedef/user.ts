@@ -15,7 +15,7 @@ const user: DocumentNode = gql`
     "Date that the user registered"
     createdAt: String
 
-    posts: [Post]
+    posts: [Post] # Q: move this to post typedef and extend type User?
   }
 
   type Query {
