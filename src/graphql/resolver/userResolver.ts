@@ -8,8 +8,9 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
       user: (_root, args, context) => {
         return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args));
       },
-      
+
       users: (_root, args, context) => {
+        // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
         return userService.getMany(args);
       },
     },
