@@ -12,14 +12,14 @@ export async function seed(knex: Knex): Promise<void> {
       createdAt: "2019-10-15",
     },
     {
-      id: "00000000-0000-0000-0000-000000000001",
+      id: "00000000-0000-4000-A000-000000000000",
       username: "bbarker",
       firstName: "Bob",
       lastName: "Barker",
       createdAt: "2020-04-15",
     },
     {
-      id: "00000000-0000-0000-0000-000000000002",
+      id: "00000000-0000-4000-B000-000000000000",
       username: "cchase",
       firstName: "Chevy",
       lastName: "Chase",
