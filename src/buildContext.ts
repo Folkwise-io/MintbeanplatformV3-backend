@@ -9,25 +9,26 @@ import user from "./graphql/typedef/user";
 import post from "./graphql/typedef/post";
 import customScalars from "./graphql/typedef/customScalars";
 import UserService from "./service/UserService";
-import UserDao from "./dao/UserDao";
+import UserDaoImpl from "./dao/UserDaoImpl";
 import UserResolverValidator from "./validator/UserResolverValidator";
+import UserDao from "./dao/UserDao";
 
-interface PersistenceContext {
+export interface PersistenceContext {
   userDao: UserDao;
+}
+
+export interface ResolverContext {
+  userResolverValidator: UserResolverValidator;
+  userService: UserService;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
-  const userDao = new UserDao(knex);
+  const userDao = new UserDaoImpl(knex);
 
   return {
     userDao,
   };
-}
-
-interface ResolverContext {
-  userResolverValidator: UserResolverValidator;
-  userService: UserService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -41,6 +42,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   };
 }
 
+// TODO: Refactor into a buildSchema.ts file
 export function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const { userService, userResolverValidator } = resolverContext;
   const typeDefs = [customScalars, user, post];
@@ -56,6 +58,7 @@ export function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   });
 }
 
+// TODO: Refactor into a buildServer.ts file
 export function buildServer(schema: GraphQLSchema): ApolloServer {
   const apolloServer = new ApolloServer({
     schema,

@@ -1,25 +1,54 @@
-import { createTestClient } from "apollo-server-testing";
-import buildServerContext from "../../src/buildServerContext";
+import { createTestClient, ApolloServerTestClient } from "apollo-server-testing";
+import {
+  buildResolverContext,
+  ResolverContext,
+  buildPersistenceContext,
+  buildSchema,
+  buildServer,
+  PersistenceContext,
+} from "../../src/buildContext";
+import { buildTestPersistenceContext } from "./dao/testPersistenceContextBuilder";
 import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
+import { TestState } from "./dao/TestState";
+import { GraphQLSchema } from "graphql";
+import { ApolloServer } from "apollo-server-express";
 
-const { server: testServer } = buildServerContext(); // TODO: call buildTestServerContext to generate a test server with mocked daos
-const { query, mutate } = createTestClient(testServer);
+interface TestManagerParams {
+  persistenceContext: PersistenceContext;
+  resolverContext: ResolverContext;
+  schema: GraphQLSchema;
+  testServer: ApolloServer;
+  testClient: ApolloServerTestClient;
+}
 
 export default class TestManager {
-  /**
-   * Wrapper for original apollo-server-testing query function.
-   * @param gqlQuery The GraphQL query
-   */
-  async query(gqlQuery: Query): Promise<GraphQLResponse> {
-    return await query(gqlQuery);
+  private constructor(private params: TestManagerParams) {}
+
+  static build(override: TestState = null) {
+    const state: TestState = override || {
+      users: [],
+    };
+
+    const persistenceContext = buildTestPersistenceContext(state);
+    const resolverContext = buildResolverContext(persistenceContext);
+    const schema = buildSchema(resolverContext);
+    const testServer = buildServer(schema);
+    const testClient = createTestClient(testServer);
+
+    return new TestManager({
+      persistenceContext,
+      resolverContext,
+      schema,
+      testServer,
+      testClient,
+    });
   }
 
-  /**
-   * Queries server and pretty-prints the raw query response to console for
-     debugging / dev purposes.
-   * @param gqlQuery The GraphQL query
-   */
+  async query(gqlQuery: Query): Promise<GraphQLResponse> {
+    return await this.params.testClient.query(gqlQuery);
+  }
+
   async printQueryResults(gqlQuery: Query): Promise<void> {
     const results = await this.query(gqlQuery);
 
