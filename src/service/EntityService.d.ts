@@ -2,7 +2,7 @@ export interface Args {
   [key: string]: string;
 }
 
-export interface ResolverService<T> {
+export interface EntityService<T> {
   getMany: (args: Args) => T[];
   getOne: (args: Args) => T;
 }

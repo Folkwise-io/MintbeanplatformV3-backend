@@ -7,7 +7,7 @@ interface UserServiceGetOneParams {
   username?: string | null;
 }
 
-export default class UserValidator {
+export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
 
   /**

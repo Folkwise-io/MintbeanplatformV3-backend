@@ -4,9 +4,9 @@ import {
   QueryUserArgs,
 } from "../graphql/generated/tsTypes";
 
-import { ResolverService } from "./ResolverService";
+import { EntityService } from "./EntityService";
 
-export default class UserResolverService implements ResolverService<User> {
+export default class UserService implements EntityService<User> {
   constructor(private userDao: any) {}
 
   getMany(args: QueryUsersArgs): User[] {

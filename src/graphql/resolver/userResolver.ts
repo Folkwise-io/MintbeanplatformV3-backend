@@ -1,6 +1,6 @@
 import { Resolvers } from "../generated/tsTypes";
-import UserService from "../../service/UserResolverService";
-import UserResolverValidator from "../../validator/UserValidator";
+import UserService from "../../service/UserService";
+import UserResolverValidator from "../../validator/UserResolverValidator";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
