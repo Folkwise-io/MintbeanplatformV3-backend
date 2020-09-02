@@ -13,8 +13,10 @@ import { GraphQLResponse } from "apollo-server-types";
 import { TestState } from "./dao/TestState";
 import { GraphQLSchema } from "graphql";
 import { ApolloServer } from "apollo-server-express";
+import { User } from "../../src/graphql/generated/tsTypes";
 
 interface TestManagerParams {
+  state: TestState;
   persistenceContext: PersistenceContext;
   resolverContext: ResolverContext;
   schema: GraphQLSchema;
@@ -23,6 +25,7 @@ interface TestManagerParams {
 }
 
 export default class TestManager {
+  private state: TestState;
   private constructor(private params: TestManagerParams) {}
 
   static build(override: TestState = null) {
@@ -37,12 +40,18 @@ export default class TestManager {
     const testClient = createTestClient(testServer);
 
     return new TestManager({
+      state,
       persistenceContext,
       resolverContext,
       schema,
       testServer,
       testClient,
     });
+  }
+
+  addUsers(...users: User[]) {
+    users.forEach((u) => this.state.users.push(u));
+    return this;
   }
 
   async query(gqlQuery: Query): Promise<GraphQLResponse> {

@@ -10,17 +10,17 @@ const GET_ALL_USERS = gql`
   }
 `;
 
-let testManager;
+let testManager: TestManager;
 describe("Querying users", () => {
   beforeEach(() => {
-    const state = {
-      users: [],
-    };
-    testManager = TestManager.build(state);
+    testManager = TestManager.build();
   });
 
   it("gets all users", async () => {
-    await testManager.printQueryResults({ query: GET_ALL_USERS });
+    await testManager
+      .addUsers({ id: "blah" })
+      .query({ query: GET_ALL_USERS })
+      .then((value) => {});
   });
 });
 
