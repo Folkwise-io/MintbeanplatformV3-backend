@@ -10,22 +10,18 @@ import post from "./graphql/typedef/post";
 import customScalars from "./graphql/typedef/customScalars";
 import UserResolverService from "./service/UserResolverService";
 import UserDao from "./dao/UserDao";
-import ValidatorDao from "./dao/ValidatorDao";
 import UserValidator from "./validator/UserValidator";
 
 interface PersistenceContext {
   userDao: UserDao;
-  validatorDao: ValidatorDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
   const userDao = new UserDao(knex);
-  const validatorDao = new ValidatorDao(knex);
 
   return {
     userDao,
-    validatorDao,
   };
 }
 
@@ -35,9 +31,9 @@ interface ResolverContext {
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, validatorDao } = persistenceContext;
+  const { userDao } = persistenceContext;
   const userResolverService = new UserResolverService(userDao);
-  const userValidator = new UserValidator(validatorDao);
+  const userValidator = new UserValidator(userDao);
 
   return {
     userResolverService,
@@ -50,7 +46,7 @@ export function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const typeDefs = [customScalars, user, post];
   const resolvers = [
     customScalarsResolver, // Defines resolver (i.e. validation) for custom scalars
-    userResolver(userResolverService, userValidator),
+    userResolver(userValidator, userResolverService),
     postResolver, // TODO: pass in postResolverService
   ];
 
