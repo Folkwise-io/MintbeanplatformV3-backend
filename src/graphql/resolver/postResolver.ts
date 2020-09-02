@@ -1,3 +1,4 @@
+// Not working on Posts until parity - keeping file here for reference & sample query for frontend
 import { knex } from "../../db/knex";
 import { Resolvers } from "../generated/tsTypes";
 
