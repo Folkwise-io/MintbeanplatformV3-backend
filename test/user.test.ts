@@ -18,9 +18,11 @@ describe("Querying users", () => {
 
   it("gets all users", async () => {
     await testManager
-      .addUsers({ id: "blah" })
+      .addUsers({ id: "blah", firstName: "Joe" })
       .query({ query: GET_ALL_USERS })
-      .then((value) => {});
+      .then((response) => {
+        expect(JSON.stringify(response)).toContain("Joe");
+      });
   });
 });
 

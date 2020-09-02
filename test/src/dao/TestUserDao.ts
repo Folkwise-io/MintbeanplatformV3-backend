@@ -4,12 +4,13 @@ import { UserServiceGetOneArgs, UserServiceGetManyArgs } from "../../../src/serv
 import { TestState } from "./TestState";
 
 export class TestUserDao implements UserDao {
-  constructor(testState: TestState) {}
+  constructor(private testState: TestState) {}
 
   getOne(args: UserServiceGetOneArgs): Promise<User> {
     throw new Error("Method not implemented.");
   }
-  getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    throw new Error("Method not implemented.");
+  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
+    return this.testState.users;
+    // throw new Error("Method not implemented.");
   }
 }

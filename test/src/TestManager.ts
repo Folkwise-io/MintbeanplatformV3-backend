@@ -2,7 +2,6 @@ import { createTestClient, ApolloServerTestClient } from "apollo-server-testing"
 import {
   buildResolverContext,
   ResolverContext,
-  buildPersistenceContext,
   buildSchema,
   buildServer,
   PersistenceContext,
@@ -25,10 +24,9 @@ interface TestManagerParams {
 }
 
 export default class TestManager {
-  private state: TestState;
   private constructor(private params: TestManagerParams) {}
 
-  static build(override: TestState = null) {
+  static build(override?: TestState) {
     const state: TestState = override || {
       users: [],
     };
@@ -50,7 +48,7 @@ export default class TestManager {
   }
 
   addUsers(...users: User[]) {
-    users.forEach((u) => this.state.users.push(u));
+    users.forEach((u) => this.params.state.users.push(u));
     return this;
   }
 
