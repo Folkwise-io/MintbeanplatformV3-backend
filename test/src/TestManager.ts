@@ -6,7 +6,7 @@ import {
   buildServer,
   PersistenceContext,
 } from "../../src/buildContext";
-import { buildTestPersistenceContext } from "./dao/testPersistenceContextBuilder";
+import { buildTestPersistenceContext } from "./buildTestPersistenceContext";
 import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { TestState } from "./dao/TestState";
@@ -26,8 +26,8 @@ interface TestManagerParams {
 export default class TestManager {
   private constructor(private params: TestManagerParams) {}
 
-  static build(override?: TestState) {
-    const state: TestState = override || {
+  static build(initialState?: TestState) {
+    const state: TestState = initialState || {
       users: [],
     };
 
