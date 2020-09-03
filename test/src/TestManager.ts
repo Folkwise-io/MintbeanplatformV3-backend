@@ -59,12 +59,19 @@ export default class TestManager {
   getData = (response: GraphQLResponse) => {
     if (response.errors) {
       this.printObj(response);
-      throw new Error("Expected data but got an error");
+      throw new Error("Test expected data but got an error");
     }
     if (!response.data) {
-      throw new Error("Received no data");
+      throw new Error("Test expected data but received no data");
     }
     return response.data;
+  };
+
+  getErrors = (response: GraphQLResponse) => {
+    if (!response.errors) {
+      throw new Error("Test expected an error but did not get any");
+    }
+    return response.errors;
   };
 
   printObj(result: object): void {

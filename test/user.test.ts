@@ -18,16 +18,25 @@ const BOB = {
   createdAt: "2020-04-15",
 };
 
-const GET_AMY = gql`
-  query getOneUser {
-    user (id: "00000000-0000-4000-A000-000000000000") {
+const BAD_USER_ID_QUERY = gql`
+  query badUserId {
+    user(id: "000000") {
       firstName
       lastName
     }
   }
 `;
 
-const GET_ALL_USERS = gql`
+const GET_AMY_QUERY = gql`
+  query getOneUser {
+    user(id: "00000000-0000-4000-A000-000000000000") {
+      firstName
+      lastName
+    }
+  }
+`;
+
+const GET_ALL_USERS_QUERY = gql`
   query getAllUsers {
     users {
       firstName
@@ -42,11 +51,23 @@ beforeEach(() => {
   testManager = TestManager.build();
 });
 
-describe("Querying users", () => {
-  it("gets one user", async () => {
+describe("GraphQL built-in validation", () => {
+  it("throws an error when you pass in an ID that is not a UUID", async () => {
     await testManager
       .addUsers(AMY, BOB)
-      .query({ query: GET_AMY })
+      .query({ query: BAD_USER_ID_QUERY })
+      .then(testManager.getErrors)
+      .then((errors) => {
+        expect(errors[0].message).toContain("UUID");
+      });
+  });
+});
+
+describe("Querying users", () => {
+  it("gets one user by ID", async () => {
+    await testManager
+      .addUsers(AMY, BOB)
+      .query({ query: GET_AMY_QUERY })
       .then(testManager.getData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);
@@ -56,7 +77,7 @@ describe("Querying users", () => {
   it("gets all the users", async () => {
     await testManager
       .addUsers(AMY, BOB)
-      .query({ query: GET_ALL_USERS })
+      .query({ query: GET_ALL_USERS_QUERY })
       .then(testManager.getData)
       .then(({ users }) => {
         expect(users).toHaveLength(2);
