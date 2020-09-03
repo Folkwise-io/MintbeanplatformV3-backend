@@ -6,9 +6,10 @@ import { TestState } from "./TestState";
 export class TestUserDao implements UserDao {
   constructor(private testState: TestState) {}
 
-  getOne(args: UserServiceGetOneArgs): Promise<User> {
-    throw new Error("Method not implemented.");
+  async getOne(args: UserServiceGetOneArgs): Promise<User> {
+    return this.testState.users[0];
   }
+  
   async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
     return this.testState.users;
     // throw new Error("Method not implemented.");
