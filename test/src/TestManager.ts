@@ -56,10 +56,18 @@ export default class TestManager {
     return await this.params.testClient.query(gqlQuery);
   }
 
-  async printQueryResults(gqlQuery: Query): Promise<void> {
-    const results = await this.query(gqlQuery);
+  getData = (response: GraphQLResponse) => {
+    if (response.errors) {
+      this.printObj(response);
+      throw new Error("Expected data but got an error");
+    }
+    if (!response.data) {
+      throw new Error("Received no data");
+    }
+    return response.data;
+  };
 
-    // Pretty-print the response object
-    console.log(JSON.stringify(results, null, 2));
+  printObj(result: object): void {
+    console.log(JSON.stringify(result, null, 2));
   }
 }

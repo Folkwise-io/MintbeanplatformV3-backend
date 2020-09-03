@@ -62,7 +62,6 @@ export function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
 export function buildServer(schema: GraphQLSchema): ApolloServer {
   const apolloServer = new ApolloServer({
     schema,
-    tracing: true,
   });
 
   return apolloServer;

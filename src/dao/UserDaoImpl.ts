@@ -15,7 +15,9 @@ export default class UserDaoImpl implements UserDao {
   }
 
   getMany(args: UserServiceGetManyArgs) {
-    const users = this.knex<User>("users").where({ ...args });
+    const users = this.knex<User>("users")
+      .where({ ...args })
+      .orderBy("username");
     return users as Promise<User[]>;
   }
 }
