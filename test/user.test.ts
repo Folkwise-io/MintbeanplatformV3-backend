@@ -1,6 +1,5 @@
 import TestManager from "./src/TestManager";
 import { gql } from "apollo-server-express";
-import { knex } from "../src/db/knex";
 
 const AMY = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -29,7 +28,7 @@ const BAD_USER_ID_QUERY = gql`
 
 const GET_AMY_QUERY = gql`
   query getOneUser {
-    user(id: "00000000-0000-4000-A000-000000000000") {
+    user(id: "00000000-0000-0000-0000-000000000000") {
       firstName
       lastName
     }
@@ -45,17 +44,17 @@ const GET_ALL_USERS_QUERY = gql`
   }
 `;
 
-let testManager: TestManager;
+const testManager = TestManager.build();
 
-beforeEach(() => {
-  testManager = TestManager.build();
+beforeEach(async () => {
+  await testManager.deleteAllUsers();
 });
 
 describe("GraphQL built-in validation", () => {
   it("throws an error when you pass in an ID that is not a UUID", async () => {
     await testManager
-      .addUsers(AMY, BOB)
-      .query({ query: BAD_USER_ID_QUERY })
+      .addUsers([AMY, BOB])
+      .then((t) => t.query({ query: BAD_USER_ID_QUERY }))
       .then(testManager.getErrors)
       .then((errors) => {
         expect(errors[0].message).toContain("UUID");
@@ -66,8 +65,8 @@ describe("GraphQL built-in validation", () => {
 describe("Querying users", () => {
   it("gets one user by ID", async () => {
     await testManager
-      .addUsers(AMY, BOB)
-      .query({ query: GET_AMY_QUERY })
+      .addUsers([AMY, BOB])
+      .then(() => testManager.query({ query: GET_AMY_QUERY }))
       .then(testManager.getData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);
@@ -76,8 +75,8 @@ describe("Querying users", () => {
 
   it("gets all the users", async () => {
     await testManager
-      .addUsers(AMY, BOB)
-      .query({ query: GET_ALL_USERS_QUERY })
+      .addUsers([AMY, BOB])
+      .then((t) => t.query({ query: GET_ALL_USERS_QUERY }))
       .then(testManager.getData)
       .then(({ users }) => {
         expect(users).toHaveLength(2);
@@ -87,5 +86,5 @@ describe("Querying users", () => {
 });
 
 afterAll(async () => {
-  await knex.destroy();
+  await testManager.destroy();
 });

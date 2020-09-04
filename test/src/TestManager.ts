@@ -5,17 +5,15 @@ import {
   buildSchema,
   buildServer,
   PersistenceContext,
+  buildPersistenceContext,
 } from "../../src/buildContext";
-import { buildTestPersistenceContext } from "./buildTestPersistenceContext";
 import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
-import { TestState } from "./dao/TestState";
 import { GraphQLSchema } from "graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/graphql/generated/tsTypes";
 
 interface TestManagerParams {
-  state: TestState;
   persistenceContext: PersistenceContext;
   resolverContext: ResolverContext;
   schema: GraphQLSchema;
@@ -26,19 +24,14 @@ interface TestManagerParams {
 export default class TestManager {
   private constructor(private params: TestManagerParams) {}
 
-  static build(initialState?: TestState) {
-    const state: TestState = initialState || {
-      users: [],
-    };
-
-    const persistenceContext = buildTestPersistenceContext(state);
+  static build() {
+    const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
     const testServer = buildServer(schema);
     const testClient = createTestClient(testServer);
 
     return new TestManager({
-      state,
       persistenceContext,
       resolverContext,
       schema,
@@ -47,18 +40,21 @@ export default class TestManager {
     });
   }
 
-  addUsers(...users: User[]) {
-    users.forEach((u) => this.params.state.users.push(u));
-    return this;
+  addUsers(users: User[]): Promise<TestManager> {
+    return this.params.persistenceContext.userDao.addUsers(users).then(() => this);
   }
 
-  async query(gqlQuery: Query): Promise<GraphQLResponse> {
-    return await this.params.testClient.query(gqlQuery);
+  deleteAllUsers(): Promise<void> {
+    return this.params.persistenceContext.userDao.deleteAll();
+  }
+
+  query(gqlQuery: Query): Promise<GraphQLResponse> {
+    return this.params.testClient.query(gqlQuery);
   }
 
   getData = (response: GraphQLResponse) => {
     if (response.errors) {
-      this.printObj(response);
+      this.printJson(response);
       throw new Error("Test expected data but got an error");
     }
     if (!response.data) {
@@ -74,7 +70,11 @@ export default class TestManager {
     return response.errors;
   };
 
-  printObj(result: object): void {
-    console.log(JSON.stringify(result, null, 2));
+  printJson(json: object): void {
+    console.log(JSON.stringify(json, null, 2));
+  }
+
+  destroy(): Promise<void> {
+    return this.params.persistenceContext.knex.destroy();
   }
 }

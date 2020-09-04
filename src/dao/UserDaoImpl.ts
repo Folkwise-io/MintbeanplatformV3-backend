@@ -20,4 +20,12 @@ export default class UserDaoImpl implements UserDao {
       .orderBy("username");
     return users as Promise<User[]>;
   }
+
+  addUsers(users: User[]): Promise<void> {
+    return this.knex<User>("users").insert(users);
+  }
+
+  deleteAll(): Promise<void> {
+    return this.knex<User>("users").delete();
+  }
 }

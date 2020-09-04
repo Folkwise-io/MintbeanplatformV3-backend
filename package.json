@@ -14,7 +14,8 @@
     "postgres": "docker-compose -f ./db/docker-compose.yml up",
     "psql": "docker exec -it db-mintbean-v3 psql -U mintbean -d mintbean_development_v3",
     "tdd": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --watch --runInBand",
-    "test": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --runInBand"
+    "test": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --runInBand",
+    "test:buddy": "node -r dotenv/config node_modules/jest/bin/jest.js --runInBand"
   },
   "author": "",
   "license": "UNLICENSED",

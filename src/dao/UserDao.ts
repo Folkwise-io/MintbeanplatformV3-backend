@@ -4,4 +4,6 @@ import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserSe
 export default interface UserDao {
   getOne(args: UserServiceGetOneArgs): Promise<User>;
   getMany(args: UserServiceGetManyArgs): Promise<User[]>;
+  addUsers(users: User[]): Promise<void>;
+  deleteAll(): Promise<void>;
 }
