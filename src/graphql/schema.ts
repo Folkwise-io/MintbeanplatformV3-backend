@@ -1,5 +1,6 @@
 // Only read by graphql-code-generator for generating TS types
-import { buildPersistenceContext, buildResolverContext, buildSchema } from "../buildContext";
+import { buildPersistenceContext, buildResolverContext } from "../buildContext";
+import buildSchema from "../buildSchema";
 
 const persistenceContext = buildPersistenceContext();
 const resolverContext = buildResolverContext(persistenceContext);

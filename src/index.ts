@@ -1,5 +1,7 @@
-import { buildPersistenceContext, buildResolverContext, buildSchema, buildServer } from "./buildContext";
 import express from "express";
+import { buildPersistenceContext, buildResolverContext } from "./buildContext";
+import buildSchema from "./buildSchema";
+import buildServer from "./buildServer";
 
 const persistenceContext = buildPersistenceContext();
 const resolverContext = buildResolverContext(persistenceContext);

@@ -2,11 +2,11 @@ import { createTestClient, ApolloServerTestClient } from "apollo-server-testing"
 import {
   buildResolverContext,
   ResolverContext,
-  buildSchema,
-  buildServer,
   PersistenceContext,
   buildPersistenceContext,
 } from "../../src/buildContext";
+import buildSchema from "../../src/buildSchema";
+import buildServer from "../../src/buildServer";
 import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { GraphQLSchema } from "graphql";
