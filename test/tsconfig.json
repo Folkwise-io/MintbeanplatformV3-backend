@@ -1,9 +1,8 @@
 {
   "extends": "../tsconfig.json",
-  "compilerOptions": {},
-  "references": [
-    {
-      "path": "../src"
-    }
-  ]
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true
+  },
+  "references": [{ "path": "../src" }]
 }
