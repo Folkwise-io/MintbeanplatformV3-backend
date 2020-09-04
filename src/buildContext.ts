@@ -9,7 +9,7 @@ import user from "./graphql/typedef/user";
 import post from "./graphql/typedef/post";
 import customScalars from "./graphql/typedef/customScalars";
 import UserService from "./service/UserService";
-import UserDaoImpl from "./dao/UserDaoImpl";
+import UserDaoKnex from "./dao/UserDaoKnex";
 import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
 
@@ -25,7 +25,7 @@ export interface ResolverContext {
 
 export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
-  const userDao = new UserDaoImpl(knex);
+  const userDao = new UserDaoKnex(knex);
 
   return {
     userDao,

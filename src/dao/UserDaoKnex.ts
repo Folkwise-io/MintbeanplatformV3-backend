@@ -3,7 +3,7 @@ import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao from "./UserDao";
 
-export default class UserDaoImpl implements UserDao {
+export default class UserDaoKnex implements UserDao {
   constructor(private knex: Knex) {}
 
   getOne(args: UserServiceGetOneArgs) {
