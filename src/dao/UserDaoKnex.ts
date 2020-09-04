@@ -5,7 +5,6 @@ import UserDao from "./UserDao";
 
 export default class UserDaoKnex implements UserDao {
   constructor(private knex: Knex) {}
-
   getOne(args: UserServiceGetOneArgs) {
     const user = this.knex<User>("users")
       .where({ ...args })
@@ -27,5 +26,9 @@ export default class UserDaoKnex implements UserDao {
 
   deleteAll(): Promise<void> {
     return this.knex<User>("users").delete();
+  }
+
+  destroy(): Promise<void> {
+    return this.knex.destroy();
   }
 }

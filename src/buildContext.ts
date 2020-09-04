@@ -7,7 +7,6 @@ import UserDao from "./dao/UserDao";
 
 export interface PersistenceContext {
   userDao: UserDao;
-  knex: Knex;
 }
 
 export interface ResolverContext {
@@ -21,7 +20,6 @@ export function buildPersistenceContext(): PersistenceContext {
 
   return {
     userDao,
-    knex,
   };
 }
 

@@ -54,7 +54,7 @@ describe("GraphQL built-in validation", () => {
   it("throws an error when you pass in an ID that is not a UUID", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then((t) => t.query({ query: BAD_USER_ID_QUERY }))
+      .then(() => testManager.query({ query: BAD_USER_ID_QUERY }))
       .then(testManager.getErrors)
       .then((errors) => {
         expect(errors[0].message).toContain("UUID");
@@ -76,7 +76,7 @@ describe("Querying users", () => {
   it("gets all the users", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then((t) => t.query({ query: GET_ALL_USERS_QUERY }))
+      .then(() => testManager.query({ query: GET_ALL_USERS_QUERY }))
       .then(testManager.getData)
       .then(({ users }) => {
         expect(users).toHaveLength(2);

@@ -75,6 +75,6 @@ export default class TestManager {
   }
 
   destroy(): Promise<void> {
-    return this.params.persistenceContext.knex.destroy();
+    return this.params.persistenceContext.userDao.destroy();
   }
 }

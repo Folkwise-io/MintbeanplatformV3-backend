@@ -8,4 +8,5 @@ export default interface UserDao {
   // Testing methods for TestManager to call
   addUsers(users: User[]): Promise<void>;
   deleteAll(): Promise<void>;
+  destroy(): Promise<void>; // Needed to terminate knex so tests don't hang
 }
