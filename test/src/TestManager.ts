@@ -54,9 +54,12 @@ export default class TestManager {
 
   getData = (response: GraphQLResponse) => {
     if (response.errors) {
-      this.printJson(response);
+      this.log(response);
       throw new Error("Test expected data but got an error");
     }
+
+    // These conditional errors help with typing in the tests file
+    // For example, when accessing response.data.user without the conditional below, it will complain
     if (!response.data) {
       throw new Error("Test expected data but received no data");
     }
@@ -70,8 +73,16 @@ export default class TestManager {
     return response.errors;
   };
 
-  printJson(json: object): void {
-    console.log(JSON.stringify(json, null, 2));
+  getDataAndErrors = ({ data, errors }: GraphQLResponse) => {
+    if (!data || !errors) {
+      throw new Error("Test expected both a data and error but did not get them");
+    }
+    return { data, errors };
+  };
+
+  // Needed for debugging because console.log would just give you "[object]"
+  log(obj: object): void {
+    console.log(JSON.stringify(obj, null, 2));
   }
 
   destroy(): Promise<void> {

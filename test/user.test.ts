@@ -17,9 +17,18 @@ const BOB = {
   createdAt: "2020-04-15",
 };
 
-const BAD_USER_ID_QUERY = gql`
+const BAD_UUID_QUERY = gql`
   query badUserId {
     user(id: "000000") {
+      firstName
+      lastName
+    }
+  }
+`;
+
+const BAD_USERNAME_QUERY = gql`
+  query badUserName {
+    user(username: 5) {
       firstName
       lastName
     }
@@ -51,10 +60,18 @@ beforeEach(async () => {
 });
 
 describe("GraphQL built-in validation", () => {
+  it("throws an error when you pass in a username that's not a string", async () => {
+    await testManager
+      .query({ query: BAD_USERNAME_QUERY })
+      .then(testManager.getErrors)
+      .then((errors) => {
+        expect(errors[0].message).toContain("string");
+      });
+  });
+
   it("throws an error when you pass in an ID that is not a UUID", async () => {
     await testManager
-      .addUsers([AMY, BOB])
-      .then(() => testManager.query({ query: BAD_USER_ID_QUERY }))
+      .query({ query: BAD_UUID_QUERY })
       .then(testManager.getErrors)
       .then((errors) => {
         expect(errors[0].message).toContain("UUID");
@@ -81,6 +98,17 @@ describe("Querying users", () => {
       .then(({ users }) => {
         expect(users).toHaveLength(2);
         expect([AMY, BOB]).toMatchObject(users);
+      });
+  });
+
+  it("gets no users when ID doesn't exist", async () => {
+    await testManager
+      .addUsers([])
+      .then(() => testManager.query({ query: GET_AMY_QUERY }))
+      .then(testManager.getDataAndErrors)
+      .then(({ data, errors }) => {
+        expect(data.user).toBeNull();
+        expect(errors[0].message).toBe("User does not exist");
       });
   });
 });
