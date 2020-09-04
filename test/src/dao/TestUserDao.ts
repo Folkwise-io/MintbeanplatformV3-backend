@@ -5,10 +5,8 @@ import { TestState } from "./TestState";
 
 export class TestUserDao implements UserDao {
   constructor(private testState: TestState) {}
+
   addUsers(users: User[]): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  deleteAll(): Promise<void> {
     throw new Error("Method not implemented.");
   }
 
@@ -17,7 +15,14 @@ export class TestUserDao implements UserDao {
   }
 
   async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    return this.testState.users;
-    // throw new Error("Method not implemented.");
+    return this.testState.users;    
+  }
+
+  deleteAll(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  destroy(): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }
