@@ -1,4 +1,4 @@
-// Only read by graphql-code-generator for generating TS types
+// Only read by graphql-code-generator for generating a TS types file
 import { buildPersistenceContext, buildResolverContext } from "../buildContext";
 import buildSchema from "../buildSchema";
 
