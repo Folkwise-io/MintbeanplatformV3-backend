@@ -1,6 +1,7 @@
 import TestManager from "./src/TestManager";
 import { gql } from "apollo-server-express";
 
+// Will use generator factory / faker once more entities are added
 const AMY = {
   id: "00000000-0000-0000-0000-000000000000",
   username: "aadams",

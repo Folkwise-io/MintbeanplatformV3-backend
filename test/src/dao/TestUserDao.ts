@@ -1,3 +1,4 @@
+// May use in the future instead of UserDaoKnex if Knex/Postgres gets too slow in tests
 import UserDao from "../../../src/dao/UserDao";
 import { User } from "../../../src/graphql/generated/tsTypes";
 import { UserServiceGetOneArgs, UserServiceGetManyArgs } from "../../../src/service/UserService";
@@ -15,7 +16,7 @@ export class TestUserDao implements UserDao {
   }
 
   async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    return this.testState.users;    
+    return this.testState.users;
   }
 
   deleteAll(): Promise<void> {
