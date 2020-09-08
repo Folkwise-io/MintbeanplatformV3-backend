@@ -1,4 +1,4 @@
-import { User } from "../graphql/generated/tsTypes";
+import { User } from "../types/gqlGeneratedTypes";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 
 export default interface UserDao {

@@ -1,6 +1,7 @@
-import { Resolvers } from "../generated/tsTypes";
+import { Resolvers } from "../../types/gqlGeneratedTypes";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
+import { ServerContext } from "../../types/ServerContext";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {

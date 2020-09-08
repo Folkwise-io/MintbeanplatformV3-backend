@@ -1,4 +1,4 @@
-import { User } from "../graphql/generated/tsTypes";
+import { User } from "../types/gqlGeneratedTypes";
 
 import { EntityService } from "./EntityService";
 

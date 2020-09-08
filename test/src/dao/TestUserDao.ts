@@ -1,6 +1,6 @@
 // May use in the future instead of UserDaoKnex if Knex/Postgres gets too slow in tests
 import UserDao from "../../../src/dao/UserDao";
-import { User } from "../../../src/graphql/generated/tsTypes";
+import { User } from "../../../src/types/gqlGeneratedTypes";
 import { UserServiceGetOneArgs, UserServiceGetManyArgs } from "../../../src/service/UserService";
 import { TestState } from "./TestState";
 

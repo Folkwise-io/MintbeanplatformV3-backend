@@ -1,4 +1,4 @@
-import { User } from "../graphql/generated/tsTypes";
+import { User } from "../types/gqlGeneratedTypes";
 import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao from "./UserDao";

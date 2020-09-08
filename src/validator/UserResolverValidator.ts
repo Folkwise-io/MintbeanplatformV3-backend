@@ -1,7 +1,8 @@
-import { QueryUserArgs, User } from "../graphql/generated/tsTypes";
+import { QueryUserArgs, User } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { UserServiceGetOneArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
+import { ServerContext } from "../types/ServerContext";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}

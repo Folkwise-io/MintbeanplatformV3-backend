@@ -11,7 +11,7 @@ import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { GraphQLSchema } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { User } from "../../src/graphql/generated/tsTypes";
+import { User } from "../../src/types/gqlGeneratedTypes";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
