@@ -13,7 +13,7 @@ export default class UserResolverValidator {
    * @param context The context passed in from the resolver (useful for authorization checks in other validators)
    * @returns The cleaned args as defined in UserService
    */
-  getOne(args: QueryUserArgs, context: any): Promise<UserServiceGetOneArgs> {
+  getOne(args: QueryUserArgs, context: ServerContext): Promise<UserServiceGetOneArgs> {
     return this.userDao
       .getOne(args)
       .then((user) => <User>ensureExists("User")(user))
