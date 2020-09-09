@@ -7,13 +7,13 @@ const user: DocumentNode = gql`
     id: UUID!
 
     "Unique username"
-    username: String
+    username: String!
 
-    firstName: String
-    lastName: String
+    firstName: String!
+    lastName: String!
 
     "Date that the user registered"
-    createdAt: String
+    createdAt: String!
   }
 
   type Query {

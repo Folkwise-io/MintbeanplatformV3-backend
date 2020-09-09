@@ -1,29 +1,91 @@
-import { createTestClient } from "apollo-server-testing";
-import buildServerContext from "../../src/buildServerContext";
+import { createTestClient, ApolloServerTestClient } from "apollo-server-testing";
+import {
+  buildResolverContext,
+  ResolverContext,
+  PersistenceContext,
+  buildPersistenceContext,
+} from "../../src/buildContext";
+import buildSchema from "../../src/buildSchema";
+import buildServer from "../../src/buildServer";
 import { Query } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
+import { GraphQLSchema } from "graphql";
+import { ApolloServer } from "apollo-server-express";
+import { User } from "../../src/types/gqlGeneratedTypes";
 
-const { server: testServer } = buildServerContext(); // TODO: call buildTestServerContext to generate a test server with mocked daos
-const { query, mutate } = createTestClient(testServer);
+interface TestManagerParams {
+  persistenceContext: PersistenceContext;
+  resolverContext: ResolverContext;
+  schema: GraphQLSchema;
+  testServer: ApolloServer;
+  testClient: ApolloServerTestClient;
+}
 
 export default class TestManager {
-  /**
-   * Wrapper for original apollo-server-testing query function.
-   * @param gqlQuery The GraphQL query
-   */
-  async query(gqlQuery: Query): Promise<GraphQLResponse> {
-    return await query(gqlQuery);
+  private constructor(private params: TestManagerParams) {}
+
+  static build() {
+    const persistenceContext = buildPersistenceContext();
+    const resolverContext = buildResolverContext(persistenceContext);
+    const schema = buildSchema(resolverContext);
+    const testServer = buildServer(schema);
+    const testClient = createTestClient(testServer);
+
+    return new TestManager({
+      persistenceContext,
+      resolverContext,
+      schema,
+      testServer,
+      testClient,
+    });
   }
 
-  /**
-   * Queries server and pretty-prints the raw query response to console for
-     debugging / dev purposes.
-   * @param gqlQuery The GraphQL query
-   */
-  async printQueryResults(gqlQuery: Query): Promise<void> {
-    const results = await this.query(gqlQuery);
+  addUsers(users: User[]): Promise<TestManager> {
+    return this.params.persistenceContext.userDao.addUsers(users).then(() => this);
+  }
 
-    // Pretty-print the response object
-    console.log(JSON.stringify(results, null, 2));
+  deleteAllUsers(): Promise<void> {
+    return this.params.persistenceContext.userDao.deleteAll();
+  }
+
+  query(gqlQuery: Query): Promise<GraphQLResponse> {
+    return this.params.testClient.query(gqlQuery);
+  }
+
+  getData = (response: GraphQLResponse) => {
+    if (response.errors) {
+      this.log(response);
+      throw new Error("Test expected data but got an error");
+    }
+
+    // These conditional errors help with typing in the tests file
+    // For example, when accessing response.data.user without the conditional below, it will complain
+    if (!response.data) {
+      throw new Error("Test expected data but received no data");
+    }
+    return response.data;
+  };
+
+  getErrors = (response: GraphQLResponse) => {
+    if (!response.errors) {
+      throw new Error("Test expected an error but did not get any");
+    }
+    return response.errors;
+  };
+
+  getDataAndErrors = ({ data, errors }: GraphQLResponse) => {
+    if (!data || !errors) {
+      throw new Error("Test expected both a data and error but did not get them");
+    }
+    return { data, errors };
+  };
+
+  // Needed for debugging because console.log would just give you "[object]"
+  log(obj: object): void {
+    console.log(JSON.stringify(obj, null, 2));
+  }
+
+  destroy(): Promise<void> {
+    return this.params.persistenceContext.userDao.destroy();
   }
 }

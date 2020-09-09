@@ -1,8 +1,8 @@
-import { QueryUserArgs, User } from "../graphql/generated/tsTypes";
+import { QueryUserArgs, User } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
-import UserDao from "../dao/UserDao";
 import { UserServiceGetOneArgs } from "../service/UserService";
-
+import UserDao from "../dao/UserDao";
+import { ServerContext } from "../types/ServerContext";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
@@ -14,7 +14,7 @@ export default class UserResolverValidator {
    * @param context The context passed in from the resolver (useful for authorization checks in other validators)
    * @returns The cleaned args as defined in UserService
    */
-  getOne(args: QueryUserArgs, context: any): Promise<UserServiceGetOneArgs> {
+  getOne(args: QueryUserArgs, context: ServerContext): Promise<UserServiceGetOneArgs> {
     return this.userDao
       .getOne(args)
       .then((user) => <User>ensureExists("User")(user))

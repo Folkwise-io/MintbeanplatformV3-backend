@@ -1,0 +1,29 @@
+// May use in the future instead of UserDaoKnex if Knex/Postgres gets too slow in tests
+import UserDao from "../../../src/dao/UserDao";
+import { User } from "../../../src/types/gqlGeneratedTypes";
+import { UserServiceGetOneArgs, UserServiceGetManyArgs } from "../../../src/service/UserService";
+import { TestState } from "./TestState";
+
+export class TestUserDao implements UserDao {
+  constructor(private testState: TestState) {}
+
+  addUsers(users: User[]): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  async getOne(args: UserServiceGetOneArgs): Promise<User> {
+    return this.testState.users[0];
+  }
+
+  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
+    return this.testState.users;
+  }
+
+  deleteAll(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+
+  destroy(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+}
