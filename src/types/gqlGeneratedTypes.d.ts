@@ -35,7 +35,7 @@ export type Query = {
   __typename?: 'Query';
   /** Search for users by first or last name */
   users?: Maybe<Array<Maybe<User>>>;
-  /** Get a single user by ID or username */
+  /** Get a single user by ID, username, or email */
   user?: Maybe<User>;
   /** Search for posts by userId */
   posts?: Maybe<Array<Maybe<Post>>>;
@@ -53,6 +53,7 @@ export type QueryUsersArgs = {
 export type QueryUserArgs = {
   id?: Maybe<Scalars['UUID']>;
   username?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
 };
 
 

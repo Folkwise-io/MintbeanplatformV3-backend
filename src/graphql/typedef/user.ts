@@ -26,8 +26,8 @@ const user: DocumentNode = gql`
     "Search for users by first or last name"
     users(firstName: String, lastName: String): [User]
 
-    "Get a single user by ID or username"
-    user(id: UUID, username: String): User
+    "Get a single user by ID, username, or email"
+    user(id: UUID, username: String, email: String): User
   }
 
   type Mutation {
