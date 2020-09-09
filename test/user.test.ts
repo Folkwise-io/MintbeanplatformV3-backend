@@ -42,9 +42,9 @@ describe("GraphQL built-in validation", () => {
 
     await testManager
       .query({ query: BAD_USERNAME_QUERY })
-      .then(testManager.getErrors)
-      .then((errors) => {
-        expect(errors[0].message).toContain("string");
+      .then(testManager.getError)
+      .then((error) => {
+        expect(error.message).toContain("string");
       });
   });
 
@@ -60,9 +60,9 @@ describe("GraphQL built-in validation", () => {
 
     await testManager
       .query({ query: BAD_UUID_QUERY })
-      .then(testManager.getErrors)
-      .then((errors) => {
-        expect(errors[0].message).toContain("UUID");
+      .then(testManager.getError)
+      .then((error) => {
+        expect(error.message).toContain("UUID");
       });
   });
 });
@@ -120,9 +120,18 @@ describe("Querying users", () => {
 });
 
 describe("Login", () => {
-  const LOGIN_MUTATION = gql`
+  const LOGIN_MUTATION_CORRECT = gql`
     mutation logMeIn {
       login(email: "a@a.com", password: "password") {
+        id
+        username
+      }
+    }
+  `;
+
+  const LOGIN_MUTATION_INCORRECT = gql`
+    mutation logMeIn {
+      login(email: "a@a.com", password: "wrongpassword") {
         id
         username
       }
@@ -132,10 +141,20 @@ describe("Login", () => {
   it("sends back the user when given the email", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.mutate({ mutation: LOGIN_MUTATION }))
+      .then(() => testManager.mutate({ mutation: LOGIN_MUTATION_CORRECT }))
       .then(testManager.getData)
       .then(({ login }) => {
         expect(AMY).toMatchObject(login);
+      });
+  });
+
+  it("sends back an error if the password is wrong", async () => {
+    await testManager
+      .addUsers([AMY, BOB])
+      .then(() => testManager.mutate({ mutation: LOGIN_MUTATION_INCORRECT }))
+      .then(testManager.getError)
+      .then((error) => {
+        expect(error.message).toMatch(/login failed/i);
       });
   });
 });

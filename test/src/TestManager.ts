@@ -70,7 +70,14 @@ export default class TestManager {
     return response.data;
   };
 
-  getErrors = (response: GraphQLResponse) => {
+  getError = (response: GraphQLResponse) => {
+    if (!response.errors) {
+      throw new Error("Test expected an error but did not get any");
+    }
+    return response.errors[0];
+  };
+
+  getAllErrors = (response: GraphQLResponse) => {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
