@@ -9,6 +9,9 @@ const user: DocumentNode = gql`
     "Unique username"
     username: String!
 
+    "Unique email"
+    email: String!
+
     firstName: String!
     lastName: String!
 
@@ -22,6 +25,9 @@ const user: DocumentNode = gql`
 
     "Get a single user by ID or username"
     user(id: UUID, username: String): User
+
+    "Login using email and password"
+    login(email: String!, password: String!): User
   }
 `;
 
