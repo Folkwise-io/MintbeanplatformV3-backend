@@ -36,13 +36,10 @@ _[Docker](https://docs.docker.com/get-docker/) must be installed and running for
 
 2. Run `cp .env.development .env` to use default development database variables during development.
 
-3. Set up the migrations with `yarn knex migrate:latest`.
+3. Run `yarn pristine`, which resets the database and runs the migrations and seeds.
+   **Warning: all existing data in the database will be lost!**
 
-4. Set up the seeds with `yarn knex seed:run`.
-
-Roll back all migrations with `yarn knex migrate:rollback --all`.
-
-Access the PostgreSQL CLI with `yarn psql`. All column names that are in camelCase need double quotation marks when used in raw SQL queries (i.e. `SELECT body, "userId" from posts;`).
+- Access the PostgreSQL CLI with `yarn psql`. All column names that are in camelCase need double quotation marks when used in raw SQL queries (i.e. `SELECT body, "userId" from posts;`).
 
 ### Development workflow
 
@@ -83,7 +80,7 @@ Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` 
 
 1. Start the PostgreSQL container with `yarn postgres`. Test roles and databases are automatically created on the initial run.
 
-2. Run `yarn knex:test migrate:latest` to set up the test database.
+2. Run `yarn pristine` to set up the test database migrations.
 
 3. Run `yarn test` for a single test with coverage report, or `yarn tdd` to run tests in watch mode as part of a TDD workflow.
 
@@ -94,10 +91,12 @@ Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` 
 | `start`     | Starts the server with `ts-node`                                                                   |
 | `dev`       | Starts the server with `ts-node` & hot-reload                                                      |
 | `build`     | Builds `*.ts` in `./src` to `*.js` in `./build`                                                    |
+| `db:reset`  | Drops and recreates all databases, nuking all the tables                                           |
 | `gen-types` | See [above](#auto-generating-typescript-types)                                                     |
 | `knex`      | Runs knex cli tools for migration/seeds, using the default database specified in `.env`            |
 | `knex:test` | Runs knex cli tools for migration/seeds, using the test database (specified in `./test/.env.test`) |
 | `postgres`  | Starts the Postgres docker container                                                               |
+| `pristine`  | Runs `db:reset` then runs all the migrations and seeds on both the dev and test databases.         |
 | `psql`      | Enters the psql CLI in the docker container                                                        |
 | `tdd`       | Runs the tests in watch mode for a TDD workflow                                                    |
 | `test`      | Runs the tests once and generates a coverage report                                                |
