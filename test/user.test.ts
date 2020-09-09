@@ -138,7 +138,7 @@ describe("Login", () => {
     }
   `;
 
-  it("sends back the user when given the email", async () => {
+  it("sends back the user when given the email and the correct password", async () => {
     await testManager
       .addUsers([AMY, BOB])
       .then(() => testManager.mutate({ mutation: LOGIN_MUTATION_CORRECT }))

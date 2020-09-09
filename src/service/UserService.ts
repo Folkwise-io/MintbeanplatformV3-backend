@@ -1,10 +1,13 @@
 import { User } from "../types/gqlGeneratedTypes";
-
 import { EntityService } from "./EntityService";
+import bcrypt from "bcryptjs";
+import { AuthenticationError } from "apollo-server-express";
+import UserDao from "../dao/UserDao";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;
   username?: string | null;
+  email? :string | null;
 }
 
 export interface UserServiceGetManyArgs {
@@ -13,22 +16,27 @@ export interface UserServiceGetManyArgs {
 }
 
 export interface UserServiceLoginArgs {
-  email?: string | null;
-  password?: string | null;
+  email: string;
+  password: string;
 }
 
 export default class UserService implements EntityService<User> {
-  constructor(private userDao: any) {}
+  constructor(private userDao: UserDao) {}
 
-  getOne(args: UserServiceGetOneArgs): User {
+  async getOne(args: UserServiceGetOneArgs): Promise<User> {
     return this.userDao.getOne(args);
   }
 
-  getMany(args: UserServiceGetManyArgs): User[] {
+  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
     return this.userDao.getMany(args);
   }
 
-  login(args: UserServiceLoginArgs): User {
-    return this.userDao.getOne({ email: args.email });
+  async login(args: UserServiceLoginArgs): Promise<User> {
+    const user: User = await this.userDao.getOne({ email: args.email });
+    const correctPassword = await bcrypt.compare(args.password, user.passwordHash);
+    if (!correctPassword) {
+      throw new AuthenticationError("Login failed!");
+    }
+    return user;
   }
 }
