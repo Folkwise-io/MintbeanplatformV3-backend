@@ -7,7 +7,7 @@ import {
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
 import buildServer from "../../src/buildServer";
-import { Query } from "./createTestClient";
+import { Query, Mutation } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { GraphQLSchema } from "graphql";
 import { ApolloServer } from "apollo-server-express";
@@ -50,6 +50,10 @@ export default class TestManager {
 
   query(gqlQuery: Query): Promise<GraphQLResponse> {
     return this.params.testClient.query(gqlQuery);
+  }
+
+  mutate(gqlMutation: Mutation): Promise<GraphQLResponse> {
+    return this.params.testClient.mutate(gqlMutation);
   }
 
   getData = (response: GraphQLResponse) => {
