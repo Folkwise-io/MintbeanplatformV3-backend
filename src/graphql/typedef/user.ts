@@ -28,7 +28,9 @@ const user: DocumentNode = gql`
 
     "Get a single user by ID or username"
     user(id: UUID, username: String): User
+  }
 
+  type Mutation {
     "Login using email and password"
     login(email: String!, password: String!): User
   }

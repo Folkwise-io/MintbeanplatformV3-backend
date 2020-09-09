@@ -12,6 +12,11 @@ export interface UserServiceGetManyArgs {
   lastName?: string | null;
 }
 
+export interface UserServiceLoginArgs {
+  email?: string | null;
+  password?: string | null;
+}
+
 export default class UserService implements EntityService<User> {
   constructor(private userDao: any) {}
 
@@ -19,7 +24,11 @@ export default class UserService implements EntityService<User> {
     return this.userDao.getOne(args);
   }
 
-  getMany(args: UserServiceGetManyArgs): User[] {    
+  getMany(args: UserServiceGetManyArgs): User[] {
     return this.userDao.getMany(args);
+  }
+
+  login(args: UserServiceLoginArgs): User {
+    return this.userDao.getOne({ email: args.email });
   }
 }

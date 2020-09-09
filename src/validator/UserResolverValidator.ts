@@ -1,6 +1,6 @@
-import { QueryUserArgs, User } from "../types/gqlGeneratedTypes";
+import { QueryUserArgs, User, MutationLoginArgs } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
-import { UserServiceGetOneArgs } from "../service/UserService";
+import { UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../types/ServerContext";
 
@@ -19,5 +19,10 @@ export default class UserResolverValidator {
       .getOne(args)
       .then((user) => <User>ensureExists("User")(user))
       .then(({ id, username }) => ({ id, username }));
+  }
+
+  login(args: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
+    // TODO: validate prescence of email/password
+    return Promise.resolve(args);
   }
 }

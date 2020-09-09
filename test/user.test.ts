@@ -123,7 +123,7 @@ describe("Login", () => {
   const LOGIN_MUTATION = gql`
     mutation logMeIn {
       login(email: "a@a.com", password: "password") {
-        uuid
+        id
         username
       }
     }
@@ -134,8 +134,8 @@ describe("Login", () => {
       .addUsers([AMY, BOB])
       .then(() => testManager.mutate({ mutation: LOGIN_MUTATION }))
       .then(testManager.getData)
-      .then(({ user }) => {
-        expect(AMY).toMatchObject(user);
+      .then(({ login }) => {
+        expect(AMY).toMatchObject(login);
       });
   });
 });
