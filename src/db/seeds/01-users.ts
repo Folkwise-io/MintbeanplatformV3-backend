@@ -9,6 +9,7 @@ export async function seed(knex: Knex): Promise<void> {
       username: "aadams",
       firstName: "Amy",
       lastName: "Adams",
+      passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
       createdAt: "2019-10-15",
     },
     {
@@ -16,6 +17,7 @@ export async function seed(knex: Knex): Promise<void> {
       username: "bbarker",
       firstName: "Bob",
       lastName: "Barker",
+      passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
       createdAt: "2020-04-15",
     },
     {
@@ -23,6 +25,7 @@ export async function seed(knex: Knex): Promise<void> {
       username: "cchase",
       firstName: "Chevy",
       lastName: "Chase",
+      passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
       createdAt: "2020-08-15",
     },
   ]);
