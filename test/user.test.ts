@@ -119,6 +119,27 @@ describe("Querying users", () => {
   });
 });
 
+describe("Login", () => {
+  const LOGIN_MUTATION = gql`
+    mutation logMeIn {
+      login(email: "a@a.com", password: "password") {
+        uuid
+        username
+      }
+    }
+  `;
+
+  it("sends back the user when given the email", async () => {
+    await testManager
+      .addUsers([AMY, BOB])
+      .then(() => testManager.mutate({ mutation: LOGIN_MUTATION }))
+      .then(testManager.getData)
+      .then(({ user }) => {
+        expect(AMY).toMatchObject(user);
+      });
+  });
+});
+
 afterAll(async () => {
   await testManager.destroy();
 });
