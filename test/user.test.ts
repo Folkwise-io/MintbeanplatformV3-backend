@@ -120,18 +120,13 @@ describe("Querying users", () => {
 });
 
 describe("Login", () => {
-  const LOGIN_MUTATION_CORRECT = gql`
-    mutation logMeIn {
-      login(email: "a@a.com", password: "password") {
-        id
-        username
-      }
-    }
-  `;
+  beforeEach(async () => {
+    await testManager.addUsers([AMY, BOB]);
+  });
 
-  const LOGIN_MUTATION_INCORRECT = gql`
-    mutation logMeIn {
-      login(email: "a@a.com", password: "wrongpassword") {
+  const LOGIN_MUTATION_CORRECT = gql`
+    mutation correctLogin {
+      login(email: "a@a.com", password: "password") {
         id
         username
       }
@@ -140,8 +135,7 @@ describe("Login", () => {
 
   it("sends back the user when given the email and the correct password", async () => {
     await testManager
-      .addUsers([AMY, BOB])
-      .then(() => testManager.mutate({ mutation: LOGIN_MUTATION_CORRECT }))
+      .mutate({ mutation: LOGIN_MUTATION_CORRECT })
       .then(testManager.getData)
       .then(({ login }) => {
         expect(AMY).toMatchObject(login);
@@ -149,12 +143,56 @@ describe("Login", () => {
   });
 
   it("sends back an error if the password is wrong", async () => {
+    const LOGIN_MUTATION_INCORRECT_PASSWORD = gql`
+      mutation wrongPassword {
+        login(email: "a@a.com", password: "wrongpassword") {
+          id
+          username
+        }
+      }
+    `;
+
     await testManager
-      .addUsers([AMY, BOB])
-      .then(() => testManager.mutate({ mutation: LOGIN_MUTATION_INCORRECT }))
+      .mutate({ mutation: LOGIN_MUTATION_INCORRECT_PASSWORD })
       .then(testManager.getError)
       .then((error) => {
         expect(error.message).toMatch(/login failed/i);
+      });
+  });
+
+  it("sends back an error if no password is provided", async () => {
+    const LOGIN_MUTATION_NO_PASSWORD = gql`
+      mutation noPassword {
+        login(email: "a@a.com") {
+          id
+          username
+        }
+      }
+    `;
+
+    await testManager
+      .mutate({ mutation: LOGIN_MUTATION_NO_PASSWORD })
+      .then(testManager.getError)
+      .then((error) => {
+        expect(error.message).toContain("password");
+      });
+  });
+
+  it("sends back an error if no email is provided", async () => {
+    const LOGIN_MUTATION_NO_EMAIL = gql`
+      mutation noEmail {
+        login(password: "password") {
+          id
+          username
+        }
+      }
+    `;
+
+    await testManager
+      .mutate({ mutation: LOGIN_MUTATION_NO_EMAIL })
+      .then(testManager.getError)
+      .then((error) => {
+        expect(error.message).toContain("email");
       });
   });
 });
