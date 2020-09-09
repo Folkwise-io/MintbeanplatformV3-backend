@@ -1,18 +1,23 @@
 import TestManager from "./src/TestManager";
 import { gql } from "apollo-server-express";
+import { User } from "../src/types/gqlGeneratedTypes";
 
 // Will use generator factory / faker once more entities are added
 const AMY = {
   id: "00000000-0000-0000-0000-000000000000",
   username: "aadams",
+  email: "a@a.com",
+  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
   firstName: "Amy",
   lastName: "Adams",
   createdAt: "2019-10-15",
 };
 
-const BOB = {
+const BOB: User = {
   id: "00000000-0000-4000-A000-000000000000",
   username: "bbarker",
+  email: "b@b.com",
+  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
   firstName: "Bob",
   lastName: "Barker",
   createdAt: "2020-04-15",

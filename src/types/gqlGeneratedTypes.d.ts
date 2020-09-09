@@ -20,6 +20,10 @@ export type User = {
   id: Scalars['UUID'];
   /** Unique username */
   username: Scalars['String'];
+  /** Unique email */
+  email: Scalars['String'];
+  /** The user's hashed password */
+  passwordHash: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
   /** Date that the user registered */
@@ -33,6 +37,8 @@ export type Query = {
   users?: Maybe<Array<Maybe<User>>>;
   /** Get a single user by ID or username */
   user?: Maybe<User>;
+  /** Login using email and password */
+  login?: Maybe<User>;
   /** Search for posts by userId */
   posts?: Maybe<Array<Maybe<Post>>>;
   /** Get a single post by its ID */
@@ -49,6 +55,12 @@ export type QueryUsersArgs = {
 export type QueryUserArgs = {
   id?: Maybe<Scalars['UUID']>;
   username?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryLoginArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 
@@ -180,6 +192,8 @@ export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  passwordHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -190,6 +204,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, never>>;
+  login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryLoginArgs, 'email' | 'password'>>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
 };

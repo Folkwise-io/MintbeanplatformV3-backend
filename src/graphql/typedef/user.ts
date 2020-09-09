@@ -12,6 +12,9 @@ const user: DocumentNode = gql`
     "Unique email"
     email: String!
 
+    "The user's hashed password"
+    passwordHash: String!
+
     firstName: String!
     lastName: String!
 
