@@ -4,7 +4,6 @@ import {
   ResolverContext,
   PersistenceContext,
   buildPersistenceContext,
-  buildServerContext,
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
 import buildServer from "../../src/buildServer";
@@ -13,6 +12,7 @@ import { GraphQLResponse } from "apollo-server-types";
 import { GraphQLSchema } from "graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
+import { buildTestServerContext } from "./buildTestServerContext";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -29,7 +29,7 @@ export default class TestManager {
     const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
-    const testServer = buildServer(schema, buildServerContext);
+    const testServer = buildServer(schema, buildTestServerContext);
     const testClient = createTestClient(testServer);
 
     return new TestManager({

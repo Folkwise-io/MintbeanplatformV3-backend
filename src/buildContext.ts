@@ -48,12 +48,6 @@ export interface ServerContext {
 
 export type BuildExpressServerContext = (expressContext: ExpressContext) => ServerContext;
 
-export const buildServerContext: BuildExpressServerContext = function ({
-  req,
-  res,
-}: {
-  req: Request;
-  res: Response;
-}): ServerContext {
+export const buildServerContext: BuildExpressServerContext = function ({ req, res }: { req: Request; res: Response }) {
   return { req, res };
 };
