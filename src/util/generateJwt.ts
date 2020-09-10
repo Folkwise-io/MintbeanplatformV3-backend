@@ -7,6 +7,12 @@ export interface JWTPayload {
   sub: string; // sub (Subject) is a registered JWT claim
 }
 
+export interface ParsedToken {
+  sub: string;
+  iat: number;
+  exp: number;
+}
+
 export default function generateJwt(payload: JWTPayload): string {
   const options: SignOptions = {
     algorithm: "HS256",

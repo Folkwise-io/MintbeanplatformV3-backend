@@ -1,6 +1,11 @@
 import TestManager from "./src/TestManager";
 import { gql } from "apollo-server-express";
 import { User } from "../src/types/gqlGeneratedTypes";
+import jwt from "jsonwebtoken";
+
+import config from "../src/util/config";
+import { ParsedToken } from "../src/util/generateJwt";
+const { jwtSecret } = config;
 
 // Will use generator factory / faker once more entities are added
 const AMY: User = {
@@ -139,6 +144,29 @@ describe("Login", () => {
       .then(testManager.getData)
       .then(({ login }) => {
         expect(AMY).toMatchObject(login);
+      });
+  });
+
+  it("sends back a valid JWT when given the email and the correct password", async () => {
+    const LOGIN_MUTATION_WITH_TOKEN = gql`
+      mutation correctLogin {
+        login(email: "a@a.com", password: "password") {
+          token
+        }
+      }
+    `;
+    await testManager
+      .mutate({ mutation: LOGIN_MUTATION_WITH_TOKEN })
+      .then(testManager.getData)
+      .then(({ login: { token } }) => {
+        const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
+        expect(parsedToken.sub).toBe(AMY.id);
+
+        const currentUnixTime = Math.floor(new Date().getTime() / 1000);
+        expect(parsedToken.iat).toBeCloseTo(currentUnixTime);
+        expect(parsedToken.exp - parsedToken.iat).toBeCloseTo(14 * 24 * 60 * 60); // 14 days
+
+        expect(() => jwt.verify(token, "wrongsecret")).toThrowError();
       });
   });
 
