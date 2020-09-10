@@ -4,7 +4,6 @@ import { UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserServ
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildContext";
 
-
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
 
@@ -22,8 +21,8 @@ export default class UserResolverValidator {
       .then(({ id, username }) => ({ id, username }));
   }
 
-  login(args: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
-    // TODO: validate prescence of email/password
-    return Promise.resolve(args);
+  login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
+    // TODO: validate that email is formatted correctly?
+    return Promise.resolve({ email, password });
   }
 }
