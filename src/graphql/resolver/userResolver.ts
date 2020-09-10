@@ -1,7 +1,7 @@
 import { Resolvers } from "../../types/gqlGeneratedTypes";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
-import { ServerContext } from "../../types/ServerContext";
+import { ServerContext } from "../../buildContext";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
@@ -18,7 +18,6 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
 
     Mutation: {
       login: (_root, args, context: ServerContext) => {
-        // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
         return userResolverValidator.login(args, context).then((args) => userService.login(args));
       },
     },

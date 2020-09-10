@@ -4,6 +4,7 @@ import {
   ResolverContext,
   PersistenceContext,
   buildPersistenceContext,
+  buildServerContext,
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
 import buildServer from "../../src/buildServer";
@@ -28,7 +29,7 @@ export default class TestManager {
     const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
-    const testServer = buildServer(schema);
+    const testServer = buildServer(schema, buildServerContext);
     const testClient = createTestClient(testServer);
 
     return new TestManager({
