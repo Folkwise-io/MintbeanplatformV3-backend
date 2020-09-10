@@ -20,6 +20,9 @@ const user: DocumentNode = gql`
 
     "Date that the user registered"
     createdAt: String!
+
+    "A JWT created for the user after login (also sent in cookies)"
+    token: String
   }
 
   type Query {

@@ -28,6 +28,8 @@ export type User = {
   lastName: Scalars['String'];
   /** Date that the user registered */
   createdAt: Scalars['String'];
+  /** A JWT created for the user after login (also sent in cookies) */
+  token?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
 };
 
@@ -204,6 +206,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
