@@ -7,13 +7,16 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
   return {
     Query: {
       user: (_root, args, context: ServerContext) => {
-        console.log(context);
         return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args, context));
       },
 
       users: (_root, args, context: ServerContext) => {
         // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
         return userService.getMany(args, context);
+      },
+
+      me: (_root, _args, context: ServerContext) => {
+        return userService.me(context);
       },
     },
 
