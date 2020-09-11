@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import config from "../util/config";
+import config from "./config";
 
 const { jwtSecret } = config;
 
@@ -13,7 +13,7 @@ export interface ParsedToken {
   exp: number;
 }
 
-export default function generateJwt(payload: JWTPayload): string {
+export function generateJwt(payload: JWTPayload): string {
   const options: SignOptions = {
     algorithm: "HS256",
     expiresIn: "2w",

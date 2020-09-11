@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { AuthenticationError } from "apollo-server-express";
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildContext";
-import generateJwt, { JWTPayload } from "../util/generateJwt";
+import { generateJwt, JWTPayload } from "../util/jwtUtils";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;

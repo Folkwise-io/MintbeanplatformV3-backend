@@ -43,6 +43,7 @@ export interface ExpressContext {
 
 export interface ServerContext {
   setCookie: (token: string) => void;
+  // userId: string;
   // TODO: include userId and maybe auth scope, which will be parsed from req cookie
 }
 
