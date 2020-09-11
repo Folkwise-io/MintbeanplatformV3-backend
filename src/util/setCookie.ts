@@ -6,6 +6,8 @@ const cookieOptions: CookieOptions = {
   sameSite: "strict", // May need to change if frontend & backend are hosted on different servers
 };
 
-export default function setCookie(res: Response, token: string): void {
+export const setCookie = (res: Response) => (token: string): void => {
   res.cookie("jwt", token, cookieOptions);
-}
+};
+const b = 2
+const a = setCookie(b as any)

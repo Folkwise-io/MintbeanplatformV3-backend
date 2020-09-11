@@ -5,6 +5,7 @@ import UserDaoKnex from "./dao/UserDaoKnex";
 import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
 import { Request, Response } from "express";
+import { setCookie } from "./util/setCookie";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -41,13 +42,18 @@ export interface ExpressContext {
 }
 
 export interface ServerContext {
-  req: Request;
-  res: Response;
-  // TODO: maybe parse the user from req cookie and send user, instead of sending req down to resolvers
+  setCookie: (token: string) => void;
+  // TODO: include userId and maybe auth scope, which will be parsed from req cookie
 }
 
 export type BuildExpressServerContext = (expressContext: ExpressContext) => ServerContext;
 
-export const buildServerContext: BuildExpressServerContext = function ({ req, res }: { req: Request; res: Response }) {
-  return { req, res };
+export const buildExpressServerContext: BuildExpressServerContext = function ({
+  req,
+  res,
+}: {
+  req: Request;
+  res: Response;
+}) {
+  return { setCookie: setCookie(res) };
 };

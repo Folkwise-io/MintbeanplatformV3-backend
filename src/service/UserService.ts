@@ -5,7 +5,6 @@ import { AuthenticationError } from "apollo-server-express";
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildContext";
 import generateJwt, { JWTPayload } from "../util/generateJwt";
-import setCookie from "../util/setCookie";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;
@@ -46,8 +45,8 @@ export default class UserService implements EntityService<User> {
       sub: user.id,
     };
     const token = generateJwt(payload);
-    
-    setCookie(context.res, token);
+
+    context.setCookie(token);
     return { ...user, token };
   }
 }
