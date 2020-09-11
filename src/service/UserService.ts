@@ -33,6 +33,7 @@ export default class UserService implements EntityService<User> {
     return this.userDao.getMany(args);
   }
 
+  // TODO: Only checkPassword should be in UserService
   async login(args: UserServiceLoginArgs, context: ServerContext): Promise<User> {
     const user: User = await this.userDao.getOne({ email: args.email });
     const correctPassword = await bcrypt.compare(args.password, user.passwordHash);
@@ -40,6 +41,7 @@ export default class UserService implements EntityService<User> {
       throw new AuthenticationError("Login failed!");
     }
 
+    // TODO: Move this in controller, or make jwt auth service
     // Make a JWT and return it in the body as well as the cookie
     const payload: JWTPayload = {
       sub: user.id,

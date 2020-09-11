@@ -59,6 +59,7 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   req: Request;
   res: Response;
 }) {
+  // TODO: Clean up later
   let userId;
   const jwt: string = req.cookies.jwt;
 
@@ -74,6 +75,7 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   }
 
   return {
+    //getUserId
     userId,
     setCookie: setCookie(res),
     clearCookie: clearCookie(res),
