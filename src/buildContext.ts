@@ -6,6 +6,7 @@ import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
 import { Request, Response } from "express";
 import { setCookie } from "./util/setCookie";
+import { parseJwt } from "./util/jwtUtils";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -43,7 +44,7 @@ export interface ExpressContext {
 
 export interface ServerContext {
   setCookie: (token: string) => void;
-  // userId: string;
+  userId?: string;
   // TODO: include userId and maybe auth scope, which will be parsed from req cookie
 }
 
@@ -56,5 +57,14 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   req: Request;
   res: Response;
 }) {
-  return { setCookie: setCookie(res) };
+  const userId = parseJwt(req.cookies.jwt);
+
+  if (!userId) {
+    res.clearCookie("jwt");
+  }
+
+  return {
+    userId,
+    setCookie: setCookie(res),
+  };
 };

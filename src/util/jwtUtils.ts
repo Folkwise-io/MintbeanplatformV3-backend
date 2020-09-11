@@ -23,3 +23,12 @@ export function generateJwt(payload: JWTPayload): string {
 
   return token;
 }
+
+export function parseJwt(token: string): string | undefined {
+  try {
+    const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
+    return parsedToken.sub;
+  } catch (e) {
+    return undefined;
+  }
+}

@@ -7,6 +7,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
   return {
     Query: {
       user: (_root, args, context: ServerContext) => {
+        console.log(context);
         return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args, context));
       },
 
