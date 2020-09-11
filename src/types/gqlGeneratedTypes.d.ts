@@ -20,10 +20,16 @@ export type User = {
   id: Scalars['UUID'];
   /** Unique username */
   username: Scalars['String'];
+  /** Unique email */
+  email: Scalars['String'];
+  /** The user's hashed password */
+  passwordHash: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
   /** Date that the user registered */
   createdAt: Scalars['String'];
+  /** A JWT created for the user after login (also sent in cookies) */
+  token?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
 };
 
@@ -31,7 +37,7 @@ export type Query = {
   __typename?: 'Query';
   /** Search for users by first or last name */
   users?: Maybe<Array<Maybe<User>>>;
-  /** Get a single user by ID or username */
+  /** Get a single user by ID, username, or email */
   user?: Maybe<User>;
   /** Search for posts by userId */
   posts?: Maybe<Array<Maybe<Post>>>;
@@ -49,6 +55,7 @@ export type QueryUsersArgs = {
 export type QueryUserArgs = {
   id?: Maybe<Scalars['UUID']>;
   username?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
 };
 
 
@@ -59,6 +66,18 @@ export type QueryPostsArgs = {
 
 export type QueryPostArgs = {
   id: Scalars['UUID'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  /** Login using email and password */
+  login?: Maybe<User>;
+};
+
+
+export type MutationLoginArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Post = {
@@ -159,6 +178,7 @@ export type ResolversTypes = {
   User: ResolverTypeWrapper<User>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Query: ResolverTypeWrapper<{}>;
+  Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
 };
@@ -169,6 +189,7 @@ export type ResolversParentTypes = {
   User: User;
   String: Scalars['String'];
   Query: {};
+  Mutation: {};
   Post: Post;
   Boolean: Scalars['Boolean'];
 };
@@ -180,9 +201,12 @@ export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  passwordHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
@@ -192,6 +216,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, never>>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
+};
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -208,6 +236,7 @@ export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
 };
 

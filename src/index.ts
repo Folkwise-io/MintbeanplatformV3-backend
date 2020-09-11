@@ -1,12 +1,12 @@
 import express from "express";
-import { buildPersistenceContext, buildResolverContext } from "./buildContext";
+import { buildPersistenceContext, buildResolverContext, buildExpressServerContext } from "./buildContext";
 import buildSchema from "./buildSchema";
 import buildServer from "./buildServer";
 
 const persistenceContext = buildPersistenceContext();
 const resolverContext = buildResolverContext(persistenceContext);
 const schema = buildSchema(resolverContext);
-const server = buildServer(schema);
+const server = buildServer(schema, buildExpressServerContext);
 const app = express();
 
 server.applyMiddleware({ app });

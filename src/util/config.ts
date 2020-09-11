@@ -23,9 +23,7 @@ const hoc = (key: string, _opts = {}) => {
   const val = opts.convert(getValue(key));
 
   if (opts.required && !val) {
-    throw new Error(
-      `CRITICAL ERROR: Value for config variable [${key}] was not provided. Check env file.`
-    );
+    throw new Error(`CRITICAL ERROR: Value for config variable [${key}] was not provided. Check env file.`);
   }
 
   return val || opts.defaultValue;
@@ -37,4 +35,5 @@ export default {
   dbPassword: hoc("DB_PASSWORD"),
   dbHost: hoc("DB_HOST"),
   dbPort: hoc("DB_PORT", { convert: CONVERTERS.toNumber }),
+  jwtSecret: hoc("JWT_SECRET"),
 };

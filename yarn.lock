@@ -634,17 +634,17 @@
     tslib "~2.0.0"
     upper-case "2.0.1"
 
-"@graphql-codegen/typescript-resolvers@1.17.9":
-  version "1.17.9"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-1.17.9.tgz#621778bc06f62998856c2209b5cccc506e74086e"
-  integrity sha512-JrH7YgGqKEkEbFGnf4YnBBEUA3WeVBM5nNDIAeoUeZR4lorxhcfSagcrRYAGWgZq5q2cGbKNyQvn/qSk2xJfsw==
+"@graphql-codegen/typescript-resolvers@1.17.8":
+  version "1.17.8"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-1.17.8.tgz#c10af67e54c00520aa33be0403c9e19981d820b5"
+  integrity sha512-0uMipQjqdRWCW/4I9ZmuZmPuR9jMqKqKph+G/9iAVkfRz3XEa8v1ho+pZ7NhJLWIeiW9NC7B/BKB1UUhKecysg==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^1.17.8"
     "@graphql-codegen/typescript" "^1.17.8"
     "@graphql-codegen/visitor-plugin-common" "^1.17.13"
     "@graphql-tools/utils" "^6.0.18"
     auto-bind "~4.0.0"
-    tslib "~2.0.1"
+    tslib "~2.0.0"
 
 "@graphql-codegen/typescript@1.17.8":
   version "1.17.8"
@@ -1221,6 +1221,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bcryptjs@2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@types/bcryptjs/-/bcryptjs-2.4.2.tgz#e3530eac9dd136bfdfb0e43df2c4c5ce1f77dfae"
+  integrity sha512-LiMQ6EOPob/4yUL66SZzu6Yh77cbzJFYll+ZfaPiPPFswtIlA/Fs1MzdKYA7JApHU49zQTbJGX3PDmCpIdDBRQ==
+
 "@types/body-parser@*", "@types/body-parser@1.19.0":
   version "1.19.0"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.0.tgz#0685b3c47eb3006ffed117cdd55164b61f80538f"
@@ -1296,7 +1301,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/graphql-type-uuid@^0.2.3":
+"@types/graphql-type-uuid@0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@types/graphql-type-uuid/-/graphql-type-uuid-0.2.3.tgz#4ba98c8e50fa44c60c1b5ee0bc2c0f0629afff0b"
   integrity sha512-2wDianawweUVLZ8wyKwlZbBk5NDRx2L9HVKOik3Q9qLhwQPoZdvF8nswftp8bo8IATVyMFW/1vhvZFc3CqFd6g==
@@ -2084,6 +2089,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bcryptjs@2.4.3:
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/bcryptjs/-/bcryptjs-2.4.3.tgz#9ab5627b93e60621ff7cdac5da9733027df1d0cb"
+  integrity sha1-mrVie5PmBiH/fNrF2pczAn3x0Ms=
 
 binary-extensions@^2.0.0:
   version "2.1.0"
@@ -4854,7 +4864,7 @@ jsonify@~0.0.0:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
-jsonwebtoken@^8.5.1:
+jsonwebtoken@8.5.1, jsonwebtoken@^8.5.1:
   version "8.5.1"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-8.5.1.tgz#00e71e0b8df54c2121a1f26137df2280673bcc0d"
   integrity sha512-XjwVfRS6jTMsqYs0EsuJ4LGxXV14zQybNd4L2r0UvbVnSF9Af8x7p5MzbJ90Ioz/9TI41/hTCvznF/loiSzn8w==

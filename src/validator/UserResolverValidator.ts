@@ -1,8 +1,8 @@
-import { QueryUserArgs, User } from "../types/gqlGeneratedTypes";
+import { QueryUserArgs, User, MutationLoginArgs } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
-import { UserServiceGetOneArgs } from "../service/UserService";
+import { UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
-import { ServerContext } from "../types/ServerContext";
+import { ServerContext } from "../buildContext";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
@@ -19,5 +19,10 @@ export default class UserResolverValidator {
       .getOne(args)
       .then((user) => <User>ensureExists("User")(user))
       .then(({ id, username }) => ({ id, username }));
+  }
+
+  login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
+    // TODO: validate that email is formatted correctly?
+    return Promise.resolve({ email, password });
   }
 }

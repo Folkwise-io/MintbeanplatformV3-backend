@@ -4,14 +4,11 @@ import UserService from "./service/UserService";
 import UserDaoKnex from "./dao/UserDaoKnex";
 import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
+import { Request, Response } from "express";
+import { setCookie } from "./util/setCookie";
 
 export interface PersistenceContext {
   userDao: UserDao;
-}
-
-export interface ResolverContext {
-  userResolverValidator: UserResolverValidator;
-  userService: UserService;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -21,6 +18,11 @@ export function buildPersistenceContext(): PersistenceContext {
   return {
     userDao,
   };
+}
+
+export interface ResolverContext {
+  userResolverValidator: UserResolverValidator;
+  userService: UserService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -33,3 +35,25 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     userService,
   };
 }
+
+export interface ExpressContext {
+  req: Request;
+  res: Response;
+}
+
+export interface ServerContext {
+  setCookie: (token: string) => void;
+  // TODO: include userId and maybe auth scope, which will be parsed from req cookie
+}
+
+export type BuildExpressServerContext = (expressContext: ExpressContext) => ServerContext;
+
+export const buildExpressServerContext: BuildExpressServerContext = function ({
+  req,
+  res,
+}: {
+  req: Request;
+  res: Response;
+}) {
+  return { setCookie: setCookie(res) };
+};

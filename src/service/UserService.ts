@@ -1,10 +1,15 @@
 import { User } from "../types/gqlGeneratedTypes";
-
 import { EntityService } from "./EntityService";
+import bcrypt from "bcryptjs";
+import { AuthenticationError } from "apollo-server-express";
+import UserDao from "../dao/UserDao";
+import { ServerContext } from "../buildContext";
+import generateJwt, { JWTPayload } from "../util/generateJwt";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;
   username?: string | null;
+  email?: string | null;
 }
 
 export interface UserServiceGetManyArgs {
@@ -12,14 +17,36 @@ export interface UserServiceGetManyArgs {
   lastName?: string | null;
 }
 
-export default class UserService implements EntityService<User> {
-  constructor(private userDao: any) {}
+export interface UserServiceLoginArgs {
+  email: string;
+  password: string;
+}
 
-  getOne(args: UserServiceGetOneArgs): User {
+export default class UserService implements EntityService<User> {
+  constructor(private userDao: UserDao) {}
+
+  async getOne(args: UserServiceGetOneArgs, context: ServerContext): Promise<User> {
     return this.userDao.getOne(args);
   }
 
-  getMany(args: UserServiceGetManyArgs): User[] {    
+  async getMany(args: UserServiceGetManyArgs, context: ServerContext): Promise<User[]> {
     return this.userDao.getMany(args);
+  }
+
+  async login(args: UserServiceLoginArgs, context: ServerContext): Promise<User> {
+    const user: User = await this.userDao.getOne({ email: args.email });
+    const correctPassword = await bcrypt.compare(args.password, user.passwordHash);
+    if (!correctPassword) {
+      throw new AuthenticationError("Login failed!");
+    }
+
+    // Make a JWT and return it in the body as well as the cookie
+    const payload: JWTPayload = {
+      sub: user.id,
+    };
+    const token = generateJwt(payload);
+
+    context.setCookie(token);
+    return { ...user, token };
   }
 }

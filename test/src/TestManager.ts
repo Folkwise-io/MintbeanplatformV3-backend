@@ -7,11 +7,12 @@ import {
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
 import buildServer from "../../src/buildServer";
-import { Query } from "./createTestClient";
+import { Query, Mutation } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { GraphQLSchema } from "graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
+import { buildTestServerContext } from "./buildTestServerContext";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -28,7 +29,7 @@ export default class TestManager {
     const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
-    const testServer = buildServer(schema);
+    const testServer = buildServer(schema, buildTestServerContext);
     const testClient = createTestClient(testServer);
 
     return new TestManager({
@@ -52,6 +53,10 @@ export default class TestManager {
     return this.params.testClient.query(gqlQuery);
   }
 
+  mutate(gqlMutation: Mutation): Promise<GraphQLResponse> {
+    return this.params.testClient.mutate(gqlMutation);
+  }
+
   getData = (response: GraphQLResponse) => {
     if (response.errors) {
       this.log(response);
@@ -66,7 +71,14 @@ export default class TestManager {
     return response.data;
   };
 
-  getErrors = (response: GraphQLResponse) => {
+  getError = (response: GraphQLResponse) => {
+    if (!response.errors) {
+      throw new Error("Test expected an error but did not get any");
+    }
+    return response.errors[0];
+  };
+
+  getAllErrors = (response: GraphQLResponse) => {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
