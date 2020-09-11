@@ -7,6 +7,7 @@ import UserDao from "./dao/UserDao";
 import { Request, Response } from "express";
 import { setCookie } from "./util/setCookie";
 import { parseJwt } from "./util/jwtUtils";
+import { AuthenticationError } from "apollo-server-express";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -57,10 +58,18 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   req: Request;
   res: Response;
 }) {
-  const userId = parseJwt(req.cookies.jwt);
+  let userId;
+  const jwt: string = req.cookies.jwt;
 
-  if (!userId) {
-    res.clearCookie("jwt");
+  if (jwt) {
+    try {
+      const parsedToken = parseJwt(jwt);
+      userId = parsedToken.sub;
+    } catch (e) {
+      // parseJwt throws an error in case of signature mismatch or jwt is expired
+      res.clearCookie("jwt"); // We need to do this otherwise it will be an infinite loop
+      throw new AuthenticationError(e.message);
+    }
   }
 
   return {

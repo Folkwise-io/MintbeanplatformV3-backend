@@ -1,3 +1,4 @@
+import { AuthenticationError } from "apollo-server-express";
 import jwt, { SignOptions } from "jsonwebtoken";
 import config from "./config";
 
@@ -24,11 +25,11 @@ export function generateJwt(payload: JWTPayload): string {
   return token;
 }
 
-export function parseJwt(token: string): string | undefined {
-  try {
-    const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
-    return parsedToken.sub;
-  } catch (e) {
-    return undefined;
-  }
+/**
+ * Parses a token, throwing an error if the token is invalid
+ * @param token The base64-encoded, signed token
+ */
+export function parseJwt(token: string): ParsedToken {
+  const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
+  return parsedToken;
 }
