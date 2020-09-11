@@ -5,7 +5,7 @@ import UserDaoKnex from "./dao/UserDaoKnex";
 import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
 import { Request, Response } from "express";
-import { setCookie } from "./util/setCookie";
+import { setCookie } from "./util/cookieUtils";
 import { parseJwt } from "./util/jwtUtils";
 import { AuthenticationError } from "apollo-server-express";
 
