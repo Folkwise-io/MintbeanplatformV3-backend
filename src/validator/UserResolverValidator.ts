@@ -2,7 +2,7 @@ import { QueryUserArgs, User, MutationLoginArgs } from "../types/gqlGeneratedTyp
 import { ensureExists } from "../util/ensureExists";
 import { UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
-import { ServerContext } from "../buildContext";
+import { ServerContext } from "../buildServerContext";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}

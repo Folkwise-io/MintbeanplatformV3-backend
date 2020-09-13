@@ -1,7 +1,7 @@
 import { Resolvers, User } from "../../types/gqlGeneratedTypes";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
-import { ServerContext } from "../../buildContext";
+import { ServerContext } from "../../buildServerContext";
 import { AuthenticationError } from "apollo-server-express";
 import { JWTPayload, generateJwt } from "../../util/jwtUtils";
 

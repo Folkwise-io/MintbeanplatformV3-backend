@@ -1,5 +1,6 @@
 import express from "express";
-import { buildPersistenceContext, buildResolverContext, buildExpressServerContext } from "./buildContext";
+import { buildPersistenceContext, buildResolverContext } from "./buildContext";
+import { buildExpressServerContext } from "./buildServerContext";
 import buildSchema from "./buildSchema";
 import buildServer from "./buildServer";
 import cookieParser from "cookie-parser";
