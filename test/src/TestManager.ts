@@ -59,7 +59,7 @@ export default class TestManager {
 
   getData = (response: GraphQLResponse) => {
     if (response.errors) {
-      this.log(response);
+      this.logResponse(response);
       throw new Error("Test expected data but got an error");
     }
 
@@ -93,8 +93,9 @@ export default class TestManager {
   };
 
   // Needed for debugging because console.log would just give you "[object]"
-  log(obj: object): void {
-    console.log(JSON.stringify(obj, null, 2));
+  logResponse(response: GraphQLResponse): GraphQLResponse {
+    console.log(JSON.stringify(response, null, 2));
+    return response;
   }
 
   destroy(): Promise<void> {
