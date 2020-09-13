@@ -5,7 +5,7 @@ import { BuildExpressServerContext, ServerContext } from "../../src/buildContext
 export const buildTestServerContext: BuildExpressServerContext = function (_expressContext) {
   return {
     //TODO: add a way to manipulate the userId from TestManager
-    userId: undefined,
+    getUserId: jest.fn(),
     setCookie: jest.fn(),
     clearCookie: jest.fn(),
   };

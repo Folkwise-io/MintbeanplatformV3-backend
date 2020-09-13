@@ -53,7 +53,7 @@ export default class UserService implements EntityService<User> {
   }
 
   async me(context: ServerContext): Promise<User> {
-    const { userId } = context;
+    const userId = context.getUserId();
     if (!userId) {
       throw new AuthenticationError("You are not logged in!");
     }
@@ -62,7 +62,7 @@ export default class UserService implements EntityService<User> {
   }
 
   async logout(context: ServerContext): Promise<boolean> {
-    const { userId } = context;
+    const userId = context.getUserId();
     if (userId) {
       context.clearCookie();
       return true;

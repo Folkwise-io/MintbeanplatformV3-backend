@@ -44,9 +44,9 @@ export interface ExpressContext {
 }
 
 export interface ServerContext {
-  setCookie: (token: string) => void;
-  clearCookie: () => void;
-  userId?: string;
+  setCookie(token: string): void;
+  clearCookie(): void;
+  getUserId(): string;
   // TODO: include userId and maybe auth scope, which will be parsed from req cookie
 }
 
@@ -60,7 +60,7 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   res: Response;
 }) {
   // TODO: Clean up later
-  let userId;
+  let userId: string;
   const jwt: string = req.cookies.jwt;
 
   if (jwt) {
@@ -75,8 +75,7 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   }
 
   return {
-    //getUserId
-    userId,
+    getUserId: () => userId,
     setCookie: setCookie(res),
     clearCookie: clearCookie(res),
   };
