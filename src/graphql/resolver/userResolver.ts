@@ -3,6 +3,7 @@ import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildContext";
 import { AuthenticationError } from "apollo-server-express";
+import { JWTPayload, generateJwt } from "../../util/jwtUtils";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
@@ -28,7 +29,22 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
 
     Mutation: {
       login: (_root, args, context: ServerContext): Promise<User> => {
-        return userResolverValidator.login(args, context).then((args) => userService.login(args, context));
+        return userResolverValidator.login(args, context).then(async (args) => {
+          const isValidPassword = await userService.checkPassword(args);
+          if (!isValidPassword) {
+            throw new AuthenticationError("Login failed!");
+          }
+          // TODO: Move below into jwt auth service
+          // Make a JWT and return it in the body as well as the cookie
+          const user = await userService.getOne({ email: args.email }, context);
+          const payload: JWTPayload = {
+            sub: user.id,
+          };
+          const token = generateJwt(payload);
+
+          context.setCookie(token);
+          return { ...user, token };
+        });
       },
 
       logout: (_root, _args, context: ServerContext): boolean => {

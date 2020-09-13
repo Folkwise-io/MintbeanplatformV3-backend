@@ -1,10 +1,8 @@
 import { User } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 import bcrypt from "bcryptjs";
-import { AuthenticationError } from "apollo-server-express";
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildContext";
-import { generateJwt, JWTPayload } from "../util/jwtUtils";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;
@@ -33,22 +31,12 @@ export default class UserService implements EntityService<User> {
     return this.userDao.getMany(args);
   }
 
-  // TODO: Only checkPassword should be in UserService
-  async login(args: UserServiceLoginArgs, context: ServerContext): Promise<User> {
+  async checkPassword(args: UserServiceLoginArgs): Promise<boolean> {
     const user: User = await this.userDao.getOne({ email: args.email });
     const correctPassword = await bcrypt.compare(args.password, user.passwordHash);
     if (!correctPassword) {
-      throw new AuthenticationError("Login failed!");
+      return false;
     }
-
-    // TODO: Move this in controller, or make jwt auth service
-    // Make a JWT and return it in the body as well as the cookie
-    const payload: JWTPayload = {
-      sub: user.id,
-    };
-    const token = generateJwt(payload);
-
-    context.setCookie(token);
-    return { ...user, token };
+    return true;
   }
 }
