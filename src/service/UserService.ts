@@ -51,13 +51,4 @@ export default class UserService implements EntityService<User> {
     context.setCookie(token);
     return { ...user, token };
   }
-
-  async me(context: ServerContext): Promise<User> {
-    const userId = context.getUserId();
-    if (!userId) {
-      throw new AuthenticationError("You are not logged in!");
-    }
-
-    return this.userDao.getOne({ id: userId });
-  }
 }

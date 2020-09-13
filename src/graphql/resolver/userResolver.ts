@@ -2,6 +2,7 @@ import { Resolvers, User } from "../../types/gqlGeneratedTypes";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildContext";
+import { AuthenticationError } from "apollo-server-express";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
@@ -16,7 +17,12 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
       },
 
       me: (_root, _args, context: ServerContext): Promise<User> => {
-        return userService.me(context);
+        const userId = context.getUserId();
+        if (!userId) {
+          throw new AuthenticationError("You are not logged in!");
+        }
+
+        return userService.getOne({ id: userId }, context);
       },
     },
 
