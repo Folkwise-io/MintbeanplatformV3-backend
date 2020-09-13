@@ -9,12 +9,12 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
   return {
     Query: {
       user: (_root, args, context: ServerContext): Promise<User> => {
-        return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args, context));
+        return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args));
       },
 
       users: (_root, args, context: ServerContext): Promise<User[]> => {
         // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
-        return userService.getMany(args, context);
+        return userService.getMany(args);
       },
 
       me: (_root, _args, context: ServerContext): Promise<User> => {
@@ -23,7 +23,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           throw new AuthenticationError("You are not logged in!");
         }
 
-        return userService.getOne({ id: userId }, context);
+        return userService.getOne({ id: userId });
       },
     },
 
@@ -36,7 +36,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           }
           // TODO: Move below into jwt auth service
           // Make a JWT and return it in the body as well as the cookie
-          const user = await userService.getOne({ email: args.email }, context);
+          const user = await userService.getOne({ email: args.email });
           const payload: JWTPayload = {
             sub: user.id,
           };

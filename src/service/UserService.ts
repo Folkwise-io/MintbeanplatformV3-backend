@@ -2,7 +2,6 @@ import { User } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 import bcrypt from "bcryptjs";
 import UserDao from "../dao/UserDao";
-import { ServerContext } from "../buildContext";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;
@@ -23,11 +22,11 @@ export interface UserServiceLoginArgs {
 export default class UserService implements EntityService<User> {
   constructor(private userDao: UserDao) {}
 
-  async getOne(args: UserServiceGetOneArgs, context: ServerContext): Promise<User> {
+  async getOne(args: UserServiceGetOneArgs): Promise<User> {
     return this.userDao.getOne(args);
   }
 
-  async getMany(args: UserServiceGetManyArgs, context: ServerContext): Promise<User[]> {
+  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
     return this.userDao.getMany(args);
   }
 
