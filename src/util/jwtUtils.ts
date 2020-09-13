@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import config from "../util/config";
+import config from "./config";
 
 const { jwtSecret } = config;
 
@@ -13,7 +13,7 @@ export interface ParsedToken {
   exp: number;
 }
 
-export default function generateJwt(payload: JWTPayload): string {
+export function generateJwt(payload: JWTPayload): string {
   const options: SignOptions = {
     algorithm: "HS256",
     expiresIn: "2w",
@@ -22,4 +22,13 @@ export default function generateJwt(payload: JWTPayload): string {
   const token = jwt.sign(payload, jwtSecret, options);
 
   return token;
+}
+
+/**
+ * Parses a token, with jwt.verify throwing an error if the token is invalid
+ * @param token The base64-encoded, signed token
+ */
+export function parseJwt(token: string): ParsedToken {
+  const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
+  return parsedToken;
 }

@@ -4,7 +4,7 @@ import { User } from "../src/types/gqlGeneratedTypes";
 import jwt from "jsonwebtoken";
 
 import config from "../src/util/config";
-import { ParsedToken } from "../src/util/generateJwt";
+import { ParsedToken } from "../src/util/jwtUtils";
 const { jwtSecret } = config;
 
 // Will use generator factory / faker once more entities are added

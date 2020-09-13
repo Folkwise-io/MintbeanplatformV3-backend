@@ -31,6 +31,9 @@ const user: DocumentNode = gql`
 
     "Get a single user by ID, username, or email"
     user(id: UUID, username: String, email: String): User
+
+    "Get the current logged in user using cookies"
+    me: User
   }
 
   type Mutation {

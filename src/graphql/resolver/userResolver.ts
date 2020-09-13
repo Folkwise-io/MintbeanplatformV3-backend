@@ -14,6 +14,10 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
         return userService.getMany(args, context);
       },
+
+      me: (_root, _args, context: ServerContext) => {
+        return userService.me(context);
+      },
     },
 
     Mutation: {
