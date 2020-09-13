@@ -6,7 +6,7 @@ export const buildTestServerContext: BuildExpressServerContext = function (_expr
   return {
     //TODO: add a way to manipulate the userId from TestManager
     getUserId: jest.fn(),
-    setCookie: jest.fn(),
-    clearCookie: jest.fn(),
+    setJwt: jest.fn(),
+    clearJwt: jest.fn(),
   };
 };

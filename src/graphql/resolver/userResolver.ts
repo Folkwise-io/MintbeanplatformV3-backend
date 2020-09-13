@@ -42,7 +42,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           };
           const token = generateJwt(payload);
 
-          context.setCookie(token);
+          context.setJwt(token);
           return { ...user, token };
         });
       },
@@ -50,7 +50,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
       logout: (_root, _args, context: ServerContext): boolean => {
         const userId = context.getUserId();
         if (userId) {
-          context.clearCookie();
+          context.clearJwt();
           return true;
         }
         return false;
