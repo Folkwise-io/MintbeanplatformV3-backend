@@ -60,13 +60,4 @@ export default class UserService implements EntityService<User> {
 
     return this.userDao.getOne({ id: userId });
   }
-
-  async logout(context: ServerContext): Promise<boolean> {
-    const userId = context.getUserId();
-    if (userId) {
-      context.clearCookie();
-      return true;
-    }
-    return false;
-  }
 }

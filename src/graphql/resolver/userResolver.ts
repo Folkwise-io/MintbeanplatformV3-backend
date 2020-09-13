@@ -25,8 +25,13 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         return userResolverValidator.login(args, context).then((args) => userService.login(args, context));
       },
 
-      logout: (_root, _args, context: ServerContext) => {
-        return userService.logout(context);
+      logout: (_root, _args, context: ServerContext): boolean => {
+        const userId = context.getUserId();
+        if (userId) {
+          context.clearCookie();
+          return true;
+        }
+        return false;
       },
     },
   };
