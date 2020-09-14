@@ -46,7 +46,7 @@ describe("GraphQL built-in validation", () => {
     `;
 
     await testManager
-      .query({ query: BAD_USERNAME_QUERY })
+      .query(BAD_USERNAME_QUERY)
       .then(testManager.getError)
       .then((error) => {
         expect(error.message).toContain("string");
@@ -64,7 +64,7 @@ describe("GraphQL built-in validation", () => {
     `;
 
     await testManager
-      .query({ query: BAD_UUID_QUERY })
+      .query(BAD_UUID_QUERY)
       .then(testManager.getError)
       .then((error) => {
         expect(error.message).toContain("UUID");
@@ -94,7 +94,8 @@ describe("Querying users", () => {
   it("gets one user by ID", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.query({ query: GET_ONE_QUERY }))
+      .then(() => testManager.query(GET_ONE_QUERY))
+      .then(testManager.logResponse)
       .then(testManager.getData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);
@@ -104,7 +105,7 @@ describe("Querying users", () => {
   it("gets all the users", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.query({ query: GET_ALL_USERS_QUERY }))
+      .then(() => testManager.query(GET_ALL_USERS_QUERY))
       .then(testManager.getData)
       .then(({ users }) => {
         expect(users).toHaveLength(2);
@@ -115,7 +116,7 @@ describe("Querying users", () => {
   it("gets no users when ID doesn't exist", async () => {
     await testManager
       .addUsers([])
-      .then(() => testManager.query({ query: GET_ONE_QUERY }))
+      .then(() => testManager.query(GET_ONE_QUERY))
       .then(testManager.getDataAndErrors)
       .then(({ data, errors }) => {
         expect(data.user).toBeNull();
@@ -140,7 +141,7 @@ describe("Login", () => {
 
   it("sends back the user when given the email and the correct password", async () => {
     await testManager
-      .mutate({ mutation: LOGIN_MUTATION_CORRECT })
+      .query(LOGIN_MUTATION_CORRECT)
       .then(testManager.getData)
       .then(({ login }) => {
         expect(AMY).toMatchObject(login);
@@ -156,7 +157,7 @@ describe("Login", () => {
       }
     `;
     await testManager
-      .mutate({ mutation: LOGIN_MUTATION_WITH_TOKEN })
+      .query(LOGIN_MUTATION_WITH_TOKEN)
       .then(testManager.getData)
       .then(({ login: { token } }) => {
         const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
@@ -181,7 +182,7 @@ describe("Login", () => {
     `;
 
     await testManager
-      .mutate({ mutation: LOGIN_MUTATION_INCORRECT_PASSWORD })
+      .query(LOGIN_MUTATION_INCORRECT_PASSWORD)
       .then(testManager.getError)
       .then((error) => {
         expect(error.message).toMatch(/login failed/i);
@@ -199,7 +200,7 @@ describe("Login", () => {
     `;
 
     await testManager
-      .mutate({ mutation: LOGIN_MUTATION_NO_PASSWORD })
+      .query(LOGIN_MUTATION_NO_PASSWORD)
       .then(testManager.getError)
       .then((error) => {
         expect(error.message).toContain("password");
@@ -217,7 +218,7 @@ describe("Login", () => {
     `;
 
     await testManager
-      .mutate({ mutation: LOGIN_MUTATION_NO_EMAIL })
+      .query(LOGIN_MUTATION_NO_EMAIL)
       .then(testManager.getError)
       .then((error) => {
         expect(error.message).toContain("email");

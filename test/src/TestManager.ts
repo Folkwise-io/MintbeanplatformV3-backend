@@ -1,4 +1,3 @@
-import { createTestClient, ApolloServerTestClient } from "apollo-server-testing";
 import {
   buildResolverContext,
   ResolverContext,
@@ -6,20 +5,24 @@ import {
   buildPersistenceContext,
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
+import { buildExpressServerContext } from "../../src/buildServerContext";
 import buildApolloServer from "../../src/buildApolloServer";
+import buildExpressServer from "../../src/buildExpressServer";
 import { Query, Mutation } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
-import { GraphQLSchema } from "graphql";
+import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
-import { buildTestServerContext } from "./buildTestServerContext";
+import { Application } from "express";
+import supertest, { SuperTest, Test } from "supertest";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
   resolverContext: ResolverContext;
   schema: GraphQLSchema;
   testServer: ApolloServer;
-  testClient: ApolloServerTestClient;
+  app: Application;
+  testClient: SuperTest<Test>;
 }
 
 export default class TestManager {
@@ -29,14 +32,16 @@ export default class TestManager {
     const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
-    const testServer = buildApolloServer(schema, buildTestServerContext);
-    const testClient = createTestClient(testServer);
+    const testServer = buildApolloServer(schema, buildExpressServerContext);
+    const app = buildExpressServer(testServer);
+    const testClient = supertest(app);
 
     return new TestManager({
       persistenceContext,
       resolverContext,
       schema,
       testServer,
+      app,
       testClient,
     });
   }
@@ -49,12 +54,11 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  query(gqlQuery: Query): Promise<GraphQLResponse> {
-    return this.params.testClient.query(gqlQuery);
-  }
-
-  mutate(gqlMutation: Mutation): Promise<GraphQLResponse> {
-    return this.params.testClient.mutate(gqlMutation);
+  query(gqlQuery: DocumentNode): Promise<GraphQLResponse> {
+    return this.params.testClient
+      .post("/graphql")
+      .send({ query: print(gqlQuery) })
+      .then((response) => JSON.parse(response.text));
   }
 
   getData = (response: GraphQLResponse) => {
