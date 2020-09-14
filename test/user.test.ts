@@ -181,6 +181,17 @@ describe("Cookies and authentication", () => {
         expect(logout).toBe(false);
       });
   });
+
+  it("returns true when going to the 'logout' endpoint while logged in", async () => {
+    const cookies = await testManager.getCookies(LOGIN_MUTATION_CORRECT);
+
+    await testManager
+      .getGraphQLResponse(LOGOUT, cookies)
+      .then(testManager.parseData)
+      .then(({ logout }) => {
+        expect(logout).toBe(true);
+      });
+  });
 });
 
 afterAll(async () => {
