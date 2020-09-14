@@ -6,7 +6,7 @@ import {
   buildPersistenceContext,
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
-import buildServer from "../../src/buildServer";
+import buildApolloServer from "../../src/buildApolloServer";
 import { Query, Mutation } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { GraphQLSchema } from "graphql";
@@ -29,7 +29,7 @@ export default class TestManager {
     const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
-    const testServer = buildServer(schema, buildTestServerContext);
+    const testServer = buildApolloServer(schema, buildTestServerContext);
     const testClient = createTestClient(testServer);
 
     return new TestManager({
