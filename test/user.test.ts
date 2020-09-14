@@ -95,7 +95,6 @@ describe("Querying users", () => {
     await testManager
       .addUsers([AMY, BOB])
       .then(() => testManager.query(GET_ONE_QUERY))
-      .then(testManager.logResponse)
       .then(testManager.getData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);

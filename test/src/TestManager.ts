@@ -8,7 +8,6 @@ import buildSchema from "../../src/buildSchema";
 import { buildExpressServerContext } from "../../src/buildServerContext";
 import buildApolloServer from "../../src/buildApolloServer";
 import buildExpressServer from "../../src/buildExpressServer";
-import { Query, Mutation } from "./createTestClient";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
