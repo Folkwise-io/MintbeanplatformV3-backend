@@ -46,8 +46,8 @@ describe("GraphQL built-in validation", () => {
     `;
 
     await testManager
-      .query(BAD_USERNAME_QUERY)
-      .then(testManager.getError)
+      .getGraphQLResponse(BAD_USERNAME_QUERY)
+      .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("string");
       });
@@ -64,8 +64,8 @@ describe("GraphQL built-in validation", () => {
     `;
 
     await testManager
-      .query(BAD_UUID_QUERY)
-      .then(testManager.getError)
+      .getGraphQLResponse(BAD_UUID_QUERY)
+      .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("UUID");
       });
@@ -94,8 +94,8 @@ describe("Querying users", () => {
   it("gets one user by ID", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.query(GET_ONE_QUERY))
-      .then(testManager.getData)
+      .then(() => testManager.getGraphQLResponse(GET_ONE_QUERY))
+      .then(testManager.parseData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);
       });
@@ -104,8 +104,8 @@ describe("Querying users", () => {
   it("gets all the users", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.query(GET_ALL_USERS_QUERY))
-      .then(testManager.getData)
+      .then(() => testManager.getGraphQLResponse(GET_ALL_USERS_QUERY))
+      .then(testManager.parseData)
       .then(({ users }) => {
         expect(users).toHaveLength(2);
         expect([AMY, BOB]).toMatchObject(users);
@@ -115,8 +115,8 @@ describe("Querying users", () => {
   it("gets no users when ID doesn't exist", async () => {
     await testManager
       .addUsers([])
-      .then(() => testManager.query(GET_ONE_QUERY))
-      .then(testManager.getDataAndErrors)
+      .then(() => testManager.getGraphQLResponse(GET_ONE_QUERY))
+      .then(testManager.parseDataAndErrors)
       .then(({ data, errors }) => {
         expect(data.user).toBeNull();
         expect(errors[0].message).toBe("User does not exist");
@@ -140,8 +140,8 @@ describe("Login", () => {
 
   it("sends back the user when given the email and the correct password", async () => {
     await testManager
-      .query(LOGIN_MUTATION_CORRECT)
-      .then(testManager.getData)
+      .getGraphQLResponse(LOGIN_MUTATION_CORRECT)
+      .then(testManager.parseData)
       .then(({ login }) => {
         expect(AMY).toMatchObject(login);
       });
@@ -156,8 +156,8 @@ describe("Login", () => {
       }
     `;
     await testManager
-      .query(LOGIN_MUTATION_WITH_TOKEN)
-      .then(testManager.getData)
+      .getGraphQLResponse(LOGIN_MUTATION_WITH_TOKEN)
+      .then(testManager.parseData)
       .then(({ login: { token } }) => {
         const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
         expect(parsedToken.sub).toBe(AMY.id);
@@ -181,8 +181,8 @@ describe("Login", () => {
     `;
 
     await testManager
-      .query(LOGIN_MUTATION_INCORRECT_PASSWORD)
-      .then(testManager.getError)
+      .getGraphQLResponse(LOGIN_MUTATION_INCORRECT_PASSWORD)
+      .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toMatch(/login failed/i);
       });
@@ -199,8 +199,8 @@ describe("Login", () => {
     `;
 
     await testManager
-      .query(LOGIN_MUTATION_NO_PASSWORD)
-      .then(testManager.getError)
+      .getGraphQLResponse(LOGIN_MUTATION_NO_PASSWORD)
+      .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("password");
       });
@@ -217,8 +217,8 @@ describe("Login", () => {
     `;
 
     await testManager
-      .query(LOGIN_MUTATION_NO_EMAIL)
-      .then(testManager.getError)
+      .getGraphQLResponse(LOGIN_MUTATION_NO_EMAIL)
+      .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("email");
       });

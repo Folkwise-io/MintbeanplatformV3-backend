@@ -53,14 +53,19 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  query(gqlQuery: DocumentNode): Promise<GraphQLResponse> {
+  getRawResponse(gqlQuery: DocumentNode) {
     return this.params.testClient
       .post("/graphql")
       .send({ query: print(gqlQuery) })
-      .then((response) => JSON.parse(response.text));
+      .then((rawResponse) => rawResponse);
   }
 
-  getData = (response: GraphQLResponse) => {
+  // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
+  getGraphQLResponse(gqlQuery: DocumentNode): Promise<GraphQLResponse> {
+    return this.getRawResponse(gqlQuery).then((rawResponse) => JSON.parse(rawResponse.text));
+  }
+
+  parseData = (response: GraphQLResponse) => {
     if (response.errors) {
       this.logResponse(response);
       throw new Error("Test expected data but got an error");
@@ -74,21 +79,21 @@ export default class TestManager {
     return response.data;
   };
 
-  getError = (response: GraphQLResponse) => {
+  parseError = (response: GraphQLResponse) => {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
     return response.errors[0];
   };
 
-  getAllErrors = (response: GraphQLResponse) => {
+  parseAllErrors = (response: GraphQLResponse) => {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
     return response.errors;
   };
 
-  getDataAndErrors = ({ data, errors }: GraphQLResponse) => {
+  parseDataAndErrors = ({ data, errors }: GraphQLResponse) => {
     if (!data || !errors) {
       throw new Error("Test expected both a data and error but did not get them");
     }
