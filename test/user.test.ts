@@ -161,8 +161,15 @@ describe("Cookies", () => {
       .then((error) => expect(error.message).toMatch(/not logged in/i));
   });
 
-  it("gives you the logged in user when you have the JWT cookie in your request", async () => {
-    // TODO
+  it("gives you the logged in user when you have the JWT cookie in your 'me' query", async () => {
+    const cookies = await testManager.getCookies(LOGIN_MUTATION_CORRECT);
+
+    await testManager
+      .getGraphQLResponse(ME_QUERY, cookies)
+      .then(testManager.parseData)
+      .then(({ me }) => {
+        expect(AMY).toMatchObject(me);
+      });
   });
 });
 

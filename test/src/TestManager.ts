@@ -14,7 +14,7 @@ import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
-import setCookieParser from "set-cookie-parser";
+import setCookieParser, { Cookie } from "set-cookie-parser";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -54,14 +54,19 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  getRawResponse(gqlQuery: DocumentNode): Promise<Response> {
+  getRawResponse(gqlQuery: DocumentNode, cookies: string[] = []): Promise<Response> {
     return this.params.testClient
       .post("/graphql")
+      .set("Cookie", cookies)
       .send({ query: print(gqlQuery) })
       .then((rawResponse) => rawResponse);
   }
 
-  parseCookies(rawResponse: Response) {
+  getCookies(gqlQuery: DocumentNode): Promise<string[]> {
+    return this.getRawResponse(gqlQuery).then((rawResponse) => rawResponse.header["set-cookie"]);
+  }
+
+  parseCookies(rawResponse: Response): Cookie[] {
     return setCookieParser.parse(rawResponse.header["set-cookie"]);
   }
 
@@ -70,8 +75,8 @@ export default class TestManager {
   }
 
   // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
-  getGraphQLResponse(gqlQuery: DocumentNode): Promise<GraphQLResponse> {
-    return this.getRawResponse(gqlQuery).then(this.parseGraphQLResponse);
+  getGraphQLResponse(gqlQuery: DocumentNode, cookies: string[] = []): Promise<GraphQLResponse> {
+    return this.getRawResponse(gqlQuery, cookies).then(this.parseGraphQLResponse);
   }
 
   parseData(response: GraphQLResponse) {
