@@ -24,6 +24,10 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
       login: (_root, args, context: ServerContext) => {
         return userResolverValidator.login(args, context).then((args) => userService.login(args, context));
       },
+
+      logout: (_root, _args, context: ServerContext) => {
+        return userService.logout(context);
+      },
     },
   };
 };

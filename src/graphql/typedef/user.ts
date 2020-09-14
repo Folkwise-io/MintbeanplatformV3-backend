@@ -39,6 +39,9 @@ const user: DocumentNode = gql`
   type Mutation {
     "Login using email and password"
     login(email: String!, password: String!): User
+
+    "Log out by clearing cookies"
+    logout: Boolean!
   }
 `;
 

@@ -9,3 +9,7 @@ const cookieOptions: CookieOptions = {
 export const setCookie = (res: Response) => (token: string): void => {
   res.cookie("jwt", token, cookieOptions);
 };
+
+export const clearCookie = (res: Response) => (): void => {
+  res.clearCookie("jwt");
+};

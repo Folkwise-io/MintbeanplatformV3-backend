@@ -74,6 +74,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Login using email and password */
   login?: Maybe<User>;
+  /** Log out by clearing cookies */
+  logout: Scalars['Boolean'];
 };
 
 
@@ -181,8 +183,8 @@ export type ResolversTypes = {
   String: ResolverTypeWrapper<Scalars['String']>;
   Query: ResolverTypeWrapper<{}>;
   Mutation: ResolverTypeWrapper<{}>;
-  Post: ResolverTypeWrapper<Post>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Post: ResolverTypeWrapper<Post>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -192,8 +194,8 @@ export type ResolversParentTypes = {
   String: Scalars['String'];
   Query: {};
   Mutation: {};
-  Post: Post;
   Boolean: Scalars['Boolean'];
+  Post: Post;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -223,6 +225,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

@@ -5,7 +5,7 @@ import UserDaoKnex from "./dao/UserDaoKnex";
 import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
 import { Request, Response } from "express";
-import { setCookie } from "./util/setCookie";
+import { clearCookie, setCookie } from "./util/cookieUtils";
 import { parseJwt } from "./util/jwtUtils";
 import { AuthenticationError } from "apollo-server-express";
 
@@ -45,6 +45,7 @@ export interface ExpressContext {
 
 export interface ServerContext {
   setCookie: (token: string) => void;
+  clearCookie: () => void;
   userId?: string;
   // TODO: include userId and maybe auth scope, which will be parsed from req cookie
 }
@@ -75,5 +76,6 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
   return {
     userId,
     setCookie: setCookie(res),
+    clearCookie: clearCookie(res),
   };
 };
