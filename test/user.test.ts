@@ -129,16 +129,16 @@ describe("Login", () => {
     await testManager.addUsers([AMY, BOB]);
   });
 
-  const LOGIN_MUTATION_CORRECT = gql`
-    mutation correctLogin {
-      login(email: "a@a.com", password: "password") {
-        id
-        username
-      }
-    }
-  `;
-
   it("sends back the user when given the email and the correct password", async () => {
+    const LOGIN_MUTATION_CORRECT = gql`
+      mutation correctLogin {
+        login(email: "a@a.com", password: "password") {
+          id
+          username
+        }
+      }
+    `;
+
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_CORRECT)
       .then(testManager.parseData)
@@ -155,6 +155,7 @@ describe("Login", () => {
         }
       }
     `;
+
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_WITH_TOKEN)
       .then(testManager.parseData)
@@ -222,6 +223,28 @@ describe("Login", () => {
       .then((error) => {
         expect(error.message).toContain("email");
       });
+  });
+});
+
+describe("Cookies", () => {
+  beforeEach(async () => {
+    await testManager.addUsers([AMY, BOB]);
+  });
+
+  it("sends back a cookie containing the JWT that is identical to the token in the body", async () => {
+    const LOGIN_MUTATION_WITH_TOKEN = gql`
+      mutation correctLogin {
+        login(email: "a@a.com", password: "password") {
+          token
+        }
+      }
+    `;
+
+    await testManager.getRawResponse(LOGIN_MUTATION_WITH_TOKEN).then((rawResponse) => {
+      const jwtCookie = testManager.parseCookies(rawResponse)[0];
+      const { token } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).login;
+      expect(jwtCookie.value).toBe(token);
+    });
   });
 });
 

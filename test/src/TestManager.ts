@@ -14,6 +14,7 @@ import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
+import setCookieParser from "set-cookie-parser";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -58,6 +59,10 @@ export default class TestManager {
       .post("/graphql")
       .send({ query: print(gqlQuery) })
       .then((rawResponse) => rawResponse);
+  }
+
+  parseCookies(rawResponse: Response) {
+    return setCookieParser.parse(rawResponse.header["set-cookie"]);
   }
 
   parseGraphQLResponse(rawResponse: Response): GraphQLResponse {
@@ -105,7 +110,7 @@ export default class TestManager {
   }
 
   // Needed for debugging because console.log would just give you "[object]"
-  logResponse(response: GraphQLResponse): GraphQLResponse {
+  logResponse<T>(response: T): T {
     console.log(JSON.stringify(response, null, 2));
     return response;
   }
