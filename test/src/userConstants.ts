@@ -109,3 +109,9 @@ export const ME_QUERY = gql`
     }
   }
 `;
+
+export const LOGOUT = gql`
+  mutation logout {
+    logout
+  }
+`;

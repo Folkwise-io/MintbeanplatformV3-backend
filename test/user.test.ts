@@ -16,6 +16,7 @@ import {
   LOGIN_MUTATION_NO_EMAIL,
   LOGIN_MUTATION_NO_PASSWORD,
   LOGIN_MUTATION_WITH_TOKEN,
+  LOGOUT,
   ME_QUERY,
 } from "./src/userConstants";
 const { jwtSecret } = config;
@@ -137,7 +138,7 @@ describe("Login", () => {
   });
 });
 
-describe("Cookies", () => {
+describe("Cookies and authentication", () => {
   beforeEach(async () => {
     await testManager.addUsers([AMY, BOB]);
   });
@@ -150,7 +151,7 @@ describe("Cookies", () => {
       expect(jwtCookie.value).toBe(token);
       expect(jwtCookie.httpOnly).toBe(true);
       expect(jwtCookie.sameSite).toBe("Strict");
-      expect(jwtCookie.maxAge).toBeCloseTo(14 * 24 * 60 * 60);
+      expect(jwtCookie.maxAge).toBe(14 * 24 * 60 * 60);
     });
   });
 
@@ -169,6 +170,15 @@ describe("Cookies", () => {
       .then(testManager.parseData)
       .then(({ me }) => {
         expect(AMY).toMatchObject(me);
+      });
+  });
+
+  it("returns false when trying to go to the 'logout' endpoint without a cookie (i.e. without being logged in)", async () => {
+    await testManager
+      .getGraphQLResponse(LOGOUT)
+      .then(testManager.parseData)
+      .then(({ logout }) => {
+        expect(logout).toBe(false);
       });
   });
 });
