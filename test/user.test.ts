@@ -148,6 +148,7 @@ describe("Cookies and authentication", () => {
       const jwtCookie = testManager.parseCookies(rawResponse)[0];
       const { token } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).login;
 
+      expect(jwtCookie.name).toBe("jwt");
       expect(jwtCookie.value).toBe(token);
       expect(jwtCookie.httpOnly).toBe(true);
       expect(jwtCookie.sameSite).toBe("Strict");
@@ -193,7 +194,7 @@ describe("Cookies and authentication", () => {
       });
   });
 
-  it("The cookies are being cleared when hitting the 'logout' endpoint while logged in", async () => {
+  it("clears the cookies when hitting the 'logout' endpoint while logged in", async () => {
     const cookies = await testManager.getCookies(LOGIN_MUTATION_CORRECT);
 
     await testManager.getRawResponse(LOGOUT, cookies).then((rawResponse) => {
