@@ -192,6 +192,16 @@ describe("Cookies and authentication", () => {
         expect(logout).toBe(true);
       });
   });
+
+  it("The cookies are being cleared when hitting the 'logout' endpoint while logged in", async () => {
+    const cookies = await testManager.getCookies(LOGIN_MUTATION_CORRECT);
+
+    await testManager.getRawResponse(LOGOUT, cookies).then((rawResponse) => {
+      const newCookie = testManager.parseCookies(rawResponse)[0];
+      expect(newCookie.name).toBe("jwt");
+      expect(newCookie.value).toBeFalsy();
+    });
+  });
 });
 
 afterAll(async () => {
