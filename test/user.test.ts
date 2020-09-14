@@ -1,33 +1,24 @@
 import TestManager from "./src/TestManager";
-import { gql } from "apollo-server-express";
-import { User } from "../src/types/gqlGeneratedTypes";
 import jwt from "jsonwebtoken";
 
 import config from "../src/util/config";
 import { ParsedToken } from "../src/util/jwtUtils";
 import { getCurrentUnixTime } from "./src/util";
+import {
+  AMY,
+  BAD_USERNAME_QUERY,
+  BAD_UUID_QUERY,
+  BOB,
+  GET_ALL_USERS_QUERY,
+  GET_ONE_QUERY,
+  LOGIN_MUTATION_CORRECT,
+  LOGIN_MUTATION_INCORRECT_PASSWORD,
+  LOGIN_MUTATION_NO_EMAIL,
+  LOGIN_MUTATION_NO_PASSWORD,
+  LOGIN_MUTATION_WITH_TOKEN,
+  ME_QUERY,
+} from "./src/userConstants";
 const { jwtSecret } = config;
-
-// Will use generator factory / faker once more entities are added
-const AMY: User = {
-  id: "00000000-0000-0000-0000-000000000000",
-  username: "aadams",
-  email: "a@a.com",
-  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
-  firstName: "Amy",
-  lastName: "Adams",
-  createdAt: "2019-10-15",
-};
-
-const BOB: User = {
-  id: "00000000-0000-4000-A000-000000000000",
-  username: "bbarker",
-  email: "b@b.com",
-  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
-  firstName: "Bob",
-  lastName: "Barker",
-  createdAt: "2020-04-15",
-};
 
 const testManager = TestManager.build();
 
@@ -37,15 +28,6 @@ beforeEach(async () => {
 
 describe("GraphQL built-in validation", () => {
   it("throws an error when you pass in a username that's not a string", async () => {
-    const BAD_USERNAME_QUERY = gql`
-      query badUserName {
-        user(username: 5) {
-          firstName
-          lastName
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(BAD_USERNAME_QUERY)
       .then(testManager.parseError)
@@ -55,15 +37,6 @@ describe("GraphQL built-in validation", () => {
   });
 
   it("throws an error when you pass in an ID that is not a UUID", async () => {
-    const BAD_UUID_QUERY = gql`
-      query badUserId {
-        user(id: "000000") {
-          firstName
-          lastName
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(BAD_UUID_QUERY)
       .then(testManager.parseError)
@@ -74,24 +47,6 @@ describe("GraphQL built-in validation", () => {
 });
 
 describe("Querying users", () => {
-  const GET_ONE_QUERY = gql`
-    query getOneUser {
-      user(id: "00000000-0000-0000-0000-000000000000") {
-        firstName
-        lastName
-      }
-    }
-  `;
-
-  const GET_ALL_USERS_QUERY = gql`
-    query getAllUsers {
-      users {
-        firstName
-        lastName
-      }
-    }
-  `;
-
   it("gets one user by ID", async () => {
     await testManager
       .addUsers([AMY, BOB])
@@ -125,29 +80,12 @@ describe("Querying users", () => {
   });
 });
 
-const LOGIN_MUTATION_WITH_TOKEN = gql`
-  mutation correctLogin {
-    login(email: "a@a.com", password: "password") {
-      token
-    }
-  }
-`;
-
 describe("Login", () => {
   beforeEach(async () => {
     await testManager.addUsers([AMY, BOB]);
   });
 
   it("sends back the user when given the email and the correct password", async () => {
-    const LOGIN_MUTATION_CORRECT = gql`
-      mutation correctLogin {
-        login(email: "a@a.com", password: "password") {
-          id
-          username
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_CORRECT)
       .then(testManager.parseData)
@@ -172,15 +110,6 @@ describe("Login", () => {
   });
 
   it("sends back an error if the password is wrong", async () => {
-    const LOGIN_MUTATION_INCORRECT_PASSWORD = gql`
-      mutation wrongPassword {
-        login(email: "a@a.com", password: "wrongpassword") {
-          id
-          username
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_INCORRECT_PASSWORD)
       .then(testManager.parseError)
@@ -190,15 +119,6 @@ describe("Login", () => {
   });
 
   it("sends back an error if no password is provided", async () => {
-    const LOGIN_MUTATION_NO_PASSWORD = gql`
-      mutation noPassword {
-        login(email: "a@a.com") {
-          id
-          username
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_NO_PASSWORD)
       .then(testManager.parseError)
@@ -208,15 +128,6 @@ describe("Login", () => {
   });
 
   it("sends back an error if no email is provided", async () => {
-    const LOGIN_MUTATION_NO_EMAIL = gql`
-      mutation noEmail {
-        login(password: "password") {
-          id
-          username
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_NO_EMAIL)
       .then(testManager.parseError)
@@ -235,6 +146,7 @@ describe("Cookies", () => {
     await testManager.getRawResponse(LOGIN_MUTATION_WITH_TOKEN).then((rawResponse) => {
       const jwtCookie = testManager.parseCookies(rawResponse)[0];
       const { token } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).login;
+
       expect(jwtCookie.value).toBe(token);
       expect(jwtCookie.httpOnly).toBe(true);
       expect(jwtCookie.sameSite).toBe("Strict");
@@ -242,20 +154,15 @@ describe("Cookies", () => {
     });
   });
 
-  const ME_QUERY = gql`
-    query me {
-      me {
-        id
-        username
-      }
-    }
-  `;
-
   it("returns an unauthenticated error when trying to go to the 'me' endpoint without a cookie", async () => {
     await testManager
       .getGraphQLResponse(ME_QUERY)
       .then(testManager.parseError)
       .then((error) => expect(error.message).toMatch(/not logged in/i));
+  });
+
+  it("gives you the logged in user when you have the JWT cookie in your request", async () => {
+    // TODO
   });
 });
 
