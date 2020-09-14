@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 
 import config from "../src/util/config";
 import { ParsedToken } from "../src/util/jwtUtils";
+import { getCurrentUnixTime } from "./src/util";
 const { jwtSecret } = config;
 
 // Will use generator factory / faker once more entities are added
@@ -124,6 +125,14 @@ describe("Querying users", () => {
   });
 });
 
+const LOGIN_MUTATION_WITH_TOKEN = gql`
+  mutation correctLogin {
+    login(email: "a@a.com", password: "password") {
+      token
+    }
+  }
+`;
+
 describe("Login", () => {
   beforeEach(async () => {
     await testManager.addUsers([AMY, BOB]);
@@ -148,14 +157,6 @@ describe("Login", () => {
   });
 
   it("sends back a valid JWT when given the email and the correct password", async () => {
-    const LOGIN_MUTATION_WITH_TOKEN = gql`
-      mutation correctLogin {
-        login(email: "a@a.com", password: "password") {
-          token
-        }
-      }
-    `;
-
     await testManager
       .getGraphQLResponse(LOGIN_MUTATION_WITH_TOKEN)
       .then(testManager.parseData)
@@ -163,8 +164,7 @@ describe("Login", () => {
         const parsedToken = jwt.verify(token, jwtSecret) as ParsedToken;
         expect(parsedToken.sub).toBe(AMY.id);
 
-        const currentUnixTime = Math.floor(new Date().getTime() / 1000);
-        expect(parsedToken.iat).toBeCloseTo(currentUnixTime);
+        expect(parsedToken.iat).toBeCloseTo(getCurrentUnixTime());
         expect(parsedToken.exp - parsedToken.iat).toBeCloseTo(14 * 24 * 60 * 60); // 14 days
 
         expect(() => jwt.verify(token, "wrongsecret")).toThrowError();
@@ -231,20 +231,31 @@ describe("Cookies", () => {
     await testManager.addUsers([AMY, BOB]);
   });
 
-  it("sends back a cookie containing the JWT that is identical to the token in the body", async () => {
-    const LOGIN_MUTATION_WITH_TOKEN = gql`
-      mutation correctLogin {
-        login(email: "a@a.com", password: "password") {
-          token
-        }
-      }
-    `;
-
+  it("sends back a cookie containing the JWT that is identical to the token in the body, is httpOnly, sameSite=Strict, and has a valid maxAge", async () => {
     await testManager.getRawResponse(LOGIN_MUTATION_WITH_TOKEN).then((rawResponse) => {
       const jwtCookie = testManager.parseCookies(rawResponse)[0];
       const { token } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).login;
       expect(jwtCookie.value).toBe(token);
+      expect(jwtCookie.httpOnly).toBe(true);
+      expect(jwtCookie.sameSite).toBe("Strict");
+      expect(jwtCookie.maxAge).toBeCloseTo(14 * 24 * 60 * 60);
     });
+  });
+
+  const ME_QUERY = gql`
+    query me {
+      me {
+        id
+        username
+      }
+    }
+  `;
+
+  it("returns an unauthenticated error when trying to go to the 'me' endpoint without a cookie", async () => {
+    await testManager
+      .getGraphQLResponse(ME_QUERY)
+      .then(testManager.parseError)
+      .then((error) => expect(error.message).toMatch(/not logged in/i));
   });
 });
 
