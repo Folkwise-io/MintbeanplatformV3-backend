@@ -13,7 +13,7 @@ import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
 import { Application } from "express";
-import supertest, { SuperTest, Test } from "supertest";
+import supertest, { Response, SuperTest, Test } from "supertest";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -53,19 +53,23 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  getRawResponse(gqlQuery: DocumentNode) {
+  getRawResponse(gqlQuery: DocumentNode): Promise<Response> {
     return this.params.testClient
       .post("/graphql")
       .send({ query: print(gqlQuery) })
       .then((rawResponse) => rawResponse);
   }
 
-  // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
-  getGraphQLResponse(gqlQuery: DocumentNode): Promise<GraphQLResponse> {
-    return this.getRawResponse(gqlQuery).then((rawResponse) => JSON.parse(rawResponse.text));
+  parseGraphQLResponse(rawResponse: Response): GraphQLResponse {
+    return JSON.parse(rawResponse.text);
   }
 
-  parseData = (response: GraphQLResponse) => {
+  // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
+  getGraphQLResponse(gqlQuery: DocumentNode): Promise<GraphQLResponse> {
+    return this.getRawResponse(gqlQuery).then(this.parseGraphQLResponse);
+  }
+
+  parseData(response: GraphQLResponse) {
     if (response.errors) {
       this.logResponse(response);
       throw new Error("Test expected data but got an error");
@@ -77,28 +81,28 @@ export default class TestManager {
       throw new Error("Test expected data but received no data");
     }
     return response.data;
-  };
+  }
 
-  parseError = (response: GraphQLResponse) => {
+  parseError(response: GraphQLResponse) {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
     return response.errors[0];
-  };
+  }
 
-  parseAllErrors = (response: GraphQLResponse) => {
+  parseAllErrors(response: GraphQLResponse) {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
     return response.errors;
-  };
+  }
 
-  parseDataAndErrors = ({ data, errors }: GraphQLResponse) => {
+  parseDataAndErrors({ data, errors }: GraphQLResponse) {
     if (!data || !errors) {
       throw new Error("Test expected both a data and error but did not get them");
     }
     return { data, errors };
-  };
+  }
 
   // Needed for debugging because console.log would just give you "[object]"
   logResponse(response: GraphQLResponse): GraphQLResponse {
