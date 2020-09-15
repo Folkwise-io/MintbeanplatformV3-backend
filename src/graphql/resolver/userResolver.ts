@@ -59,7 +59,15 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           throw new AuthenticationError("Already logged in!");
         }
 
-        return userResolverValidator.addOne(args).then((args) => userService.addOne(args));
+        return userResolverValidator
+          .addOne(args)
+          .then((args) => userService.addOne(args))
+          .then((user: User) => {
+            const token = generateJwt(user);
+
+            context.setJwt(token);
+            return { ...user, token };
+          });
       },
     },
   };
