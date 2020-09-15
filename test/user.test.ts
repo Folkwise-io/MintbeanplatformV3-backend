@@ -214,13 +214,28 @@ describe("User registration", () => {
     await testManager.addUsers([AMY, BOB]);
   });
 
-  it("Returns the firstName of the newly registered user", async () => {
+  it("returns the firstName and id of the newly registered user", async () => {
     await testManager
       .getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } })
       .then(testManager.parseData)
       .then((data) => {
         const newUser: User = data.register;
         expect(newUser.firstName).toBe(NEW_USER_INPUT.firstName);
+        expect(newUser.id).toBeTruthy();
+      });
+  });
+
+  it("allows a user to register and log in with their username and password", async () => {
+    await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
+
+    await testManager
+      .getGraphQLResponse({
+        query: LOGIN,
+        variables: { email: NEW_USER_INPUT.email, password: NEW_USER_INPUT.password },
+      })
+      .then(testManager.parseData)
+      .then(({ login }) => {
+        expect(login.firstName).toBe(NEW_USER_INPUT.firstName);
       });
   });
 });
