@@ -13,9 +13,6 @@ import {
   GET_ALL_USERS_QUERY,
   GET_ONE_QUERY,
   LOGIN,
-  LOGIN_MUTATION_INCORRECT_PASSWORD,
-  LOGIN_MUTATION_NO_EMAIL,
-  LOGIN_MUTATION_NO_PASSWORD,
   LOGIN_MUTATION_WITH_TOKEN,
   LOGOUT,
   ME_QUERY,
@@ -113,7 +110,7 @@ describe("Login", () => {
 
   it("sends back an error if the password is wrong", async () => {
     await testManager
-      .getGraphQLResponse({ query: LOGIN_MUTATION_INCORRECT_PASSWORD })
+      .getGraphQLResponse({ query: LOGIN, variables: { email: "a@a.com", password: "wrongpassF" } })
       .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toMatch(/login failed/i);
@@ -122,7 +119,7 @@ describe("Login", () => {
 
   it("sends back an error if no password is provided", async () => {
     await testManager
-      .getGraphQLResponse({ query: LOGIN_MUTATION_NO_PASSWORD })
+      .getGraphQLResponse({ query: LOGIN, variables: { email: "a@a.com" } })
       .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("password");
@@ -131,7 +128,7 @@ describe("Login", () => {
 
   it("sends back an error if no email is provided", async () => {
     await testManager
-      .getGraphQLResponse({ query: LOGIN_MUTATION_NO_EMAIL })
+      .getGraphQLResponse({ query: LOGIN, variables: { password: "password" } })
       .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("email");

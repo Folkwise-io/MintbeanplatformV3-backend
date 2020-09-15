@@ -61,11 +61,6 @@ export const GET_ALL_USERS_QUERY = gql`
   }
 `;
 
-export const AMY_CREDENTIALS = {
-  email: "a@a.com",
-  password: "password",
-};
-
 export const LOGIN = gql`
   mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
@@ -75,37 +70,15 @@ export const LOGIN = gql`
   }
 `;
 
-export const LOGIN_MUTATION_INCORRECT_PASSWORD = gql`
-  mutation wrongPassword {
-    login(email: "a@a.com", password: "wrongpassword") {
-      id
-      username
-    }
-  }
-`;
-
-export const LOGIN_MUTATION_NO_PASSWORD = gql`
-  mutation noPassword {
-    login(email: "a@a.com") {
-      id
-      username
-    }
-  }
-`;
+export const AMY_CREDENTIALS = {
+  email: "a@a.com",
+  password: "password",
+};
 
 export const LOGIN_MUTATION_WITH_TOKEN = gql`
   mutation correctLogin {
     login(email: "a@a.com", password: "password") {
       token
-    }
-  }
-`;
-
-export const LOGIN_MUTATION_NO_EMAIL = gql`
-  mutation noEmail {
-    login(password: "password") {
-      id
-      username
     }
   }
 `;
