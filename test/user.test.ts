@@ -261,6 +261,20 @@ describe("User registration", () => {
         expect(error.message).toMatch(/email/i);
       });
   });
+
+  it("after registration, it sets the cookie for the new user", async () => {
+    await testManager.getRawResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } }).then((rawResponse) => {
+      const cookie = testManager.parseCookies(rawResponse)[0];
+      expect(cookie).toBeDefined();
+
+      // Check the JWT cookie's sub field is the id of the new user
+      const { id, firstName } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).register;
+      const parsedToken = jwt.verify(cookie.value, jwtSecret) as ParsedToken;
+
+      expect(parsedToken.sub).toBe(id);
+      expect(NEW_USER_INPUT.firstName).toBe(firstName);
+    });
+  });
 });
 
 afterAll(async () => {
