@@ -240,25 +240,25 @@ describe("User registration", () => {
       });
   });
 
-  it("returns an error when a user registers with the same username", async () => {
+  it("returns an appropriate error message when a user registers with the same username", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
 
     await testManager
       .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, email: "new@new.com" } } })
       .then(testManager.parseError)
       .then((error) => {
-        expect(error.message).toMatch(/username taken/);
+        expect(error.message).toMatch(/username/i);
       });
   });
 
-  it("returns an error when a user registers with the same email", async () => {
+  it("returns an appropriate error message when a user registers with the same email", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
 
     await testManager
       .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, username: "newuser" } } })
       .then(testManager.parseError)
       .then((error) => {
-        expect(error.message).toMatch(/email taken/);
+        expect(error.message).toMatch(/email/i);
       });
   });
 });
