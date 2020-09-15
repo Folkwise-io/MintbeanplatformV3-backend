@@ -61,9 +61,14 @@ export const GET_ALL_USERS_QUERY = gql`
   }
 `;
 
-export const LOGIN_MUTATION_CORRECT = gql`
-  mutation correctLogin {
-    login(email: "a@a.com", password: "password") {
+export const AMY_CREDENTIALS = {
+  email: "a@a.com",
+  password: "password",
+};
+
+export const LOGIN = gql`
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
       id
       username
     }
@@ -129,7 +134,7 @@ export const registerInput: UserRegistrationInput = {
   passwordConfirmation: "password",
 };
 
-export const REGISTER_CORRECT = gql`
+export const REGISTER = gql`
   mutation register($input: UserRegistrationInput) {
     register(input: $input) {
       id

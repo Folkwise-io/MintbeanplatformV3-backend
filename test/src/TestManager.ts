@@ -62,16 +62,16 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  getRawResponse({ query, cookies = [] }: PostParams): Promise<Response> {
+  getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
     return this.params.testClient
       .post("/graphql")
       .set("Cookie", cookies)
-      .send({ query: print(query) })
+      .send({ query: print(query), variables })
       .then((rawResponse) => rawResponse);
   }
 
-  getCookies({ query }: PostParams): Promise<string[]> {
-    return this.getRawResponse({ query }).then((rawResponse) => rawResponse.header["set-cookie"]);
+  getCookies({ query, variables }: PostParams): Promise<string[]> {
+    return this.getRawResponse({ query, variables }).then((rawResponse) => rawResponse.header["set-cookie"]);
   }
 
   parseCookies(rawResponse: Response): Cookie[] {
@@ -83,8 +83,8 @@ export default class TestManager {
   }
 
   // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
-  getGraphQLResponse({ query, cookies = [] }: PostParams): Promise<GraphQLResponse> {
-    return this.getRawResponse({ query, cookies }).then(this.parseGraphQLResponse);
+  getGraphQLResponse({ query, cookies = [], variables }: PostParams): Promise<GraphQLResponse> {
+    return this.getRawResponse({ query, cookies, variables }).then(this.parseGraphQLResponse);
   }
 
   parseData(response: GraphQLResponse) {

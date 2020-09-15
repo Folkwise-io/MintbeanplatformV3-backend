@@ -6,12 +6,13 @@ import { ParsedToken } from "../src/util/jwtUtils";
 import { getCurrentUnixTime } from "./src/util";
 import {
   AMY,
+  AMY_CREDENTIALS,
   BAD_USERNAME_QUERY,
   BAD_UUID_QUERY,
   BOB,
   GET_ALL_USERS_QUERY,
   GET_ONE_QUERY,
-  LOGIN_MUTATION_CORRECT,
+  LOGIN,
   LOGIN_MUTATION_INCORRECT_PASSWORD,
   LOGIN_MUTATION_NO_EMAIL,
   LOGIN_MUTATION_NO_PASSWORD,
@@ -88,7 +89,7 @@ describe("Login", () => {
 
   it("sends back the user when given the email and the correct password", async () => {
     await testManager
-      .getGraphQLResponse({ query: LOGIN_MUTATION_CORRECT })
+      .getGraphQLResponse({ query: LOGIN, variables: AMY_CREDENTIALS })
       .then(testManager.parseData)
       .then(({ login }) => {
         expect(AMY).toMatchObject(login);
@@ -164,7 +165,10 @@ describe("Cookies and authentication", () => {
   });
 
   it("gives you the logged in user when you have the JWT cookie in your 'me' query", async () => {
-    const cookies = await testManager.getCookies({ query: LOGIN_MUTATION_CORRECT });
+    const cookies = await testManager.getCookies({
+      query: LOGIN,
+      variables: AMY_CREDENTIALS,
+    });
 
     await testManager
       .getGraphQLResponse({ query: ME_QUERY, cookies })
@@ -184,7 +188,7 @@ describe("Cookies and authentication", () => {
   });
 
   it("returns true when going to the 'logout' endpoint while logged in", async () => {
-    const cookies = await testManager.getCookies({ query: LOGIN_MUTATION_CORRECT });
+    const cookies = await testManager.getCookies({ query: LOGIN, variables: AMY_CREDENTIALS });
 
     await testManager
       .getGraphQLResponse({ query: LOGOUT, cookies })
@@ -195,7 +199,7 @@ describe("Cookies and authentication", () => {
   });
 
   it("clears the cookies when hitting the 'logout' endpoint while logged in", async () => {
-    const cookies = await testManager.getCookies({ query: LOGIN_MUTATION_CORRECT });
+    const cookies = await testManager.getCookies({ query: LOGIN, variables: AMY_CREDENTIALS });
 
     await testManager.getRawResponse({ query: LOGOUT, cookies }).then((rawResponse) => {
       const newCookie = testManager.parseCookies(rawResponse)[0];
