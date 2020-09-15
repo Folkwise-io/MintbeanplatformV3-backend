@@ -5,7 +5,7 @@ const cookieOptions: CookieOptions = {
   httpOnly: true,
   sameSite: "strict", // May need to change if frontend & backend are hosted on different servers
 };
-
+// TODO: Put in decorator
 export const setCookie = (res: Response) => (token: string): void => {
   res.cookie("jwt", token, cookieOptions);
 };

@@ -1,4 +1,3 @@
-import { createTestClient, ApolloServerTestClient } from "apollo-server-testing";
 import {
   buildResolverContext,
   ResolverContext,
@@ -6,20 +5,24 @@ import {
   buildPersistenceContext,
 } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
-import buildServer from "../../src/buildServer";
-import { Query, Mutation } from "./createTestClient";
+import { buildExpressServerContext } from "../../src/buildServerContext";
+import buildApolloServer from "../../src/buildApolloServer";
+import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
-import { GraphQLSchema } from "graphql";
+import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
 import { User } from "../../src/types/gqlGeneratedTypes";
-import { buildTestServerContext } from "./buildTestServerContext";
+import { Application } from "express";
+import supertest, { Response, SuperTest, Test } from "supertest";
+import setCookieParser, { Cookie } from "set-cookie-parser";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
   resolverContext: ResolverContext;
   schema: GraphQLSchema;
   testServer: ApolloServer;
-  testClient: ApolloServerTestClient;
+  app: Application;
+  testClient: SuperTest<Test>;
 }
 
 export default class TestManager {
@@ -29,14 +32,16 @@ export default class TestManager {
     const persistenceContext = buildPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
-    const testServer = buildServer(schema, buildTestServerContext);
-    const testClient = createTestClient(testServer);
+    const testServer = buildApolloServer(schema, buildExpressServerContext);
+    const app = buildExpressServer(testServer);
+    const testClient = supertest(app);
 
     return new TestManager({
       persistenceContext,
       resolverContext,
       schema,
       testServer,
+      app,
       testClient,
     });
   }
@@ -49,17 +54,34 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  query(gqlQuery: Query): Promise<GraphQLResponse> {
-    return this.params.testClient.query(gqlQuery);
+  getRawResponse(gqlQuery: DocumentNode, cookies: string[] = []): Promise<Response> {
+    return this.params.testClient
+      .post("/graphql")
+      .set("Cookie", cookies)
+      .send({ query: print(gqlQuery) })
+      .then((rawResponse) => rawResponse);
   }
 
-  mutate(gqlMutation: Mutation): Promise<GraphQLResponse> {
-    return this.params.testClient.mutate(gqlMutation);
+  getCookies(gqlQuery: DocumentNode): Promise<string[]> {
+    return this.getRawResponse(gqlQuery).then((rawResponse) => rawResponse.header["set-cookie"]);
   }
 
-  getData = (response: GraphQLResponse) => {
+  parseCookies(rawResponse: Response): Cookie[] {
+    return setCookieParser.parse(rawResponse.header["set-cookie"]);
+  }
+
+  parseGraphQLResponse(rawResponse: Response): GraphQLResponse {
+    return JSON.parse(rawResponse.text);
+  }
+
+  // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
+  getGraphQLResponse(gqlQuery: DocumentNode, cookies: string[] = []): Promise<GraphQLResponse> {
+    return this.getRawResponse(gqlQuery, cookies).then(this.parseGraphQLResponse);
+  }
+
+  parseData(response: GraphQLResponse) {
     if (response.errors) {
-      this.log(response);
+      this.logResponse(response);
       throw new Error("Test expected data but got an error");
     }
 
@@ -69,32 +91,33 @@ export default class TestManager {
       throw new Error("Test expected data but received no data");
     }
     return response.data;
-  };
+  }
 
-  getError = (response: GraphQLResponse) => {
+  parseError(response: GraphQLResponse) {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
     return response.errors[0];
-  };
+  }
 
-  getAllErrors = (response: GraphQLResponse) => {
+  parseAllErrors(response: GraphQLResponse) {
     if (!response.errors) {
       throw new Error("Test expected an error but did not get any");
     }
     return response.errors;
-  };
+  }
 
-  getDataAndErrors = ({ data, errors }: GraphQLResponse) => {
+  parseDataAndErrors({ data, errors }: GraphQLResponse) {
     if (!data || !errors) {
       throw new Error("Test expected both a data and error but did not get them");
     }
     return { data, errors };
-  };
+  }
 
   // Needed for debugging because console.log would just give you "[object]"
-  log(obj: object): void {
-    console.log(JSON.stringify(obj, null, 2));
+  logResponse<T>(response: T): T {
+    console.log(JSON.stringify(response, null, 2));
+    return response;
   }
 
   destroy(): Promise<void> {

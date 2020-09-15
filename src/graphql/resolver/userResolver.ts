@@ -1,32 +1,59 @@
-import { Resolvers } from "../../types/gqlGeneratedTypes";
+import { Resolvers, User } from "../../types/gqlGeneratedTypes";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
-import { ServerContext } from "../../buildContext";
+import { ServerContext } from "../../buildServerContext";
+import { AuthenticationError } from "apollo-server-express";
+import { JWTPayload, generateJwt } from "../../util/jwtUtils";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
     Query: {
-      user: (_root, args, context: ServerContext) => {
-        return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args, context));
+      user: (_root, args, context: ServerContext): Promise<User> => {
+        return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args));
       },
 
-      users: (_root, args, context: ServerContext) => {
+      users: (_root, args, context: ServerContext): Promise<User[]> => {
         // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
-        return userService.getMany(args, context);
+        return userService.getMany(args);
       },
 
-      me: (_root, _args, context: ServerContext) => {
-        return userService.me(context);
+      me: (_root, _args, context: ServerContext): Promise<User> => {
+        const userId = context.getUserId();
+        if (!userId) {
+          throw new AuthenticationError("You are not logged in!");
+        }
+
+        return userService.getOne({ id: userId });
       },
     },
 
     Mutation: {
-      login: (_root, args, context: ServerContext) => {
-        return userResolverValidator.login(args, context).then((args) => userService.login(args, context));
+      login: (_root, args, context: ServerContext): Promise<User> => {
+        return userResolverValidator.login(args, context).then(async (args) => {
+          const isValidPassword = await userService.checkPassword(args);
+          if (!isValidPassword) {
+            throw new AuthenticationError("Login failed!");
+          }
+          // TODO: Move below into jwt auth service
+          // Make a JWT and return it in the body as well as the cookie
+          const user = await userService.getOne({ email: args.email });
+          const payload: JWTPayload = {
+            sub: user.id,
+          };
+          const token = generateJwt(payload);
+
+          context.setJwt(token);
+          return { ...user, token };
+        });
       },
 
-      logout: (_root, _args, context: ServerContext) => {
-        return userService.logout(context);
+      logout: (_root, _args, context: ServerContext): boolean => {
+        const userId = context.getUserId();
+        if (userId) {
+          context.clearJwt();
+          return true;
+        }
+        return false;
       },
     },
   };
