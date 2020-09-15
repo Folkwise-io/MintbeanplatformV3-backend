@@ -239,6 +239,28 @@ describe("User registration", () => {
         expect(login.username).toBe(NEW_USER_INPUT.username);
       });
   });
+
+  it("returns an error when a user registers with the same username", async () => {
+    await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
+
+    await testManager
+      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, email: "new@new.com" } } })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/username taken/);
+      });
+  });
+
+  it("returns an error when a user registers with the same email", async () => {
+    await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
+
+    await testManager
+      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, username: "newuser" } } })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/email taken/);
+      });
+  });
 });
 
 afterAll(async () => {
