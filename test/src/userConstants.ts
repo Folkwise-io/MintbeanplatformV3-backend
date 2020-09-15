@@ -98,7 +98,7 @@ export const LOGOUT = gql`
   }
 `;
 
-export const registerInput: UserRegistrationInput = {
+export const NEW_USER_INPUT: UserRegistrationInput = {
   username: "ddevito",
   email: "d@d.com",
   firstName: "Danny",

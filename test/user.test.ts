@@ -16,7 +16,10 @@ import {
   LOGIN_MUTATION_WITH_TOKEN,
   LOGOUT,
   ME_QUERY,
+  NEW_USER_INPUT,
+  REGISTER,
 } from "./src/userConstants";
+import { User } from "../src/types/gqlGeneratedTypes";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();
@@ -203,6 +206,22 @@ describe("Cookies and authentication", () => {
       expect(newCookie.name).toBe("jwt");
       expect(newCookie.value).toBeFalsy();
     });
+  });
+});
+
+describe("User registration", () => {
+  beforeEach(async () => {
+    await testManager.addUsers([AMY, BOB]);
+  });
+
+  it("Returns the firstName of the newly registered user", async () => {
+    await testManager
+      .getGraphQLResponse({ query: REGISTER, variables: NEW_USER_INPUT })
+      .then(testManager.parseData)
+      .then((data) => {
+        const newUser: User = data.register;
+        expect(newUser.firstName).toBe(NEW_USER_INPUT.firstName);
+      });
   });
 });
 
