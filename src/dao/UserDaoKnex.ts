@@ -1,7 +1,7 @@
 import { User } from "../types/gqlGeneratedTypes";
 import Knex from "knex";
-import { UserServiceAddOneArgs, UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
-import UserDao from "./UserDao";
+import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
+import UserDao, { UserDaoAddOneArgs } from "./UserDao";
 
 export default class UserDaoKnex implements UserDao {
   constructor(private knex: Knex) {}
@@ -18,7 +18,7 @@ export default class UserDaoKnex implements UserDao {
       .orderBy("username");
   }
 
-  async addOne(args: UserServiceAddOneArgs): Promise<User> {
+  async addOne(args: UserDaoAddOneArgs): Promise<User> {
     const insertedUsers = (await this.knex<User>("users").insert(args).returning("*")) as User[];
     // console.log(insertedUsers);
     return insertedUsers[0];

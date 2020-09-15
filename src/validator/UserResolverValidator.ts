@@ -1,4 +1,9 @@
-import { QueryUserArgs, User, MutationLoginArgs, UserRegistrationInput } from "../types/gqlGeneratedTypes";
+import {
+  QueryUserArgs,
+  User,
+  MutationLoginArgs,
+  MutationRegisterArgs,
+} from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { UserServiceAddOneArgs, UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
@@ -22,12 +27,12 @@ export default class UserResolverValidator {
       .then(({ id, username }) => ({ id, username }));
   }
 
-  addOne(input: UserRegistrationInput): Promise<UserServiceAddOneArgs> {
+  addOne({ input }: MutationRegisterArgs): Promise<UserServiceAddOneArgs> {
     const { username, firstName, lastName, email, password, passwordConfirmation } = input;
     if (password !== passwordConfirmation) {
       throw new AuthenticationError("Passwords do not match!");
     }
-    return Promise.resolve({ username, firstName, lastName, email, passwordHash: password });
+    return Promise.resolve({ username, firstName, lastName, email, password });
   }
 
   login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {

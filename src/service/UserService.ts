@@ -24,7 +24,7 @@ export interface UserServiceAddOneArgs {
   email: string;
   firstName: string;
   lastName: string;
-  passwordHash: string;
+  password: string;
 }
 
 export default class UserService implements EntityService<User> {
@@ -48,6 +48,8 @@ export default class UserService implements EntityService<User> {
   }
 
   async addOne(args: UserServiceAddOneArgs): Promise<User> {
-    return this.userDao.addOne(args);
+    const { username, email, firstName, lastName, password } = args;
+    const passwordHash = bcrypt.hashSync(password, 10);
+    return this.userDao.addOne({ username, email, firstName, lastName, passwordHash });
   }
 }

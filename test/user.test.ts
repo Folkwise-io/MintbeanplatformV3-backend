@@ -228,14 +228,15 @@ describe("User registration", () => {
   it("allows a user to register and log in with their username and password", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
 
+    const { email, password } = NEW_USER_INPUT;
     await testManager
       .getGraphQLResponse({
         query: LOGIN,
-        variables: { email: NEW_USER_INPUT.email, password: NEW_USER_INPUT.password },
+        variables: { email, password },
       })
       .then(testManager.parseData)
       .then(({ login }) => {
-        expect(login.firstName).toBe(NEW_USER_INPUT.firstName);
+        expect(login.username).toBe(NEW_USER_INPUT.username);
       });
   });
 });

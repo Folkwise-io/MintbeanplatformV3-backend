@@ -61,8 +61,8 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         if (userId) {
           throw new AuthenticationError("Already logged in!");
         }
-        const { input } = args;
-        return userResolverValidator.addOne(input).then((args) => userService.addOne(args));
+
+        return userResolverValidator.addOne(args).then((args) => userService.addOne(args));
       },
     },
   };
