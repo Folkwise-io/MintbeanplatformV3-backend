@@ -26,8 +26,12 @@ export type User = {
   passwordHash: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
-  /** Date that the user registered */
+  /** Timestamp that the user registered */
   createdAt: Scalars['String'];
+  /** Timestamp that the user updated their profile */
+  updatedAt: Scalars['String'];
+  /** Whether the user has admin privileges to create/modify events */
+  isAdmin: Scalars['Boolean'];
   /** A JWT created for the user after login (also sent in cookies) */
   token?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
@@ -70,18 +74,36 @@ export type QueryPostArgs = {
   id: Scalars['UUID'];
 };
 
+export type UserRegistrationInput = {
+  /** Unique username */
+  username: Scalars['String'];
+  /** Unique email */
+  email: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  password: Scalars['String'];
+  passwordConfirmation: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Login using email and password */
   login?: Maybe<User>;
   /** Log out by clearing cookies */
   logout: Scalars['Boolean'];
+  /** Register a user */
+  register?: Maybe<User>;
 };
 
 
 export type MutationLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationRegisterArgs = {
+  input: UserRegistrationInput;
 };
 
 export type Post = {
@@ -181,9 +203,10 @@ export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
   User: ResolverTypeWrapper<User>;
   String: ResolverTypeWrapper<Scalars['String']>;
-  Query: ResolverTypeWrapper<{}>;
-  Mutation: ResolverTypeWrapper<{}>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  Query: ResolverTypeWrapper<{}>;
+  UserRegistrationInput: UserRegistrationInput;
+  Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
 };
 
@@ -192,9 +215,10 @@ export type ResolversParentTypes = {
   UUID: Scalars['UUID'];
   User: User;
   String: Scalars['String'];
-  Query: {};
-  Mutation: {};
   Boolean: Scalars['Boolean'];
+  Query: {};
+  UserRegistrationInput: UserRegistrationInput;
+  Mutation: {};
   Post: Post;
 };
 
@@ -210,6 +234,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
@@ -226,6 +252,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  register?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
