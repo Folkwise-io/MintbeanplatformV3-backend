@@ -214,7 +214,7 @@ describe("User registration", () => {
     await testManager.addUsers([AMY, BOB]);
   });
 
-  it("returns the firstName and id of the newly registered user", async () => {
+  it("returns the info, including id, of the newly registered user", async () => {
     await testManager
       .getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } })
       .then(testManager.parseData)
@@ -225,7 +225,7 @@ describe("User registration", () => {
       });
   });
 
-  it("allows a user to register and log in with their username and password", async () => {
+  it("allows a user to register and log in with their email and password", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
 
     const { email, password } = NEW_USER_INPUT;
@@ -262,17 +262,16 @@ describe("User registration", () => {
       });
   });
 
-  it("after registration, it sets the cookie for the new user", async () => {
+  it("after registration, it sets the cookie for the new user, which contains the id", async () => {
     await testManager.getRawResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } }).then((rawResponse) => {
       const cookie = testManager.parseCookies(rawResponse)[0];
       expect(cookie).toBeDefined();
 
       // Check the JWT cookie's sub field is the id of the new user
-      const { id, firstName } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).register;
+      const { id } = testManager.parseData(testManager.parseGraphQLResponse(rawResponse)).register;
       const parsedToken = jwt.verify(cookie.value, jwtSecret) as ParsedToken;
 
       expect(parsedToken.sub).toBe(id);
-      expect(NEW_USER_INPUT.firstName).toBe(firstName);
     });
   });
 });
