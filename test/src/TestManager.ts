@@ -87,7 +87,7 @@ export default class TestManager {
     return this.getRawResponse({ query, cookies, variables }).then(this.parseGraphQLResponse);
   }
 
-  parseData(response: GraphQLResponse) {
+  parseData = (response: GraphQLResponse) => { // Q: Why did this need to be an arrow function?
     if (response.errors) {
       this.logResponse(response);
       throw new Error("Test expected data but got an error");
@@ -99,7 +99,7 @@ export default class TestManager {
       throw new Error("Test expected data but received no data");
     }
     return response.data;
-  }
+  };
 
   parseError(response: GraphQLResponse) {
     if (!response.errors) {
