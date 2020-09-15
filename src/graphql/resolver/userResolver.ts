@@ -55,6 +55,15 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         }
         return false;
       },
+
+      register: (_root, args, context: ServerContext): Promise<User> => {
+        const userId = context.getUserId();
+        if (userId) {
+          throw new AuthenticationError("Already logged in!");
+        }
+        const { input } = args;
+        return userResolverValidator.addOne(input).then((args) => userService.addOne(args));
+      },
     },
   };
 };

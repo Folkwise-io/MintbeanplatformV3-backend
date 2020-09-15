@@ -108,7 +108,7 @@ export const NEW_USER_INPUT: UserRegistrationInput = {
 };
 
 export const REGISTER = gql`
-  mutation register($input: UserRegistrationInput) {
+  mutation register($input: UserRegistrationInput!) {
     register(input: $input) {
       id
       username

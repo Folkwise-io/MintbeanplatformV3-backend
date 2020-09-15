@@ -29,7 +29,7 @@ interface PostParams {
   query: DocumentNode;
   cookies?: string[];
   variables?: {
-    [key: string]: string;
+    [key: string]: any;
   };
 }
 
@@ -55,7 +55,7 @@ export default class TestManager {
   }
 
   addUsers(users: User[]): Promise<TestManager> {
-    return this.params.persistenceContext.userDao.addUsers(users).then(() => this);
+    return this.params.persistenceContext.userDao.addMany(users).then(() => this);
   }
 
   deleteAllUsers(): Promise<void> {
@@ -87,7 +87,8 @@ export default class TestManager {
     return this.getRawResponse({ query, cookies, variables }).then(this.parseGraphQLResponse);
   }
 
-  parseData = (response: GraphQLResponse) => { // Q: Why did this need to be an arrow function?
+  parseData = (response: GraphQLResponse) => {
+    // Q: Why did this need to be an arrow function?
     if (response.errors) {
       this.logResponse(response);
       throw new Error("Test expected data but got an error");

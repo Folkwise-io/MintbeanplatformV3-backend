@@ -216,7 +216,7 @@ describe("User registration", () => {
 
   it("Returns the firstName of the newly registered user", async () => {
     await testManager
-      .getGraphQLResponse({ query: REGISTER, variables: NEW_USER_INPUT })
+      .getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } })
       .then(testManager.parseData)
       .then((data) => {
         const newUser: User = data.register;
@@ -226,5 +226,6 @@ describe("User registration", () => {
 });
 
 afterAll(async () => {
+  await testManager.deleteAllUsers();
   await testManager.destroy();
 });
