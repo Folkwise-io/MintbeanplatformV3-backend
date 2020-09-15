@@ -37,10 +37,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           // TODO: Move below into jwt auth service
           // Make a JWT and return it in the body as well as the cookie
           const user = await userService.getOne({ email: args.email });
-          const payload: JWTPayload = {
-            sub: user.id,
-          };
-          const token = generateJwt(payload);
+          const token = generateJwt(user);
 
           context.setJwt(token);
           return { ...user, token };

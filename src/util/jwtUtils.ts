@@ -1,4 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
+import { User } from "../types/gqlGeneratedTypes";
 import config from "./config";
 
 const { jwtSecret } = config;
@@ -13,7 +14,11 @@ export interface ParsedToken {
   exp: number;
 }
 
-export function generateJwt(payload: JWTPayload): string {
+export function generateJwt(user: User): string {
+  const payload: JWTPayload = {
+    sub: user.id,
+  };
+
   const options: SignOptions = {
     algorithm: "HS256",
     expiresIn: "2w",
