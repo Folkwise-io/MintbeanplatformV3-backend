@@ -43,4 +43,13 @@ describe("Querying meets", () => {
         expect(meets).toHaveLength(0);
       });
   });
+
+  it("does not retrieve deleted meets", async () => {
+    await testManager
+      .addMeets([PAPERJS, { ...ALGOLIA, deleted: true } as any])
+      .then(() => testManager.getGraphQLResponse({ query: GET_ALL_MEETS }).then(testManager.parseData))
+      .then(({ meets }) => {
+        expect(meets).toHaveLength(1);
+      });
+  });
 });
