@@ -11,7 +11,10 @@ export type Scalars = {
   Float: number;
   /** The `UUID` scalar type represents UUID values as specified by [RFC 4122](https://tools.ietf.org/html/rfc4122). */
   UUID: any;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: any;
 };
+
 
 
 export type User = {
@@ -27,9 +30,9 @@ export type User = {
   firstName: Scalars['String'];
   lastName: Scalars['String'];
   /** Timestamp that the user registered */
-  createdAt: Scalars['String'];
+  createdAt: Scalars['DateTime'];
   /** Timestamp that the user updated their profile */
-  updatedAt: Scalars['String'];
+  updatedAt: Scalars['DateTime'];
   /** Whether the user has admin privileges to create/modify events */
   isAdmin: Scalars['Boolean'];
   /** A JWT created for the user after login (also sent in cookies) */
@@ -49,6 +52,8 @@ export type Query = {
   posts?: Maybe<Array<Maybe<Post>>>;
   /** Get a single post by its ID */
   post?: Maybe<Post>;
+  /** Gets all the meets in descending startTime order */
+  meets?: Maybe<Array<Maybe<Meet>>>;
 };
 
 
@@ -120,6 +125,28 @@ export type Post = {
   updatedAt?: Maybe<Scalars['String']>;
   /** User who created the post */
   user?: Maybe<User>;
+};
+
+export type Meet = {
+  __typename?: 'Meet';
+  /** ID of the Meet in UUID */
+  id: Scalars['UUID'];
+  /** The type of the Meet as enum string. Only hackMeet is supported for now */
+  meetType: Scalars['String'];
+  title: Scalars['String'];
+  /** A short blurb about the Meet */
+  description: Scalars['String'];
+  /** The instructions in markdown format */
+  instructions: Scalars['String'];
+  registerLink?: Maybe<Scalars['String']>;
+  coverImageUrl: Scalars['String'];
+  /** Wallclock times */
+  startTime: Scalars['DateTime'];
+  endTime: Scalars['DateTime'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  /** The IANA region used with wallclock time */
+  region: Scalars['String'];
 };
 
 
@@ -201,6 +228,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
+  DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
   User: ResolverTypeWrapper<User>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
@@ -208,11 +236,13 @@ export type ResolversTypes = {
   UserRegistrationInput: UserRegistrationInput;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
+  Meet: ResolverTypeWrapper<Meet>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   UUID: Scalars['UUID'];
+  DateTime: Scalars['DateTime'];
   User: User;
   String: Scalars['String'];
   Boolean: Scalars['Boolean'];
@@ -220,10 +250,15 @@ export type ResolversParentTypes = {
   UserRegistrationInput: UserRegistrationInput;
   Mutation: {};
   Post: Post;
+  Meet: Meet;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
   name: 'UUID';
+}
+
+export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['DateTime'], any> {
+  name: 'DateTime';
 }
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -233,8 +268,8 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   passwordHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
@@ -247,6 +282,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
+  meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -265,12 +301,30 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type MeetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Meet'] = ResolversParentTypes['Meet']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  meetType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  registerLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  coverImageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
+  DateTime?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
+  Meet?: MeetResolvers<ContextType>;
 };
 
 

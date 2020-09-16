@@ -1,7 +1,6 @@
 import { gql } from "apollo-server-express";
-import { DocumentNode } from "graphql";
 
-const user: DocumentNode = gql`
+const user = gql`
   type User {
     "User's ID in UUID"
     id: UUID!
@@ -18,11 +17,11 @@ const user: DocumentNode = gql`
     firstName: String!
     lastName: String!
 
-    "Timestamp that the user registered"
-    createdAt: String!
+    "DateTime that the user registered"
+    createdAt: DateTime!
 
-    "Timestamp that the user updated their profile"
-    updatedAt: String!
+    "DateTime that the user updated their profile"
+    updatedAt: DateTime!
 
     "Whether the user has admin privileges to create/modify events"
     isAdmin: Boolean!

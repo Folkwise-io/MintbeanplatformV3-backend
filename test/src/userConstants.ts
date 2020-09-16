@@ -15,7 +15,7 @@ export const AMY: User = {
 };
 
 export const BOB: User = {
-  id: "00000000-0000-4000-A000-000000000000",
+  id: "00000000-0000-4000-a000-000000000000",
   username: "bbarker",
   email: "b@b.com",
   passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",

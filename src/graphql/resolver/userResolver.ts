@@ -3,7 +3,7 @@ import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";
 import { AuthenticationError } from "apollo-server-express";
-import { JWTPayload, generateJwt } from "../../util/jwtUtils";
+import { generateJwt } from "../../util/jwtUtils";
 
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
