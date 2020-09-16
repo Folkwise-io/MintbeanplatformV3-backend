@@ -62,6 +62,10 @@ export default class TestManager {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
+  deleteAllMeets(): Promise<void> {
+    return this.params.persistenceContext.meetDao.deleteAll();
+  }
+
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
     return this.params.testClient
       .post("/graphql")

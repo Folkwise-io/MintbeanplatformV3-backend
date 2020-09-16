@@ -4,17 +4,22 @@ import UserService from "./service/UserService";
 import UserDaoKnex from "./dao/UserDaoKnex";
 import UserResolverValidator from "./validator/UserResolverValidator";
 import UserDao from "./dao/UserDao";
+import MeetDaoKnex from "./dao/MeetDaoKnex";
+import MeetDao from "./dao/MeetDao";
 
 export interface PersistenceContext {
   userDao: UserDao;
+  meetDao: MeetDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
   const userDao = new UserDaoKnex(knex);
+  const meetDao = new MeetDaoKnex(knex);
 
   return {
     userDao,
+    meetDao,
   };
 }
 
