@@ -17,7 +17,7 @@ export async function seed(knex: Knex): Promise<void> {
       createdAt: "2020-08-15",
     },
     {
-      id: "00000000-0000-4000-A000-000000000000",
+      id: "00000000-0000-4000-a000-000000000000",
       meetType: "hackMeet",
       title: "Algolia gives you super powers",
       description: "Buiilding impressive portfolio projects with Algolia.",

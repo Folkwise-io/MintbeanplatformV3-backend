@@ -14,7 +14,7 @@ export async function seed(knex: Knex): Promise<void> {
       createdAt: "2019-10-15",
     },
     {
-      id: "00000000-0000-4000-A000-000000000000",
+      id: "00000000-0000-4000-a000-000000000000",
       username: "bbarker",
       email: "b@b.com",
       firstName: "Bob",
@@ -23,7 +23,7 @@ export async function seed(knex: Knex): Promise<void> {
       createdAt: "2020-04-15",
     },
     {
-      id: "00000000-0000-4000-B000-000000000000",
+      id: "00000000-0000-4000-b000-000000000000",
       username: "cchase",
       email: "c@c.com",
       firstName: "Chevy",

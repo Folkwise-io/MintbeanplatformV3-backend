@@ -15,7 +15,7 @@ export async function seed(knex: Knex): Promise<void> {
       createdAt: "2019-02-15",
     },
     {
-      userId: "00000000-0000-4000-A000-000000000000",
+      userId: "00000000-0000-4000-a000-000000000000",
       body: "Post 3",
       createdAt: "2020-08-15",
     },
