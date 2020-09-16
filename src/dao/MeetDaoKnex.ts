@@ -7,8 +7,8 @@ export default class MeetDaoKnex implements MeetDao {
   constructor(private knex: Knex) {}
 
   async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {
-    const meets = await this.knex<Meet>("meets")
-      .where({ ...args })
+    const meets = await this.knex("meets")
+      .where({ ...args, deleted: false })
       .orderBy("startTime", "desc");
 
     // Remove the Z from startTime and endTime
