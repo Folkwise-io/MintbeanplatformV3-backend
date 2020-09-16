@@ -15,10 +15,11 @@ afterAll(async () => {
 describe("Querying meets", () => {
   it("gets a meet", async () => {
     await testManager
-      .addMeets([PAPERJS, ALGOLIA])
+      .addMeets([PAPERJS])
       .then(() => testManager.getGraphQLResponse({ query: GET_ALL_MEETS }).then(testManager.parseData))
       .then(({ meets }) => {
-        expect(meets[0]).toBeDefined();
+        const [meet1] = meets;
+        expect(PAPERJS).toMatchObject(meet1);
       });
   });
 });

@@ -9,8 +9,8 @@ export async function up(knex: Knex): Promise<void> {
     table.text("instructions").notNullable();
     table.text("registerLink");
     table.text("coverImageUrl").notNullable();
-    table.timestamp("startTime", { useTz: false }).notNullable();
-    table.timestamp("endTime", { useTz: false }).notNullable();
+    table.timestamp("startTime").notNullable();
+    table.timestamp("endTime").notNullable();
     table.text("region").notNullable().defaultTo("America/Toronto");
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());

@@ -19,9 +19,9 @@ const meet = gql`
     registerLink: String
     coverImageUrl: String!
 
-    "Wallclock DateTimes - may need to truncate the Z to use them as intended"
-    startTime: DateTime!
-    endTime: DateTime!
+    "Wallclock times"
+    startTime: String!
+    endTime: String!
 
     "DateTime that the meet was created"
     createdAt: DateTime!
