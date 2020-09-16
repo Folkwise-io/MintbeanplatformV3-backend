@@ -1,7 +1,6 @@
 import { gql } from "apollo-server-express";
-import { DocumentNode } from "graphql";
 
-const post: DocumentNode = gql`
+const post = gql`
   type Post {
     "ID of post in UUID"
     id: UUID!

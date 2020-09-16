@@ -122,6 +122,22 @@ export type Post = {
   user?: Maybe<User>;
 };
 
+export type Meet = {
+  __typename?: 'Meet';
+  /** ID of the Meet in UUID */
+  id: Scalars['UUID'];
+  title: Scalars['String'];
+  description: Scalars['String'];
+  coverImageUrl: Scalars['String'];
+  instructions: Scalars['String'];
+  startTime: Scalars['String'];
+  endTime: Scalars['String'];
+  createdAt: Scalars['String'];
+  updatedAt: Scalars['String'];
+  registerLink: Scalars['String'];
+  region: Scalars['String'];
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -208,6 +224,7 @@ export type ResolversTypes = {
   UserRegistrationInput: UserRegistrationInput;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
+  Meet: ResolverTypeWrapper<Meet>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -220,6 +237,7 @@ export type ResolversParentTypes = {
   UserRegistrationInput: UserRegistrationInput;
   Mutation: {};
   Post: Post;
+  Meet: Meet;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -265,12 +283,28 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type MeetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Meet'] = ResolversParentTypes['Meet']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  coverImageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  registerLink?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   User?: UserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
+  Meet?: MeetResolvers<ContextType>;
 };
 
 

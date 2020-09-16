@@ -7,10 +7,11 @@ import user from "./graphql/typedef/user";
 import post from "./graphql/typedef/post";
 import customScalars from "./graphql/typedef/customScalars";
 import { ResolverContext } from "./buildContext";
+import meet from "./graphql/typedef/meet";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const { userService, userResolverValidator } = resolverContext;
-  const typeDefs = [customScalars, user, post];
+  const typeDefs = [customScalars, user, post, meet];
   const resolvers = [customScalarsResolver, userResolver(userResolverValidator, userService), postResolver];
 
   return makeExecutableSchema({

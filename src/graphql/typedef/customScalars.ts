@@ -1,7 +1,6 @@
 import { gql } from "apollo-server-express";
-import { DocumentNode } from "graphql";
 
-const customScalar: DocumentNode = gql`
+const customScalar = gql`
   scalar UUID
 `;
 
