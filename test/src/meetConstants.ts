@@ -1,3 +1,4 @@
+import { gql } from "apollo-server-express";
 import { Meet } from "../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
@@ -29,3 +30,21 @@ export const ALGOLIA: Meet = {
   updatedAt: "2020-08-15",
   region: "America/Toronto",
 };
+
+export const GET_ALL_MEETS = gql`
+  query getAllMeets {
+    meets {
+      id
+      meetType
+      title
+      description
+      instructions
+      registerLink
+      coverImageUrl
+      startTime
+      endTime
+      createdAt
+      region
+    }
+  }
+`;
