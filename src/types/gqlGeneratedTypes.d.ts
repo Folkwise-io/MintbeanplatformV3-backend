@@ -49,6 +49,8 @@ export type Query = {
   posts?: Maybe<Array<Maybe<Post>>>;
   /** Get a single post by its ID */
   post?: Maybe<Post>;
+  /** Gets all the meets in descending startTime order */
+  meets?: Maybe<Array<Maybe<Meet>>>;
 };
 
 
@@ -271,6 +273,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
+  meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {

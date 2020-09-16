@@ -29,6 +29,11 @@ const meet = gql`
     "The IANA region used with wallclock time"
     region: String!
   }
+
+  extend type Query {
+    "Gets all the meets in descending startTime order"
+    meets: [Meet]
+  }
 `;
 
 export default meet;
