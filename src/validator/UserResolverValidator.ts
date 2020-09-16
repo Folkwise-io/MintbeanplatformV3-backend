@@ -3,7 +3,8 @@ import { ensureExists } from "../util/ensureExists";
 import { UserServiceAddOneArgs, UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildServerContext";
-import { ApolloError, AuthenticationError } from "apollo-server-express";
+import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-express";
+import registerSchema from "./yupSchemas/registerSchema";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
@@ -24,8 +25,10 @@ export default class UserResolverValidator {
 
   async addOne({ input }: MutationRegisterArgs): Promise<UserServiceAddOneArgs> {
     const { username, firstName, lastName, email, password, passwordConfirmation } = input;
-    if (password !== passwordConfirmation) {
-      throw new AuthenticationError("Passwords do not match!");
+    try {
+      registerSchema.validateSync(input);
+    } catch (e) {
+      throw new UserInputError(e.message);
     }
 
     const userWithSameUsername = await this.userDao.getOne({ username });
