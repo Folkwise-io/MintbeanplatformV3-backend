@@ -7,7 +7,7 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
   return {
     Query: {
       meets: (_root, _args, _context): Promise<Meet[]> => {
-        throw new ApolloError("not implemented");
+        return meetService.getMany(_args, _context);
       },
     },
   };
