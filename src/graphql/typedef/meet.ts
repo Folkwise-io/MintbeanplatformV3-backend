@@ -19,12 +19,15 @@ const meet = gql`
     registerLink: String
     coverImageUrl: String!
 
-    "Wallclock times"
-    startTime: String!
-    endTime: String!
+    "Wallclock DateTimes - may need to truncate the Z to use them as intended"
+    startTime: DateTime!
+    endTime: DateTime!
 
-    createdAt: String!
-    updatedAt: String!
+    "DateTime that the meet was created"
+    createdAt: DateTime!
+
+    "DateTime that the meet was modified"
+    updatedAt: DateTime!
 
     "The IANA region used with wallclock time"
     region: String!

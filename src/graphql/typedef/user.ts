@@ -17,11 +17,11 @@ const user = gql`
     firstName: String!
     lastName: String!
 
-    "Timestamp that the user registered"
-    createdAt: String!
+    "DateTime that the user registered"
+    createdAt: DateTime!
 
-    "Timestamp that the user updated their profile"
-    updatedAt: String!
+    "DateTime that the user updated their profile"
+    updatedAt: DateTime!
 
     "Whether the user has admin privileges to create/modify events"
     isAdmin: Boolean!
