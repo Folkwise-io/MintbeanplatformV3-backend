@@ -240,6 +240,64 @@ describe("User registration", () => {
       });
   });
 
+  it("returns an appropriate error message when a user violates length constraints", async () => {
+    await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
+
+    await testManager
+      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, username: "a" } } })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/username/i);
+      });
+
+    await testManager
+      .getGraphQLResponse({
+        query: REGISTER,
+        variables: {
+          input: { ...NEW_USER_INPUT, firstName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+        },
+      })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/first name/i);
+      });
+
+    await testManager
+      .getGraphQLResponse({
+        query: REGISTER,
+        variables: {
+          input: { ...NEW_USER_INPUT, lastName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+        },
+      })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/last name/i);
+      });
+
+    await testManager
+      .getGraphQLResponse({
+        query: REGISTER,
+        variables: { input: { ...NEW_USER_INPUT, password: "a", passwordConfirmation: "a" } },
+      })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/password/i);
+      });
+  });
+
+  it("returns an appropriate error message when the user's passwords don't match", async () => {
+    await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
+    await testManager
+      .getGraphQLResponse({
+        query: REGISTER,
+        variables: { input: { ...NEW_USER_INPUT, password: "password", passwordConfirmation: "password2" } },
+      })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/password.*match/i);
+      });
+  });
+
   it("returns an appropriate error message when a user registers with the same username", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
 
