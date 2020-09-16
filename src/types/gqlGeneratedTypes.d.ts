@@ -126,15 +126,21 @@ export type Meet = {
   __typename?: 'Meet';
   /** ID of the Meet in UUID */
   id: Scalars['UUID'];
+  /** The type of the Meet as enum string. Only hackMeet is supported for now */
+  meetType: Scalars['String'];
   title: Scalars['String'];
+  /** A short blurb about the Meet */
   description: Scalars['String'];
-  coverImageUrl: Scalars['String'];
+  /** The instructions in markdown format */
   instructions: Scalars['String'];
+  registerLink?: Maybe<Scalars['String']>;
+  coverImageUrl: Scalars['String'];
+  /** Wallclock times */
   startTime: Scalars['String'];
   endTime: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
-  registerLink: Scalars['String'];
+  /** The IANA region used with wallclock time */
   region: Scalars['String'];
 };
 
@@ -285,15 +291,16 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type MeetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Meet'] = ResolversParentTypes['Meet']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  meetType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  coverImageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  registerLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  coverImageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  registerLink?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };

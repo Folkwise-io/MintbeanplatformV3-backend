@@ -5,15 +5,28 @@ const meet = gql`
     "ID of the Meet in UUID"
     id: UUID!
 
+    "The type of the Meet as enum string. Only hackMeet is supported for now"
+    meetType: String!
+
     title: String!
+
+    "A short blurb about the Meet"
     description: String!
-    coverImageUrl: String!
+
+    "The instructions in markdown format"
     instructions: String!
+
+    registerLink: String
+    coverImageUrl: String!
+
+    "Wallclock times"
     startTime: String!
     endTime: String!
+
     createdAt: String!
     updatedAt: String!
-    registerLink: String!
+
+    "The IANA region used with wallclock time"
     region: String!
   }
 `;
