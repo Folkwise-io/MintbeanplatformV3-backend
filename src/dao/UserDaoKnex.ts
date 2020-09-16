@@ -24,6 +24,7 @@ export default class UserDaoKnex implements UserDao {
     return insertedUsers[0];
   }
 
+  // Testing methods below, for TestManager to call
   async addMany(users: User[]): Promise<void> {
     return this.knex<User>("users").insert(users);
   }

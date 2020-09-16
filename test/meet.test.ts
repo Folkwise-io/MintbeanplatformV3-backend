@@ -1,3 +1,4 @@
+import { ALGOLIA, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 
 const testManager = TestManager.build();
@@ -13,6 +14,7 @@ afterAll(async () => {
 
 describe("Querying meets", () => {
   it("does something", async () => {
+    await testManager.addMeets([PAPERJS, ALGOLIA]);
     expect(1).toBe(1);
   });
 });
