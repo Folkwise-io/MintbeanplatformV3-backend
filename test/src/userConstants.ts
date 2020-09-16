@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { User } from "../../src/types/gqlGeneratedTypes";
+import { User, UserRegistrationInput } from "../../src/types/gqlGeneratedTypes";
 
 // Will use generator factory / faker once more entities are added
 export const AMY: User = {
@@ -10,6 +10,8 @@ export const AMY: User = {
   firstName: "Amy",
   lastName: "Adams",
   createdAt: "2019-10-15",
+  updatedAt: "2019-10-15",
+  isAdmin: false,
 };
 
 export const BOB: User = {
@@ -20,6 +22,8 @@ export const BOB: User = {
   firstName: "Bob",
   lastName: "Barker",
   createdAt: "2020-04-15",
+  updatedAt: "2020-04-15",
+  isAdmin: false,
 };
 
 export const BAD_USERNAME_QUERY = gql`
@@ -57,46 +61,24 @@ export const GET_ALL_USERS_QUERY = gql`
   }
 `;
 
-export const LOGIN_MUTATION_CORRECT = gql`
-  mutation correctLogin {
-    login(email: "a@a.com", password: "password") {
+export const LOGIN = gql`
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
       id
       username
     }
   }
 `;
 
-export const LOGIN_MUTATION_INCORRECT_PASSWORD = gql`
-  mutation wrongPassword {
-    login(email: "a@a.com", password: "wrongpassword") {
-      id
-      username
-    }
-  }
-`;
-
-export const LOGIN_MUTATION_NO_PASSWORD = gql`
-  mutation noPassword {
-    login(email: "a@a.com") {
-      id
-      username
-    }
-  }
-`;
+export const AMY_CREDENTIALS = {
+  email: "a@a.com",
+  password: "password",
+};
 
 export const LOGIN_MUTATION_WITH_TOKEN = gql`
   mutation correctLogin {
     login(email: "a@a.com", password: "password") {
       token
-    }
-  }
-`;
-
-export const LOGIN_MUTATION_NO_EMAIL = gql`
-  mutation noEmail {
-    login(password: "password") {
-      id
-      username
     }
   }
 `;
@@ -113,5 +95,26 @@ export const ME_QUERY = gql`
 export const LOGOUT = gql`
   mutation logout {
     logout
+  }
+`;
+
+export const NEW_USER_INPUT: UserRegistrationInput = {
+  username: "ddevito",
+  email: "d@d.com",
+  firstName: "Danny",
+  lastName: "DeVito",
+  password: "password",
+  passwordConfirmation: "password",
+};
+
+export const REGISTER = gql`
+  mutation register($input: UserRegistrationInput!) {
+    register(input: $input) {
+      id
+      username
+      firstName
+      lastName
+      isAdmin
+    }
   }
 `;

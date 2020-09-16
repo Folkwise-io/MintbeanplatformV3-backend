@@ -10,6 +10,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text("passwordHash").notNullable();
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
+    table.boolean("isAdmin").notNullable().defaultTo(false);
 
     // constraints and indices
     table.primary(["id"]);

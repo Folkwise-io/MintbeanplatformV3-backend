@@ -19,6 +19,14 @@ export interface UserServiceLoginArgs {
   password: string;
 }
 
+export interface UserServiceAddOneArgs {
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}
+
 export default class UserService implements EntityService<User> {
   constructor(private userDao: UserDao) {}
 
@@ -37,5 +45,11 @@ export default class UserService implements EntityService<User> {
       return false;
     }
     return true;
+  }
+
+  async addOne(args: UserServiceAddOneArgs): Promise<User> {
+    const { username, email, firstName, lastName, password } = args;
+    const passwordHash = bcrypt.hashSync(password, 10);
+    return this.userDao.addOne({ username, email, firstName, lastName, passwordHash });
   }
 }

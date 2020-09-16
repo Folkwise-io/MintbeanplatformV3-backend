@@ -18,8 +18,14 @@ const user: DocumentNode = gql`
     firstName: String!
     lastName: String!
 
-    "Date that the user registered"
+    "Timestamp that the user registered"
     createdAt: String!
+
+    "Timestamp that the user updated their profile"
+    updatedAt: String!
+
+    "Whether the user has admin privileges to create/modify events"
+    isAdmin: Boolean!
 
     "A JWT created for the user after login (also sent in cookies)"
     token: String
@@ -36,12 +42,29 @@ const user: DocumentNode = gql`
     me: User
   }
 
+  input UserRegistrationInput {
+    "Unique username"
+    username: String!
+
+    "Unique email"
+    email: String!
+
+    firstName: String!
+    lastName: String!
+
+    password: String!
+    passwordConfirmation: String!
+  }
+
   type Mutation {
     "Login using email and password"
     login(email: String!, password: String!): User
 
     "Log out by clearing cookies"
     logout: Boolean!
+
+    "Register a user"
+    register(input: UserRegistrationInput!): User
   }
 `;
 

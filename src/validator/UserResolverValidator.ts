@@ -1,8 +1,9 @@
-import { QueryUserArgs, User, MutationLoginArgs } from "../types/gqlGeneratedTypes";
+import { QueryUserArgs, User, MutationLoginArgs, MutationRegisterArgs } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
-import { UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
+import { UserServiceAddOneArgs, UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildServerContext";
+import { ApolloError, AuthenticationError } from "apollo-server-express";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
@@ -19,6 +20,25 @@ export default class UserResolverValidator {
       .getOne(args)
       .then((user) => <User>ensureExists("User")(user))
       .then(({ id, username }) => ({ id, username }));
+  }
+
+  async addOne({ input }: MutationRegisterArgs): Promise<UserServiceAddOneArgs> {
+    const { username, firstName, lastName, email, password, passwordConfirmation } = input;
+    if (password !== passwordConfirmation) {
+      throw new AuthenticationError("Passwords do not match!");
+    }
+
+    const userWithSameUsername = await this.userDao.getOne({ username });
+    if (userWithSameUsername) {
+      throw new ApolloError("Username taken!");
+    }
+
+    const userWithSameEmail = await this.userDao.getOne({ email });
+    if (userWithSameEmail) {
+      throw new ApolloError("Email taken!");
+    }
+
+    return { username, firstName, lastName, email, password };
   }
 
   login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {

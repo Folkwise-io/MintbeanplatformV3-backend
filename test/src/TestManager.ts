@@ -25,6 +25,14 @@ interface TestManagerParams {
   testClient: SuperTest<Test>;
 }
 
+interface PostParams {
+  query: DocumentNode;
+  cookies?: string[];
+  variables?: {
+    [key: string]: any;
+  };
+}
+
 export default class TestManager {
   private constructor(private params: TestManagerParams) {}
 
@@ -47,23 +55,23 @@ export default class TestManager {
   }
 
   addUsers(users: User[]): Promise<TestManager> {
-    return this.params.persistenceContext.userDao.addUsers(users).then(() => this);
+    return this.params.persistenceContext.userDao.addMany(users).then(() => this);
   }
 
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
-  getRawResponse(gqlQuery: DocumentNode, cookies: string[] = []): Promise<Response> {
+  getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
     return this.params.testClient
       .post("/graphql")
       .set("Cookie", cookies)
-      .send({ query: print(gqlQuery) })
+      .send({ query: print(query), variables })
       .then((rawResponse) => rawResponse);
   }
 
-  getCookies(gqlQuery: DocumentNode): Promise<string[]> {
-    return this.getRawResponse(gqlQuery).then((rawResponse) => rawResponse.header["set-cookie"]);
+  getCookies({ query, variables }: PostParams): Promise<string[]> {
+    return this.getRawResponse({ query, variables }).then((rawResponse) => rawResponse.header["set-cookie"]);
   }
 
   parseCookies(rawResponse: Response): Cookie[] {
@@ -75,11 +83,12 @@ export default class TestManager {
   }
 
   // The GraphQL response is now sent as stringified json in rawResponse.text by supertest
-  getGraphQLResponse(gqlQuery: DocumentNode, cookies: string[] = []): Promise<GraphQLResponse> {
-    return this.getRawResponse(gqlQuery, cookies).then(this.parseGraphQLResponse);
+  getGraphQLResponse({ query, cookies = [], variables }: PostParams): Promise<GraphQLResponse> {
+    return this.getRawResponse({ query, cookies, variables }).then(this.parseGraphQLResponse);
   }
 
-  parseData(response: GraphQLResponse) {
+  parseData = (response: GraphQLResponse) => {
+    // Q: Why did this need to be an arrow function?
     if (response.errors) {
       this.logResponse(response);
       throw new Error("Test expected data but got an error");
@@ -91,7 +100,7 @@ export default class TestManager {
       throw new Error("Test expected data but received no data");
     }
     return response.data;
-  }
+  };
 
   parseError(response: GraphQLResponse) {
     if (!response.errors) {
