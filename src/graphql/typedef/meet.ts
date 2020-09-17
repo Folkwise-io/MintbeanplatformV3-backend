@@ -63,7 +63,7 @@ const meet = gql`
     region: String!
   }
 
-  "Input that can be used to edit a meet"
+  "Input that can be used to edit a meet - all fields are optional"
   input EditMeetInput {
     "The type of the Meet as enum string. Only hackMeet is supported for now"
     meetType: String

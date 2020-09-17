@@ -164,4 +164,16 @@ describe("Editing meets", () => {
         expect(errorMessage).toMatch(/[(not |un)authorized]/i);
       });
   });
+
+  it("handles when no edit fields are specified", async () => {
+    await testManager
+      .getGraphQLData({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: {} },
+        cookies,
+      })
+      .then(({ editMeet }) => {
+        expect(editMeet).toMatchObject(NEW_MEET_INPUT);
+      });
+  });
 });
