@@ -1,5 +1,5 @@
 import { Meet } from "../src/types/gqlGeneratedTypes";
-import { ALGOLIA, GET_ALL_MEETS, PAPERJS } from "./src/meetConstants";
+import { ALGOLIA, CREATE_MEET, GET_ALL_MEETS, NEW_MEET_INPUT, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 
 const testManager = TestManager.build();
@@ -50,6 +50,17 @@ describe("Querying meets", () => {
       .then(() => testManager.getGraphQLResponse({ query: GET_ALL_MEETS }).then(testManager.parseData))
       .then(({ meets }) => {
         expect(meets).toHaveLength(1);
+      });
+  });
+});
+
+describe("Creating meets", () => {
+  it("creates a meet", async () => {
+    await testManager
+      .getGraphQLResponse({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
+      .then(testManager.parseData)
+      .then(({ createMeet }) => {
+        expect(createMeet).toBeDefined();
       });
   });
 });
