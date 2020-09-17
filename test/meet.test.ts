@@ -154,7 +154,7 @@ describe("Editing meets", () => {
       });
   });
 
-  it("updates the updatedAt timestamp when editing", async () => {
+  it("updates the updatedAt timestamp after editing a meet", async () => {
     // Check that createdAt is initially equal to updatedAt
     await testManager
       .getGraphQLData({ query: GET_ALL_MEETS })
@@ -167,7 +167,7 @@ describe("Editing meets", () => {
         cookies,
       })
       .then(({ editMeet }) => {
-        expect(editMeet.createdAt).not.toBe(editMeet.updatedAt);
+        expect(editMeet.createdAt < editMeet.updatedAt).toBe(true);
       });
   });
 

@@ -42,7 +42,10 @@ export default class MeetDaoKnex implements MeetDao {
   }
 
   async editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet> {
-    const newMeets = (await this.knex("meets").where({ id }).update(input).returning("*")) as Meet[];
+    const newMeets = (await this.knex("meets")
+      .where({ id })
+      .update({ ...input, updatedAt: this.knex.fn.now() })
+      .returning("*")) as Meet[];
     const formattedMeets = formatMeets(newMeets);
     return formattedMeets[0];
   }
