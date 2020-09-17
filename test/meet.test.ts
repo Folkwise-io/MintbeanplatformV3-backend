@@ -238,6 +238,8 @@ describe("Deleting meets", () => {
   });
 
   it("deletes a meet successfully when admin is logged in", async () => {
+    await testManager.getGraphQLData({ query: GET_ALL_MEETS }).then(({ meets }) => expect(meets).toHaveLength(1));
+
     await testManager
       .getGraphQLData({
         query: DELETE_MEET,
@@ -247,6 +249,8 @@ describe("Deleting meets", () => {
       .then(({ deleteMeet }) => {
         expect(deleteMeet).toBe(true);
       });
+
+    await testManager.getGraphQLData({ query: GET_ALL_MEETS }).then(({ meets }) => expect(meets).toHaveLength(0));
   });
 
   it("returns an 'unauthorized' error message when deleting a meet without admin cookies", async () => {
