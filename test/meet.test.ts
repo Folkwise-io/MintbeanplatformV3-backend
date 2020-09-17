@@ -154,6 +154,23 @@ describe("Editing meets", () => {
       });
   });
 
+  it("updates the updatedAt timestamp when editing", async () => {
+    // Check that createdAt is initially equal to updatedAt
+    await testManager
+      .getGraphQLData({ query: GET_ALL_MEETS })
+      .then(({ meets }) => expect(meets[0].createdAt).toBe(meets[0].updatedAt));
+
+    await testManager
+      .getGraphQLData({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: EDIT_MEET_INPUT },
+        cookies,
+      })
+      .then(({ editMeet }) => {
+        expect(editMeet.createdAt).not.toBe(editMeet.updatedAt);
+      });
+  });
+
   it("returns an 'unauthorized' error message when editing a meet without admin cookies", async () => {
     await testManager
       .getErrorMessage({

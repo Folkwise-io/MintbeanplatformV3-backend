@@ -44,6 +44,7 @@ export const GET_ALL_MEETS = gql`
       startTime
       endTime
       createdAt
+      updatedAt
       region
     }
   }
@@ -62,6 +63,7 @@ export const CREATE_MEET = gql`
       startTime
       endTime
       createdAt
+      updatedAt
       region
     }
   }
@@ -93,6 +95,7 @@ export const EDIT_MEET = gql`
       endTime
       createdAt
       region
+      updatedAt
     }
   }
 `;
