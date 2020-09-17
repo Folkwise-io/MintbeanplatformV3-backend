@@ -1,5 +1,13 @@
 import { Meet } from "../src/types/gqlGeneratedTypes";
-import { ALGOLIA, CREATE_MEET, GET_ALL_MEETS, NEW_MEET_INPUT, PAPERJS } from "./src/meetConstants";
+import {
+  ALGOLIA,
+  CREATE_MEET,
+  EDIT_MEET,
+  EDIT_MEET_INPUT,
+  GET_ALL_MEETS,
+  NEW_MEET_INPUT,
+  PAPERJS,
+} from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 
@@ -104,6 +112,43 @@ describe("Creating meets", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/title/i);
+      });
+  });
+});
+
+describe("Editing meets", () => {
+  let cookies: string[];
+  let meetId: string;
+
+  beforeAll(async () => {
+    cookies = await getAdminCookies();
+  });
+
+  // Create a constant meet that will be edited and get its ID
+  beforeEach(async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_MEET,
+        variables: { input: NEW_MEET_INPUT },
+        cookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createMeet }) => {
+        meetId = createMeet.id;
+      });
+  });
+
+  it("edits a meet successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: EDIT_MEET_INPUT },
+        cookies,
+      })
+      .then(testManager.parseData)
+      .then(({ editMeet }) => {
+        expect(editMeet.title).toBe(EDIT_MEET_INPUT.title);
+        expect(editMeet.registerLink).toBe(EDIT_MEET_INPUT.registerLink);
       });
   });
 });
