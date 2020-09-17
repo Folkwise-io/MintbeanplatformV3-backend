@@ -61,7 +61,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
 
         return userResolverValidator
           .addOne(args)
-          .then((args) => userService.addOne(args))
+          .then((input) => userService.addOne(input))
           .then((user: User) => {
             const token = generateJwt(user);
 

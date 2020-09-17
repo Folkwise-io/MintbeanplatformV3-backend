@@ -12,6 +12,7 @@ export async function seed(knex: Knex): Promise<void> {
       lastName: "Adams",
       passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
       createdAt: "2019-10-15",
+      isAdmin: true,
     },
     {
       id: "00000000-0000-4000-a000-000000000000",

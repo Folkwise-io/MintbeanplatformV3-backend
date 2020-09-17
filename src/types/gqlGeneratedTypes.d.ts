@@ -17,6 +17,7 @@ export type Scalars = {
 
 
 
+/** A member of the Mintbean platform */
 export type User = {
   __typename?: 'User';
   /** User's ID in UUID */
@@ -29,9 +30,9 @@ export type User = {
   passwordHash: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
-  /** Timestamp that the user registered */
+  /** DateTime that the user registered */
   createdAt: Scalars['DateTime'];
-  /** Timestamp that the user updated their profile */
+  /** DateTime that the user updated their profile */
   updatedAt: Scalars['DateTime'];
   /** Whether the user has admin privileges to create/modify events */
   isAdmin: Scalars['Boolean'];
@@ -79,6 +80,7 @@ export type QueryPostArgs = {
   id: Scalars['UUID'];
 };
 
+/** The fields needed for a new user to register */
 export type UserRegistrationInput = {
   /** Unique username */
   username: Scalars['String'];
@@ -93,11 +95,13 @@ export type UserRegistrationInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   /** Login using email and password */
-  login?: Maybe<User>;
+  login: User;
   /** Log out by clearing cookies */
   logout: Scalars['Boolean'];
   /** Register a user */
-  register?: Maybe<User>;
+  register: User;
+  /** Creates a new meet (only hackMeet is supported for now) */
+  createMeet: Meet;
 };
 
 
@@ -109,6 +113,11 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   input: UserRegistrationInput;
+};
+
+
+export type MutationCreateMeetArgs = {
+  input: CreateMeetInput;
 };
 
 export type Post = {
@@ -127,6 +136,7 @@ export type Post = {
   user?: Maybe<User>;
 };
 
+/** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */
 export type Meet = {
   __typename?: 'Meet';
   /** ID of the Meet in UUID */
@@ -141,10 +151,30 @@ export type Meet = {
   registerLink?: Maybe<Scalars['String']>;
   coverImageUrl: Scalars['String'];
   /** Wallclock times */
-  startTime: Scalars['DateTime'];
-  endTime: Scalars['DateTime'];
+  startTime: Scalars['String'];
+  endTime: Scalars['String'];
+  /** DateTime that the meet was created */
   createdAt: Scalars['DateTime'];
+  /** DateTime that the meet was modified */
   updatedAt: Scalars['DateTime'];
+  /** The IANA region used with wallclock time */
+  region: Scalars['String'];
+};
+
+/** The input needed to create a new meet */
+export type CreateMeetInput = {
+  /** The type of the Meet as enum string. Only hackMeet is supported for now */
+  meetType: Scalars['String'];
+  title: Scalars['String'];
+  /** A short blurb about the Meet */
+  description: Scalars['String'];
+  /** The instructions in markdown format */
+  instructions: Scalars['String'];
+  registerLink?: Maybe<Scalars['String']>;
+  coverImageUrl: Scalars['String'];
+  /** Wallclock times */
+  startTime: Scalars['String'];
+  endTime: Scalars['String'];
   /** The IANA region used with wallclock time */
   region: Scalars['String'];
 };
@@ -237,6 +267,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
   Meet: ResolverTypeWrapper<Meet>;
+  CreateMeetInput: CreateMeetInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -251,6 +282,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Post: Post;
   Meet: Meet;
+  CreateMeetInput: CreateMeetInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -286,9 +318,10 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  login?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  login?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  register?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  createMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationCreateMeetArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -309,8 +342,8 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   registerLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   coverImageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  startTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  endTime?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  startTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  endTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

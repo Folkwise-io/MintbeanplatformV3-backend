@@ -1,6 +1,7 @@
 import { gql } from "apollo-server-express";
 
 const user = gql`
+  "A member of the Mintbean platform"
   type User {
     "User's ID in UUID"
     id: UUID!
@@ -41,6 +42,7 @@ const user = gql`
     me: User
   }
 
+  "The fields needed for a new user to register"
   input UserRegistrationInput {
     "Unique username"
     username: String!
@@ -57,13 +59,13 @@ const user = gql`
 
   type Mutation {
     "Login using email and password"
-    login(email: String!, password: String!): User
+    login(email: String!, password: String!): User!
 
     "Log out by clearing cookies"
     logout: Boolean!
 
     "Register a user"
-    register(input: UserRegistrationInput!): User
+    register(input: UserRegistrationInput!): User!
   }
 `;
 

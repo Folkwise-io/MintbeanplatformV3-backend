@@ -5,11 +5,11 @@ import config from "./config";
 const { jwtSecret } = config;
 
 export interface JWTPayload {
-  sub: string; // sub (Subject) is a registered JWT claim
+  sub: string; // sub (Subject) is a registered JWT claim, we use it to store userId
+  isAdmin: boolean;
 }
 
-export interface ParsedToken {
-  sub: string;
+export interface ParsedToken extends JWTPayload {
   iat: number;
   exp: number;
 }
@@ -17,6 +17,7 @@ export interface ParsedToken {
 export function generateJwt(user: User): string {
   const payload: JWTPayload = {
     sub: user.id,
+    isAdmin: user.isAdmin,
   };
 
   const options: SignOptions = {

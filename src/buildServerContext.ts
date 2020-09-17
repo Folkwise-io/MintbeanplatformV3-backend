@@ -10,6 +10,7 @@ export interface ExpressContext {
 
 export interface ServerContext {
   getUserId(): string;
+  getIsAdmin(): boolean;
   setJwt(token: string): void;
   clearJwt(): void;
   // TODO: include userId and maybe auth scope, which will be parsed from req cookie
@@ -26,12 +27,14 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
 }): ServerContext {
   // TODO: Clean up later
   let userId: string;
+  let isAdmin: boolean = false;
   const jwt: string = req.cookies.jwt;
 
   if (jwt) {
     try {
       const parsedToken = parseJwt(jwt);
       userId = parsedToken.sub;
+      isAdmin = parsedToken.isAdmin;
     } catch (e) {
       // parseJwt throws an error in case of signature mismatch or jwt is expired
       res.clearCookie("jwt"); // We need to do this otherwise it will be an infinite loop
@@ -41,6 +44,7 @@ export const buildExpressServerContext: BuildExpressServerContext = function ({
 
   return {
     getUserId: () => userId,
+    getIsAdmin: () => isAdmin,
     setJwt: setCookie(res),
     clearJwt: clearCookie(res),
   };
