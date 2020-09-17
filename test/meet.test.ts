@@ -165,6 +165,18 @@ describe("Editing meets", () => {
       });
   });
 
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_MEET_INPUT },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+
   it("gives an error message when no edit fields are specified in the mutation", async () => {
     await testManager
       .getErrorMessage({
