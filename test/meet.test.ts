@@ -165,7 +165,7 @@ describe("Editing meets", () => {
       });
   });
 
-  it("handles when no edit fields are specified", async () => {
+  it("gives an error message when no edit fields are specified in the mutation", async () => {
     await testManager
       .getErrorMessage({
         query: EDIT_MEET,
@@ -174,6 +174,30 @@ describe("Editing meets", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/field/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a non-existent field", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: { nonexistent: "hello" } },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: { deleted: true } },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
       });
   });
 });
