@@ -1,6 +1,7 @@
 import { Meet } from "../src/types/gqlGeneratedTypes";
 import { ALGOLIA, CREATE_MEET, GET_ALL_MEETS, NEW_MEET_INPUT, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
+import { getAdminCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
@@ -55,12 +56,25 @@ describe("Querying meets", () => {
 });
 
 describe("Creating meets", () => {
-  it("creates a meet", async () => {
+  it("creates a meet successfully when admin is logged in", async () => {
     await testManager
-      .getGraphQLResponse({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
+      .getGraphQLResponse({
+        query: CREATE_MEET,
+        variables: { input: NEW_MEET_INPUT },
+        cookies: await getAdminCookies(),
+      })
       .then(testManager.parseData)
       .then(({ createMeet }) => {
         expect(createMeet).toMatchObject(NEW_MEET_INPUT);
+      });
+  });
+
+  it("returns an 'unauthorized' error message when creating a meet without admin cookies", async () => {
+    await testManager
+      .getGraphQLResponse({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
+      .then(testManager.parseError)
+      .then((error) => {
+        expect(error.message).toMatch(/unauthorized/i);
       });
   });
 });
