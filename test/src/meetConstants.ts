@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { Meet } from "../../src/types/gqlGeneratedTypes";
+import { CreateMeetInput, Meet } from "../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -48,3 +48,33 @@ export const GET_ALL_MEETS = gql`
     }
   }
 `;
+
+export const CREATE_MEET = gql`
+  mutation createMeet($input: CreateMeetInput!) {
+    createMeet(input: $input) {
+      id
+      meetType
+      title
+      description
+      instructions
+      registerLink
+      coverImageUrl
+      startTime
+      endTime
+      createdAt
+      region
+    }
+  }
+`;
+
+export const NEW_MEET_INPUT: CreateMeetInput = {
+  meetType: "hackMeet",
+  title: "Color Palette Generator",
+  description: "Exploring pre-existing color libraries while building visually impressive projects.",
+  instructions: "See https://sites.google.com/mintbean.io/2020-06-08-color-scheme-genera/home",
+  registerLink: "http://google.com",
+  coverImageUrl: "https://graf1x.com/wp-content/uploads/2014/09/color-wheel-poster.jpg",
+  startTime: "2020-06-08T12:00:00",
+  endTime: "2020-06-08T16:00:00",
+  region: "America/Toronto",
+};

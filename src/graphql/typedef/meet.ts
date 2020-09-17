@@ -64,7 +64,7 @@ const meet = gql`
   }
 
   extend type Mutation {
-    "Creates a new meet (only hackMeet is supported for now"
+    "Creates a new meet (only hackMeet is supported for now)"
     createMeet(input: CreateMeetInput!): Meet!
   }
 `;
