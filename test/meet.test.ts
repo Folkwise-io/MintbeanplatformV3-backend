@@ -60,7 +60,7 @@ describe("Creating meets", () => {
       .getGraphQLResponse({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
       .then(testManager.parseData)
       .then(({ createMeet }) => {
-        expect(createMeet).toBeDefined();
+        expect(createMeet).toMatchObject(NEW_MEET_INPUT);
       });
   });
 });

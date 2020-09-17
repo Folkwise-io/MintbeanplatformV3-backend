@@ -1,7 +1,15 @@
 import Knex from "knex";
-import { MeetServiceGetManyArgs } from "../service/MeetService";
+import { MeetServiceAddOneArgs, MeetServiceGetManyArgs } from "../service/MeetService";
 import { Meet } from "../types/gqlGeneratedTypes";
 import MeetDao from "./MeetDao";
+
+function formatMeets(meets: any[]) {
+  return meets.map((meet) => ({
+    ...meet,
+    startTime: meet.startTime.toISOString().slice(0, -1),
+    endTime: meet.endTime.toISOString().slice(0, -1),
+  }));
+}
 
 export default class MeetDaoKnex implements MeetDao {
   constructor(private knex: Knex) {}
@@ -12,13 +20,15 @@ export default class MeetDaoKnex implements MeetDao {
       .orderBy("startTime", "desc");
 
     // Remove the Z from startTime and endTime
-    const newMeets = meets.map((meet) => ({
-      ...meet,
-      startTime: meet.startTime.toISOString().slice(0, -1),
-      endTime: meet.endTime.toISOString().slice(0, -1),
-    }));
+    const formattedMeets = formatMeets(meets);
 
-    return newMeets;
+    return formattedMeets;
+  }
+
+  async addOne(args: MeetServiceAddOneArgs): Promise<Meet> {
+    const newMeets = (await this.knex("meets").insert(args).returning("*")) as Meet[];
+    const formattedMeets = formatMeets(newMeets);
+    return formattedMeets[0];
   }
 
   // Testing methods below, for TestManager to call

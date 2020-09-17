@@ -74,7 +74,7 @@ export const NEW_MEET_INPUT: CreateMeetInput = {
   instructions: "See https://sites.google.com/mintbean.io/2020-06-08-color-scheme-genera/home",
   registerLink: "http://google.com",
   coverImageUrl: "https://graf1x.com/wp-content/uploads/2014/09/color-wheel-poster.jpg",
-  startTime: "2020-06-08T12:00:00",
-  endTime: "2020-06-08T16:00:00",
+  startTime: "2020-06-08T12:00:00.000",
+  endTime: "2020-06-08T16:00:00.000",
   region: "America/Toronto",
 };
