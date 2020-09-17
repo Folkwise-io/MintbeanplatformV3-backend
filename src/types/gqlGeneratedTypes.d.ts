@@ -17,6 +17,7 @@ export type Scalars = {
 
 
 
+/** A member of the Mintbean platform */
 export type User = {
   __typename?: 'User';
   /** User's ID in UUID */
@@ -79,6 +80,7 @@ export type QueryPostArgs = {
   id: Scalars['UUID'];
 };
 
+/** The fields needed for a new user to register */
 export type UserRegistrationInput = {
   /** Unique username */
   username: Scalars['String'];
@@ -98,7 +100,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   /** Register a user */
   register: User;
-  /** Creates a new meet (only hackMeet is supported for now */
+  /** Creates a new meet (only hackMeet is supported for now) */
   createMeet: Meet;
 };
 
@@ -134,6 +136,7 @@ export type Post = {
   user?: Maybe<User>;
 };
 
+/** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */
 export type Meet = {
   __typename?: 'Meet';
   /** ID of the Meet in UUID */

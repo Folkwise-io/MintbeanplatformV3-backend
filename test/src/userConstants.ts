@@ -11,7 +11,7 @@ export const AMY: User = {
   lastName: "Adams",
   createdAt: "2019-10-15",
   updatedAt: "2019-10-15",
-  isAdmin: false,
+  isAdmin: true,
 };
 
 export const BOB: User = {
