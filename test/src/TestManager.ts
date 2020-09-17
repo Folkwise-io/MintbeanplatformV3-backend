@@ -131,6 +131,12 @@ export default class TestManager {
     return { data, errors };
   }
 
+  getErrorMessage(postParams: PostParams): Promise<string> {
+    return this.getGraphQLResponse(postParams)
+      .then(this.parseError)
+      .then((error) => error.message);
+  }
+
   // Needed for debugging because console.log would just give you "[object]"
   logResponse<T>(response: T): T {
     console.log(JSON.stringify(response, null, 2));

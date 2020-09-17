@@ -56,9 +56,13 @@ describe("Querying meets", () => {
 });
 
 describe("Creating meets", () => {
-  it("creates a meet successfully when admin is logged in", async () => {
-    const adminCookies = await getAdminCookies();
+  let adminCookies: string[];
 
+  beforeAll(async () => {
+    adminCookies = await getAdminCookies();
+  });
+
+  it("creates a meet successfully when admin is logged in", async () => {
     await testManager
       .getGraphQLResponse({
         query: CREATE_MEET,
@@ -73,10 +77,33 @@ describe("Creating meets", () => {
 
   it("returns an 'unauthorized' error message when creating a meet without admin cookies", async () => {
     await testManager
-      .getGraphQLResponse({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
-      .then(testManager.parseError)
-      .then((error) => {
-        expect(error.message).toMatch(/[(not |un)]authorized/i);
+      .getErrorMessage({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)]authorized/i);
+      });
+  });
+
+  it("returns an appropriate error message when a field is missing", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_MEET,
+        variables: { input: { ...NEW_MEET_INPUT, description: undefined } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/description/i);
+      });
+  });
+
+  it("returns an appropriate error message when a field is in wrong type", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_MEET,
+        variables: { input: { ...NEW_MEET_INPUT, title: 100 } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/title/i);
       });
   });
 });
