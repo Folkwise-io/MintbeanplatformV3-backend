@@ -3,6 +3,7 @@ import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
 import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
 import { MutationCreateMeetArgs, MutationEditMeetArgs } from "../types/gqlGeneratedTypes";
+import { ensureExists } from "../util/ensureExists";
 
 export default class MeetResolverValidator {
   constructor(private meetDao: MeetDao) {}
@@ -21,7 +22,8 @@ export default class MeetResolverValidator {
     { id, input }: MutationEditMeetArgs,
     _context: ServerContext,
   ): Promise<{ id: string; input: MeetServiceEditOneInput }> {
-    //TODO: Validate both id and input
+    // Check if meet id exists in db
+    await this.meetDao.getOne({ id }).then((meet) => ensureExists("Meet")(meet));
 
     // Handle when input has no fields to update (knex doesn't like this)
     if (Object.keys(input).length === 0) {

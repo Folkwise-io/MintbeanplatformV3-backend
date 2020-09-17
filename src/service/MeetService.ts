@@ -2,6 +2,11 @@ import MeetDao from "../dao/MeetDao";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { Args, EntityService } from "./EntityService";
 
+// Only allow ID lookup for now
+export interface MeetServiceGetOneArgs {
+  id: string;
+}
+
 export interface MeetServiceGetManyArgs {
   // TODO: Add search query args to Meets here
 }
