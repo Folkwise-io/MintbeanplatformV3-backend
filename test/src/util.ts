@@ -10,5 +10,6 @@ export async function getAdminCookies(): Promise<string[]> {
   await testManager.deleteAllUsers();
   await testManager.addUsers([AMY]);
   const adminCookies = await testManager.getCookies({ query: LOGIN, variables: AMY_CREDENTIALS });
+  await testManager.destroy();
   return adminCookies;
 }
