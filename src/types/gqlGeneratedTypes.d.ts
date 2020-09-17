@@ -102,6 +102,10 @@ export type Mutation = {
   register: User;
   /** Creates a new meet (only hackMeet is supported for now) */
   createMeet: Meet;
+  /** Edits a meet (requires admin privileges) */
+  editMeet: Meet;
+  /** Deletes a meet (requires admin privileges) */
+  deleteMeet: Scalars['Boolean'];
 };
 
 
@@ -118,6 +122,17 @@ export type MutationRegisterArgs = {
 
 export type MutationCreateMeetArgs = {
   input: CreateMeetInput;
+};
+
+
+export type MutationEditMeetArgs = {
+  id: Scalars['UUID'];
+  input: EditMeetInput;
+};
+
+
+export type MutationDeleteMeetArgs = {
+  id: Scalars['UUID'];
 };
 
 export type Post = {
@@ -177,6 +192,24 @@ export type CreateMeetInput = {
   endTime: Scalars['String'];
   /** The IANA region used with wallclock time */
   region: Scalars['String'];
+};
+
+/** Input that can be used to edit a meet */
+export type EditMeetInput = {
+  /** The type of the Meet as enum string. Only hackMeet is supported for now */
+  meetType?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  /** A short blurb about the Meet */
+  description?: Maybe<Scalars['String']>;
+  /** The instructions in markdown format */
+  instructions?: Maybe<Scalars['String']>;
+  registerLink?: Maybe<Scalars['String']>;
+  coverImageUrl?: Maybe<Scalars['String']>;
+  /** Wallclock times */
+  startTime?: Maybe<Scalars['String']>;
+  endTime?: Maybe<Scalars['String']>;
+  /** The IANA region used with wallclock time */
+  region?: Maybe<Scalars['String']>;
 };
 
 
@@ -268,6 +301,7 @@ export type ResolversTypes = {
   Post: ResolverTypeWrapper<Post>;
   Meet: ResolverTypeWrapper<Meet>;
   CreateMeetInput: CreateMeetInput;
+  EditMeetInput: EditMeetInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -283,6 +317,7 @@ export type ResolversParentTypes = {
   Post: Post;
   Meet: Meet;
   CreateMeetInput: CreateMeetInput;
+  EditMeetInput: EditMeetInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -322,6 +357,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
   createMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationCreateMeetArgs, 'input'>>;
+  editMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationEditMeetArgs, 'id' | 'input'>>;
+  deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
