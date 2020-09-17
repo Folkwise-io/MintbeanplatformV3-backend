@@ -167,13 +167,13 @@ describe("Editing meets", () => {
 
   it("handles when no edit fields are specified", async () => {
     await testManager
-      .getGraphQLData({
+      .getErrorMessage({
         query: EDIT_MEET,
         variables: { id: meetId, input: {} },
         cookies,
       })
-      .then(({ editMeet }) => {
-        expect(editMeet).toMatchObject(NEW_MEET_INPUT);
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/field/i);
       });
   });
 });
