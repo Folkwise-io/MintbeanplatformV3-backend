@@ -248,4 +248,16 @@ describe("Deleting meets", () => {
         expect(deleteMeet).toBe(true);
       });
   });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_MEET,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
 });
