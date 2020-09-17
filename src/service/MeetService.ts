@@ -52,4 +52,8 @@ export default class MeetService implements EntityService<Meet> {
   async editOne(id: string, input: MeetServiceEditOneInput, context: any): Promise<Meet> {
     return this.meetDao.editOne(id, input);
   }
+
+  async deleteOne(id: string): Promise<boolean> {
+    return this.meetDao.deleteOne(id);
+  }
 }

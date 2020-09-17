@@ -47,6 +47,11 @@ export default class MeetDaoKnex implements MeetDao {
     return formattedMeets[0];
   }
 
+  async deleteOne(id: string): Promise<boolean> {
+    await this.knex("meets").where({ id }).update({ deleted: true });
+    return true;
+  }
+
   // Testing methods below, for TestManager to call
   async addMany(meets: Meet[]): Promise<void> {
     return this.knex<Meet>("meets").insert(meets);

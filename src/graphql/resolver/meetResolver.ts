@@ -28,6 +28,9 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
           .editOne(args, context)
           .then(({ id, input }) => meetService.editOne(id, input, context));
       },
+      deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+        return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
+      },
     },
   };
 };
