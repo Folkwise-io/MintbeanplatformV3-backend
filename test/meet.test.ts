@@ -249,6 +249,18 @@ describe("Deleting meets", () => {
       });
   });
 
+  it("returns an 'unauthorized' error message when deleting a meet without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_MEET,
+        variables: { id: meetId },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
   it("gives an error message from validator when the id of the meet does not exist", async () => {
     await testManager
       .getErrorMessage({
