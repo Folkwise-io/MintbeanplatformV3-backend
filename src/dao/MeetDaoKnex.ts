@@ -1,5 +1,5 @@
 import Knex from "knex";
-import { MeetServiceAddOneArgs, MeetServiceGetManyArgs } from "../service/MeetService";
+import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
 import { Meet } from "../types/gqlGeneratedTypes";
 import MeetDao from "./MeetDao";
 
@@ -25,8 +25,14 @@ export default class MeetDaoKnex implements MeetDao {
     return formattedMeets;
   }
 
-  async addOne(args: MeetServiceAddOneArgs): Promise<Meet> {
+  async addOne(args: MeetServiceAddOneInput): Promise<Meet> {
     const newMeets = (await this.knex("meets").insert(args).returning("*")) as Meet[];
+    const formattedMeets = formatMeets(newMeets);
+    return formattedMeets[0];
+  }
+
+  async editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet> {
+    const newMeets = (await this.knex("meets").where({ id }).update(input).returning("*")) as Meet[];
     const formattedMeets = formatMeets(newMeets);
     return formattedMeets[0];
   }

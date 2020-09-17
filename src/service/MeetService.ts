@@ -6,7 +6,7 @@ export interface MeetServiceGetManyArgs {
   // TODO: Add search query args to Meets here
 }
 
-export interface MeetServiceAddOneArgs {
+export interface MeetServiceAddOneInput {
   meetType: string;
   title: string;
   description: string;
@@ -16,6 +16,18 @@ export interface MeetServiceAddOneArgs {
   startTime: string;
   endTime: string;
   region: string;
+}
+
+export interface MeetServiceEditOneInput {
+  meetType?: string | null;
+  title?: string | null;
+  description?: string | null;
+  instructions?: string | null;
+  registerLink?: string | null;
+  coverImageUrl?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  region?: string | null;
 }
 
 export default class MeetService implements EntityService<Meet> {
@@ -28,7 +40,11 @@ export default class MeetService implements EntityService<Meet> {
     return this.meetDao.getMany(args);
   }
 
-  async addOne(args: MeetServiceAddOneArgs, context: any): Promise<Meet> {
-    return this.meetDao.addOne(args);
+  async addOne(input: MeetServiceAddOneInput, context: any): Promise<Meet> {
+    return this.meetDao.addOne(input);
+  }
+
+  async editOne(id: string, input: MeetServiceEditOneInput, context: any): Promise<Meet> {
+    return this.meetDao.editOne(id, input);
   }
 }

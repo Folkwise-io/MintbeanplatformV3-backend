@@ -1,8 +1,8 @@
 import { Server } from "http";
 import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
-import { MeetServiceAddOneArgs, MeetServiceGetManyArgs } from "../service/MeetService";
-import { MutationCreateMeetArgs } from "../types/gqlGeneratedTypes";
+import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
+import { EditMeetInput, MutationCreateMeetArgs, MutationEditMeetArgs } from "../types/gqlGeneratedTypes";
 
 export default class MeetResolverValidator {
   constructor(private meetDao: MeetDao) {}
@@ -12,8 +12,16 @@ export default class MeetResolverValidator {
     return args;
   }
 
-  async addOne({ input }: MutationCreateMeetArgs, _context: ServerContext): Promise<MeetServiceAddOneArgs> {
+  async addOne({ input }: MutationCreateMeetArgs, _context: ServerContext): Promise<MeetServiceAddOneInput> {
     //TODO: Validate createMeet args
     return input;
+  }
+
+  async editOne(
+    { id, input }: MutationEditMeetArgs,
+    _context: ServerContext,
+  ): Promise<{ id: string; input: MeetServiceEditOneInput }> {
+    //TODO: Validate createMeet args
+    return { id, input };
   }
 }

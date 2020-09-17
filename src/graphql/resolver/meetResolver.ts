@@ -14,11 +14,19 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
 
     Mutation: {
       createMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-        if (context.getIsAdmin()) {
-          return meetResolverValidator.addOne(args, context).then((input) => meetService.addOne(input, context));
-        } else {
+        if (!context.getIsAdmin()) {
           throw new AuthenticationError("You are not authorized to create new meets!");
         }
+
+        return meetResolverValidator.addOne(args, context).then((input) => meetService.addOne(input, context));
+      },
+      editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
+        if (!context.getIsAdmin()) {
+          throw new AuthenticationError("You are not authorized to edit meets!");
+        }
+        return meetResolverValidator
+          .editOne(args, context)
+          .then(({ id, input }) => meetService.editOne(id, input, context));
       },
     },
   };
