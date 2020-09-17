@@ -29,6 +29,9 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
           .then(({ id, input }) => meetService.editOne(id, input, context));
       },
       deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+        if (!context.getIsAdmin()) {
+          throw new AuthenticationError("You are not authorized to delete meets!");
+        }
         return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
       },
     },
