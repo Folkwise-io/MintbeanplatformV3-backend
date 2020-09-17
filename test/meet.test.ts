@@ -147,8 +147,21 @@ describe("Editing meets", () => {
       })
       .then(testManager.parseData)
       .then(({ editMeet }) => {
+        expect(editMeet.title).not.toBe(NEW_MEET_INPUT.title);
         expect(editMeet.title).toBe(EDIT_MEET_INPUT.title);
         expect(editMeet.registerLink).toBe(EDIT_MEET_INPUT.registerLink);
+      });
+  });
+
+  it("returns an 'unauthorized' error message when editing a meet without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: EDIT_MEET_INPUT },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
       });
   });
 });
