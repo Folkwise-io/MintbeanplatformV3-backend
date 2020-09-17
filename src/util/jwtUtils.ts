@@ -9,8 +9,7 @@ export interface JWTPayload {
   isAdmin: boolean;
 }
 
-export interface ParsedToken {
-  sub: string;
+export interface ParsedToken extends JWTPayload {
   iat: number;
   exp: number;
 }

@@ -12,7 +12,7 @@ export default class MeetResolverValidator {
     return args;
   }
 
-  async addOne({ input }: MutationCreateMeetArgs, _context: Server): Promise<MeetServiceAddOneArgs> {
+  async addOne({ input }: MutationCreateMeetArgs, _context: ServerContext): Promise<MeetServiceAddOneArgs> {
     //TODO: Validate createMeet args
     return input;
   }

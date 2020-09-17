@@ -7,7 +7,8 @@ export function getCurrentUnixTime(): number {
 
 export async function getAdminCookies(): Promise<string[]> {
   const testManager = TestManager.build();
+  await testManager.deleteAllUsers();
   await testManager.addUsers([AMY]);
-  const adminCookies = await testManager.getCookies({ query: LOGIN, variables: { input: AMY_CREDENTIALS } });
+  const adminCookies = await testManager.getCookies({ query: LOGIN, variables: AMY_CREDENTIALS });
   return adminCookies;
 }

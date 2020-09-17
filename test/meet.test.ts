@@ -57,11 +57,13 @@ describe("Querying meets", () => {
 
 describe("Creating meets", () => {
   it("creates a meet successfully when admin is logged in", async () => {
+    const adminCookies = await getAdminCookies();
+
     await testManager
       .getGraphQLResponse({
         query: CREATE_MEET,
         variables: { input: NEW_MEET_INPUT },
-        cookies: await getAdminCookies(),
+        cookies: adminCookies,
       })
       .then(testManager.parseData)
       .then(({ createMeet }) => {
@@ -74,7 +76,7 @@ describe("Creating meets", () => {
       .getGraphQLResponse({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
       .then(testManager.parseError)
       .then((error) => {
-        expect(error.message).toMatch(/unauthorized/i);
+        expect(error.message).toMatch(/[(not |un)]authorized/i);
       });
   });
 });
