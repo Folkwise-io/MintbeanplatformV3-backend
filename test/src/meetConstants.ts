@@ -101,3 +101,9 @@ export const EDIT_MEET_INPUT: EditMeetInput = {
   title: "Colour Palette Generator",
   registerLink: "http://yahoo.com",
 };
+
+export const DELETE_MEET = gql`
+  mutation deleteMeet($id: UUID!) {
+    deleteMeet(id: $id)
+  }
+`;

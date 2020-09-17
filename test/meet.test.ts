@@ -2,6 +2,7 @@ import { Meet } from "../src/types/gqlGeneratedTypes";
 import {
   ALGOLIA,
   CREATE_MEET,
+  DELETE_MEET,
   EDIT_MEET,
   EDIT_MEET_INPUT,
   GET_ALL_MEETS,
@@ -210,6 +211,41 @@ describe("Editing meets", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+});
+
+describe("Deleting meets", () => {
+  let cookies: string[];
+  let meetId: string;
+
+  beforeAll(async () => {
+    cookies = await getAdminCookies();
+  });
+
+  // Create a constant meet that will be edited and get its ID
+  beforeEach(async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_MEET,
+        variables: { input: NEW_MEET_INPUT },
+        cookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createMeet }) => {
+        meetId = createMeet.id;
+      });
+  });
+
+  it("deletes a meet successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLData({
+        query: DELETE_MEET,
+        variables: { id: meetId },
+        cookies,
+      })
+      .then(({ deleteMeet }) => {
+        expect(deleteMeet).toBe(true);
       });
   });
 });
