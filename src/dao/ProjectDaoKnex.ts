@@ -1,17 +1,25 @@
 import Knex from "knex";
-import { ProjectServiceGetOneArgs } from "../service/ProjectService";
+import { ProjectServiceGetManyArgs, ProjectServiceGetOneArgs } from "../service/ProjectService";
 import { Project } from "../types/gqlGeneratedTypes";
 import ProjectDao from "./ProjectDao";
 
 export default class ProjectDaoKnex implements ProjectDao {
   constructor(private knex: Knex) {}
-  getOne(args: ProjectServiceGetOneArgs): Promise<Project> {
-    const project = this.knex<Project>("projects").where(args).first();
-    return project as Promise<Project>;
+
+  async getOne(args: ProjectServiceGetOneArgs): Promise<Project> {
+    const project: Project = await this.knex("projects")
+      .where({ ...args, deleted: false })
+      .first();
+
+    return project;
   }
 
-  getMany(args: any): Promise<Project[]> {
-    throw new Error("Method not implemented.");
+  async getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
+    const projects: Project[] = await this.knex("projects")
+      .where({ ...args, deleted: false })
+      .orderBy("createdAt", "desc");
+
+    return projects;
   }
 
   addOne(args: any): Promise<Project> {
