@@ -20,6 +20,7 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await testManager.deleteAllMeets();
+  await testManager.deleteAllUsers();
   await testManager.destroy();
 });
 
