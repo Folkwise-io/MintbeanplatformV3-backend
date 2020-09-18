@@ -111,7 +111,7 @@ describe("nested queries involving Projects", () => {
       expect(algolia.projects).toHaveLength(1);
       expect(paperjs.projects).toHaveLength(2);
 
-      const [project1, project2]: Project[] = paperjs.projects;
+      const [project1, project2] = paperjs.projects as Project[];
       expect(project1.createdAt > project2.createdAt).toBe(true);
     });
   });
