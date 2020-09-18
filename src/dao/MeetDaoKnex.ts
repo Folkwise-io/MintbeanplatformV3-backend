@@ -21,8 +21,13 @@ export default class MeetDaoKnex implements MeetDao {
   constructor(private knex: Knex) {}
 
   async getOne(args: MeetServiceGetOneArgs): Promise<Meet> {
-    const meet = this.knex<Meet>("meets").where(args).first();
-    return meet as Promise<Meet>;
+    const meet = await this.knex<Meet>("meets").where(args).first();
+    // TODO: clean this typescript-constrained mess
+    if (meet) {
+      const [formattedMeet] = formatMeets([meet]);
+      return formattedMeet as Meet;
+    }
+    return meet as any;
   }
 
   async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {

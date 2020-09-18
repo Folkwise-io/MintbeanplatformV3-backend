@@ -38,6 +38,12 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
         return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
       },
     },
+
+    Project: {
+      meet: (project, context) => {
+        return meetService.getOne({ id: project.meetId }, context);
+      },
+    },
   };
 };
 
