@@ -250,7 +250,7 @@ export type Project = {
   /** DateTime that the project was edited */
   updatedAt: Scalars['DateTime'];
   /** The user who created the project */
-  user: User;
+  user?: Maybe<User>;
 };
 
 
@@ -443,7 +443,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   liveUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

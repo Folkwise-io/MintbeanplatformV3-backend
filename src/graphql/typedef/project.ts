@@ -27,7 +27,7 @@ const project = gql`
     updatedAt: DateTime!
 
     "The user who created the project"
-    user: User!
+    user: User
   }
 
   extend type User {

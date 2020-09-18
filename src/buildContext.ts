@@ -8,20 +8,25 @@ import MeetDaoKnex from "./dao/MeetDaoKnex";
 import MeetDao from "./dao/MeetDao";
 import MeetService from "./service/MeetService";
 import MeetResolverValidator from "./validator/MeetResolverValidator";
+import ProjectDao from "./dao/ProjectDao";
+import ProjectDaoKnex from "./dao/ProjectDaoKnex";
 
 export interface PersistenceContext {
   userDao: UserDao;
   meetDao: MeetDao;
+  projectDao: ProjectDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
   const knex = Knex(knexConfig);
   const userDao = new UserDaoKnex(knex);
   const meetDao = new MeetDaoKnex(knex);
+  const projectDao = new ProjectDaoKnex(knex);
 
   return {
     userDao,
     meetDao,
+    projectDao,
   };
 }
 
