@@ -32,12 +32,12 @@ const project = gql`
 
   extend type User {
     "All the projects that the user has submitted"
-    projects: [Project]
+    projects: [Project!]!
   }
 
   extend type Meet {
     "All the projects that are associated with the Meet"
-    projects: [Project]
+    projects: [Project!]!
   }
 
   extend type Query {

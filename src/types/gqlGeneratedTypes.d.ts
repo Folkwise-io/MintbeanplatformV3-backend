@@ -40,7 +40,7 @@ export type User = {
   token?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
   /** All the projects that the user has submitted */
-  projects?: Maybe<Array<Maybe<Project>>>;
+  projects: Array<Project>;
 };
 
 export type Query = {
@@ -192,7 +192,7 @@ export type Meet = {
   /** The IANA region used with wallclock time */
   region: Scalars['String'];
   /** All the projects that are associated with the Meet */
-  projects?: Maybe<Array<Maybe<Project>>>;
+  projects: Array<Project>;
 };
 
 /** The input needed to create a new meet */
@@ -383,7 +383,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
-  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
+  projects?: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -430,7 +430,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
+  projects?: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
