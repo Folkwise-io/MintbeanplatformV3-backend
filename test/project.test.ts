@@ -104,27 +104,23 @@ describe("nested queries involving Projects", () => {
   });
 
   it("gets the project objects of the meet when querying meets, sorted by time of submission", async () => {
-    await testManager.addProjects([AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT]);
+    await testManager.addProjects([AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT]);
 
-    await testManager
-      .getGraphQLData({ query: GET_ALL_MEETS_WITH_NESTED_PROJECTS, variables: { id: PAPERJS.id } })
-      .then(({ meets }) => {
-        const [meet1, meet2]: Meet[] = meets;
-        expect(meet1.projects).toHaveLength(2);
+    await testManager.getGraphQLData({ query: GET_ALL_MEETS_WITH_NESTED_PROJECTS }).then(({ meets }) => {
+      const [_algolia, paperjs]: Meet[] = meets;
+      expect(paperjs.projects).toHaveLength(2);
 
-        const [project1, project2]: Project[] = meet1.projects;
-        expect(project1.createdAt > project2.createdAt).toBe(true);
-      });
+      const [project1, project2]: Project[] = paperjs.projects;
+      expect(project1.createdAt > project2.createdAt).toBe(true);
+    });
   });
 
   it("returns an empty array in the 'projects' field when querying meets that don't have any projects", async () => {
     await testManager.addProjects([AMY_ALGOLIA_PROJECT]);
 
-    await testManager
-      .getGraphQLData({ query: GET_ALL_MEETS_WITH_NESTED_PROJECTS, variables: { id: PAPERJS.id } })
-      .then(({ meets }) => {
-        const [meet]: Meet[] = meets;
-        expect(meet.projects).toHaveLength(0);
-      });
+    await testManager.getGraphQLData({ query: GET_ALL_MEETS_WITH_NESTED_PROJECTS }).then(({ meets }) => {
+      const [algolia, paperjs]: Meet[] = meets;
+      expect(paperjs.projects).toHaveLength(0);
+    });
   });
 });

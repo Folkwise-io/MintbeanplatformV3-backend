@@ -19,6 +19,11 @@ const projectResolver = (
         return projectService.getMany({ userId: user.id }, context);
       },
     },
+    Meet: {
+      projects: (meet, context) => {
+        return projectService.getMany({ meetId: meet.id }, context);
+      },
+    },
   };
 };
 
