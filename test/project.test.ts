@@ -104,10 +104,11 @@ describe("nested queries involving Projects", () => {
   });
 
   it("gets the project objects of the meet when querying meets, sorted by time of submission", async () => {
-    await testManager.addProjects([AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT]);
+    await testManager.addProjects([AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT, AMY_ALGOLIA_PROJECT]);
 
     await testManager.getGraphQLData({ query: GET_ALL_MEETS_WITH_NESTED_PROJECTS }).then(({ meets }) => {
-      const [_algolia, paperjs]: Meet[] = meets;
+      const [algolia, paperjs]: Meet[] = meets;
+      expect(algolia.projects).toHaveLength(1);
       expect(paperjs.projects).toHaveLength(2);
 
       const [project1, project2]: Project[] = paperjs.projects;
@@ -120,6 +121,7 @@ describe("nested queries involving Projects", () => {
 
     await testManager.getGraphQLData({ query: GET_ALL_MEETS_WITH_NESTED_PROJECTS }).then(({ meets }) => {
       const [algolia, paperjs]: Meet[] = meets;
+      expect(algolia.projects).toHaveLength(1);
       expect(paperjs.projects).toHaveLength(0);
     });
   });
