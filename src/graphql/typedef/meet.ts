@@ -63,9 +63,39 @@ const meet = gql`
     region: String!
   }
 
+  "Input that can be used to edit a meet - all fields are optional"
+  input EditMeetInput {
+    "The type of the Meet as enum string. Only hackMeet is supported for now"
+    meetType: String
+
+    title: String
+
+    "A short blurb about the Meet"
+    description: String
+
+    "The instructions in markdown format"
+    instructions: String
+
+    registerLink: String
+    coverImageUrl: String
+
+    "Wallclock times"
+    startTime: String
+    endTime: String
+
+    "The IANA region used with wallclock time"
+    region: String
+  }
+
   extend type Mutation {
     "Creates a new meet (only hackMeet is supported for now)"
     createMeet(input: CreateMeetInput!): Meet!
+
+    "Edits a meet (requires admin privileges)"
+    editMeet(id: UUID!, input: EditMeetInput!): Meet!
+
+    "Deletes a meet (requires admin privileges)"
+    deleteMeet(id: UUID!): Boolean!
   }
 `;
 

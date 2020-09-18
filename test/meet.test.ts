@@ -1,5 +1,14 @@
 import { Meet } from "../src/types/gqlGeneratedTypes";
-import { ALGOLIA, CREATE_MEET, GET_ALL_MEETS, NEW_MEET_INPUT, PAPERJS } from "./src/meetConstants";
+import {
+  ALGOLIA,
+  CREATE_MEET,
+  DELETE_MEET,
+  EDIT_MEET,
+  EDIT_MEET_INPUT,
+  GET_ALL_MEETS,
+  NEW_MEET_INPUT,
+  PAPERJS,
+} from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 
@@ -104,6 +113,184 @@ describe("Creating meets", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/title/i);
+      });
+  });
+});
+
+describe("Editing meets", () => {
+  let cookies: string[];
+  let meetId: string;
+
+  beforeAll(async () => {
+    cookies = await getAdminCookies();
+  });
+
+  // Create a constant meet that will be edited and get its ID
+  beforeEach(async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_MEET,
+        variables: { input: NEW_MEET_INPUT },
+        cookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createMeet }) => {
+        meetId = createMeet.id;
+      });
+  });
+
+  it("edits a meet successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: EDIT_MEET_INPUT },
+        cookies,
+      })
+      .then(testManager.parseData)
+      .then(({ editMeet }) => {
+        expect(editMeet.title).not.toBe(NEW_MEET_INPUT.title);
+        expect(editMeet.title).toBe(EDIT_MEET_INPUT.title);
+        expect(editMeet.registerLink).toBe(EDIT_MEET_INPUT.registerLink);
+      });
+  });
+
+  it("updates the updatedAt timestamp after editing a meet", async () => {
+    // Check that createdAt is initially equal to updatedAt
+    await testManager
+      .getGraphQLData({ query: GET_ALL_MEETS })
+      .then(({ meets }) => expect(meets[0].createdAt).toBe(meets[0].updatedAt));
+
+    await testManager
+      .getGraphQLData({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: EDIT_MEET_INPUT },
+        cookies,
+      })
+      .then(({ editMeet }) => {
+        expect(editMeet.createdAt < editMeet.updatedAt).toBe(true);
+      });
+  });
+
+  it("returns an 'unauthorized' error message when editing a meet without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: EDIT_MEET_INPUT },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_MEET_INPUT },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+
+  it("gives an error message when no edit fields are specified in the mutation", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: {} },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/field/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a non-existent field", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: { nonexistent: "hello" } },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_MEET,
+        variables: { id: meetId, input: { deleted: true } },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+});
+
+describe("Deleting meets", () => {
+  let cookies: string[];
+  let meetId: string;
+
+  beforeAll(async () => {
+    cookies = await getAdminCookies();
+  });
+
+  // Create a constant meet that will be edited and get its ID
+  beforeEach(async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_MEET,
+        variables: { input: NEW_MEET_INPUT },
+        cookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createMeet }) => {
+        meetId = createMeet.id;
+      });
+  });
+
+  it("deletes a meet successfully when admin is logged in", async () => {
+    await testManager.getGraphQLData({ query: GET_ALL_MEETS }).then(({ meets }) => expect(meets).toHaveLength(1));
+
+    await testManager
+      .getGraphQLData({
+        query: DELETE_MEET,
+        variables: { id: meetId },
+        cookies,
+      })
+      .then(({ deleteMeet }) => {
+        expect(deleteMeet).toBe(true);
+      });
+
+    await testManager.getGraphQLData({ query: GET_ALL_MEETS }).then(({ meets }) => expect(meets).toHaveLength(0));
+  });
+
+  it("returns an 'unauthorized' error message when deleting a meet without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_MEET,
+        variables: { id: meetId },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_MEET,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
+        cookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
 });

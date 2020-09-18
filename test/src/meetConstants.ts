@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { CreateMeetInput, Meet } from "../../src/types/gqlGeneratedTypes";
+import { CreateMeetInput, EditMeetInput, Meet } from "../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -44,6 +44,7 @@ export const GET_ALL_MEETS = gql`
       startTime
       endTime
       createdAt
+      updatedAt
       region
     }
   }
@@ -62,6 +63,7 @@ export const CREATE_MEET = gql`
       startTime
       endTime
       createdAt
+      updatedAt
       region
     }
   }
@@ -78,3 +80,33 @@ export const NEW_MEET_INPUT: CreateMeetInput = {
   endTime: "2020-06-08T16:00:00.000",
   region: "America/Toronto",
 };
+
+export const EDIT_MEET = gql`
+  mutation editMeet($id: UUID!, $input: EditMeetInput!) {
+    editMeet(id: $id, input: $input) {
+      id
+      meetType
+      title
+      description
+      instructions
+      registerLink
+      coverImageUrl
+      startTime
+      endTime
+      createdAt
+      region
+      updatedAt
+    }
+  }
+`;
+
+export const EDIT_MEET_INPUT: EditMeetInput = {
+  title: "Colour Palette Generator",
+  registerLink: "http://yahoo.com",
+};
+
+export const DELETE_MEET = gql`
+  mutation deleteMeet($id: UUID!) {
+    deleteMeet(id: $id)
+  }
+`;

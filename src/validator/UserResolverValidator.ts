@@ -19,7 +19,7 @@ export default class UserResolverValidator {
   getOne(args: QueryUserArgs, context: ServerContext): Promise<UserServiceGetOneArgs> {
     return this.userDao
       .getOne(args)
-      .then((user) => <User>ensureExists("User")(user))
+      .then((user) => ensureExists<User>("User")(user))
       .then(({ id, username }) => ({ id, username }));
   }
 
