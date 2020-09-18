@@ -39,6 +39,8 @@ export type User = {
   /** A JWT created for the user after login (also sent in cookies) */
   token?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
+  /** All the projects that the user has submitted */
+  projects?: Maybe<Array<Maybe<Project>>>;
 };
 
 export type Query = {
@@ -55,6 +57,10 @@ export type Query = {
   post?: Maybe<Post>;
   /** Gets all the meets in descending startTime order */
   meets?: Maybe<Array<Maybe<Meet>>>;
+  /** Search for projects by userId or meetID */
+  projects?: Maybe<Array<Maybe<Project>>>;
+  /** Get a single project by its ID */
+  project?: Maybe<Project>;
 };
 
 
@@ -77,6 +83,17 @@ export type QueryPostsArgs = {
 
 
 export type QueryPostArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryProjectsArgs = {
+  userId?: Maybe<Scalars['UUID']>;
+  meetId?: Maybe<Scalars['UUID']>;
+};
+
+
+export type QueryProjectArgs = {
   id: Scalars['UUID'];
 };
 
@@ -174,6 +191,8 @@ export type Meet = {
   updatedAt: Scalars['DateTime'];
   /** The IANA region used with wallclock time */
   region: Scalars['String'];
+  /** All the projects that are associated with the Meet */
+  projects?: Maybe<Array<Maybe<Project>>>;
 };
 
 /** The input needed to create a new meet */
@@ -194,7 +213,7 @@ export type CreateMeetInput = {
   region: Scalars['String'];
 };
 
-/** Input that can be used to edit a meet */
+/** Input that can be used to edit a meet - all fields are optional */
 export type EditMeetInput = {
   /** The type of the Meet as enum string. Only hackMeet is supported for now */
   meetType?: Maybe<Scalars['String']>;
@@ -210,6 +229,28 @@ export type EditMeetInput = {
   endTime?: Maybe<Scalars['String']>;
   /** The IANA region used with wallclock time */
   region?: Maybe<Scalars['String']>;
+};
+
+export type Project = {
+  __typename?: 'Project';
+  /** ID of project in UUID */
+  id: Scalars['UUID'];
+  /** ID of the user who created the project */
+  userId: Scalars['UUID'];
+  /** ID of the Meet associated with this project (optional) */
+  meetId?: Maybe<Scalars['UUID']>;
+  /** Title given to the project */
+  title: Scalars['String'];
+  /** The URL (i.e. GitHub link) of the project's public source code */
+  sourceCodeUrl: Scalars['String'];
+  /** The URL of the project's deployment */
+  liveUrl: Scalars['String'];
+  /** DateTime that the project was submitted */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the project was edited */
+  updatedAt: Scalars['DateTime'];
+  /** The user who created the project */
+  user: User;
 };
 
 
@@ -302,6 +343,7 @@ export type ResolversTypes = {
   Meet: ResolverTypeWrapper<Meet>;
   CreateMeetInput: CreateMeetInput;
   EditMeetInput: EditMeetInput;
+  Project: ResolverTypeWrapper<Project>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -318,6 +360,7 @@ export type ResolversParentTypes = {
   Meet: Meet;
   CreateMeetInput: CreateMeetInput;
   EditMeetInput: EditMeetInput;
+  Project: Project;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -340,6 +383,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -350,6 +394,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
   meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
+  project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -384,6 +430,20 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type ProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sourceCodeUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  liveUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -395,6 +455,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;
   Meet?: MeetResolvers<ContextType>;
+  Project?: ProjectResolvers<ContextType>;
 };
 
 

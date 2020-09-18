@@ -3,6 +3,8 @@ import * as Knex from "knex";
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("projects", (table) => {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
+    table.uuid("userId").notNullable();
+    table.uuid("meetId");
     table.text("title").notNullable().unique();
     table.text("sourceCodeUrl").notNullable();
     table.text("liveUrl").notNullable();
@@ -12,8 +14,6 @@ export async function up(knex: Knex): Promise<void> {
 
     // Constraints and indices
     table.primary(["id"]);
-    table.uuid("userId").notNullable();
-    table.uuid("meetId");
     table.foreign("userId").references("users.id").onDelete("CASCADE");
     table.foreign("meetId").references("meets.id").onDelete("SET NULL");
   });
