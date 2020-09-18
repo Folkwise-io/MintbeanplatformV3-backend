@@ -1,5 +1,5 @@
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
-import { AMY_PAPERJS_PROJECT, GET_PROJECT } from "./src/projectConstants";
+import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, GET_PROJECT } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
 
@@ -20,12 +20,28 @@ afterAll(async () => {
   await testManager.destroy();
 });
 
-describe("'project' query", () => {
+describe("'project' by id root query", () => {
   it("gets a project by id", async () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
       .getGraphQLData({ query: GET_PROJECT, variables: { id: AMY_PAPERJS_PROJECT.id } })
       .then(({ project }) => expect(project).toMatchObject(AMY_PAPERJS_PROJECT));
+  });
+
+  it("returns null if project id does not exist", async () => {
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+
+    await testManager
+      .getGraphQLData({ query: GET_PROJECT, variables: { id: AMY_ALGOLIA_PROJECT.id } })
+      .then(({ project }) => expect(project).toBeNull());
+  });
+
+  it("returns an appropriate error if UUID is malformed", async () => {
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+
+    await testManager
+      .getErrorMessage({ query: GET_PROJECT, variables: { id: "12345" } })
+      .then((errorMessage) => expect(errorMessage).toMatch(/UUID/i));
   });
 });
