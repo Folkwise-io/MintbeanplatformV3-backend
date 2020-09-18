@@ -23,6 +23,7 @@ afterAll(async () => {
 describe("'project' query", () => {
   it("gets a project by id", async () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+
     await testManager
       .getGraphQLData({ query: GET_PROJECT, variables: { id: AMY_PAPERJS_PROJECT.id } })
       .then(({ project }) => expect(project).toMatchObject(AMY_PAPERJS_PROJECT));

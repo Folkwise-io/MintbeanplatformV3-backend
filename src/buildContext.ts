@@ -10,6 +10,8 @@ import MeetService from "./service/MeetService";
 import MeetResolverValidator from "./validator/MeetResolverValidator";
 import ProjectDao from "./dao/ProjectDao";
 import ProjectDaoKnex from "./dao/ProjectDaoKnex";
+import ProjectService from "./service/ProjectService";
+import ProjectResolverValidator from "./validator/ProjectResolverValidator";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -35,19 +37,25 @@ export interface ResolverContext {
   userService: UserService;
   meetResolverValidator: MeetResolverValidator;
   meetService: MeetService;
+  projectResolverValidator: ProjectResolverValidator;
+  projectService: ProjectService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao } = persistenceContext;
+  const { userDao, meetDao, projectDao } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
   const meetService = new MeetService(meetDao);
+  const projectResolverValidator = new ProjectResolverValidator(projectDao)
+  const projectService = new ProjectService(projectDao)
 
   return {
     userResolverValidator,
     userService,
     meetResolverValidator,
     meetService,
+    projectResolverValidator,
+    projectService,
   };
 }

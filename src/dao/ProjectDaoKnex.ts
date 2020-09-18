@@ -1,21 +1,27 @@
 import Knex from "knex";
+import { ProjectServiceGetOneArgs } from "../service/ProjectService";
 import { Project } from "../types/gqlGeneratedTypes";
 import ProjectDao from "./ProjectDao";
 
 export default class ProjectDaoKnex implements ProjectDao {
   constructor(private knex: Knex) {}
-  getOne(args: any): Promise<any> {
+  getOne(args: ProjectServiceGetOneArgs): Promise<Project> {
+    const project = this.knex<Project>("projects").where(args).first();
+    return project as Promise<Project>;
+  }
+
+  getMany(args: any): Promise<Project[]> {
     throw new Error("Method not implemented.");
   }
-  getMany(args: any): Promise<any[]> {
+
+  addOne(args: any): Promise<Project> {
     throw new Error("Method not implemented.");
   }
-  addOne(args: any): Promise<any> {
+
+  editOne(id: string, input: any): Promise<Project> {
     throw new Error("Method not implemented.");
   }
-  editOne(id: string, input: any): Promise<any> {
-    throw new Error("Method not implemented.");
-  }
+
   deleteOne(id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
   }
