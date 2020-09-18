@@ -22,6 +22,17 @@ export const AMY_ALGOLIA_PROJECT = {
   updatedAt: "2020-09-15T12:00:00.000Z",
 };
 
+export const BOB_PAPERJS_PROJECT = {
+  id: "00000000-0000-4000-a000-000000000001",
+  userId: "00000000-0000-4000-a000-000000000000",
+  meetId: "00000000-0000-0000-0000-000000000000",
+  title: "Bob's PaperJS Submission",
+  sourceCodeUrl: "http://github.com",
+  liveUrl: "http://google.com",
+  createdAt: "2020-10-15T12:00:00.000Z",
+  updatedAt: "2020-10-15T12:00:00.000Z",
+};
+
 export const GET_PROJECT = gql`
   query getProjectById($id: UUID!) {
     project(id: $id) {
@@ -37,7 +48,7 @@ export const GET_PROJECT = gql`
   }
 `;
 
-export const GET_PROJECT_NESTED_USER = gql`
+export const GET_PROJECT_WITH_NESTED_USER = gql`
   query getProjectById($id: UUID!) {
     project(id: $id) {
       id
@@ -57,12 +68,41 @@ export const GET_PROJECT_NESTED_USER = gql`
   }
 `;
 
-export const GET_USER_NESTED_PROJECTS = gql`
+export const GET_USER_WITH_NESTED_PROJECTS = gql`
   query getUsersProjects($id: UUID!) {
     user(id: $id) {
       id
       firstName
       lastName
+      projects {
+        id
+        userId
+        meetId
+        title
+        sourceCodeUrl
+        liveUrl
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+export const GET_ALL_MEETS_WITH_NESTED_PROJECTS = gql`
+  query getAllMeets {
+    meets {
+      id
+      meetType
+      title
+      description
+      instructions
+      registerLink
+      coverImageUrl
+      startTime
+      endTime
+      createdAt
+      updatedAt
+      region
       projects {
         id
         userId
