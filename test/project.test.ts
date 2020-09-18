@@ -1,3 +1,4 @@
+import { Project } from "../src/types/gqlGeneratedTypes";
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
 import {
   AMY_ALGOLIA_PROJECT,
@@ -71,11 +72,16 @@ describe("nested queries involving Projects", () => {
       .then(({ project }) => expect(AMY).toMatchObject(project.user));
   });
 
-  it("gets the project objects of the user when querying users", async () => {
-    await testManager.addProjects([AMY_PAPERJS_PROJECT, AMY_ALGOLIA_PROJECT]);
+  it("gets the project objects of the user when querying users, sorted by time of submission", async () => {
+    await testManager.addProjects([AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT]);
 
     await testManager
       .getGraphQLData({ query: GET_USER_NESTED_PROJECTS, variables: { id: AMY.id } })
-      .then(({ user }) => expect(user.projects).toHaveLength(2));
+      .then(({ user }) => {
+        expect(user.projects).toHaveLength(2);
+
+        const [project1, project2]: Project[] = user.projects;
+        expect(project1.createdAt > project2.createdAt).toBe(true);
+      });
   });
 });
