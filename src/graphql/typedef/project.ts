@@ -50,6 +50,28 @@ const project = gql`
     "Get a single project by its ID"
     project(id: UUID!): Project
   }
+
+  "Fields required to create a new project"
+  input CreateProjectInput {
+    "ID of the user who created the project"
+    userId: UUID!
+
+    "ID of the Meet associated with this project (optional)"
+    meetId: UUID
+
+    "Title given to the project"
+    title: String!
+
+    "The URL (i.e. GitHub link) of the project's public source code"
+    sourceCodeUrl: String!
+
+    "The URL of the project's deployment"
+    liveUrl: String!
+  }
+
+  extend type Mutation {
+    createProject(input: CreateProjectInput!): Project!
+  }
 `;
 
 export default project;
