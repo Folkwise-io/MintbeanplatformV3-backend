@@ -7,6 +7,8 @@ const testManager = TestManager.build();
 
 // Add foreign keys to DB
 beforeAll(async () => {
+  await testManager.deleteAllUsers();
+  await testManager.deleteAllMeets();
   await testManager.addUsers([AMY, BOB]);
   await testManager.addMeets([PAPERJS, ALGOLIA]);
 });
@@ -37,11 +39,19 @@ describe("'project' by id root query", () => {
       .then(({ project }) => expect(project).toBeNull());
   });
 
-  it("returns an appropriate error if UUID is malformed", async () => {
+  it("returns an appropriate error message if UUID is malformed", async () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
       .getErrorMessage({ query: GET_PROJECT, variables: { id: "12345" } })
-      .then((errorMessage) => expect(errorMessage).toMatch(/UUID/i));
+      .then((errorMessage) => expect(errorMessage).toMatch(/invalid.*UUID/i));
+  });
+
+  it("returns an appropriate error message if no UUID is supplied", async () => {
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+
+    await testManager
+      .getErrorMessage({ query: GET_PROJECT, variables: {} })
+      .then((errorMessage) => expect(errorMessage).toMatch(/id.*not provided/i));
   });
 });
