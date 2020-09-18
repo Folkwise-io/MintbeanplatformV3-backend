@@ -55,6 +55,8 @@ export type Query = {
   posts?: Maybe<Array<Maybe<Post>>>;
   /** Get a single post by its ID */
   post?: Maybe<Post>;
+  /** Get a meet by ID */
+  meet?: Maybe<Meet>;
   /** Gets all the meets in descending startTime order */
   meets?: Maybe<Array<Maybe<Meet>>>;
   /** Search for projects by userId or meetID */
@@ -83,6 +85,11 @@ export type QueryPostsArgs = {
 
 
 export type QueryPostArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryMeetArgs = {
   id: Scalars['UUID'];
 };
 
@@ -395,6 +402,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
+  meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType, RequireFields<QueryMeetArgs, 'id'>>;
   meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;

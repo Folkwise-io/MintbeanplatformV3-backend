@@ -31,6 +31,25 @@ export const ALGOLIA: Meet = {
   region: "America/Toronto",
 };
 
+export const GET_MEETS_BY_ID = gql`
+  query getMeetById($id: UUID!) {
+    meet(id: $id) {
+      id
+      meetType
+      title
+      description
+      instructions
+      registerLink
+      coverImageUrl
+      startTime
+      endTime
+      createdAt
+      updatedAt
+      region
+    }
+  }
+`;
+
 export const GET_ALL_MEETS = gql`
   query getAllMeets {
     meets {

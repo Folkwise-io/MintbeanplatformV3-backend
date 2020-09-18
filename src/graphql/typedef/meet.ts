@@ -35,6 +35,9 @@ const meet = gql`
   }
 
   extend type Query {
+    "Get a meet by ID"
+    meet(id: UUID!): Meet
+
     "Gets all the meets in descending startTime order"
     meets: [Meet]
   }
