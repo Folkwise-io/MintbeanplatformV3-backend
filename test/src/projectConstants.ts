@@ -49,7 +49,7 @@ export const GET_PROJECT = gql`
 `;
 
 export const GET_PROJECT_WITH_NESTED_USER = gql`
-  query getProjectById($id: UUID!) {
+  query getProjectByIdWithUser($id: UUID!) {
     project(id: $id) {
       id
       userId
@@ -112,6 +112,35 @@ export const GET_ALL_MEETS_WITH_NESTED_PROJECTS = gql`
         liveUrl
         createdAt
         updatedAt
+      }
+    }
+  }
+`;
+
+export const GET_PROJECT_WITH_NESTED_MEET = gql`
+  query getProjectByIdWithMeet($id: UUID!) {
+    project(id: $id) {
+      id
+      userId
+      meetId
+      title
+      sourceCodeUrl
+      liveUrl
+      createdAt
+      updatedAt
+      meet {
+        id
+        meetType
+        title
+        description
+        instructions
+        registerLink
+        coverImageUrl
+        startTime
+        endTime
+        createdAt
+        updatedAt
+        region
       }
     }
   }

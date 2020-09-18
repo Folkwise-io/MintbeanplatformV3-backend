@@ -28,6 +28,9 @@ const project = gql`
 
     "The user who created the project"
     user: User
+
+    "The meet associated with the project"
+    meet: Meet
   }
 
   extend type User {

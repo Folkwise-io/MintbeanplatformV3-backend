@@ -251,6 +251,8 @@ export type Project = {
   updatedAt: Scalars['DateTime'];
   /** The user who created the project */
   user?: Maybe<User>;
+  /** The meet associated with the project */
+  meet?: Maybe<Meet>;
 };
 
 
@@ -444,6 +446,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
