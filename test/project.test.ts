@@ -1,5 +1,5 @@
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
-import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, GET_PROJECT } from "./src/projectConstants";
+import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, GET_PROJECT, GET_PROJECT_NESTED_USER } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
 
@@ -59,7 +59,7 @@ describe("'project' by id root query", () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
-      .getGraphQLData({ query: GET_PROJECT, variables: { id: AMY_PAPERJS_PROJECT.id } })
-      .then(({ project }) => expect(project.user).toMatchObject(AMY));
+      .getGraphQLData({ query: GET_PROJECT_NESTED_USER, variables: { id: AMY_PAPERJS_PROJECT.id } })
+      .then(({ project }) => expect(AMY).toMatchObject(project.user));
   });
 });

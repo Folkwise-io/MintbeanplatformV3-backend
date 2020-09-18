@@ -48,7 +48,11 @@ export const GET_PROJECT_NESTED_USER = gql`
       liveUrl
       createdAt
       updatedAt
-      user
+      user {
+        id
+        firstName
+        lastName
+      }
     }
   }
 `;

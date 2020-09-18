@@ -70,6 +70,11 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           });
       },
     },
+    Project: {
+      user: (project) => {
+        return userService.getOne({ id: project.userId });
+      },
+    },
   };
 };
 
