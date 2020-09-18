@@ -6,15 +6,15 @@ import UserDao, { UserDaoAddOneArgs } from "./UserDao";
 export default class UserDaoKnex implements UserDao {
   constructor(private knex: Knex) {}
   async getOne(args: UserServiceGetOneArgs): Promise<User> {
-    const user = this.knex<User>("users")
-      .where({ ...args })
+    const user = this.knex("users")
+      .where({ ...args, deleted: false })
       .first();
     return user as Promise<User>;
   }
 
   async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    return this.knex<User>("users")
-      .where({ ...args })
+    return this.knex("users")
+      .where({ ...args, deleted: false })
       .orderBy("username");
   }
 
