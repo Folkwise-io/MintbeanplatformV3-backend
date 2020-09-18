@@ -12,9 +12,9 @@ export async function up(knex: Knex): Promise<void> {
 
     // Constraints and indices
     table.primary(["id"]);
-    table.uuid("userId"); // Make this not nullable, on delete cascade?
+    table.uuid("userId").notNullable();
     table.uuid("meetId");
-    table.foreign("userId").references("users.id").onDelete("SET NULL");
+    table.foreign("userId").references("users.id").onDelete("CASCADE");
     table.foreign("meetId").references("meets.id").onDelete("SET NULL");
   });
 }
