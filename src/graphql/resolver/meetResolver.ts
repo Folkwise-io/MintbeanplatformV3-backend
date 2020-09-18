@@ -11,6 +11,10 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
       meets: (_root, args, context: ServerContext): Promise<Meet[]> => {
         return meetResolverValidator.getMany(args, context).then((args) => meetService.getMany(args, context));
       },
+
+      meet: (_root, args, context: ServerContext): Promise<Meet> => {
+        return meetService.getOne(args, context);
+      },
     },
 
     Mutation: {
