@@ -27,7 +27,7 @@ export const ALGOLIA: Meet = {
   startTime: "2020-10-15T13:00:00.000",
   endTime: "2020-10-15T17:00:00.000",
   createdAt: "2020-10-15T12:00:00.000Z",
-  updatedAt: "2020-08-15T12:00:00.000Z",
+  updatedAt: "2020-10-15T12:00:00.000Z",
   region: "America/Toronto",
 };
 
