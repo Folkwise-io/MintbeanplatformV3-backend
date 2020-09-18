@@ -36,3 +36,19 @@ export const GET_PROJECT = gql`
     }
   }
 `;
+
+export const GET_PROJECT_NESTED_USER = gql`
+  query getProjectById($id: UUID!) {
+    project(id: $id) {
+      id
+      userId
+      meetId
+      title
+      sourceCodeUrl
+      liveUrl
+      createdAt
+      updatedAt
+      user
+    }
+  }
+`;

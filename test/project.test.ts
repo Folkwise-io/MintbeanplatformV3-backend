@@ -54,4 +54,12 @@ describe("'project' by id root query", () => {
       .getErrorMessage({ query: GET_PROJECT, variables: {} })
       .then((errorMessage) => expect(errorMessage).toMatch(/id.*not provided/i));
   });
+
+  it("gets the user object of the project as a nested field", async () => {
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+
+    await testManager
+      .getGraphQLData({ query: GET_PROJECT, variables: { id: AMY_PAPERJS_PROJECT.id } })
+      .then(({ project }) => expect(project.user).toMatchObject(AMY));
+  });
 });
