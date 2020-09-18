@@ -1,5 +1,11 @@
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
-import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, GET_PROJECT, GET_PROJECT_NESTED_USER } from "./src/projectConstants";
+import {
+  AMY_ALGOLIA_PROJECT,
+  AMY_PAPERJS_PROJECT,
+  GET_PROJECT,
+  GET_PROJECT_NESTED_USER,
+  GET_USER_NESTED_PROJECTS,
+} from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
 
@@ -54,12 +60,22 @@ describe("'project' by id root query", () => {
       .getErrorMessage({ query: GET_PROJECT, variables: {} })
       .then((errorMessage) => expect(errorMessage).toMatch(/id.*not provided/i));
   });
+});
 
+describe("nested queries involving Projects", () => {
   it("gets the user object of the project as a nested field", async () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
       .getGraphQLData({ query: GET_PROJECT_NESTED_USER, variables: { id: AMY_PAPERJS_PROJECT.id } })
       .then(({ project }) => expect(AMY).toMatchObject(project.user));
+  });
+
+  it("gets the project objects of the user when querying users", async () => {
+    await testManager.addProjects([AMY_PAPERJS_PROJECT, AMY_ALGOLIA_PROJECT]);
+
+    await testManager
+      .getGraphQLData({ query: GET_USER_NESTED_PROJECTS, variables: { id: AMY.id } })
+      .then(({ user }) => expect(user.projects).toHaveLength(2));
   });
 });
