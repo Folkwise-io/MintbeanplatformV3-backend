@@ -4,11 +4,13 @@ import {
   AMY_ALGOLIA_PROJECT,
   AMY_PAPERJS_PROJECT,
   BOB_PAPERJS_PROJECT,
+  CREATE_PROJECT,
   GET_ALL_MEETS_WITH_NESTED_PROJECTS,
   GET_PROJECT,
   GET_PROJECT_WITH_NESTED_MEET,
   GET_PROJECT_WITH_NESTED_USER,
   GET_USER_WITH_NESTED_PROJECTS,
+  NEW_PROJECT,
 } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
@@ -133,5 +135,12 @@ describe("nested queries involving Projects", () => {
     await testManager
       .getGraphQLData({ query: GET_PROJECT_WITH_NESTED_MEET, variables: { id: PAPERJS.id } })
       .then(({ project }) => expect(PAPERJS).toMatchObject(project.meet));
+  });
+});
+
+describe("Creating projects", () => {
+  it("creates a project when given all the required info", async () => {
+await testManager.getGraphQLData({query: CREATE_PROJECT, variables: {input: NEW_PROJECT}})
+
   });
 });
