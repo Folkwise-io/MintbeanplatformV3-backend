@@ -14,6 +14,7 @@ import {
 } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
+import { getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
@@ -139,8 +140,8 @@ describe("nested queries involving Projects", () => {
 });
 
 describe("Creating projects", () => {
-  it("creates a project when given all the required info", async () => {
-await testManager.getGraphQLData({query: CREATE_PROJECT, variables: {input: NEW_PROJECT}})
-
+  it("creates a project when user is logged in, and given all the required info", async () => {
+    const bobCookies = await getBobCookies();
+    await testManager.getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies });
   });
 });
