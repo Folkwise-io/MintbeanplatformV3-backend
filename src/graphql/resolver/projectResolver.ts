@@ -32,11 +32,12 @@ const projectResolver = (
 
         if (!currentUserId) {
           throw new AuthenticationError("You are not authorized to create a project! Please log in first.");
-        } else if (!context.getIsAdmin() || (inputUserId && inputUserId !== currentUserId)) {
+        } else if (!context.getIsAdmin() && inputUserId && inputUserId !== currentUserId) {
           throw new AuthenticationError("You are not authorized to create a project with the supplied userId!");
         }
 
-        return projectResolverValidator.addOne(args).then((input) => projectService.addOne(input));
+        const argsWithResolvedUserId = { ...args, input: { ...args.input, userId: inputUserId || currentUserId } };
+        return projectResolverValidator.addOne(argsWithResolvedUserId).then((input) => projectService.addOne(input));
       },
     },
   };
