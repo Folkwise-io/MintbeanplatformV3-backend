@@ -270,8 +270,8 @@ export type Project = {
 
 /** Fields required to create a new project */
 export type CreateProjectInput = {
-  /** ID of the user who created the project */
-  userId: Scalars['UUID'];
+  /** ID of the user who created the project (optional) */
+  userId?: Maybe<Scalars['UUID']>;
   /** ID of the Meet associated with this project (optional) */
   meetId?: Maybe<Scalars['UUID']>;
   /** Title given to the project */

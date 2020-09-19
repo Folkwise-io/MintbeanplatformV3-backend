@@ -53,8 +53,8 @@ const project = gql`
 
   "Fields required to create a new project"
   input CreateProjectInput {
-    "ID of the user who created the project"
-    userId: UUID!
+    "ID of the user who created the project (optional)"
+    userId: UUID
 
     "ID of the Meet associated with this project (optional)"
     meetId: UUID

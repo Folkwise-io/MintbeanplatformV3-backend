@@ -148,7 +148,6 @@ export const GET_PROJECT_WITH_NESTED_MEET = gql`
 `;
 
 export const NEW_PROJECT: CreateProjectInput = {
-  userId: "00000000-0000-4000-a000-000000000000",
   meetId: "00000000-0000-0000-0000-000000000000",
   title: "Bob's PaperJS Submission",
   sourceCodeUrl: "http://github.com",
