@@ -14,6 +14,11 @@ export const AMY: User = {
   isAdmin: true,
 };
 
+export const AMY_CREDENTIALS = {
+  email: "a@a.com",
+  password: "password",
+};
+
 export const BOB: User = {
   id: "00000000-0000-4000-a000-000000000000",
   username: "bbarker",
@@ -24,6 +29,11 @@ export const BOB: User = {
   createdAt: "2020-04-15",
   updatedAt: "2020-04-15",
   isAdmin: false,
+};
+
+export const BOB_CREDENTIALS = {
+  email: "b@b.com",
+  password: "password",
 };
 
 export const BAD_USERNAME_QUERY = gql`
@@ -70,11 +80,6 @@ export const LOGIN = gql`
     }
   }
 `;
-
-export const AMY_CREDENTIALS = {
-  email: "a@a.com",
-  password: "password",
-};
 
 export const LOGIN_MUTATION_WITH_TOKEN = gql`
   mutation correctLogin {
