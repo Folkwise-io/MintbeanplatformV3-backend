@@ -11,6 +11,14 @@ export interface ProjectServiceGetManyArgs {
   meetId?: string;
 }
 
+export interface ProjectServiceAddOneInput {
+  userId?: string;
+  meetId?: string;
+  title: string;
+  sourceCodeUrl: string;
+  liveUrl: string;
+}
+
 export default class ProjectService implements EntityService<Project> {
   constructor(private projectDao: ProjectDao) {}
 
@@ -22,7 +30,7 @@ export default class ProjectService implements EntityService<Project> {
     return this.projectDao.getMany(args);
   }
 
-  addOne(args: any, context: any): Promise<Project> {
-    throw "Not implemented";
+  addOne(input: ProjectServiceAddOneInput): Promise<Project> {
+    return this.projectDao.addOne(input);
   }
 }

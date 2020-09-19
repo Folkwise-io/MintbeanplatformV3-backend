@@ -35,8 +35,8 @@ const projectResolver = (
         } else if (!context.getIsAdmin() || (inputUserId && inputUserId !== currentUserId)) {
           throw new AuthenticationError("You are not authorized to create a project with the supplied userId!");
         }
-        // TODO: add project to db and return it
-        // return projectResolverValidator.addOne(args).then((input) => projectService.addOne(input));
+
+        return projectResolverValidator.addOne(args).then((input) => projectService.addOne(input));
       },
     },
   };
