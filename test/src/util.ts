@@ -11,6 +11,7 @@ export async function getCookies(user: User, credentials: { email: string; passw
   await testManager.deleteAllUsers();
   await testManager.addUsers([user]);
   const cookies = await testManager.getCookies({ query: LOGIN, variables: credentials });
+  await testManager.deleteAllUsers();
   await testManager.destroy();
   return cookies;
 }

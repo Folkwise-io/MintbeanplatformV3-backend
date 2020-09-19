@@ -14,14 +14,19 @@ import {
 } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
-import { getBobCookies } from "./src/util";
+import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
-// Add foreign keys to DB
+let bobCookies: string[];
+let adminCookies: string[];
+
+// Add foreign keys to DB, get cookies
 beforeAll(async () => {
   await testManager.deleteAllUsers();
   await testManager.deleteAllMeets();
+  bobCookies = await getBobCookies();
+  adminCookies = await getAdminCookies();
   await testManager.addUsers([AMY, BOB]);
   await testManager.addMeets([PAPERJS, ALGOLIA]);
 });
@@ -141,7 +146,6 @@ describe("nested queries involving Projects", () => {
 
 describe("Creating projects", () => {
   it("creates a project when user is logged in, and given all the required info", async () => {
-    const bobCookies = await getBobCookies();
     await testManager
       .getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies })
       .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
@@ -154,7 +158,6 @@ describe("Creating projects", () => {
   });
 
   it("gives an error message when supplying a userId that differs from cookie's userId", async () => {
-    const bobCookies = await getBobCookies();
     const input = { ...NEW_PROJECT, userId: AMY.id };
     await testManager
       .getErrorMessage({
@@ -166,13 +169,23 @@ describe("Creating projects", () => {
   });
 
   it("does not give an error message when supplying a userId that is the same as cookie's userId", async () => {
-    const bobCookies = await getBobCookies();
     const input = { ...NEW_PROJECT, userId: BOB.id };
     await testManager
       .getGraphQLData({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
+      })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
+
+  it("does not give an error message when supplying a userId that differs from cookie's userId but user is admin", async () => {
+    const input = { ...NEW_PROJECT, userId: BOB.id };
+    await testManager
+      .getGraphQLData({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: adminCookies,
       })
       .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
   });
