@@ -189,4 +189,33 @@ describe("Creating projects", () => {
       })
       .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
   });
+
+  it("gives an error message when the title is too long", async () => {
+    const input = {
+      ...NEW_PROJECT,
+      title:
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/title/i));
+  });
+
+  it("gives an error message when the url is not valid", async () => {
+    const input = {
+      ...NEW_PROJECT,
+      liveUrl: "httpaaaaaaaaaaaaaaaaaaaaa",
+    };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/url/i));
+  });
 });

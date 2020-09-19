@@ -67,6 +67,8 @@ const project = gql`
 
     "The URL of the project's deployment"
     liveUrl: String!
+
+    # TODO: Add mediaAssets: [MediaAssets] as param
   }
 
   extend type Mutation {
