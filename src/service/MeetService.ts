@@ -37,8 +37,8 @@ export interface MeetServiceEditOneInput {
 
 export default class MeetService implements EntityService<Meet> {
   constructor(private meetDao: MeetDao) {}
-  async getOne(args: Args, context: any): Promise<Meet> {
-    throw new Error("Method not implemented");
+  async getOne(args: MeetServiceGetOneArgs, context: any): Promise<Meet> {
+    return this.meetDao.getOne(args);
   }
 
   async getMany(args: MeetServiceGetManyArgs, context: any): Promise<Meet[]> {

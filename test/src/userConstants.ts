@@ -34,6 +34,7 @@ export const BAD_USERNAME_QUERY = gql`
     }
   }
 `;
+
 export const BAD_UUID_QUERY = gql`
   query badUserId {
     user(id: "000000") {

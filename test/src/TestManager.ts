@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { Meet, User } from "../../src/types/gqlGeneratedTypes";
+import { Meet, Project, User } from "../../src/types/gqlGeneratedTypes";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
@@ -62,12 +62,20 @@ export default class TestManager {
     return this.params.persistenceContext.meetDao.addMany(meets).then(() => this);
   }
 
+  addProjects(projects: Project[]): Promise<TestManager> {
+    return this.params.persistenceContext.projectDao.addMany(projects).then(() => this);
+  }
+
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }
 
   deleteAllMeets(): Promise<void> {
     return this.params.persistenceContext.meetDao.deleteAll();
+  }
+
+  deleteAllProjects(): Promise<void> {
+    return this.params.persistenceContext.projectDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {

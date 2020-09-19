@@ -6,6 +6,7 @@ import {
   EDIT_MEET,
   EDIT_MEET_INPUT,
   GET_ALL_MEETS,
+  GET_MEETS_BY_ID,
   NEW_MEET_INPUT,
   PAPERJS,
 } from "./src/meetConstants";
@@ -20,17 +21,21 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await testManager.deleteAllMeets();
+  await testManager.deleteAllUsers();
   await testManager.destroy();
 });
 
 describe("Querying meets", () => {
-  it("gets a meet", async () => {
+  it("gets a meet by id", async () => {
     await testManager
       .addMeets([PAPERJS])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ALL_MEETS }).then(testManager.parseData))
-      .then(({ meets }) => {
-        const [meet1] = meets;
-        expect(PAPERJS).toMatchObject(meet1);
+      .then(() =>
+        testManager
+          .getGraphQLResponse({ query: GET_MEETS_BY_ID, variables: { id: PAPERJS.id } })
+          .then(testManager.parseData),
+      )
+      .then(({ meet }) => {
+        expect(PAPERJS).toMatchObject(meet);
       });
   });
 

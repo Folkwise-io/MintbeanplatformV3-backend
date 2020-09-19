@@ -27,9 +27,28 @@ export const ALGOLIA: Meet = {
   startTime: "2020-10-15T13:00:00.000",
   endTime: "2020-10-15T17:00:00.000",
   createdAt: "2020-10-15T12:00:00.000Z",
-  updatedAt: "2020-08-15T12:00:00.000Z",
+  updatedAt: "2020-10-15T12:00:00.000Z",
   region: "America/Toronto",
 };
+
+export const GET_MEETS_BY_ID = gql`
+  query getMeetById($id: UUID!) {
+    meet(id: $id) {
+      id
+      meetType
+      title
+      description
+      instructions
+      registerLink
+      coverImageUrl
+      startTime
+      endTime
+      createdAt
+      updatedAt
+      region
+    }
+  }
+`;
 
 export const GET_ALL_MEETS = gql`
   query getAllMeets {

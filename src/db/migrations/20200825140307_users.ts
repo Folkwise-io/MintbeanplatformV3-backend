@@ -11,8 +11,9 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("isAdmin").notNullable().defaultTo(false);
+    table.boolean("deleted").notNullable().defaultTo(false);
 
-    // constraints and indices
+    // Constraints and indices
     table.primary(["id"]);
   });
 }
