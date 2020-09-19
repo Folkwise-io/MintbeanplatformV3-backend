@@ -152,4 +152,28 @@ describe("Creating projects", () => {
       .getErrorMessage({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
       .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
   });
+
+  it("gives an error message when supplying a userId that differs from cookie's userId", async () => {
+    const bobCookies = await getBobCookies();
+    const input = { ...NEW_PROJECT, userId: AMY.id };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+  });
+
+  it("does not give an error message when supplying a userId that is the same as cookie's userId", async () => {
+    const bobCookies = await getBobCookies();
+    const input = { ...NEW_PROJECT, userId: BOB.id };
+    await testManager
+      .getGraphQLData({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
 });
