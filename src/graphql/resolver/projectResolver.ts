@@ -1,3 +1,4 @@
+import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
@@ -22,6 +23,20 @@ const projectResolver = (
     Meet: {
       projects: (meet, context) => {
         return projectService.getMany({ meetId: meet.id }, context);
+      },
+    },
+    Mutation: {
+      createProject: (_root, args, context: ServerContext): Promise<Project> => {
+        const inputUserId = args.input.userId;
+        const currentUserId = context.getUserId();
+
+        if (!currentUserId) {
+          throw new AuthenticationError("You are not authorized to create a project! Please log in first.");
+        } else if (!context.getIsAdmin() || (inputUserId && inputUserId !== currentUserId)) {
+          throw new AuthenticationError("You are not authorized to create a project with the supplied userId!");
+        }
+        // TODO: add project to db and return it
+        // return projectResolverValidator.addOne(args).then((input) => projectService.addOne(input));
       },
     },
   };
