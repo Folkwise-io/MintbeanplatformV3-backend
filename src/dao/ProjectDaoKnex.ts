@@ -27,7 +27,7 @@ export default class ProjectDaoKnex implements ProjectDao {
   }
 
   async addOne(input: ProjectServiceAddOneInput): Promise<Project> {
-    const newProjects = (await this.knex("meets").insert(input).returning("*")) as Project[];
+    const newProjects = (await this.knex("projects").insert(input).returning("*")) as Project[];
     return newProjects[0];
   }
 
