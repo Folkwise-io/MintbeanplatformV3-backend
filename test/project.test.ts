@@ -142,6 +142,14 @@ describe("nested queries involving Projects", () => {
 describe("Creating projects", () => {
   it("creates a project when user is logged in, and given all the required info", async () => {
     const bobCookies = await getBobCookies();
-    await testManager.getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies });
+    await testManager
+      .getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
+
+  it("gives an error message when accessing createProject without being logged in", async () => {
+    await testManager
+      .getErrorMessage({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
   });
 });
