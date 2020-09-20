@@ -1,3 +1,4 @@
+import { MediaAsset } from "../src/types/gqlGeneratedTypes";
 import {
   GET_PROJECT_WITH_NESTED_MEDIA_ASSETS,
   AMY_PAPERJS_MEDIA_ASSET_1,
@@ -47,6 +48,16 @@ describe("Querying nested media assets in projects", () => {
       .getGraphQLData({ query: GET_PROJECT_WITH_NESTED_MEDIA_ASSETS, variables: { id: AMY_PAPERJS_PROJECT.id } })
       .then(({ project }) => {
         expect(project.mediaAssets).toHaveLength(2);
+        const [mediaAsset1, mediaAsset2]: MediaAsset[] = project.mediaAssets;
+        expect(mediaAsset1.index).toBeLessThan(mediaAsset2.index);
+        expect(AMY_PAPERJS_MEDIA_ASSET_1).toMatchObject(mediaAsset1);
+      });
+
+      await testManager
+      .getGraphQLData({ query: GET_PROJECT_WITH_NESTED_MEDIA_ASSETS, variables: { id: BOB_PAPERJS_PROJECT.id } })
+      .then(({ project }) => {
+        expect(project.mediaAssets).toHaveLength(1);
+        expect(BOB_PAPERJS_MEDIA_ASSET_1).toMatchObject(project.mediaAssets[0]);
       });
   });
 });
