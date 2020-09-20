@@ -1,4 +1,9 @@
-import { MEDIA_ASSET_1, MEDIA_ASSET_2, MEDIA_ASSET_3 } from "./src/mediaAssetConstants";
+import {
+  GET_PROJECT_WITH_NESTED_MEDIA_ASSETS,
+  MEDIA_ASSET_1,
+  MEDIA_ASSET_2,
+  MEDIA_ASSET_3,
+} from "./src/mediaAssetConstants";
 import { PAPERJS, ALGOLIA } from "./src/meetConstants";
 import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
@@ -28,8 +33,12 @@ afterAll(async () => {
 });
 
 describe("Querying nested media assets in projects", () => {
-  it("Does something", async () => {
-    await testManager.addMediaAssets([MEDIA_ASSET_1, MEDIA_ASSET_2, MEDIA_ASSET_3]).then(testManager.logResponse);
-    expect(true).toBe(true);
+  it("gets media assets of the project", async () => {
+    await testManager.addMediaAssets([MEDIA_ASSET_1, MEDIA_ASSET_2, MEDIA_ASSET_3]);
+    await testManager
+      .getGraphQLData({ query: GET_PROJECT_WITH_NESTED_MEDIA_ASSETS, variables: { id: PAPERJS.id } })
+      .then(({ project }) => {
+        expect(project.mediaAssets).toHaveLength(2);
+      });
   });
 });
