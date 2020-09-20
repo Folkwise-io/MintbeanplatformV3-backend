@@ -12,11 +12,14 @@ import ProjectDao from "./dao/ProjectDao";
 import ProjectDaoKnex from "./dao/ProjectDaoKnex";
 import ProjectService from "./service/ProjectService";
 import ProjectResolverValidator from "./validator/ProjectResolverValidator";
+import MediaAssetDao from "./dao/MediaAssetDao";
+import MediaAssetDaoKnex from "./dao/MediaAssetDaoKnex";
 
 export interface PersistenceContext {
   userDao: UserDao;
   meetDao: MeetDao;
   projectDao: ProjectDao;
+  mediaAssetDao: MediaAssetDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -24,11 +27,13 @@ export function buildPersistenceContext(): PersistenceContext {
   const userDao = new UserDaoKnex(knex);
   const meetDao = new MeetDaoKnex(knex);
   const projectDao = new ProjectDaoKnex(knex);
+  const mediaAssetDao = new MediaAssetDaoKnex(knex);
 
   return {
     userDao,
     meetDao,
     projectDao,
+    mediaAssetDao
   };
 }
 

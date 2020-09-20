@@ -78,6 +78,10 @@ export default class TestManager {
     return this.params.persistenceContext.projectDao.deleteAll();
   }
 
+  deleteAllMediaAssets() {
+    return this.params.persistenceContext.mediaAssetDao.deleteAll();
+  }
+
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
     return this.params.testClient
       .post("/graphql")
