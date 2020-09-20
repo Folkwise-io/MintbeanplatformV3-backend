@@ -9,6 +9,11 @@ export interface MediaAssetServiceAddManyArgs {
   index?: number;
 }
 
+export interface MediaAssetServiceGetManyArgs {
+  userId?: string | null;
+  projectId?: string | null;
+}
+
 export default class MediaAssetService implements EntityService<MediaAsset> {
   constructor(private mediaAssetDao: MediaAssetDao) {}
 
@@ -16,8 +21,8 @@ export default class MediaAssetService implements EntityService<MediaAsset> {
     throw new Error("not emplemented");
   }
 
-  async getMany(args: Args, context: any): Promise<MediaAsset[]> {
-    throw new Error("not emplemented");
+  async getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]> {
+    return this.mediaAssetDao.getMany(args);
   }
 
   async addOne(input: any, context: any): Promise<MediaAsset> {

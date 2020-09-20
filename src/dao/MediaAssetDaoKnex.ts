@@ -1,5 +1,5 @@
 import Knex from "knex";
-import { MediaAssetServiceAddManyArgs } from "../service/MediaAssetService";
+import { MediaAssetServiceAddManyArgs, MediaAssetServiceGetManyArgs } from "../service/MediaAssetService";
 import { MediaAsset } from "../types/gqlGeneratedTypes";
 import MediaAssetDao from "./MediaAssetDao";
 
@@ -10,8 +10,17 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
     throw new Error("Method not implemented.");
   }
 
-  getMany(args: any): Promise<MediaAsset[]> {
-    throw new Error("Method not implemented.");
+  async getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]> {
+    const modifiedArgs = {
+      "projectMediaAssets.projectId": args.projectId,
+    };
+
+    const mediaAssets = await this.knex("mediaAssets")
+      .join("projectMediaAssets", "mediaAssets.id", "=", "projectMediaAssets.mediaAssetId")
+      .where({ ...modifiedArgs, "mediaAssets.deleted": false })
+      .orderBy("index");
+
+    return mediaAssets;
   }
 
   addOne(args: any): Promise<MediaAsset> {
