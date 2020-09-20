@@ -266,6 +266,8 @@ export type Project = {
   user?: Maybe<User>;
   /** The meet associated with the project */
   meet?: Maybe<Meet>;
+  /** A list of MediaAssets for this Project, ordered by index */
+  mediaAssets?: Maybe<Array<MediaAsset>>;
 };
 
 /** Fields required to create a new project */
@@ -280,6 +282,25 @@ export type CreateProjectInput = {
   sourceCodeUrl: Scalars['String'];
   /** The URL of the project's deployment */
   liveUrl: Scalars['String'];
+  /** An array of Cloudinary Public IDs of the Project's MediaAssets */
+  mediaAssets?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
+/** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */
+export type MediaAsset = {
+  __typename?: 'MediaAsset';
+  /** ID of the MediaAsset in UUID */
+  id: Scalars['UUID'];
+  /** ID of the User who created this MediaAsset */
+  userId: Scalars['UUID'];
+  /** Public Cloudinary ID used to retrieve the MediaAsset */
+  cloudinaryPublicId: Scalars['String'];
+  /** An index representing the order information of multiple MediaAssets in a Project submission */
+  index: Scalars['Int'];
+  /** DateTime that the MediaAsset was saved to the database */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the MediaAsset was saved to the database */
+  updatedAt: Scalars['DateTime'];
 };
 
 
@@ -374,6 +395,8 @@ export type ResolversTypes = {
   EditMeetInput: EditMeetInput;
   Project: ResolverTypeWrapper<Project>;
   CreateProjectInput: CreateProjectInput;
+  MediaAsset: ResolverTypeWrapper<MediaAsset>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -392,6 +415,8 @@ export type ResolversParentTypes = {
   EditMeetInput: EditMeetInput;
   Project: Project;
   CreateProjectInput: CreateProjectInput;
+  MediaAsset: MediaAsset;
+  Int: Scalars['Int'];
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -478,6 +503,17 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType>;
+  mediaAssets?: Resolver<Maybe<Array<ResolversTypes['MediaAsset']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversParentTypes['MediaAsset'] = ResolversParentTypes['MediaAsset']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  cloudinaryPublicId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -490,6 +526,7 @@ export type Resolvers<ContextType = any> = {
   Post?: PostResolvers<ContextType>;
   Meet?: MeetResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
+  MediaAsset?: MediaAssetResolvers<ContextType>;
 };
 
 
