@@ -4,21 +4,29 @@ import {
   AMY_ALGOLIA_PROJECT,
   AMY_PAPERJS_PROJECT,
   BOB_PAPERJS_PROJECT,
+  CREATE_PROJECT,
   GET_ALL_MEETS_WITH_NESTED_PROJECTS,
   GET_PROJECT,
   GET_PROJECT_WITH_NESTED_MEET,
   GET_PROJECT_WITH_NESTED_USER,
   GET_USER_WITH_NESTED_PROJECTS,
+  NEW_PROJECT,
 } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
+import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
-// Add foreign keys to DB
+let bobCookies: string[];
+let adminCookies: string[];
+
+// Add foreign keys to DB, get cookies
 beforeAll(async () => {
   await testManager.deleteAllUsers();
   await testManager.deleteAllMeets();
+  bobCookies = await getBobCookies();
+  adminCookies = await getAdminCookies();
   await testManager.addUsers([AMY, BOB]);
   await testManager.addMeets([PAPERJS, ALGOLIA]);
 });
@@ -133,5 +141,81 @@ describe("nested queries involving Projects", () => {
     await testManager
       .getGraphQLData({ query: GET_PROJECT_WITH_NESTED_MEET, variables: { id: PAPERJS.id } })
       .then(({ project }) => expect(PAPERJS).toMatchObject(project.meet));
+  });
+});
+
+describe("Creating projects", () => {
+  it("creates a project when user is logged in, and given all the required info", async () => {
+    await testManager
+      .getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
+
+  it("gives an error message when accessing createProject without being logged in", async () => {
+    await testManager
+      .getErrorMessage({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+  });
+
+  it("gives an error message when supplying a userId that differs from cookie's userId", async () => {
+    const input = { ...NEW_PROJECT, userId: AMY.id };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+  });
+
+  it("does not give an error message when supplying a userId that is the same as cookie's userId", async () => {
+    const input = { ...NEW_PROJECT, userId: BOB.id };
+    await testManager
+      .getGraphQLData({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
+
+  it("does not give an error message when supplying a userId that differs from cookie's userId but user is admin", async () => {
+    const input = { ...NEW_PROJECT, userId: BOB.id };
+    await testManager
+      .getGraphQLData({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: adminCookies,
+      })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
+
+  it("gives an error message when the title is too long", async () => {
+    const input = {
+      ...NEW_PROJECT,
+      title:
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/title/i));
+  });
+
+  it("gives an error message when the url is not valid", async () => {
+    const input = {
+      ...NEW_PROJECT,
+      liveUrl: "httpaaaaaaaaaaaaaaaaaaaaa",
+    };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/url/i));
   });
 });

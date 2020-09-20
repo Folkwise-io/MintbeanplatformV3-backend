@@ -130,6 +130,7 @@ export type Mutation = {
   editMeet: Meet;
   /** Deletes a meet (requires admin privileges) */
   deleteMeet: Scalars['Boolean'];
+  createProject: Project;
 };
 
 
@@ -157,6 +158,11 @@ export type MutationEditMeetArgs = {
 
 export type MutationDeleteMeetArgs = {
   id: Scalars['UUID'];
+};
+
+
+export type MutationCreateProjectArgs = {
+  input: CreateProjectInput;
 };
 
 export type Post = {
@@ -262,6 +268,20 @@ export type Project = {
   meet?: Maybe<Meet>;
 };
 
+/** Fields required to create a new project */
+export type CreateProjectInput = {
+  /** ID of the user who created the project (optional) */
+  userId?: Maybe<Scalars['UUID']>;
+  /** ID of the Meet associated with this project (optional) */
+  meetId?: Maybe<Scalars['UUID']>;
+  /** Title given to the project */
+  title: Scalars['String'];
+  /** The URL (i.e. GitHub link) of the project's public source code */
+  sourceCodeUrl: Scalars['String'];
+  /** The URL of the project's deployment */
+  liveUrl: Scalars['String'];
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -353,6 +373,7 @@ export type ResolversTypes = {
   CreateMeetInput: CreateMeetInput;
   EditMeetInput: EditMeetInput;
   Project: ResolverTypeWrapper<Project>;
+  CreateProjectInput: CreateProjectInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -370,6 +391,7 @@ export type ResolversParentTypes = {
   CreateMeetInput: CreateMeetInput;
   EditMeetInput: EditMeetInput;
   Project: Project;
+  CreateProjectInput: CreateProjectInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -415,6 +437,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationCreateMeetArgs, 'input'>>;
   editMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationEditMeetArgs, 'id' | 'input'>>;
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
+  createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

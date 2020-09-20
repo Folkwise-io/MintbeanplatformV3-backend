@@ -1,3 +1,9 @@
+import {
+  ProjectServiceAddOneInput,
+  ProjectServiceGetManyArgs,
+  ProjectServiceGetOneArgs,
+} from "../service/ProjectService";
+
 export default interface ProjectDao {
   getOne(args: any): Promise<Project>;
   getMany(args: ProjectServiceGetManyArgs): Promise<Project[]>;

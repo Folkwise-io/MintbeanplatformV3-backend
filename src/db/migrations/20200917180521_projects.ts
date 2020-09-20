@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
     table.uuid("userId").notNullable();
     table.uuid("meetId");
-    table.text("title").notNullable().unique();
+    table.text("title").notNullable();
     table.text("sourceCodeUrl").notNullable();
     table.text("liveUrl").notNullable();
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());

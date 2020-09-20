@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("meets", (table) => {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
     table.enu("meetType", ["hackMeet"]).notNullable();
-    table.text("title").notNullable().unique();
+    table.text("title").notNullable();
     table.text("description").notNullable();
     table.text("instructions").notNullable();
     table.text("registerLink");
