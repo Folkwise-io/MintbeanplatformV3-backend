@@ -15,6 +15,7 @@ import { MediaAsset, Meet, Project, User } from "../../src/types/gqlGeneratedTyp
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
+import ProjectMediaAsset from "../../src/types/projectMediaAsset";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -70,6 +71,9 @@ export default class TestManager {
     return this.params.persistenceContext.mediaAssetDao.addMany(mediaAssets);
   }
 
+  addProjectMediaAssets(projectMediaAssets: ProjectMediaAsset[]): Promise<void> {
+    return this.params.persistenceContext.projectMediaAssetDao.addMany(projectMediaAssets);
+  }
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }

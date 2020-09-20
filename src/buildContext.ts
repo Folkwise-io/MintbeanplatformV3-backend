@@ -16,12 +16,15 @@ import MediaAssetDao from "./dao/MediaAssetDao";
 import MediaAssetDaoKnex from "./dao/MediaAssetDaoKnex";
 import MediaAssetService from "./service/MediaAssetService";
 import MediaAssetResolverValidator from "./validator/MediaAssetResolverValidator";
+import ProjectMediaAssetDaoKnex from "./dao/ProjectMediaAssetKnex";
+import ProjectMediaAssetDao from "./dao/ProjectMediaAssetDao";
 
 export interface PersistenceContext {
   userDao: UserDao;
   meetDao: MeetDao;
   projectDao: ProjectDao;
   mediaAssetDao: MediaAssetDao;
+  projectMediaAssetDao: ProjectMediaAssetDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -30,12 +33,14 @@ export function buildPersistenceContext(): PersistenceContext {
   const meetDao = new MeetDaoKnex(knex);
   const projectDao = new ProjectDaoKnex(knex);
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
+  const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
 
   return {
     userDao,
     meetDao,
     projectDao,
     mediaAssetDao,
+    projectMediaAssetDao,
   };
 }
 
