@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { Meet, Project, User } from "../../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project, User } from "../../src/types/gqlGeneratedTypes";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
@@ -64,6 +64,10 @@ export default class TestManager {
 
   addProjects(projects: Project[]): Promise<TestManager> {
     return this.params.persistenceContext.projectDao.addMany(projects).then(() => this);
+  }
+
+  addMediaAssets(mediaAssets: MediaAsset[]): Promise<MediaAsset[]> {
+    return this.params.persistenceContext.mediaAssetDao.addMany(mediaAssets);
   }
 
   deleteAllUsers(): Promise<void> {

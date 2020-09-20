@@ -22,6 +22,7 @@ export const MEDIA_ASSET_3 = {
   id: "00000000-0000-4000-a000-000000000001",
   userId: "00000000-0000-4000-a000-000000000000",
   cloudinaryPublicId: "wzk5axcfxliedyrblkdj",
+  index: 0,
   createdAt: "2020-10-15T12:00:00.000Z",
   updatedAt: "2020-10-15T12:00:00.000Z",
 };
