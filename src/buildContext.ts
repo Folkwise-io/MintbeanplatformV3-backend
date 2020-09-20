@@ -14,6 +14,8 @@ import ProjectService from "./service/ProjectService";
 import ProjectResolverValidator from "./validator/ProjectResolverValidator";
 import MediaAssetDao from "./dao/MediaAssetDao";
 import MediaAssetDaoKnex from "./dao/MediaAssetDaoKnex";
+import MediaAssetService from "./service/MediaAssetService";
+import MediaAssetResolverValidator from "./validator/MediaAssetResolverValidator";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -33,7 +35,7 @@ export function buildPersistenceContext(): PersistenceContext {
     userDao,
     meetDao,
     projectDao,
-    mediaAssetDao
+    mediaAssetDao,
   };
 }
 
@@ -44,16 +46,20 @@ export interface ResolverContext {
   meetService: MeetService;
   projectResolverValidator: ProjectResolverValidator;
   projectService: ProjectService;
+  mediaAssetResolverValidator: MediaAssetResolverValidator;
+  mediaAssetService: MediaAssetService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao, projectDao } = persistenceContext;
+  const { userDao, meetDao, projectDao, mediaAssetDao } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
   const meetService = new MeetService(meetDao);
-  const projectResolverValidator = new ProjectResolverValidator(projectDao)
-  const projectService = new ProjectService(projectDao)
+  const projectResolverValidator = new ProjectResolverValidator(projectDao);
+  const projectService = new ProjectService(projectDao);
+  const mediaAssetResolverValidator = new MediaAssetResolverValidator(mediaAssetDao);
+  const mediaAssetService = new MediaAssetService(mediaAssetDao);
 
   return {
     userResolverValidator,
@@ -62,5 +68,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetService,
     projectResolverValidator,
     projectService,
+    mediaAssetResolverValidator,
+    mediaAssetService,
   };
 }
