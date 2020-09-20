@@ -11,13 +11,11 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
   }
 
   async getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]> {
-    const modifiedArgs = {
-      "projectMediaAssets.projectId": args.projectId,
-    };
-
+    // Only tested with projectId lookup for now
+    // TODO: Add support for userId lookup
     const mediaAssets = await this.knex("mediaAssets")
       .join("projectMediaAssets", "mediaAssets.id", "=", "projectMediaAssets.mediaAssetId")
-      .where({ ...modifiedArgs, "mediaAssets.deleted": false })
+      .where({ ...args, "mediaAssets.deleted": false })
       .orderBy("index");
 
     return mediaAssets;

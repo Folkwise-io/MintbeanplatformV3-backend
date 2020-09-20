@@ -10,7 +10,7 @@ export interface MediaAssetServiceAddManyArgs {
 }
 
 export interface MediaAssetServiceGetManyArgs {
-  userId?: string | null;
+  // userId?: string | null;
   projectId?: string | null;
 }
 
