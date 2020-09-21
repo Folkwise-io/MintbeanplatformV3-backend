@@ -152,6 +152,17 @@ describe("Creating projects without media assets", () => {
       .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
   });
 
+  it("creates a project when user is logged in, and given all the required info but leaving out meetId", async () => {
+    const newProjectWithoutMeetId = (({ title, sourceCodeUrl, liveUrl }) => ({
+      title,
+      sourceCodeUrl,
+      liveUrl,
+    }))(NEW_PROJECT);
+    await testManager
+      .getGraphQLData({ query: CREATE_PROJECT, variables: { input: newProjectWithoutMeetId }, cookies: bobCookies })
+      .then(({ createProject }) => expect(createProject).toMatchObject(newProjectWithoutMeetId));
+  });
+
   it("gives an error message when accessing createProject without being logged in", async () => {
     await testManager
       .getErrorMessage({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
