@@ -14,11 +14,21 @@ export default class ProjectResolverValidator {
   async addOne({ input }: MutationCreateProjectArgs): Promise<ProjectServiceAddOneInput> {
     //TODO: Validate createProject input: check if userId exists in db? (only needed if admin requests)
     // Q: Got TS error when trying to promise-chain
+
     try {
       createProjectInputSchema.validateSync(input);
     } catch (e) {
       throw new UserInputError(e.message);
     }
-    return input;
+
+    // Remove mediaAssets field as it is not part of projects table
+    const inputWithoutMediaAssets: ProjectServiceAddOneInput = (({
+      userId,
+      meetId,
+      title,
+      sourceCodeUrl,
+      liveUrl,
+    }) => ({ userId, meetId, title, sourceCodeUrl, liveUrl }))(input);
+    return inputWithoutMediaAssets;
   }
 }

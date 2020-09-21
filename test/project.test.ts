@@ -1,4 +1,5 @@
-import { Meet, Project } from "../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project } from "../src/types/gqlGeneratedTypes";
+import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/mediaAssetConstants";
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
 import {
   AMY_ALGOLIA_PROJECT,
@@ -11,6 +12,7 @@ import {
   GET_PROJECT_WITH_NESTED_USER,
   GET_USER_WITH_NESTED_PROJECTS,
   NEW_PROJECT,
+  NEW_PROJECT_WITH_MEDIA_ASSETS,
 } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
@@ -144,11 +146,22 @@ describe("nested queries involving Projects", () => {
   });
 });
 
-describe("Creating projects", () => {
+describe("Creating projects without media assets", () => {
   it("creates a project when user is logged in, and given all the required info", async () => {
     await testManager
       .getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies })
       .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT));
+  });
+
+  it("creates a project when user is logged in, and given all the required info but leaving out meetId", async () => {
+    const newProjectWithoutMeetId = (({ title, sourceCodeUrl, liveUrl }) => ({
+      title,
+      sourceCodeUrl,
+      liveUrl,
+    }))(NEW_PROJECT);
+    await testManager
+      .getGraphQLData({ query: CREATE_PROJECT, variables: { input: newProjectWithoutMeetId }, cookies: bobCookies })
+      .then(({ createProject }) => expect(createProject).toMatchObject(newProjectWithoutMeetId));
   });
 
   it("gives an error message when accessing createProject without being logged in", async () => {
@@ -217,5 +230,50 @@ describe("Creating projects", () => {
         cookies: bobCookies,
       })
       .then((errorMessage) => expect(errorMessage).toMatch(/url/i));
+  });
+});
+
+describe("Creating projects without media assets", () => {
+  it("creates a project with media assets when user is logged in, and given all the required info, which is later queryable", async () => {
+    await testManager
+      .getGraphQLData({
+        query: CREATE_PROJECT,
+        variables: { input: NEW_PROJECT_WITH_MEDIA_ASSETS },
+        cookies: bobCookies,
+      })
+      .then(({ createProject }) => {
+        const { mediaAssets }: { mediaAssets: MediaAsset[] } = createProject;
+        expect(mediaAssets).toHaveLength(2);
+        const [mediaAsset1, mediaAsset2] = mediaAssets;
+        expect(mediaAsset1.index).toBeLessThan(mediaAsset2.index);
+
+        testManager
+          .getGraphQLData({ query: GET_PROJECT_WITH_NESTED_MEDIA_ASSETS, variables: { id: createProject.id } })
+          .then(({ project }) => expect(project.mediaAssets).toHaveLength(2));
+      });
+
+    await testManager
+      .addProjects([BOB_PAPERJS_PROJECT])
+      .then(() =>
+        testManager.getGraphQLData({
+          query: GET_PROJECT_WITH_NESTED_MEDIA_ASSETS,
+          variables: { id: BOB_PAPERJS_PROJECT.id },
+        }),
+      )
+      .then(({ project }) => expect(project.mediaAssets).toHaveLength(0));
+  });
+
+  it("gives an error message when the mediaAssets is not an array of strings", async () => {
+    const input = {
+      ...NEW_PROJECT,
+      mediaAssets: [1, 2],
+    };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/mediaAssets/i));
   });
 });

@@ -28,8 +28,8 @@ const mediaAsset = gql`
   }
 
   extend input CreateProjectInput {
-    "An array of Cloudinary Public IDs of the Project's MediaAssets"
-    mediaAssets: [String]
+    "An array of Cloudinary Public IDs that will be saved as the Project's MediaAssets"
+    cloudinaryPublicIds: [String!]
   }
 
   # TODO: Extend type User to make all a user's mediaAssets queryable
