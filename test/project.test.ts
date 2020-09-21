@@ -329,7 +329,7 @@ describe("Deleting projects", () => {
       .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
   });
 
-  it("lets you delete someone else's project if you're admin", async () => {
+  it("lets the admin delete someone else's project", async () => {
     await testManager
       .addProjects([BOB_PAPERJS_PROJECT])
       .then(() =>
@@ -340,5 +340,15 @@ describe("Deleting projects", () => {
         }),
       )
       .then(({ deleteProject }) => expect(deleteProject).toBe(true));
+  });
+
+  it("gives an error message when trying to delete a project that doesn't exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_PROJECT,
+        variables: { id: AMY_PAPERJS_PROJECT.id },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/not exist/i));
   });
 });
