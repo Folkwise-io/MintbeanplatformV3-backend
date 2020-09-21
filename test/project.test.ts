@@ -6,6 +6,7 @@ import {
   AMY_PAPERJS_PROJECT,
   BOB_PAPERJS_PROJECT,
   CREATE_PROJECT,
+  DELETE_PROJECT,
   GET_ALL_MEETS_WITH_NESTED_PROJECTS,
   GET_PROJECT,
   GET_PROJECT_WITH_NESTED_MEET,
@@ -275,5 +276,21 @@ describe("Creating projects with media assets", () => {
         cookies: bobCookies,
       })
       .then((errorMessage) => expect(errorMessage).toMatch(/mediaAssets/i));
+  });
+});
+
+describe("Deleting projects", () => {
+  it("deletes a project that has no media assets", async () => {
+    await testManager.addProjects([BOB_PAPERJS_PROJECT]);
+    await testManager
+      .getGraphQLData({
+        query: GET_PROJECT,
+        variables: { id: BOB_PAPERJS_PROJECT.id },
+      })
+      .then(({ project }) => expect(project).toBeDefined());
+
+    await testManager
+      .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id } })
+      .then(({ deleteProject }) => expect(deleteProject.toBe(true)));
   });
 });
