@@ -7,7 +7,7 @@ export async function seed(knex: Knex): Promise<void> {
     {
       id: "00000000-0000-0000-0000-000000000000",
       userId: "00000000-0000-0000-0000-000000000000",
-      cloudinaryPublicId: "uaxkolonhp2lik1dnvzb",
+      cloudinaryPublicId: "rtcx50vsggqq9wjvhob6",
       index: 0,
       createdAt: "2020-08-15T12:00:00.000Z",
       updatedAt: "2020-08-15T12:00:00.000Z",
