@@ -11,6 +11,7 @@ import {
   GET_PROJECT_WITH_NESTED_USER,
   GET_USER_WITH_NESTED_PROJECTS,
   NEW_PROJECT,
+  NEW_PROJECT_WITH_MEDIA_ASSETS,
 } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
@@ -144,7 +145,7 @@ describe("nested queries involving Projects", () => {
   });
 });
 
-describe("Creating projects", () => {
+describe("Creating projects without media assets", () => {
   it("creates a project when user is logged in, and given all the required info", async () => {
     await testManager
       .getGraphQLData({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT }, cookies: bobCookies })
@@ -217,5 +218,17 @@ describe("Creating projects", () => {
         cookies: bobCookies,
       })
       .then((errorMessage) => expect(errorMessage).toMatch(/url/i));
+  });
+});
+
+describe("Creating projects without media assets", () => {
+  it("creates a project with media assets when user is logged in, and given all the required info", async () => {
+    await testManager
+      .getGraphQLData({
+        query: CREATE_PROJECT,
+        variables: { input: NEW_PROJECT_WITH_MEDIA_ASSETS },
+        cookies: bobCookies,
+      })
+      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT_WITH_MEDIA_ASSETS));
   });
 });
