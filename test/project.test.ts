@@ -292,6 +292,13 @@ describe("Deleting projects", () => {
     await testManager
       .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id }, cookies: bobCookies })
       .then(({ deleteProject }) => expect(deleteProject).toBe(true));
+
+    await testManager
+      .getGraphQLData({
+        query: GET_PROJECT,
+        variables: { id: BOB_PAPERJS_PROJECT.id },
+      })
+      .then(({ project }) => expect(project).toBeNull);
   });
 
   it("gives an error message when deleting a project while not logged in", async () => {
