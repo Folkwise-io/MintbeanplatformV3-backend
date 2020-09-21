@@ -1,6 +1,6 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import MediaAssetService from "../../service/MediaAssetService";
+import MediaAssetService, { MediaAssetServiceAddManyArgs } from "../../service/MediaAssetService";
 import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
@@ -33,7 +33,7 @@ const projectResolver = (
     },
 
     Mutation: {
-      createProject: (_root, args, context: ServerContext): Promise<Project> => {
+      createProject: async (_root, args, context: ServerContext): Promise<Project> => {
         const inputUserId = args.input.userId;
         const currentUserId = context.getUserId();
 
@@ -44,6 +44,23 @@ const projectResolver = (
         }
 
         const argsWithResolvedUserId = { ...args, input: { ...args.input, userId: inputUserId || currentUserId } };
+
+        // TODO: Make this transactional somehow?
+
+        // Media assets are received as an array of cloudinaryPublicIds for convenience, so we must transform the
+        // array into an object that includes userId and meetId to hand off to MediaAssetService and
+        // ProjectMediaAssetService
+        const { cloudinaryPublicIds, userId } = argsWithResolvedUserId.input;
+        if (cloudinaryPublicIds && cloudinaryPublicIds.length > 0) {
+          const mediaAssets: MediaAssetServiceAddManyArgs = cloudinaryPublicIds.map((cloudinaryPublicId, index) => ({
+            userId,
+            cloudinaryPublicId,
+            index,
+          }));
+          const createdMediaAssets = await mediaAssetService.addMany(mediaAssets);
+          console.log(createdMediaAssets);
+        }
+
         return projectResolverValidator.addOne(argsWithResolvedUserId).then((input) => projectService.addOne(input));
       },
     },

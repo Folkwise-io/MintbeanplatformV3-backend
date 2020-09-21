@@ -31,7 +31,7 @@ export default class MediaAssetService implements EntityService<MediaAsset> {
     throw new Error("not emplemented");
   }
 
-  async addMany(args: MediaAssetServiceAddManyArgs, context: any): Promise<MediaAsset[]> {
+  async addMany(args: MediaAssetServiceAddManyArgs): Promise<MediaAsset[]> {
     return this.mediaAssetDao.addMany(args);
   }
 }
