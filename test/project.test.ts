@@ -231,4 +231,18 @@ describe("Creating projects without media assets", () => {
       })
       .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT_WITH_MEDIA_ASSETS));
   });
+
+  it("gives an error message when the mediaAssets is not an array of strings", async () => {
+    const input = {
+      ...NEW_PROJECT,
+      mediaAssets: [1, 2],
+    };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_PROJECT,
+        variables: { input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/mediaAssets/i));
+  });
 });
