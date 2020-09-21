@@ -240,7 +240,7 @@ describe("Creating projects without media assets", () => {
         variables: { input: NEW_PROJECT_WITH_MEDIA_ASSETS },
         cookies: bobCookies,
       })
-      .then(({ createProject }) => expect(createProject).toMatchObject(NEW_PROJECT_WITH_MEDIA_ASSETS));
+      .then(({ createProject }) => expect(createProject.mediaAssets).toHaveLength(2));
   });
 
   it("gives an error message when the mediaAssets is not an array of strings", async () => {
