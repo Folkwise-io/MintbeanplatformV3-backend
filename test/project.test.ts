@@ -293,4 +293,25 @@ describe("Deleting projects", () => {
       .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id }, cookies: bobCookies })
       .then(({ deleteProject }) => expect(deleteProject).toBe(true));
   });
+
+  it("gives an error message when deleting a project while not logged in", async () => {
+    await testManager.addProjects([BOB_PAPERJS_PROJECT]);
+    await testManager
+      .getErrorMessage({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id }, cookies: undefined })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+  });
+
+  it("gives an error message when trying to delete someone else's project", async () => {
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+    await testManager
+      .getErrorMessage({ query: DELETE_PROJECT, variables: { id: AMY_PAPERJS_PROJECT.id }, cookies: bobCookies })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+  });
+
+  it("lets you delete someone else's project if you're admin", async () => {
+    await testManager.addProjects([BOB_PAPERJS_PROJECT]);
+    await testManager
+      .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id }, cookies: adminCookies })
+      .then(({ deleteProject }) => expect(deleteProject).toBe(true));
+  });
 });
