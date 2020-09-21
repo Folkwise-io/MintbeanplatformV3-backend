@@ -35,8 +35,9 @@ export default class ProjectDaoKnex implements ProjectDao {
     throw new Error("Method not implemented.");
   }
 
-  deleteOne(id: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+  async deleteOne(id: string): Promise<boolean> {
+    await this.knex("projects").where({ id }).update({ deleted: true });
+    return true;
   }
 
   // Testing methods below, for TestManager to call

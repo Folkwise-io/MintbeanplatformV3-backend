@@ -290,7 +290,7 @@ describe("Deleting projects", () => {
       .then(({ project }) => expect(project).toBeDefined());
 
     await testManager
-      .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id } })
-      .then(({ deleteProject }) => expect(deleteProject.toBe(true)));
+      .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id }, cookies: bobCookies })
+      .then(({ deleteProject }) => expect(deleteProject).toBe(true));
   });
 });
