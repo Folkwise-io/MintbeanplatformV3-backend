@@ -282,8 +282,8 @@ export type CreateProjectInput = {
   sourceCodeUrl: Scalars['String'];
   /** The URL of the project's deployment */
   liveUrl: Scalars['String'];
-  /** An array of Cloudinary Public IDs of the Project's MediaAssets */
-  mediaAssets?: Maybe<Array<Maybe<Scalars['String']>>>;
+  /** An array of Cloudinary Public IDs that will be saved as the Project's MediaAssets */
+  cloudinaryPublicIds?: Maybe<Array<Scalars['String']>>;
 };
 
 /** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */

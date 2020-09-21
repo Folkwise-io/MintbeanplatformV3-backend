@@ -178,5 +178,5 @@ export const NEW_PROJECT_WITH_MEDIA_ASSETS: CreateProjectInput = {
   title: "Someone's PaperJS Submission",
   sourceCodeUrl: "http://github.com",
   liveUrl: "http://google.com",
-  mediaAssets: ["abcdef", "ghijkl"],
+  cloudinaryPublicIds: ["abcdef", "ghijkl"],
 };
