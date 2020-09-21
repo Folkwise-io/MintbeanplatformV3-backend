@@ -2,12 +2,14 @@ import MediaAssetDao from "../dao/MediaAssetDao";
 import { MediaAsset } from "../types/gqlGeneratedTypes";
 import { Args, EntityService } from "./EntityService";
 
-export interface MediaAssetServiceAddManyArgs {
+export interface MediaAssetServiceAddOneArgs {
   userId: string;
   meetId?: string | null;
   cloudinaryPublicId: string;
   index?: number;
 }
+
+export type MediaAssetServiceAddManyArgs = Array<MediaAssetServiceAddOneArgs>;
 
 export interface MediaAssetServiceGetManyArgs {
   // userId?: string | null;
@@ -25,10 +27,11 @@ export default class MediaAssetService implements EntityService<MediaAsset> {
     return this.mediaAssetDao.getMany(args);
   }
 
-  async addOne(input: any, context: any): Promise<MediaAsset> {
+  async addOne(input: MediaAssetServiceAddOneArgs, context: any): Promise<MediaAsset> {
     throw new Error("not emplemented");
   }
-  async addMany(args: MediaAssetServiceAddManyArgs, context: any): Promise<MediaAsset[]> {
+
+  async addMany(args: MediaAssetServiceAddManyArgs): Promise<MediaAsset[]> {
     return this.mediaAssetDao.addMany(args);
   }
 }

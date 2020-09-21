@@ -2,7 +2,7 @@ import ProjectMediaAssetDao from "../dao/ProjectMediaAssetDao";
 import ProjectMediaAsset from "../types/projectMediaAsset";
 import { EntityService } from "./EntityService";
 
-export default interface ProjectMediaAssetServiceAddManyArgs {
+export interface ProjectMediaAssetServiceAddOneArgs {
   mediaAssetId: string;
   projectId: string;
 }
@@ -22,7 +22,7 @@ export default class ProjectMediaAssetService implements EntityService<ProjectMe
     throw new Error("not emplemented");
   }
 
-  async addMany(args: ProjectMediaAssetServiceAddManyArgs[]): Promise<void> {
+  async addMany(args: ProjectMediaAssetServiceAddOneArgs[]): Promise<void> {
     return this.projectMediaAssetDao.addMany(args);
   }
 }

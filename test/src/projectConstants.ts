@@ -165,6 +165,18 @@ export const CREATE_PROJECT = gql`
       liveUrl
       createdAt
       updatedAt
+      mediaAssets {
+        index
+        cloudinaryPublicId
+      }
     }
   }
 `;
+
+export const NEW_PROJECT_WITH_MEDIA_ASSETS: CreateProjectInput = {
+  meetId: "00000000-0000-0000-0000-000000000000",
+  title: "Someone's PaperJS Submission",
+  sourceCodeUrl: "http://github.com",
+  liveUrl: "http://google.com",
+  cloudinaryPublicIds: ["abcdef", "ghijkl"],
+};
