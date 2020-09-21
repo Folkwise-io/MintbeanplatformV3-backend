@@ -11,6 +11,8 @@ import meet from "./graphql/typedef/meet";
 import meetResolver from "./graphql/resolver/meetResolver";
 import project from "./graphql/typedef/project";
 import projectResolver from "./graphql/resolver/projectResolver";
+import mediaAsset from "./graphql/typedef/mediaAsset";
+import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -20,13 +22,16 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     meetService,
     projectResolverValidator,
     projectService,
+    mediaAssetResolverValidator,
+    mediaAssetService,
   } = resolverContext;
-  const typeDefs = [customScalars, user, post, meet, project];
+  const typeDefs = [customScalars, user, post, meet, project, mediaAsset];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),
     meetResolver(meetResolverValidator, meetService),
     projectResolver(projectResolverValidator, projectService),
+    mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
     postResolver,
   ];
 

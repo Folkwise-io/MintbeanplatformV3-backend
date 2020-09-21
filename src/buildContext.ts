@@ -12,11 +12,19 @@ import ProjectDao from "./dao/ProjectDao";
 import ProjectDaoKnex from "./dao/ProjectDaoKnex";
 import ProjectService from "./service/ProjectService";
 import ProjectResolverValidator from "./validator/ProjectResolverValidator";
+import MediaAssetDao from "./dao/MediaAssetDao";
+import MediaAssetDaoKnex from "./dao/MediaAssetDaoKnex";
+import MediaAssetService from "./service/MediaAssetService";
+import MediaAssetResolverValidator from "./validator/MediaAssetResolverValidator";
+import ProjectMediaAssetDaoKnex from "./dao/ProjectMediaAssetKnex";
+import ProjectMediaAssetDao from "./dao/ProjectMediaAssetDao";
 
 export interface PersistenceContext {
   userDao: UserDao;
   meetDao: MeetDao;
   projectDao: ProjectDao;
+  mediaAssetDao: MediaAssetDao;
+  projectMediaAssetDao: ProjectMediaAssetDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -24,11 +32,15 @@ export function buildPersistenceContext(): PersistenceContext {
   const userDao = new UserDaoKnex(knex);
   const meetDao = new MeetDaoKnex(knex);
   const projectDao = new ProjectDaoKnex(knex);
+  const mediaAssetDao = new MediaAssetDaoKnex(knex);
+  const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
 
   return {
     userDao,
     meetDao,
     projectDao,
+    mediaAssetDao,
+    projectMediaAssetDao,
   };
 }
 
@@ -39,16 +51,20 @@ export interface ResolverContext {
   meetService: MeetService;
   projectResolverValidator: ProjectResolverValidator;
   projectService: ProjectService;
+  mediaAssetResolverValidator: MediaAssetResolverValidator;
+  mediaAssetService: MediaAssetService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao, projectDao } = persistenceContext;
+  const { userDao, meetDao, projectDao, mediaAssetDao } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
   const meetService = new MeetService(meetDao);
-  const projectResolverValidator = new ProjectResolverValidator(projectDao)
-  const projectService = new ProjectService(projectDao)
+  const projectResolverValidator = new ProjectResolverValidator(projectDao);
+  const projectService = new ProjectService(projectDao);
+  const mediaAssetResolverValidator = new MediaAssetResolverValidator(mediaAssetDao);
+  const mediaAssetService = new MediaAssetService(mediaAssetDao);
 
   return {
     userResolverValidator,
@@ -57,5 +73,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetService,
     projectResolverValidator,
     projectService,
+    mediaAssetResolverValidator,
+    mediaAssetService,
   };
 }

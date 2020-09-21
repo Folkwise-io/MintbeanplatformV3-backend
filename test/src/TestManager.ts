@@ -11,10 +11,11 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { Meet, Project, User } from "../../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project, User } from "../../src/types/gqlGeneratedTypes";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
+import ProjectMediaAsset from "../../src/types/projectMediaAsset";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -66,6 +67,13 @@ export default class TestManager {
     return this.params.persistenceContext.projectDao.addMany(projects).then(() => this);
   }
 
+  addMediaAssets(mediaAssets: MediaAsset[]): Promise<MediaAsset[]> {
+    return this.params.persistenceContext.mediaAssetDao.addMany(mediaAssets);
+  }
+
+  addProjectMediaAssets(projectMediaAssets: ProjectMediaAsset[]): Promise<void> {
+    return this.params.persistenceContext.projectMediaAssetDao.addMany(projectMediaAssets);
+  }
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }
@@ -76,6 +84,10 @@ export default class TestManager {
 
   deleteAllProjects(): Promise<void> {
     return this.params.persistenceContext.projectDao.deleteAll();
+  }
+
+  deleteAllMediaAssets() {
+    return this.params.persistenceContext.mediaAssetDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
