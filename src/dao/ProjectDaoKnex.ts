@@ -19,7 +19,6 @@ export default class ProjectDaoKnex implements ProjectDao {
   }
 
   async getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
-    console.log(args);
     const projects: Project[] = await this.knex("projects")
       .where({ ...args, deleted: false })
       .orderBy("createdAt", "desc");
