@@ -83,6 +83,19 @@ const projectResolver = (
         // Query the project again to retrieve its associated media assets
         return projectService.getOne({ id: projectId }, context);
       },
+
+      deleteProject: (_root, args, context: ServerContext): Promise<boolean> => {
+        return projectResolverValidator.deleteOne(args).then(async (projectId) => {
+          const { userId: projectOwnerId } = await projectService.getOne({ id: projectId }, context);
+          const currentUserId = context.getUserId();
+
+          if (!context.getIsAdmin() && currentUserId !== projectOwnerId) {
+            throw new AuthenticationError("You are not authorized to delete the project!");
+          }
+
+          return projectService.deleteOne(projectId);
+        });
+      },
     },
   };
 };

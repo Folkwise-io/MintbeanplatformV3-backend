@@ -2,7 +2,8 @@ import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import ProjectDao from "../dao/ProjectDao";
 import { ProjectServiceAddOneInput, ProjectServiceGetOneArgs } from "../service/ProjectService";
-import { MutationCreateProjectArgs, QueryProjectArgs } from "../types/gqlGeneratedTypes";
+import { MutationCreateProjectArgs, MutationDeleteProjectArgs, Project, QueryProjectArgs } from "../types/gqlGeneratedTypes";
+import { ensureExists } from "../util/ensureExists";
 import createProjectInputSchema from "./yupSchemas/createProjectInputSchema";
 
 export default class ProjectResolverValidator {
@@ -30,5 +31,13 @@ export default class ProjectResolverValidator {
       liveUrl,
     }) => ({ userId, meetId, title, sourceCodeUrl, liveUrl }))(input);
     return inputWithoutMediaAssets;
+  }
+
+  async deleteOne({ id }: MutationDeleteProjectArgs): Promise<string> {
+    // Check if project id exists in db
+    return this.projectDao
+      .getOne({ id })
+      .then((project) => ensureExists<Project>("Project")(project))
+      .then(({ id }) => id);
   }
 }

@@ -130,7 +130,10 @@ export type Mutation = {
   editMeet: Meet;
   /** Deletes a meet (requires admin privileges) */
   deleteMeet: Scalars['Boolean'];
+  /** Creates a new project (must be logged in) */
   createProject: Project;
+  /** Deletes a project by ID (user must be logged in and own the project) */
+  deleteProject: Scalars['Boolean'];
 };
 
 
@@ -163,6 +166,11 @@ export type MutationDeleteMeetArgs = {
 
 export type MutationCreateProjectArgs = {
   input: CreateProjectInput;
+};
+
+
+export type MutationDeleteProjectArgs = {
+  id: Scalars['UUID'];
 };
 
 export type Post = {
@@ -463,6 +471,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   editMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationEditMeetArgs, 'id' | 'input'>>;
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
+  deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
