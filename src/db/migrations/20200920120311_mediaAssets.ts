@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("mediaAssets", (table) => {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
     table.uuid("userId").notNullable();
-    table.text("cloudinaryPublicId").notNullable().unique();
+    table.text("cloudinaryPublicId").notNullable();
     table.integer("index").defaultTo(0); // Preserve order information in project submission
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
