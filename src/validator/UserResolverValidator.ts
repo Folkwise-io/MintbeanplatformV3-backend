@@ -5,6 +5,7 @@ import UserDao from "../dao/UserDao";
 import { ServerContext } from "../buildServerContext";
 import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-express";
 import registerSchema from "./yupSchemas/registerSchema";
+import loginSchema from "./yupSchemas/loginSchema";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
@@ -20,7 +21,7 @@ export default class UserResolverValidator {
     return this.userDao
       .getOne(args)
       .then((user) => ensureExists<User>("User")(user))
-      .then(({ id, username }) => ({ id, username }));
+      .then(({ id, username, email }) => ({ id, username, email }));
   }
 
   async addOne({ input }: MutationRegisterArgs): Promise<UserServiceAddOneArgs> {
@@ -44,8 +45,13 @@ export default class UserResolverValidator {
     return { username, firstName, lastName, email, password };
   }
 
-  login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
-    // TODO: validate that email is formatted correctly?
-    return Promise.resolve({ email, password });
+  async login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
+    try {
+      loginSchema.validateSync({ email, password });
+    } catch (e) {
+      throw new ApolloError(e.message);
+    }
+
+    return { email, password };
   }
 }
