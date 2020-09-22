@@ -164,6 +164,12 @@ describe("Cookies and authentication", () => {
       .then((error) => expect(error.message).toMatch(/not logged in/i));
   });
 
+  it("gives an error message when trying to login with a malformed email address", async () => {
+    await testManager
+      .getErrorMessage({ query: LOGIN, variables: { email: "sfdsd", password: "password" } })
+      .then((errorMessage) => expect(errorMessage).toMatch(/email/i));
+  });
+
   it("gives you the logged in user when you have the JWT cookie in your 'me' query", async () => {
     const cookies = await testManager.getCookies({
       query: LOGIN,
