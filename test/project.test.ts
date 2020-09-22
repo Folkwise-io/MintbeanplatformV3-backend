@@ -233,7 +233,7 @@ describe("Creating projects without media assets", () => {
   });
 });
 
-describe("Creating projects without media assets", () => {
+describe("Creating projects with media assets", () => {
   it("creates a project with media assets when user is logged in, and given all the required info, which is later queryable", async () => {
     await testManager
       .getGraphQLData({
