@@ -180,3 +180,9 @@ export const NEW_PROJECT_WITH_MEDIA_ASSETS: CreateProjectInput = {
   liveUrl: "http://google.com",
   cloudinaryPublicIds: ["abcdef", "ghijkl"],
 };
+
+export const DELETE_PROJECT = gql`
+  mutation deleteProject($id: UUID!) {
+    deleteProject(id: $id)
+  }
+`;

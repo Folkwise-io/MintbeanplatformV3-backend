@@ -70,7 +70,11 @@ const project = gql`
   }
 
   extend type Mutation {
+    "Creates a new project (must be logged in)"
     createProject(input: CreateProjectInput!): Project!
+
+    "Deletes a project by ID (user must be logged in and own the project)"
+    deleteProject(id: UUID!): Boolean!
   }
 `;
 

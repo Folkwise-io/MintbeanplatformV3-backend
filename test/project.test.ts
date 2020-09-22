@@ -6,6 +6,7 @@ import {
   AMY_PAPERJS_PROJECT,
   BOB_PAPERJS_PROJECT,
   CREATE_PROJECT,
+  DELETE_PROJECT,
   GET_ALL_MEETS_WITH_NESTED_PROJECTS,
   GET_PROJECT,
   GET_PROJECT_WITH_NESTED_MEET,
@@ -275,5 +276,79 @@ describe("Creating projects with media assets", () => {
         cookies: bobCookies,
       })
       .then((errorMessage) => expect(errorMessage).toMatch(/mediaAssets/i));
+  });
+});
+
+describe("Deleting projects", () => {
+  it("deletes a project that has no media assets", async () => {
+    await testManager
+      .addProjects([BOB_PAPERJS_PROJECT])
+      .then(() =>
+        testManager.getGraphQLData({
+          query: GET_PROJECT,
+          variables: { id: BOB_PAPERJS_PROJECT.id },
+        }),
+      )
+      .then(({ project }) => expect(project).toBeDefined());
+
+    await testManager
+      .getGraphQLData({ query: DELETE_PROJECT, variables: { id: BOB_PAPERJS_PROJECT.id }, cookies: bobCookies })
+      .then(({ deleteProject }) => expect(deleteProject).toBe(true));
+
+    await testManager
+      .getGraphQLData({
+        query: GET_PROJECT,
+        variables: { id: BOB_PAPERJS_PROJECT.id },
+      })
+      .then(({ project }) => expect(project).toBeNull);
+  });
+
+  it("gives an error message when deleting a project while not logged in", async () => {
+    await testManager
+      .addProjects([BOB_PAPERJS_PROJECT])
+      .then(() =>
+        testManager.getErrorMessage({
+          query: DELETE_PROJECT,
+          variables: { id: BOB_PAPERJS_PROJECT.id },
+          cookies: undefined,
+        }),
+      )
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+  });
+
+  it("gives an error message when trying to delete someone else's project", async () => {
+    await testManager
+      .addProjects([AMY_PAPERJS_PROJECT])
+      .then(() =>
+        testManager.getErrorMessage({
+          query: DELETE_PROJECT,
+          variables: { id: AMY_PAPERJS_PROJECT.id },
+          cookies: bobCookies,
+        }),
+      )
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+  });
+
+  it("lets the admin delete someone else's project", async () => {
+    await testManager
+      .addProjects([BOB_PAPERJS_PROJECT])
+      .then(() =>
+        testManager.getGraphQLData({
+          query: DELETE_PROJECT,
+          variables: { id: BOB_PAPERJS_PROJECT.id },
+          cookies: adminCookies,
+        }),
+      )
+      .then(({ deleteProject }) => expect(deleteProject).toBe(true));
+  });
+
+  it("gives an error message when trying to delete a project that doesn't exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_PROJECT,
+        variables: { id: AMY_PAPERJS_PROJECT.id },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/not exist/i));
   });
 });

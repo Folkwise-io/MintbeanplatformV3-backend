@@ -33,4 +33,8 @@ export default class ProjectService implements EntityService<Project> {
   addOne(input: ProjectServiceAddOneInput): Promise<Project> {
     return this.projectDao.addOne(input);
   }
+
+  async deleteOne(id: string): Promise<boolean> {
+    return this.projectDao.deleteOne(id);
+  }
 }
