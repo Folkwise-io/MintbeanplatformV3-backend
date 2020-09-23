@@ -2,26 +2,32 @@ import { User } from "../types/gqlGeneratedTypes";
 import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao, { UserDaoAddOneArgs } from "./UserDao";
+import handleDatabaseError from "../util/handleDatabaseError";
 
 export default class UserDaoKnex implements UserDao {
   constructor(private knex: Knex) {}
   async getOne(args: UserServiceGetOneArgs): Promise<User> {
-    const user = this.knex("users")
-      .where({ ...args, deleted: false })
-      .first();
-    return user as Promise<User>;
+    return handleDatabaseError(() => {
+      const user = this.knex("users")
+        .where({ ...args, deleted: false })
+        .first();
+      return user as Promise<User>;
+    });
   }
 
   async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    return this.knex("users")
-      .where({ ...args, deleted: false })
-      .orderBy("username");
+    return handleDatabaseError(() =>
+      this.knex("users")
+        .where({ ...args, deleted: false })
+        .orderBy("username"),
+    );
   }
 
   async addOne(args: UserDaoAddOneArgs): Promise<User> {
-    const insertedUsers = (await this.knex<User>("users").insert(args).returning("*")) as User[];
-    // console.log(insertedUsers);
-    return insertedUsers[0];
+    return handleDatabaseError(async () => {
+      const insertedUsers = (await this.knex<User>("users").insert(args).returning("*")) as User[];
+      return insertedUsers[0];
+    });
   }
 
   // Testing methods below, for TestManager to call
