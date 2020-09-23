@@ -1,6 +1,7 @@
 import Knex from "knex";
 import ProjectMediaAssetServiceAddOneArgs from "../service/ProjectMediaAssetService";
 import ProjectMediaAsset from "../types/projectMediaAsset";
+import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectMediaAssetDao from "./ProjectMediaAssetDao";
 
 export default class ProjectMediaAssetDaoKnex implements ProjectMediaAssetDao {
@@ -11,6 +12,6 @@ export default class ProjectMediaAssetDaoKnex implements ProjectMediaAssetDao {
   }
 
   async addMany(projectMediaAssets: ProjectMediaAssetServiceAddOneArgs[]): Promise<void> {
-    return this.knex("projectMediaAssets").insert(projectMediaAssets);
+    return handleDatabaseError(() => this.knex("projectMediaAssets").insert(projectMediaAssets));
   }
 }

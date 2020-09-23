@@ -6,6 +6,7 @@ import {
   MeetServiceGetOneArgs,
 } from "../service/MeetService";
 import { Meet } from "../types/gqlGeneratedTypes";
+import handleDatabaseError from "../util/handleDatabaseError";
 import MeetDao from "./MeetDao";
 
 // Remove the ending Z (which denotes UTC) from startTime and endTime
@@ -21,45 +22,55 @@ export default class MeetDaoKnex implements MeetDao {
   constructor(private knex: Knex) {}
 
   async getOne(args: MeetServiceGetOneArgs): Promise<Meet> {
-    const meet = await this.knex("meets")
-      .where({ ...args, deleted: false })
-      .first();
-    // TODO: clean this typescript-constrained mess
-    if (meet) {
-      const [formattedMeet] = formatMeets([meet]);
-      return formattedMeet as Meet;
-    }
-    return meet as any;
+    return handleDatabaseError(async () => {
+      const meet = await this.knex("meets")
+        .where({ ...args, deleted: false })
+        .first();
+      // TODO: clean this typescript-constrained mess
+      if (meet) {
+        const [formattedMeet] = formatMeets([meet]);
+        return formattedMeet as Meet;
+      }
+      return meet as any;
+    });
   }
 
   async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {
-    const meets = await this.knex("meets")
-      .where({ ...args, deleted: false })
-      .orderBy("startTime", "desc");
+    return handleDatabaseError(async () => {
+      const meets = await this.knex("meets")
+        .where({ ...args, deleted: false })
+        .orderBy("startTime", "desc");
 
-    const formattedMeets = formatMeets(meets);
+      const formattedMeets = formatMeets(meets);
 
-    return formattedMeets;
+      return formattedMeets;
+    });
   }
 
   async addOne(args: MeetServiceAddOneInput): Promise<Meet> {
-    const newMeets = (await this.knex("meets").insert(args).returning("*")) as Meet[];
-    const formattedMeets = formatMeets(newMeets);
-    return formattedMeets[0];
+    return handleDatabaseError(async () => {
+      const newMeets = (await this.knex("meets").insert(args).returning("*")) as Meet[];
+      const formattedMeets = formatMeets(newMeets);
+      return formattedMeets[0];
+    });
   }
 
   async editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet> {
-    const newMeets = (await this.knex("meets")
-      .where({ id })
-      .update({ ...input, updatedAt: this.knex.fn.now() })
-      .returning("*")) as Meet[];
-    const formattedMeets = formatMeets(newMeets);
-    return formattedMeets[0];
+    return handleDatabaseError(async () => {
+      const newMeets = (await this.knex("meets")
+        .where({ id })
+        .update({ ...input, updatedAt: this.knex.fn.now() })
+        .returning("*")) as Meet[];
+      const formattedMeets = formatMeets(newMeets);
+      return formattedMeets[0];
+    });
   }
 
   async deleteOne(id: string): Promise<boolean> {
-    await this.knex("meets").where({ id }).update({ deleted: true });
-    return true;
+    return handleDatabaseError(async () => {
+      await this.knex("meets").where({ id }).update({ deleted: true });
+      return true;
+    });
   }
 
   // Testing methods below, for TestManager to call
