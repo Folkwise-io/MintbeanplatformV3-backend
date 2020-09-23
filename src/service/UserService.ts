@@ -40,6 +40,10 @@ export default class UserService implements EntityService<User> {
 
   async checkPassword(args: UserServiceLoginArgs): Promise<boolean> {
     const user: User = await this.userDao.getOne({ email: args.email });
+    if (!user) {
+      return false;
+    }
+
     const correctPassword = await bcrypt.compare(args.password, user.passwordHash);
     if (!correctPassword) {
       return false;
