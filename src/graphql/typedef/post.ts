@@ -8,7 +8,7 @@ const post = gql`
     "ID of the user who created the posted"
     userId: UUID!
 
-    "Unique username"
+    "Post body"
     body: String
 
     "Date that the post was made"

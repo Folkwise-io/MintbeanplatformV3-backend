@@ -22,8 +22,6 @@ export type User = {
   __typename?: 'User';
   /** User's ID in UUID */
   id: Scalars['UUID'];
-  /** Unique username */
-  username: Scalars['String'];
   /** Unique email */
   email: Scalars['String'];
   /** The user's hashed password */
@@ -47,7 +45,7 @@ export type Query = {
   __typename?: 'Query';
   /** Search for users by first or last name */
   users?: Maybe<Array<Maybe<User>>>;
-  /** Get a single user by ID, username, or email */
+  /** Get a single user by ID or email */
   user?: Maybe<User>;
   /** Get the current logged in user using cookies */
   me?: Maybe<User>;
@@ -74,7 +72,6 @@ export type QueryUsersArgs = {
 
 export type QueryUserArgs = {
   id?: Maybe<Scalars['UUID']>;
-  username?: Maybe<Scalars['String']>;
   email?: Maybe<Scalars['String']>;
 };
 
@@ -106,8 +103,6 @@ export type QueryProjectArgs = {
 
 /** The fields needed for a new user to register */
 export type UserRegistrationInput = {
-  /** Unique username */
-  username: Scalars['String'];
   /** Unique email */
   email: Scalars['String'];
   firstName: Scalars['String'];
@@ -179,7 +174,7 @@ export type Post = {
   id: Scalars['UUID'];
   /** ID of the user who created the posted */
   userId: Scalars['UUID'];
-  /** Unique username */
+  /** Post body */
   body?: Maybe<Scalars['String']>;
   /** Date that the post was made */
   createdAt?: Maybe<Scalars['String']>;
@@ -437,7 +432,6 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   passwordHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

@@ -19,7 +19,7 @@ export default class UserDaoKnex implements UserDao {
     return handleDatabaseError(() =>
       this.knex("users")
         .where({ ...args, deleted: false })
-        .orderBy("username"),
+        .orderBy("firstName"),
     );
   }
 
