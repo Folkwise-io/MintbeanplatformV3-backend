@@ -1,6 +1,7 @@
 import Knex from "knex";
 import { MediaAssetServiceAddManyArgs, MediaAssetServiceGetManyArgs } from "../service/MediaAssetService";
 import { MediaAsset } from "../types/gqlGeneratedTypes";
+import handleDatabaseError from "../util/handleDatabaseError";
 import MediaAssetDao from "./MediaAssetDao";
 
 export default class MediaAssetDaoKnex implements MediaAssetDao {
@@ -13,12 +14,14 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
   async getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]> {
     // Only tested with projectId lookup for now
     // TODO: Add support for userId lookup
-    const mediaAssets = await this.knex("mediaAssets")
-      .join("projectMediaAssets", "mediaAssets.id", "=", "projectMediaAssets.mediaAssetId")
-      .where({ ...args, "mediaAssets.deleted": false })
-      .orderBy("index");
+    return handleDatabaseError(async () => {
+      const mediaAssets = await this.knex("mediaAssets")
+        .join("projectMediaAssets", "mediaAssets.id", "=", "projectMediaAssets.mediaAssetId")
+        .where({ ...args, "mediaAssets.deleted": false })
+        .orderBy("index");
 
-    return mediaAssets;
+      return mediaAssets;
+    });
   }
 
   addOne(args: any): Promise<MediaAsset> {
@@ -26,7 +29,7 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
   }
 
   addMany(mediaAssets: MediaAssetServiceAddManyArgs): Promise<MediaAsset[]> {
-    return this.knex<MediaAsset>("mediaAssets").insert(mediaAssets).returning("*");
+    return handleDatabaseError(() => this.knex<MediaAsset>("mediaAssets").insert(mediaAssets).returning("*"));
   }
 
   editOne(id: string, input: any): Promise<MediaAsset> {

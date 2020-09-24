@@ -5,30 +5,37 @@ import {
   ProjectServiceGetOneArgs,
 } from "../service/ProjectService";
 import { Project } from "../types/gqlGeneratedTypes";
+import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectDao from "./ProjectDao";
 
 export default class ProjectDaoKnex implements ProjectDao {
   constructor(private knex: Knex) {}
 
   async getOne(args: ProjectServiceGetOneArgs): Promise<Project> {
-    const project: Project = await this.knex("projects")
-      .where({ ...args, deleted: false })
-      .first();
+    return handleDatabaseError(async () => {
+      const project: Project = await this.knex("projects")
+        .where({ ...args, deleted: false })
+        .first();
 
-    return project;
+      return project;
+    });
   }
 
   async getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
-    const projects: Project[] = await this.knex("projects")
-      .where({ ...args, deleted: false })
-      .orderBy("createdAt", "desc");
+    return handleDatabaseError(async () => {
+      const projects: Project[] = await this.knex("projects")
+        .where({ ...args, deleted: false })
+        .orderBy("createdAt", "desc");
 
-    return projects;
+      return projects;
+    });
   }
 
   async addOne(input: ProjectServiceAddOneInput): Promise<Project> {
-    const newProjects = (await this.knex("projects").insert(input).returning("*")) as Project[];
-    return newProjects[0];
+    return handleDatabaseError(async () => {
+      const newProjects = (await this.knex("projects").insert(input).returning("*")) as Project[];
+      return newProjects[0];
+    });
   }
 
   editOne(id: string, input: any): Promise<Project> {
@@ -36,8 +43,10 @@ export default class ProjectDaoKnex implements ProjectDao {
   }
 
   async deleteOne(id: string): Promise<boolean> {
-    await this.knex("projects").where({ id }).update({ deleted: true });
-    return true;
+    return handleDatabaseError(async () => {
+      await this.knex("projects").where({ id }).update({ deleted: true });
+      return true;
+    });
   }
 
   // Testing methods below, for TestManager to call
