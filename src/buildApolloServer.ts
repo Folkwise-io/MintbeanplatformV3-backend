@@ -7,7 +7,7 @@ export default function buildApolloServer(schema: GraphQLSchema, context: BuildE
   const apolloServer = new ApolloServer({
     schema,
     context,
-    validationRules: [depthLimit(4)],
+    validationRules: [depthLimit(3)], // Max depth of frontend query is 3, used in MeetDao
   });
 
   return apolloServer;
