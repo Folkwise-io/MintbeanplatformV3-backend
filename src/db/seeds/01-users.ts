@@ -6,7 +6,6 @@ export async function seed(knex: Knex): Promise<void> {
   await knex("users").insert([
     {
       id: "00000000-0000-0000-0000-000000000000",
-      username: "aadams",
       email: "a@a.com",
       firstName: "Amy",
       lastName: "Adams",
@@ -16,7 +15,6 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "00000000-0000-4000-a000-000000000000",
-      username: "bbarker",
       email: "b@b.com",
       firstName: "Bob",
       lastName: "Barker",
@@ -25,7 +23,6 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "00000000-0000-4000-b000-000000000000",
-      username: "cchase",
       email: "c@c.com",
       firstName: "Chevy",
       lastName: "Chase",

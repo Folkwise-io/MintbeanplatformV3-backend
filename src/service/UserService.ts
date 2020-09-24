@@ -5,7 +5,6 @@ import UserDao from "../dao/UserDao";
 
 export interface UserServiceGetOneArgs {
   id?: string | null;
-  username?: string | null;
   email?: string | null;
 }
 
@@ -20,7 +19,6 @@ export interface UserServiceLoginArgs {
 }
 
 export interface UserServiceAddOneArgs {
-  username: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -52,8 +50,8 @@ export default class UserService implements EntityService<User> {
   }
 
   async addOne(args: UserServiceAddOneArgs): Promise<User> {
-    const { username, email, firstName, lastName, password } = args;
+    const { email, firstName, lastName, password } = args;
     const passwordHash = bcrypt.hashSync(password, 10);
-    return this.userDao.addOne({ username, email, firstName, lastName, passwordHash });
+    return this.userDao.addOne({ email, firstName, lastName, passwordHash });
   }
 }

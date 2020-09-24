@@ -6,9 +6,6 @@ const user = gql`
     "User's ID in UUID"
     id: UUID!
 
-    "Unique username"
-    username: String!
-
     "Unique email"
     email: String!
 
@@ -35,8 +32,8 @@ const user = gql`
     "Search for users by first or last name"
     users(firstName: String, lastName: String): [User]
 
-    "Get a single user by ID, username, or email"
-    user(id: UUID, username: String, email: String): User
+    "Get a single user by ID or email"
+    user(id: UUID, email: String): User
 
     "Get the current logged in user using cookies"
     me: User
@@ -44,9 +41,6 @@ const user = gql`
 
   "The fields needed for a new user to register"
   input UserRegistrationInput {
-    "Unique username"
-    username: String!
-
     "Unique email"
     email: String!
 

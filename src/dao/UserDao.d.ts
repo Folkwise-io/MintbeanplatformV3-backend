@@ -2,7 +2,6 @@ import { User } from "../types/gqlGeneratedTypes";
 import { UserServiceAddOneArgs, UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 
 interface UserDaoAddOneArgs {
-  username: string;
   email: string;
   firstName: string;
   lastName: string;
