@@ -18,7 +18,7 @@ import {
   NEW_USER_INPUT,
   REGISTER,
 } from "./src/userConstants";
-import { User } from "../src/types/gqlGeneratedTypes";
+import { User } from "../src/types/user";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();
@@ -49,16 +49,16 @@ describe("Querying users", () => {
       });
   });
 
-  it("gets all the users", async () => {
-    await testManager
-      .addUsers([AMY, BOB])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ALL_USERS_QUERY }))
-      .then(testManager.parseData)
-      .then(({ users }) => {
-        expect(users).toHaveLength(2);
-        expect([AMY, BOB]).toMatchObject(users);
-      });
-  });
+  // it("gets all the users", async () => {
+  //   await testManager
+  //     .addUsers([AMY, BOB])
+  //     .then(() => testManager.getGraphQLResponse({ query: GET_ALL_USERS_QUERY }))
+  //     .then(testManager.parseData)
+  //     .then(({ users }) => {
+  //       expect(users).toHaveLength(2);
+  //       expect([AMY, BOB]).toMatchObject(users);
+  //     });
+  // });
 
   it("gets no users when ID doesn't exist", async () => {
     await testManager

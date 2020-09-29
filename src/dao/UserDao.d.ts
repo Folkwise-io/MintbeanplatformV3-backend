@@ -1,4 +1,4 @@
-import { User } from "../types/gqlGeneratedTypes";
+import { User } from "../types/user";
 import { UserServiceAddOneArgs, UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 
 interface UserDaoAddOneArgs {

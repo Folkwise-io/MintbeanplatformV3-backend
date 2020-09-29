@@ -1,4 +1,5 @@
-import { Resolvers, User } from "../../types/gqlGeneratedTypes";
+import { Resolvers } from "../../types/gqlGeneratedTypes";
+import { User } from "../../types/user";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";
@@ -10,11 +11,6 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
     Query: {
       user: (_root, args, context: ServerContext): Promise<User> => {
         return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args));
-      },
-
-      users: (_root, args, context: ServerContext): Promise<User[]> => {
-        // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
-        return userService.getMany(args);
       },
 
       me: (_root, _args, context: ServerContext): Promise<User> => {

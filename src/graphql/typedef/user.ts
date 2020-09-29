@@ -9,9 +9,6 @@ const user = gql`
     "Unique email"
     email: String!
 
-    "The user's hashed password"
-    passwordHash: String!
-
     firstName: String!
     lastName: String!
 
@@ -29,10 +26,7 @@ const user = gql`
   }
 
   type Query {
-    "Search for users by first or last name"
-    users(firstName: String, lastName: String): [User]
-
-    "Get a single user by ID or email"
+    "Get a single user by ID"
     user(id: UUID, email: String): User
 
     "Get the current logged in user using cookies"
