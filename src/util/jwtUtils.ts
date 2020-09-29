@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { User } from "../types/gqlGeneratedTypes";
+import { User } from "../types/user";
 import config from "./config";
 
 const { jwtSecret } = config;

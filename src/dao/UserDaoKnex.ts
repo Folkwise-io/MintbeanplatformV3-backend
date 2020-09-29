@@ -1,4 +1,4 @@
-import { User } from "../types/gqlGeneratedTypes";
+import { User } from "../types/user";
 import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao, { UserDaoAddOneArgs } from "./UserDao";

@@ -1,4 +1,5 @@
-import { Resolvers, User } from "../../types/gqlGeneratedTypes";
+import { Resolvers } from "../../types/gqlGeneratedTypes";
+import { User } from "../../types/user";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";

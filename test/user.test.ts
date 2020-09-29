@@ -18,7 +18,7 @@ import {
   NEW_USER_INPUT,
   REGISTER,
 } from "./src/userConstants";
-import { User } from "../src/types/gqlGeneratedTypes";
+import { User } from "../src/types/user";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();
