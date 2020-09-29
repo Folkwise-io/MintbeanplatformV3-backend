@@ -44,7 +44,7 @@ describe("Querying users", () => {
       .then(() =>
         testManager.getGraphQLResponse({
           query: GET_USER_QUERY,
-          variables: { id: "00000000-0000-0000-0000-000000000000" },
+          variables: { id: AMY.id },
         }),
       )
       .then(testManager.parseData)
@@ -70,7 +70,7 @@ describe("Querying users", () => {
       .then(() =>
         testManager.getGraphQLResponse({
           query: GET_USER_QUERY,
-          variables: { id: "00000000-0000-0000-0000-000000000000" },
+          variables: { id: AMY.id },
         }),
       )
       .then(testManager.parseDataAndErrors)
