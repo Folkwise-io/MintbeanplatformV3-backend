@@ -2,7 +2,7 @@ import { gql } from "apollo-server-express";
 import { User, UserRegistrationInput } from "../../src/types/gqlGeneratedTypes";
 
 // Will use generator factory / faker once more entities are added
-export const AMY: User = {
+export const AMY = {
   id: "00000000-0000-0000-0000-000000000000",
   email: "a@a.com",
   passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
@@ -18,7 +18,7 @@ export const AMY_CREDENTIALS = {
   password: "password",
 };
 
-export const BOB: User = {
+export const BOB = {
   id: "00000000-0000-4000-a000-000000000000",
   email: "b@b.com",
   passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",

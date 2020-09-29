@@ -12,11 +12,6 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         return userResolverValidator.getOne(args, context).then((args) => userService.getOne(args));
       },
 
-      users: (_root, args, context: ServerContext): Promise<User[]> => {
-        // TODO: Add validation once we need to validate params that are used for pagination / sorting etc.
-        return userService.getMany(args);
-      },
-
       me: (_root, _args, context: ServerContext): Promise<User> => {
         const userId = context.getUserId();
         if (!userId) {
