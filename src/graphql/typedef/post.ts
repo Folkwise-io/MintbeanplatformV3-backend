@@ -18,10 +18,14 @@ const post = gql`
     updatedAt: String
 
     "User who created the post"
-    user: User
+    user: PublicUser
   }
 
-  extend type User {
+  extend type PublicUser {
+    posts: [Post] # Keep everything related to posts in this schema.
+  }
+
+  extend type PrivateUser {
     posts: [Post] # Keep everything related to posts in this schema.
   }
 

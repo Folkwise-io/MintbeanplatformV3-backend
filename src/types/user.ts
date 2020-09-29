@@ -1,6 +1,6 @@
 import { Post, Project } from "./gqlGeneratedTypes";
 
-export type User = {
+export interface User {
   /** User's ID in UUID */
   id: string;
   /** Unique email */
@@ -18,4 +18,14 @@ export type User = {
   posts?: Post[];
   /** All the projects that the user has submitted */
   projects?: Project[];
-};
+}
+
+export interface PublicUser extends User {
+  passwordHash: never;
+  email: never;
+}
+
+export interface PrivateUser extends User {
+  passwordHash: string;
+  email: string;
+}
