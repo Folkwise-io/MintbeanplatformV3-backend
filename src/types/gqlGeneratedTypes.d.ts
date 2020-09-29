@@ -39,6 +39,8 @@ export type User = {
   posts?: Maybe<Array<Maybe<Post>>>;
   /** All the projects that the user has submitted */
   projects?: Maybe<Array<Project>>;
+  /** A list of meets that the user has registered for */
+  registeredMeets?: Maybe<Array<Meet>>;
 };
 
 export type Query = {
@@ -209,6 +211,8 @@ export type Meet = {
   region: Scalars['String'];
   /** All the projects that are associated with the Meet */
   projects?: Maybe<Array<Project>>;
+  /** A list of users that are registered for the Meet */
+  registrants?: Maybe<Array<User>>;
 };
 
 /** The input needed to create a new meet */
@@ -442,6 +446,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
+  registeredMeets?: Resolver<Maybe<Array<ResolversTypes['Meet']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -492,6 +497,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
+  registrants?: Resolver<Maybe<Array<ResolversTypes['User']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
