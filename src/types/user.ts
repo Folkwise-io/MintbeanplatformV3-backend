@@ -1,5 +1,6 @@
 import { Post, Project } from "./gqlGeneratedTypes";
 
+// The internal representation of a User in the db
 export interface User {
   /** User's ID in UUID */
   id: string;
@@ -20,12 +21,24 @@ export interface User {
   projects?: Project[];
 }
 
-export interface PublicUser extends User {
-  passwordHash: never;
-  email: never;
+interface BaseUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+  updatedAt: string;
+  isAdmin: boolean;
+  passwordHash?: undefined; // This guards against passwordHash being in the type that is returned
+  posts?: Post[];
+  projects?: Project[];
 }
 
-export interface PrivateUser extends User {
-  passwordHash: string;
+// The return type of a public query
+export interface PublicUser extends BaseUser {
+  email?: undefined;
+}
+
+// The return type of a private query
+export interface PrivateUser extends BaseUser {
   email: string;
 }
