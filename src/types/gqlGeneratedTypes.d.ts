@@ -17,7 +17,7 @@ export type Scalars = {
 
 
 
-/** A member of the Mintbean platform */
+/** A private user entity that is only returned in authenticated routes, which contains fields that are private */
 export type PrivateUser = {
   __typename?: 'PrivateUser';
   /** User's ID in UUID */
@@ -39,12 +39,15 @@ export type PrivateUser = {
   projects?: Maybe<Array<Project>>;
 };
 
+/** A public user entity whose fields should all be public information */
 export type PublicUser = {
   __typename?: 'PublicUser';
   /** User's ID in UUID */
   id: Scalars['UUID'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
+  /** Whether the user has admin privileges to create/modify events */
+  isAdmin: Scalars['Boolean'];
   /** DateTime that the user registered */
   createdAt: Scalars['DateTime'];
   /** DateTime that the user updated their profile */
@@ -77,7 +80,6 @@ export type Query = {
 
 export type QueryUserArgs = {
   id?: Maybe<Scalars['UUID']>;
-  email?: Maybe<Scalars['String']>;
 };
 
 
@@ -455,6 +457,7 @@ export type PublicUserResolvers<ContextType = any, ParentType extends ResolversP
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
