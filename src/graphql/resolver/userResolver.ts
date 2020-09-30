@@ -1,12 +1,12 @@
 import { Resolvers } from "../../types/gqlGeneratedTypes";
-import { User, PublicUser, PrivateUser } from "../../types/user";
+import { User, PublicUserDto, PrivateUserDto } from "../../types/user";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";
 import { AuthenticationError } from "apollo-server-express";
 import { generateJwt } from "../../util/jwtUtils";
 
-const extractPublicFields = ({ id, firstName, lastName, isAdmin, createdAt, updatedAt }: User): PublicUser => ({
+const mapUserToPublicUser = ({ id, firstName, lastName, isAdmin, createdAt, updatedAt }: User): PublicUserDto => ({
   id,
   firstName,
   lastName,
@@ -15,7 +15,7 @@ const extractPublicFields = ({ id, firstName, lastName, isAdmin, createdAt, upda
   updatedAt,
 });
 
-const extractPrivateFields = ({
+const mapUserToPrivateUser = ({
   id,
   firstName,
   lastName,
@@ -23,7 +23,7 @@ const extractPrivateFields = ({
   createdAt,
   updatedAt,
   email,
-}: User): PrivateUser => ({
+}: User): PrivateUserDto => ({
   id,
   firstName,
   lastName,
@@ -36,25 +36,25 @@ const extractPrivateFields = ({
 const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
   return {
     Query: {
-      user: (_root, args, context: ServerContext): Promise<PublicUser> => {
+      user: (_root, args, context: ServerContext): Promise<PublicUserDto> => {
         return userResolverValidator
           .getOne(args, context)
           .then((args) => userService.getOne(args))
-          .then(extractPublicFields);
+          .then(mapUserToPublicUser);
       },
 
-      me: (_root, _args, context: ServerContext): Promise<PrivateUser> => {
+      me: (_root, _args, context: ServerContext): Promise<PrivateUserDto> => {
         const userId = context.getUserId();
         if (!userId) {
           throw new AuthenticationError("You are not logged in!");
         }
 
-        return userService.getOne({ id: userId }).then(extractPrivateFields);
+        return userService.getOne({ id: userId }).then(mapUserToPrivateUser);
       },
     },
 
     Mutation: {
-      login: (_root, args, context: ServerContext): Promise<PrivateUser> => {
+      login: (_root, args, context: ServerContext): Promise<PrivateUserDto> => {
         return userResolverValidator.login(args, context).then(async (args) => {
           const isValidPassword = await userService.checkPassword(args);
           if (!isValidPassword) {
@@ -62,7 +62,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           }
           // TODO: Move below into jwt auth service
           // Make a JWT and return it in the body as well as the cookie
-          const user = await userService.getOne({ email: args.email }).then(extractPrivateFields);
+          const user = await userService.getOne({ email: args.email }).then(mapUserToPrivateUser);
           const token = generateJwt(user);
 
           context.setJwt(token);
@@ -79,7 +79,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         return false;
       },
 
-      register: (_root, args, context: ServerContext): Promise<PrivateUser> => {
+      register: (_root, args, context: ServerContext): Promise<PrivateUserDto> => {
         const userId = context.getUserId();
         if (userId) {
           throw new AuthenticationError("Already logged in!");
@@ -88,7 +88,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         return userResolverValidator
           .addOne(args)
           .then((input) => userService.addOne(input))
-          .then(extractPrivateFields)
+          .then(mapUserToPrivateUser)
           .then((user) => {
             const token = generateJwt(user);
 
@@ -98,8 +98,8 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
       },
     },
     Project: {
-      user: (project): Promise<PublicUser> => {
-        return userService.getOne({ id: project.userId }).then(extractPublicFields);
+      user: (project): Promise<PublicUserDto> => {
+        return userService.getOne({ id: project.userId }).then(mapUserToPublicUser);
       },
     },
   };

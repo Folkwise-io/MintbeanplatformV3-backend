@@ -21,7 +21,7 @@ export interface User {
   projects?: Project[];
 }
 
-interface BaseUser {
+interface BaseUserDto {
   id: string;
   firstName: string;
   lastName: string;
@@ -34,11 +34,11 @@ interface BaseUser {
 }
 
 // The return type of a public query
-export interface PublicUser extends BaseUser {
+export interface PublicUserDto extends BaseUserDto {
   email?: never; // This guards against email being returned in a public query for a user
 }
 
 // The return type of a private query
-export interface PrivateUser extends BaseUser {
+export interface PrivateUserDto extends BaseUserDto {
   email: string;
 }
