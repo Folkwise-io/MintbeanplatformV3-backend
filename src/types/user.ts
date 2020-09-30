@@ -28,14 +28,14 @@ interface BaseUser {
   createdAt: string;
   updatedAt: string;
   isAdmin: boolean;
-  passwordHash?: undefined; // This guards against passwordHash being in the type that is returned
+  passwordHash?: never; // This guards against passwordHash being in the type that is returned
   posts?: Post[];
   projects?: Project[];
 }
 
 // The return type of a public query
 export interface PublicUser extends BaseUser {
-  email?: undefined;
+  email?: never; // This guards against email being returned in a public query for a user
 }
 
 // The return type of a private query
