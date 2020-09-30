@@ -1,6 +1,7 @@
 import { Post, Project } from "./gqlGeneratedTypes";
 
-export type User = {
+// The internal representation of a User in the db
+export interface User {
   /** User's ID in UUID */
   id: string;
   /** Unique email */
@@ -18,4 +19,26 @@ export type User = {
   posts?: Post[];
   /** All the projects that the user has submitted */
   projects?: Project[];
-};
+}
+
+interface BaseUserDto {
+  id: string;
+  firstName: string;
+  lastName: string;
+  createdAt: string;
+  updatedAt: string;
+  isAdmin: boolean;
+  passwordHash?: never; // This guards against passwordHash being in the type that is returned
+  posts?: Post[];
+  projects?: Project[];
+}
+
+// The return type of a public query
+export interface PublicUserDto extends BaseUserDto {
+  email?: never; // This guards against email being returned in a public query for a user
+}
+
+// The return type of a private query
+export interface PrivateUserDto extends BaseUserDto {
+  email: string;
+}

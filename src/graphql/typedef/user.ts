@@ -1,8 +1,8 @@
 import { gql } from "apollo-server-express";
 
 const user = gql`
-  "A member of the Mintbean platform"
-  type User {
+  "A private user entity that is only returned in authenticated routes, which contains fields that are private"
+  type PrivateUser {
     "User's ID in UUID"
     id: UUID!
 
@@ -25,12 +25,30 @@ const user = gql`
     token: String
   }
 
+  "A public user entity whose fields should all be public information"
+  type PublicUser {
+    "User's ID in UUID"
+    id: UUID!
+
+    firstName: String!
+    lastName: String!
+
+    "Whether the user has admin privileges to create/modify events"
+    isAdmin: Boolean!
+
+    "DateTime that the user registered"
+    createdAt: DateTime!
+
+    "DateTime that the user updated their profile"
+    updatedAt: DateTime!
+  }
+
   type Query {
     "Get a single user by ID"
-    user(id: UUID, email: String): User
+    user(id: UUID!): PublicUser
 
     "Get the current logged in user using cookies"
-    me: User
+    me: PrivateUser
   }
 
   "The fields needed for a new user to register"
@@ -47,13 +65,13 @@ const user = gql`
 
   type Mutation {
     "Login using email and password"
-    login(email: String!, password: String!): User!
+    login(email: String!, password: String!): PrivateUser!
 
     "Log out by clearing cookies"
     logout: Boolean!
 
     "Register a user"
-    register(input: UserRegistrationInput!): User!
+    register(input: UserRegistrationInput!): PrivateUser!
   }
 `;
 
