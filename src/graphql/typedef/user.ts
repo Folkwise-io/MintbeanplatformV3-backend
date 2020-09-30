@@ -45,7 +45,7 @@ const user = gql`
 
   type Query {
     "Get a single user by ID"
-    user(id: UUID): PublicUser
+    user(id: UUID!): PublicUser
 
     "Get the current logged in user using cookies"
     me: PrivateUser
