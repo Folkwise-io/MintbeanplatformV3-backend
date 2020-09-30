@@ -1,15 +1,12 @@
-import { ALGOLIA_3, AMY_ANIMATION_TOYS_2_REGISTRATION, ANIMATION_TOYS_2 } from "./src/registrationConstants";
+import { ALGOLIA_3, AMY_ANIMATION_TOYS_2_REGISTRATION, ANIMATION_TOYS_2 } from "./src/meetRegistrationConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB, GET_USER_QUERY } from "./src/userConstants";
+import { AMY, AMY_CREDENTIALS, BOB, GET_USER_QUERY, LOGIN } from "./src/userConstants";
 
 const testManager = TestManager.build();
 
-beforeAll(async () => {
+beforeEach(async () => {
   await testManager.deleteAllUsers();
   await testManager.deleteAllMeets();
-});
-
-beforeEach(async () => {
   await testManager.deleteAllMeetRegistrations();
 });
 
@@ -26,5 +23,21 @@ describe("Querying to find registrants of meets", () => {
       .then(({ registeredMeets }) => {
         expect(registeredMeets).toMatchObject(ANIMATION_TOYS_2);
       });
+  });
+});
+
+describe("Registering for a meet", () => {
+  beforeAll(async () => {
+    await testManager.addUsers([AMY, BOB]);
+    await testManager.addMeets([ANIMATION_TOYS_2, ALGOLIA_3]);
+  });
+
+  it("lets a logged in user register for a meet", async () => {
+    const cookies = await testManager.getCookies({
+      query: LOGIN,
+      variables: AMY_CREDENTIALS,
+    });
+
+    // TODO
   });
 });

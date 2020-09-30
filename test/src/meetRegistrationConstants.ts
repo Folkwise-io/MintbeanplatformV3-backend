@@ -14,6 +14,16 @@ export const GET_USER_REGISTERED_MEETS_QUERY = gql`
   }
 `;
 
+export const REGISTER_FOR_MEET_QUERY = gql`
+  mutation registerForMeet($id: UUID!) {
+    registerForMeet(id: $id) {
+      title
+      description
+      meetType
+    }
+  }
+`;
+
 export const ANIMATION_TOYS_2: Meet = {
   id: "e093af41-8238-4fd6-ae2e-145497c3e038",
   meetType: "hackMeet",
