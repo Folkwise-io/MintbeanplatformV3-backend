@@ -17,15 +17,13 @@ export type Scalars = {
 
 
 
-/** A member of the Mintbean platform */
-export type User = {
-  __typename?: 'User';
+/** A private user entity that is only returned in authenticated routes, which contains fields that are private */
+export type PrivateUser = {
+  __typename?: 'PrivateUser';
   /** User's ID in UUID */
   id: Scalars['UUID'];
   /** Unique email */
   email: Scalars['String'];
-  /** The user's hashed password */
-  passwordHash: Scalars['String'];
   firstName: Scalars['String'];
   lastName: Scalars['String'];
   /** DateTime that the user registered */
@@ -43,14 +41,30 @@ export type User = {
   registeredMeets?: Maybe<Array<Meet>>;
 };
 
+/** A public user entity whose fields should all be public information */
+export type PublicUser = {
+  __typename?: 'PublicUser';
+  /** User's ID in UUID */
+  id: Scalars['UUID'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  /** Whether the user has admin privileges to create/modify events */
+  isAdmin: Scalars['Boolean'];
+  /** DateTime that the user registered */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the user updated their profile */
+  updatedAt: Scalars['DateTime'];
+  posts?: Maybe<Array<Maybe<Post>>>;
+  /** All the projects that the user has submitted */
+  projects?: Maybe<Array<Project>>;
+};
+
 export type Query = {
   __typename?: 'Query';
-  /** Search for users by first or last name */
-  users?: Maybe<Array<Maybe<User>>>;
-  /** Get a single user by ID or email */
-  user?: Maybe<User>;
+  /** Get a single user by ID */
+  user?: Maybe<PublicUser>;
   /** Get the current logged in user using cookies */
-  me?: Maybe<User>;
+  me?: Maybe<PrivateUser>;
   /** Search for posts by userId */
   posts?: Maybe<Array<Maybe<Post>>>;
   /** Get a single post by its ID */
@@ -66,15 +80,8 @@ export type Query = {
 };
 
 
-export type QueryUsersArgs = {
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
-};
-
-
 export type QueryUserArgs = {
-  id?: Maybe<Scalars['UUID']>;
-  email?: Maybe<Scalars['String']>;
+  id: Scalars['UUID'];
 };
 
 
@@ -116,11 +123,11 @@ export type UserRegistrationInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   /** Login using email and password */
-  login: User;
+  login: PrivateUser;
   /** Log out by clearing cookies */
   logout: Scalars['Boolean'];
   /** Register a user */
-  register: User;
+  register: PrivateUser;
   /** Creates a new meet (only hackMeet is supported for now) */
   createMeet: Meet;
   /** Edits a meet (requires admin privileges) */
@@ -183,7 +190,7 @@ export type Post = {
   /** Date that the post was edited */
   updatedAt?: Maybe<Scalars['String']>;
   /** User who created the post */
-  user?: Maybe<User>;
+  user?: Maybe<PublicUser>;
 };
 
 /** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */
@@ -270,7 +277,7 @@ export type Project = {
   /** DateTime that the project was edited */
   updatedAt: Scalars['DateTime'];
   /** The user who created the project */
-  user?: Maybe<User>;
+  user?: Maybe<PublicUser>;
   /** The meet associated with the project */
   meet?: Maybe<Meet>;
   /** A list of MediaAssets for this Project, ordered by index */
@@ -390,9 +397,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   UUID: ResolverTypeWrapper<Scalars['UUID']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']>;
-  User: ResolverTypeWrapper<User>;
+  PrivateUser: ResolverTypeWrapper<PrivateUser>;
   String: ResolverTypeWrapper<Scalars['String']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  PublicUser: ResolverTypeWrapper<PublicUser>;
   Query: ResolverTypeWrapper<{}>;
   UserRegistrationInput: UserRegistrationInput;
   Mutation: ResolverTypeWrapper<{}>;
@@ -410,9 +418,10 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   UUID: Scalars['UUID'];
   DateTime: Scalars['DateTime'];
-  User: User;
+  PrivateUser: PrivateUser;
   String: Scalars['String'];
   Boolean: Scalars['Boolean'];
+  PublicUser: PublicUser;
   Query: {};
   UserRegistrationInput: UserRegistrationInput;
   Mutation: {};
@@ -434,10 +443,9 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+export type PrivateUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['PrivateUser'] = ResolversParentTypes['PrivateUser']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  passwordHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -450,10 +458,21 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type PublicUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['PublicUser'] = ResolversParentTypes['PublicUser']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  isAdmin?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, RequireFields<QueryUsersArgs, never>>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryUserArgs, never>>;
-  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType, RequireFields<QueryUserArgs, 'id'>>;
+  me?: Resolver<Maybe<ResolversTypes['PrivateUser']>, ParentType, ContextType>;
   posts?: Resolver<Maybe<Array<Maybe<ResolversTypes['Post']>>>, ParentType, ContextType, RequireFields<QueryPostsArgs, never>>;
   post?: Resolver<Maybe<ResolversTypes['Post']>, ParentType, ContextType, RequireFields<QueryPostArgs, 'id'>>;
   meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType, RequireFields<QueryMeetArgs, 'id'>>;
@@ -463,9 +482,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  login?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  login?: Resolver<ResolversTypes['PrivateUser'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  register?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
+  register?: Resolver<ResolversTypes['PrivateUser'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
   createMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationCreateMeetArgs, 'input'>>;
   editMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationEditMeetArgs, 'id' | 'input'>>;
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
@@ -479,7 +498,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
   body?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -510,7 +529,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   liveUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType>;
   mediaAssets?: Resolver<Maybe<Array<ResolversTypes['MediaAsset']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
@@ -529,7 +548,8 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
-  User?: UserResolvers<ContextType>;
+  PrivateUser?: PrivateUserResolvers<ContextType>;
+  PublicUser?: PublicUserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Post?: PostResolvers<ContextType>;

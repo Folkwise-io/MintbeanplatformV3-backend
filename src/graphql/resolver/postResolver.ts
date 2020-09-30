@@ -15,7 +15,13 @@ const postResolver: Resolvers = {
     },
   },
 
-  User: {
+  PublicUser: {
+    posts: (user) => {
+      return knex("posts").where({ userId: user.id });
+    },
+  },
+
+  PrivateUser: {
     posts: (user) => {
       return knex("posts").where({ userId: user.id });
     },

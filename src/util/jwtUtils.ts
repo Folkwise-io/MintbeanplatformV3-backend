@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { User } from "../types/gqlGeneratedTypes";
+import { PrivateUserDto } from "../types/user";
 import config from "./config";
 
 const { jwtSecret } = config;
@@ -14,7 +14,7 @@ export interface ParsedToken extends JWTPayload {
   exp: number;
 }
 
-export function generateJwt(user: User): string {
+export function generateJwt(user: PrivateUserDto): string {
   const payload: JWTPayload = {
     sub: user.id,
     isAdmin: user.isAdmin,

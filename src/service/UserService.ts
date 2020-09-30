@@ -1,4 +1,4 @@
-import { User } from "../types/gqlGeneratedTypes";
+import { User } from "../types/user";
 import { EntityService } from "./EntityService";
 import bcrypt from "bcryptjs";
 import UserDao from "../dao/UserDao";
