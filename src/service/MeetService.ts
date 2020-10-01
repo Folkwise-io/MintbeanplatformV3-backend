@@ -10,7 +10,7 @@ export interface MeetServiceGetOneArgs {
 
 export interface MeetServiceGetManyArgs {
   // TODO: Add search query args to Meets here
-  registrantId: string;
+  registrantId?: string;
 }
 
 export interface MeetServiceAddOneInput {
