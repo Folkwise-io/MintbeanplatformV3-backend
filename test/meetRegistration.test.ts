@@ -21,6 +21,13 @@ beforeEach(async () => {
   await testManager.deleteAllMeetRegistrations();
 });
 
+afterAll(async () => {
+  await testManager.deleteAllMeetRegistrations();
+  await testManager.deleteAllMeets();
+  await testManager.deleteAllUsers();
+  await testManager.destroy();
+});
+
 describe("Querying to find registrants of meets", () => {
   it("returns a list of meets that a user has registered for", async () => {
     await testManager.addMeetRegistrations([AMY_ANIMATION_TOYS_2_REGISTRATION]);
