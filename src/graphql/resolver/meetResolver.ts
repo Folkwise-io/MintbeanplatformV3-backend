@@ -1,7 +1,7 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import MeetService from "../../service/MeetService";
-import { Meet, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
+import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 
 const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService: MeetService): Resolvers => {
@@ -30,9 +30,7 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
           throw new AuthenticationError("You are not authorized to edit meets!");
         }
 
-        return meetResolverValidator
-          .editOne(args, context)
-          .then(({ id, input }) => meetService.editOne(id, input));
+        return meetResolverValidator.editOne(args, context).then(({ id, input }) => meetService.editOne(id, input));
       },
       deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
         if (!context.getIsAdmin()) {

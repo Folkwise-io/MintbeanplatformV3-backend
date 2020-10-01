@@ -9,7 +9,11 @@ export const GET_USER_REGISTERED_MEETS_QUERY = gql`
     user(id: $id) {
       firstName
       lastName
-      registeredMeets
+      registeredMeets {
+        id
+        title
+        description
+      }
     }
   }
 `;
