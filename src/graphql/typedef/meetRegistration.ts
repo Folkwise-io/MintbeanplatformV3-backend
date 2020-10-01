@@ -15,6 +15,11 @@ const meetRegistration = gql`
     "A list of meets that the user has registered for"
     registeredMeets: [Meet!]
   }
+
+  extend type Mutation {
+    "Registers the current logged-in user for a meet."
+    registerForMeet(id: UUID!): Boolean!
+  }
 `;
 
 export default meetRegistration;

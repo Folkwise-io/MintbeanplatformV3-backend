@@ -5,7 +5,6 @@ import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
 import ProjectMediaAssetService, { ProjectMediaAssetServiceAddOneArgs } from "../../service/ProjectMediaAssetService";
-import { PublicUser } from "../../types/gqlGeneratedTypes";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
