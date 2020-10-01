@@ -16,11 +16,7 @@ export const GET_USER_REGISTERED_MEETS_QUERY = gql`
 
 export const REGISTER_FOR_MEET_QUERY = gql`
   mutation registerForMeet($id: UUID!) {
-    registerForMeet(id: $id) {
-      title
-      description
-      meetType
-    }
+    registerForMeet(id: $id)
   }
 `;
 

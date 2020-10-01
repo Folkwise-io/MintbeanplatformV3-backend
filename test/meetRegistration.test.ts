@@ -1,21 +1,26 @@
-import { ALGOLIA_3, AMY_ANIMATION_TOYS_2_REGISTRATION, ANIMATION_TOYS_2 } from "./src/meetRegistrationConstants";
+import {
+  ALGOLIA_3,
+  AMY_ANIMATION_TOYS_2_REGISTRATION,
+  ANIMATION_TOYS_2,
+  REGISTER_FOR_MEET_QUERY,
+} from "./src/meetRegistrationConstants";
 import TestManager from "./src/TestManager";
 import { AMY, AMY_CREDENTIALS, BOB, GET_USER_QUERY, LOGIN } from "./src/userConstants";
 
 const testManager = TestManager.build();
 
-beforeEach(async () => {
+beforeAll(async () => {
   await testManager.deleteAllUsers();
   await testManager.deleteAllMeets();
+  await testManager.addUsers([AMY, BOB]);
+  await testManager.addMeets([ANIMATION_TOYS_2, ALGOLIA_3]);
+});
+
+beforeEach(async () => {
   await testManager.deleteAllMeetRegistrations();
 });
 
 describe("Querying to find registrants of meets", () => {
-  beforeAll(async () => {
-    await testManager.addUsers([AMY, BOB]);
-    await testManager.addMeets([ANIMATION_TOYS_2, ALGOLIA_3]);
-  });
-
   it("returns a list of meets that a user has registered for", async () => {
     await testManager.addMeetRegistrations([AMY_ANIMATION_TOYS_2_REGISTRATION]);
     await testManager
@@ -27,10 +32,7 @@ describe("Querying to find registrants of meets", () => {
 });
 
 describe("Registering for a meet", () => {
-  beforeAll(async () => {
-    await testManager.addUsers([AMY, BOB]);
-    await testManager.addMeets([ANIMATION_TOYS_2, ALGOLIA_3]);
-  });
+  beforeAll(async () => {});
 
   it("lets a logged in user register for a meet", async () => {
     const cookies = await testManager.getCookies({
@@ -38,6 +40,8 @@ describe("Registering for a meet", () => {
       variables: AMY_CREDENTIALS,
     });
 
-    // TODO
+    await testManager
+      .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies })
+      .then((registerForMeet) => expect(registerForMeet).toBe(true));
   });
 });
