@@ -52,6 +52,12 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
         return meetService.getMany({ registrantId: user.id });
       },
     },
+
+    PrivateUser: {
+      registeredMeets: (user: PrivateUser): Promise<Meet[]> => {
+        return meetService.getMany({ registrantId: user.id });
+      },
+    },
   };
 };
 

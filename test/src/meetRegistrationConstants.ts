@@ -18,6 +18,20 @@ export const GET_USER_REGISTERED_MEETS_QUERY = gql`
   }
 `;
 
+export const GET_MY_REGISTERED_MEETS_QUERY = gql`
+  query myRegisteredMeets {
+    me {
+      firstName
+      lastName
+      registeredMeets {
+        id
+        title
+        description
+      }
+    }
+  }
+`;
+
 export const REGISTER_FOR_MEET_QUERY = gql`
   mutation registerForMeet($id: UUID!) {
     registerForMeet(id: $id)
