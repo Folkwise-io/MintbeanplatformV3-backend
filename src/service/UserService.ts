@@ -55,4 +55,8 @@ export default class UserService implements EntityService<User> {
     const passwordHash = bcrypt.hashSync(password, 10);
     return this.userDao.addOne({ email, firstName, lastName, passwordHash });
   }
+
+  async getRegistrantsOfMeet(meetId: string): Promise<User[]> {
+    return this.userDao.getMany({ meetId });
+  }
 }

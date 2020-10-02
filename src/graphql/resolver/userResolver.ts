@@ -104,7 +104,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
     },
     Meet: {
       registrants: (meet): Promise<User[]> => {
-        return userService.getMany({ meetId: meet.id });
+        return userService.getRegistrantsOfMeet(meet.id);
       },
     },
   };
