@@ -102,6 +102,11 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         return userService.getOne({ id: project.userId }).then(mapUserToPublicUser);
       },
     },
+    Meet: {
+      registrants: (meet): Promise<User[]> => {
+        return userService.getMany({ meetId: meet.id });
+      },
+    },
   };
 };
 

@@ -52,6 +52,15 @@ describe("Querying to find registrants of meets", () => {
       expect(ANIMATION_TOYS_2).toMatchObject(me.registeredMeets[0]);
     });
   });
+
+  it("returns a list of registrants that a meet has", async () => {
+    await testManager.addMeetRegistrations([AMY_ANIMATION_TOYS_2_REGISTRATION]);
+    await testManager
+      .getGraphQLData({ query: GET_REGISTRANTS_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id } })
+      .then(({ meet }) => {
+        expect(AMY).toMatchObject(meet.registrants[0]);
+      });
+  });
 });
 
 describe("Registering for a meet", () => {
@@ -76,7 +85,7 @@ describe("Registering for a meet", () => {
 
     // Check for registrants in meet query
     await testManager
-      .getGraphQLData({ query: GET_REGISTRANTS_FOR_MEET_QUERY, variables: { id: AMY.id } })
+      .getGraphQLData({ query: GET_REGISTRANTS_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id } })
       .then(({ meet }) => {
         expect(AMY).toMatchObject(meet.registrants[0]);
       });

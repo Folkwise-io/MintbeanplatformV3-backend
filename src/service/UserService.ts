@@ -11,6 +11,7 @@ export interface UserServiceGetOneArgs {
 export interface UserServiceGetManyArgs {
   firstName?: string | null;
   lastName?: string | null;
+  meetId?: string;
 }
 
 export interface UserServiceLoginArgs {
