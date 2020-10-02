@@ -38,11 +38,9 @@ export default class MeetDaoKnex implements MeetDao {
   // Gets the meets that a user has registered for
   async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {
     return handleDatabaseError(async () => {
-      let meets;
-
       // Run a join query if registrantId is supplied
       if (args.registrantId) {
-        meets = await this.knex
+        return this.knex
           .select("meets.*") // Need to avoid colision with id from meetRegistration
           .from("meets")
           .join("meetRegistrations", "meetRegistrations.meetId", "=", "meets.id")
@@ -51,16 +49,14 @@ export default class MeetDaoKnex implements MeetDao {
             "meetRegistrations.deleted": false,
             "meets.deleted": false,
           })
-          .orderBy("startTime", "desc");
+          .orderBy("startTime", "desc")
+          .then(formatMeets);
       } else {
-        meets = await this.knex("meets")
+        return this.knex("meets")
           .where({ ...args, deleted: false })
-          .orderBy("startTime", "desc");
+          .orderBy("startTime", "desc")
+          .then(formatMeets);
       }
-
-      const formattedMeets = formatMeets(meets);
-
-      return formattedMeets;
     });
   }
 
