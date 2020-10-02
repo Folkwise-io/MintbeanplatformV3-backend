@@ -55,9 +55,13 @@ describe("Querying to find registrants of meets", () => {
 describe("Registering for a meet", () => {
   beforeAll(async () => {});
 
-  it("lets a logged in user register for a meet", async () => {
+  it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
     await testManager
       .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies: adminCookies })
       .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
+
+    await testManager.getGraphQLData({ query: GET_MY_REGISTERED_MEETS_QUERY, cookies: adminCookies }).then(({ me }) => {
+      expect(ANIMATION_TOYS_2).toMatchObject(me.registeredMeets[0]);
+    });
   });
 });
