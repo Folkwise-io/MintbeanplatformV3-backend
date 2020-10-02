@@ -1,3 +1,4 @@
+import { ALGOLIA } from "./src/meetConstants";
 import {
   ALGOLIA_3,
   AMY_ANIMATION_TOYS_2_REGISTRATION,
@@ -7,7 +8,7 @@ import {
   REGISTER_FOR_MEET_QUERY,
 } from "./src/meetRegistrationConstants";
 import TestManager from "./src/TestManager";
-import { AMY, AMY_CREDENTIALS, BOB, LOGIN } from "./src/userConstants";
+import { AMY, BOB } from "./src/userConstants";
 import { getBobCookies, getAdminCookies } from "./src/util";
 
 const testManager = TestManager.build();
@@ -63,5 +64,17 @@ describe("Registering for a meet", () => {
     await testManager.getGraphQLData({ query: GET_MY_REGISTERED_MEETS_QUERY, cookies: adminCookies }).then(({ me }) => {
       expect(ANIMATION_TOYS_2).toMatchObject(me.registeredMeets[0]);
     });
+  });
+
+  it("returns an error message if trying to register without being logged in", async () => {
+    await testManager
+      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies: undefined })
+      .then((errorMsg) => expect(errorMsg).toMatch(/not authorized/i));
+  });
+
+  it("returns an error message if trying to register for non-existent meet", async () => {
+    await testManager
+      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ALGOLIA.id }, cookies: adminCookies })
+      .then((errorMsg) => expect(errorMsg).toMatch(/exist/i));
   });
 });
