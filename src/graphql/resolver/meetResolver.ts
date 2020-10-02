@@ -1,10 +1,16 @@
 import { AuthenticationError } from "apollo-server-express";
+import { isContext } from "vm";
 import { ServerContext } from "../../buildServerContext";
+import MeetRegistrationService from "../../service/MeetRegistrationService";
 import MeetService from "../../service/MeetService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 
-const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService: MeetService): Resolvers => {
+const meetResolver = (
+  meetResolverValidator: MeetResolverValidator,
+  meetService: MeetService,
+  meetRegistrationService: MeetRegistrationService,
+): Resolvers => {
   return {
     Query: {
       // TODO: Show "deleted=true" meets for admin? Currently this query does not get Meets with "deleted=true"
@@ -38,6 +44,18 @@ const meetResolver = (meetResolverValidator: MeetResolverValidator, meetService:
         }
 
         return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
+      },
+      registerForMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+        const currentUserId = context.getUserId();
+
+        if (!currentUserId) {
+          throw new AuthenticationError("You are not authorized to register for a meet! Please log in first.");
+        }
+
+        return meetResolverValidator
+          .registerForMeet(args)
+          .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
+          .then(() => true);
       },
     },
 

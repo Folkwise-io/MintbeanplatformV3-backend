@@ -2,7 +2,13 @@ import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
 import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
-import { Meet, MutationCreateMeetArgs, MutationDeleteMeetArgs, MutationEditMeetArgs } from "../types/gqlGeneratedTypes";
+import {
+  Meet,
+  MutationCreateMeetArgs,
+  MutationDeleteMeetArgs,
+  MutationEditMeetArgs,
+  MutationRegisterForMeetArgs,
+} from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 
 export default class MeetResolverValidator {
@@ -34,6 +40,14 @@ export default class MeetResolverValidator {
   }
 
   async deleteOne({ id }: MutationDeleteMeetArgs): Promise<string> {
+    // Check if meet id exists in db
+    return this.meetDao
+      .getOne({ id })
+      .then((meet) => ensureExists<Meet>("Meet")(meet))
+      .then(({ id }) => id);
+  }
+
+  async registerForMeet({ id }: MutationRegisterForMeetArgs): Promise<string> {
     // Check if meet id exists in db
     return this.meetDao
       .getOne({ id })

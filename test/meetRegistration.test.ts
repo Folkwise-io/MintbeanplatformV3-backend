@@ -46,20 +46,18 @@ describe("Querying to find registrants of meets", () => {
 
   it("returns a list of meets that the current has registered form using cookies", async () => {
     await testManager.addMeetRegistrations([AMY_ANIMATION_TOYS_2_REGISTRATION]);
-    await testManager
-      .getGraphQLData({ query: GET_MY_REGISTERED_MEETS_QUERY, cookies: adminCookies })
-      .then(({ me }) => {
-        expect(ANIMATION_TOYS_2).toMatchObject(me.registeredMeets[0]);
-      });
+    await testManager.getGraphQLData({ query: GET_MY_REGISTERED_MEETS_QUERY, cookies: adminCookies }).then(({ me }) => {
+      expect(ANIMATION_TOYS_2).toMatchObject(me.registeredMeets[0]);
+    });
   });
 });
 
-describe.skip("Registering for a meet", () => {
+describe("Registering for a meet", () => {
   beforeAll(async () => {});
 
   it("lets a logged in user register for a meet", async () => {
     await testManager
       .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies: adminCookies })
-      .then((registerForMeet) => expect(registerForMeet).toBe(true));
+      .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
   });
 });

@@ -26,12 +26,13 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     mediaAssetResolverValidator,
     mediaAssetService,
     projectMediaAssetService,
+    meetRegistrationService,
   } = resolverContext;
   const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),
-    meetResolver(meetResolverValidator, meetService),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationService),
     projectResolver(projectResolverValidator, projectService, mediaAssetService, projectMediaAssetService),
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
     postResolver,

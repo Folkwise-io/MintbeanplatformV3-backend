@@ -140,6 +140,8 @@ export type Mutation = {
   createProject: Project;
   /** Deletes a project by ID (user must be logged in and own the project) */
   deleteProject: Scalars['Boolean'];
+  /** Registers the current logged-in user for a meet. */
+  registerForMeet: Scalars['Boolean'];
 };
 
 
@@ -176,6 +178,11 @@ export type MutationCreateProjectArgs = {
 
 
 export type MutationDeleteProjectArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type MutationRegisterForMeetArgs = {
   id: Scalars['UUID'];
 };
 
@@ -493,6 +500,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
+  registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

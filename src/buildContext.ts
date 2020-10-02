@@ -21,6 +21,7 @@ import ProjectMediaAssetDao from "./dao/ProjectMediaAssetDao";
 import ProjectMediaAssetService from "./service/ProjectMediaAssetService";
 import MeetRegistrationDaoKnex from "./dao/MeetRegistrationDaoKnex";
 import MeetRegistrationDao from "./dao/MeetRegistrationDao";
+import MeetRegistrationService from "./service/MeetRegistrationService";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -46,7 +47,7 @@ export function buildPersistenceContext(): PersistenceContext {
     projectDao,
     mediaAssetDao,
     projectMediaAssetDao,
-    meetRegistrationDao
+    meetRegistrationDao,
   };
 }
 
@@ -60,10 +61,11 @@ export interface ResolverContext {
   mediaAssetResolverValidator: MediaAssetResolverValidator;
   mediaAssetService: MediaAssetService;
   projectMediaAssetService: ProjectMediaAssetService;
+  meetRegistrationService: MeetRegistrationService
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao, projectDao, mediaAssetDao, projectMediaAssetDao } = persistenceContext;
+  const { userDao, meetDao, projectDao, mediaAssetDao, projectMediaAssetDao, meetRegistrationDao } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
@@ -73,6 +75,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const mediaAssetResolverValidator = new MediaAssetResolverValidator(mediaAssetDao);
   const mediaAssetService = new MediaAssetService(mediaAssetDao);
   const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
+  const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
 
   return {
     userResolverValidator,
@@ -84,5 +87,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     mediaAssetResolverValidator,
     mediaAssetService,
     projectMediaAssetService,
+    meetRegistrationService
   };
 }
