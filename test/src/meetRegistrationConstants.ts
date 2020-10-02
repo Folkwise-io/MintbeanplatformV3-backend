@@ -32,6 +32,21 @@ export const GET_MY_REGISTERED_MEETS_QUERY = gql`
   }
 `;
 
+export const GET_REGISTRANTS_FOR_MEET_QUERY = gql`
+  query getRegistrantsOfMeet($id: UUID!) {
+    meet(id: $id) {
+      id
+      title
+      description
+      registrants {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+`;
+
 export const REGISTER_FOR_MEET_QUERY = gql`
   mutation registerForMeet($id: UUID!) {
     registerForMeet(id: $id)

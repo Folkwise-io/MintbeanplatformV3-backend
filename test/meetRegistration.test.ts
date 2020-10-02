@@ -4,6 +4,7 @@ import {
   AMY_ANIMATION_TOYS_2_REGISTRATION,
   ANIMATION_TOYS_2,
   GET_MY_REGISTERED_MEETS_QUERY,
+  GET_REGISTRANTS_FOR_MEET_QUERY,
   GET_USER_REGISTERED_MEETS_QUERY,
   REGISTER_FOR_MEET_QUERY,
 } from "./src/meetRegistrationConstants";
@@ -61,9 +62,24 @@ describe("Registering for a meet", () => {
       .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies: adminCookies })
       .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
 
+    // Check for registeredMeets in me query
     await testManager.getGraphQLData({ query: GET_MY_REGISTERED_MEETS_QUERY, cookies: adminCookies }).then(({ me }) => {
       expect(ANIMATION_TOYS_2).toMatchObject(me.registeredMeets[0]);
     });
+
+    // Check for registeredMeets in user query
+    await testManager
+      .getGraphQLData({ query: GET_USER_REGISTERED_MEETS_QUERY, variables: { id: AMY.id } })
+      .then(({ user }) => {
+        expect(ANIMATION_TOYS_2).toMatchObject(user.registeredMeets[0]);
+      });
+
+    // Check for registrants in meet query
+    await testManager
+      .getGraphQLData({ query: GET_REGISTRANTS_FOR_MEET_QUERY, variables: { id: AMY.id } })
+      .then(({ meet }) => {
+        expect(AMY).toMatchObject(meet.registrants[0]);
+      });
   });
 
   it("returns an error message if trying to register without being logged in", async () => {
