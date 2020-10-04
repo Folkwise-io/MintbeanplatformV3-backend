@@ -67,13 +67,13 @@ const meetResolver = (
 
     PublicUser: {
       registeredMeets: (user: PublicUser): Promise<Meet[]> => {
-        return meetService.getMany({ registrantId: user.id });
+        return meetService.getRegisteredMeetsOfUser(user.id);
       },
     },
 
     PrivateUser: {
       registeredMeets: (user: PrivateUser): Promise<Meet[]> => {
-        return meetService.getMany({ registrantId: user.id });
+        return meetService.getRegisteredMeetsOfUser(user.id);
       },
     },
   };

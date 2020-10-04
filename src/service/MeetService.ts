@@ -58,4 +58,8 @@ export default class MeetService implements EntityService<Meet> {
   async deleteOne(id: string): Promise<boolean> {
     return this.meetDao.deleteOne(id);
   }
+
+  async getRegisteredMeetsOfUser(userId: string): Promise<Meet[]> {
+    return this.meetDao.getMany({ registrantId: userId });
+  }
 }
