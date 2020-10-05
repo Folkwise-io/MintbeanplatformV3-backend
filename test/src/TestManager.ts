@@ -17,6 +17,7 @@ import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/projectMediaAsset";
+import MeetRegistration from "../../src/types/meetRegistration";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -75,6 +76,11 @@ export default class TestManager {
   addProjectMediaAssets(projectMediaAssets: ProjectMediaAsset[]): Promise<void> {
     return this.params.persistenceContext.projectMediaAssetDao.addMany(projectMediaAssets);
   }
+
+  addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void>{
+    return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
+  }
+
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }
@@ -89,6 +95,10 @@ export default class TestManager {
 
   deleteAllMediaAssets() {
     return this.params.persistenceContext.mediaAssetDao.deleteAll();
+  }
+
+  deleteAllMeetRegistrations(){
+    return this.params.persistenceContext.meetRegistrationDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {

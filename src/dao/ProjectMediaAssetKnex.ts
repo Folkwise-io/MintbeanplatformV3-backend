@@ -1,6 +1,5 @@
 import Knex from "knex";
-import ProjectMediaAssetServiceAddOneArgs from "../service/ProjectMediaAssetService";
-import ProjectMediaAsset from "../types/projectMediaAsset";
+import { ProjectMediaAssetServiceAddOneArgs } from "../service/ProjectMediaAssetService";
 import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectMediaAssetDao from "./ProjectMediaAssetDao";
 

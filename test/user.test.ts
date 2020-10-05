@@ -7,10 +7,9 @@ import { getCurrentUnixTime } from "./src/util";
 import {
   AMY,
   AMY_CREDENTIALS,
-  BAD_UUID_QUERY,
   BOB,
   GET_ALL_USERS_QUERY,
-  GET_ONE_QUERY,
+  GET_USER_QUERY,
   LOGIN,
   LOGIN_MUTATION_WITH_TOKEN,
   LOGOUT,
@@ -30,7 +29,7 @@ beforeEach(async () => {
 describe("GraphQL built-in validation", () => {
   it("throws an error when you pass in an ID that is not a UUID", async () => {
     await testManager
-      .getGraphQLResponse({ query: BAD_UUID_QUERY })
+      .getGraphQLResponse({ query: GET_USER_QUERY, variables: { id: "abc" } })
       .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("UUID");
@@ -42,7 +41,12 @@ describe("Querying users", () => {
   it("gets one user by ID", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ONE_QUERY }))
+      .then(() =>
+        testManager.getGraphQLResponse({
+          query: GET_USER_QUERY,
+          variables: { id: AMY.id },
+        }),
+      )
       .then(testManager.parseData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);
@@ -63,7 +67,12 @@ describe("Querying users", () => {
   it("gets no users when ID doesn't exist", async () => {
     await testManager
       .addUsers([])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ONE_QUERY }))
+      .then(() =>
+        testManager.getGraphQLResponse({
+          query: GET_USER_QUERY,
+          variables: { id: AMY.id },
+        }),
+      )
       .then(testManager.parseDataAndErrors)
       .then(({ data, errors }) => {
         expect(data.user).toBeNull();

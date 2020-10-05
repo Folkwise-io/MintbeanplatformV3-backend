@@ -35,15 +35,28 @@ export default class MeetDaoKnex implements MeetDao {
     });
   }
 
+  // Gets the meets that a user has registered for
   async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {
     return handleDatabaseError(async () => {
-      const meets = await this.knex("meets")
-        .where({ ...args, deleted: false })
-        .orderBy("startTime", "desc");
-
-      const formattedMeets = formatMeets(meets);
-
-      return formattedMeets;
+      // Run a join query if registrantId is supplied
+      if (args.registrantId) {
+        return this.knex
+          .select("meets.*") // Need to avoid colision with id from meetRegistration
+          .from("meets")
+          .join("meetRegistrations", "meetRegistrations.meetId", "=", "meets.id")
+          .where({
+            "meetRegistrations.userId": args.registrantId,
+            "meetRegistrations.deleted": false,
+            "meets.deleted": false,
+          })
+          .orderBy("startTime", "desc")
+          .then(formatMeets);
+      } else {
+        return this.knex("meets")
+          .where({ ...args, deleted: false })
+          .orderBy("startTime", "desc")
+          .then(formatMeets);
+      }
     });
   }
 

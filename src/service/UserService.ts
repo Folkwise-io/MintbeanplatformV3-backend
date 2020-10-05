@@ -11,6 +11,7 @@ export interface UserServiceGetOneArgs {
 export interface UserServiceGetManyArgs {
   firstName?: string | null;
   lastName?: string | null;
+  meetId?: string;
 }
 
 export interface UserServiceLoginArgs {
@@ -53,5 +54,9 @@ export default class UserService implements EntityService<User> {
     const { email, firstName, lastName, password } = args;
     const passwordHash = bcrypt.hashSync(password, 10);
     return this.userDao.addOne({ email, firstName, lastName, passwordHash });
+  }
+
+  async getRegistrantsOfMeet(meetId: string): Promise<User[]> {
+    return this.userDao.getMany({ meetId });
   }
 }
