@@ -1,4 +1,4 @@
-import { ServerContext } from "../buildContext";
+import { ServerContext } from "../buildServerContext";
 
 export interface Args {
   [key: string]: string;

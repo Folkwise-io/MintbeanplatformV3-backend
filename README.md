@@ -49,7 +49,7 @@ _[Docker](https://docs.docker.com/get-docker/) must be installed and running for
 
 #### Auto-generating TypeScript types
 
-Running `yarn gen-types` auto-generates a TypeScript definition file using `graphql-codegen`. The tool reads the schema file in `./src/graphql/schema.ts` and outputs TypeScript definitions in `./src/graphql/generated/tsTypes.d.ts`. You may then import types directly from that file, such as:
+Running `yarn gen-types` auto-generates a TypeScript definition file using `graphql-codegen`. The tool reads the schema file in `./src/graphql/schema.ts` and outputs TypeScript definitions in `./src/graphql/generated/tsTypes.ts`. You may then import types directly from that file, such as:
 
 ```ts
  from "./generated/tsTypes";
