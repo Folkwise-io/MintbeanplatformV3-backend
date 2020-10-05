@@ -18,7 +18,7 @@ const meetRegistration = gql`
 
   extend type Mutation {
     "Registers the current logged-in user for a meet."
-    registerForMeet(id: UUID!): Boolean!
+    registerForMeet(meetId: UUID!): Boolean!
   }
 `;
 
