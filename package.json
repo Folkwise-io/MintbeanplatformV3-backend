@@ -21,6 +21,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "@sendgrid/mail": "7.2.6",
     "apollo-server-express": "2.17.0",
     "bcryptjs": "2.4.3",
     "cookie-parser": "1.4.5",
