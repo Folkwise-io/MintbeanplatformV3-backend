@@ -1,4 +1,4 @@
-import { User } from "../../src/types/user";
+import { User } from "../../src/types/User";
 import TestManager from "./TestManager";
 import { AMY, AMY_CREDENTIALS, BOB, BOB_CREDENTIALS, LOGIN } from "./userConstants";
 

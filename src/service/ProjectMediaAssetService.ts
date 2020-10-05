@@ -1,5 +1,5 @@
 import ProjectMediaAssetDao from "../dao/ProjectMediaAssetDao";
-import ProjectMediaAsset from "../types/projectMediaAsset";
+import ProjectMediaAsset from "../types/ProjectMediaAsset";
 import { EntityService } from "./EntityService";
 
 export interface ProjectMediaAssetServiceAddOneArgs {

@@ -1,4 +1,4 @@
-import { User } from "../types/user";
+import { User } from "../types/User";
 import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao, { UserDaoAddOneArgs } from "./UserDao";

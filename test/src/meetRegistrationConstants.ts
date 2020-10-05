@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 import { Meet } from "../../src/types/gqlGeneratedTypes";
 import { nDaysFromNowInWallClockTime } from "../../src/util/timeUtils";
-import MeetRegistration from "../../src/types/meetRegistration";
+import MeetRegistration from "../../src/types/MeetRegistration";
 import { AMY } from "./userConstants";
 
 export const GET_USER_REGISTERED_MEETS_QUERY = gql`

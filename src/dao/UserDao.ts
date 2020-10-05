@@ -1,4 +1,4 @@
-import { User } from "../types/user";
+import { User } from "../types/User";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 
 export interface UserDaoAddOneArgs {

@@ -1,6 +1,6 @@
 import Knex from "knex";
 import { MeetRegistrationServiceAddOneArgs } from "../service/MeetRegistrationService";
-import MeetRegistration from "../types/meetRegistration";
+import MeetRegistration from "../types/MeetRegistration";
 import handleDatabaseError from "../util/handleDatabaseError";
 import MeetRegistrationDao from "./MeetRegistrationDao";
 

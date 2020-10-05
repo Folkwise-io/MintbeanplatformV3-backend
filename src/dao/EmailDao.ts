@@ -1,17 +1,17 @@
 import sgMail from "@sendgrid/mail";
-
-interface Email {
-  to: string;
-  from: string;
-  subject: string;
-  html: string;
-}
+import { Email } from "../types/Email";
 
 export class EmailDao {
   constructor(private apiKey: string) {}
 
-  async sendEmail(email: Email): Promise<void> {
+  async sendEmail(email: Email): Promise<boolean> {
     sgMail.setApiKey(this.apiKey);
-    await sgMail.send(email);
+    try {
+      await sgMail.send(email);
+      return true;
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 }
