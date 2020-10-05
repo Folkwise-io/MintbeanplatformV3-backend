@@ -1,8 +1,4 @@
 import sgMail from "@sendgrid/mail";
-interface EmailClientOptions {
-  apiKey: string;
-  originEmail?: string;
-}
 
 interface Email {
   to: string;

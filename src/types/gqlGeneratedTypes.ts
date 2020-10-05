@@ -142,6 +142,7 @@ export type Mutation = {
   deleteProject: Scalars['Boolean'];
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
+  sendTestEmail: Scalars['Boolean'];
 };
 
 
@@ -501,6 +502,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'id'>>;
+  sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
