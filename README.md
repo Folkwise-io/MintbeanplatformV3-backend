@@ -118,7 +118,7 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
 ## Api Reference
 
 1. [Setting up the local database](#setting-up-the-local-database)
-2. Run `npm start`.
+2. Run `yarn start`.
 3. Navigate to `localhost:4000/graphql` on your browser to use the GraphQL playground (`NODE_ENV` must not be set to `production`).
 4. Click `DOCS` tab on the right side to explore the API reference.
    ![](docs/graphql_playground.png)
