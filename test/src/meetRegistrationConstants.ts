@@ -48,8 +48,8 @@ export const GET_REGISTRANTS_FOR_MEET_QUERY = gql`
 `;
 
 export const REGISTER_FOR_MEET_QUERY = gql`
-  mutation registerForMeet($id: UUID!) {
-    registerForMeet(id: $id)
+  mutation registerForMeet($meetId: UUID!) {
+    registerForMeet(meetId: $meetId)
   }
 `;
 

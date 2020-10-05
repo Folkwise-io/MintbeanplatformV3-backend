@@ -68,7 +68,7 @@ describe("Registering for a meet", () => {
 
   it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
     await testManager
-      .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies: adminCookies })
+      .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ANIMATION_TOYS_2.id }, cookies: adminCookies })
       .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
 
     // Check for registeredMeets in me query
@@ -93,13 +93,13 @@ describe("Registering for a meet", () => {
 
   it("returns an error message if trying to register without being logged in", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ANIMATION_TOYS_2.id }, cookies: undefined })
+      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ANIMATION_TOYS_2.id }, cookies: undefined })
       .then((errorMsg) => expect(errorMsg).toMatch(/not authorized/i));
   });
 
   it("returns an error message if trying to register for non-existent meet", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { id: ALGOLIA.id }, cookies: adminCookies })
+      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
       .then((errorMsg) => expect(errorMsg).toMatch(/exist/i));
   });
 });

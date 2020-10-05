@@ -47,10 +47,10 @@ export default class MeetResolverValidator {
       .then(({ id }) => id);
   }
 
-  async registerForMeet({ id }: MutationRegisterForMeetArgs): Promise<string> {
+  async registerForMeet({ meetId }: MutationRegisterForMeetArgs): Promise<string> {
     // Check if meet id exists in db
     return this.meetDao
-      .getOne({ id })
+      .getOne({ id: meetId })
       .then((meet) => ensureExists<Meet>("Meet")(meet))
       .then(({ id }) => id);
   }
