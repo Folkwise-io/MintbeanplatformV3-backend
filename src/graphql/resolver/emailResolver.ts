@@ -1,10 +1,16 @@
 import { Email } from "../../types/Email";
 import { EmailService } from "../../service/EmailService";
-import { Resolvers } from "../../types/gqlGeneratedTypes";
+import { Meet, Resolvers } from "../../types/gqlGeneratedTypes";
 import EmailResolverValidator from "../../validator/EmailResolverValidator";
 import MeetService from "../../service/MeetService";
+import { ServerContext } from "../../buildServerContext";
+import { ensureExists } from "../../util/ensureExists";
 
-const emailResolver = (emailResolverValidator: EmailResolverValidator, emailService: EmailService, meetService: MeetService): Resolvers => {
+const emailResolver = (
+  emailResolverValidator: EmailResolverValidator,
+  emailService: EmailService,
+  meetService: MeetService,
+): Resolvers => {
   return {
     Mutation: {
       sendTestEmail: (): Promise<boolean> => {
@@ -52,6 +58,11 @@ const emailResolver = (emailResolverValidator: EmailResolverValidator, emailServ
 `,
         };
         return emailService.sendEmail(testEmail);
+      },
+      sendReminderEmailForMeet: async (_root, args, context: ServerContext) => {
+        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
+        const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
+        return emailService.sendEmail(email);
       },
     },
   };
