@@ -5,18 +5,18 @@ import { Meet } from "../types/gqlGeneratedTypes";
 export class EmailService {
   constructor(private emailDao: EmailDao) {}
 
-  async sendInvite(recipient: string, event: Meet): Promise<boolean> {
-    const sendGridEmailObject = {
-      to: recipient,
+  generateMeetInvitationEmail(recipientEmailAddress: string, meet: Meet): Email {
+    const email: Email = {
+      to: recipientEmailAddress,
       from: "jimmy.peng@mintbean.io",
-      subject: event.title,
-      html: `<h1>Invite for <strong>${event.title}</strong><h1>`,
+      subject: meet.title,
+      html: `<h1>Invite for <strong>${meet.title}</strong><h1>`,
     };
 
-    return this.emailDao.sendEmail(sendGridEmailObject);
+    return email;
   }
 
-  async sendEmail(email: Email) {
+  async sendEmail(email: Email): Promise<boolean> {
     return this.emailDao.sendEmail(email);
   }
 }
