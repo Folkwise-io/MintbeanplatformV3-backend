@@ -4,8 +4,8 @@ import { EventAttributes } from "ics";
 
 export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
   const { title, description, region, id, startTime, endTime } = meet;
-  const startTimeUTC: Date = new Date(moment.tz(startTime, region).utc().format());
-  const endTimeUTC: Date = new Date(moment.tz(endTime, region).utc().format());
+  const startTimeUTC = moment.tz(startTime, region).utc();
+  const endTimeUTC = moment.tz(endTime, region).utc();
 
   const IcsEventAttributes: EventAttributes = {
     startInputType: "utc",
@@ -13,18 +13,18 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
     endInputType: "utc",
     endOutputType: "utc",
     start: [
-      startTimeUTC.getFullYear(),
-      startTimeUTC.getMonth() + 1,
-      startTimeUTC.getDate(),
-      startTimeUTC.getHours(),
-      startTimeUTC.getMinutes(),
+      startTimeUTC.year(),
+      startTimeUTC.month() + 1,
+      startTimeUTC.date(),
+      startTimeUTC.hours(),
+      startTimeUTC.minutes(),
     ],
     end: [
-      endTimeUTC.getFullYear(),
-      endTimeUTC.getMonth() + 1,
-      endTimeUTC.getDate(),
-      endTimeUTC.getHours(),
-      endTimeUTC.getMinutes(),
+      endTimeUTC.year(),
+      endTimeUTC.month() + 1,
+      endTimeUTC.date(),
+      endTimeUTC.hours(),
+      endTimeUTC.minutes(),
     ],
     title,
     description,
