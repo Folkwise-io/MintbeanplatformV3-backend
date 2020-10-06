@@ -191,8 +191,13 @@ export type MutationRegisterForMeetArgs = {
 };
 
 
+export type MutationSendTestEmailArgs = {
+  input: TestEmailInput;
+};
+
+
 export type MutationSendReminderEmailForMeetArgs = {
-  meetId: Scalars['UUID'];
+  input: MeetReminderEmailInput;
 };
 
 export type Post = {
@@ -335,6 +340,17 @@ export type MediaAsset = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type TestEmailInput = {
+  subject: Scalars['String'];
+  body: Scalars['String'];
+};
+
+export type MeetReminderEmailInput = {
+  meetId: Scalars['UUID'];
+  subject: Scalars['String'];
+  body: Scalars['String'];
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -430,6 +446,8 @@ export type ResolversTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: ResolverTypeWrapper<MediaAsset>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  TestEmailInput: TestEmailInput;
+  MeetReminderEmailInput: MeetReminderEmailInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -451,6 +469,8 @@ export type ResolversParentTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: MediaAsset;
   Int: Scalars['Int'];
+  TestEmailInput: TestEmailInput;
+  MeetReminderEmailInput: MeetReminderEmailInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -510,8 +530,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
-  sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'meetId'>>;
+  sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
+  sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

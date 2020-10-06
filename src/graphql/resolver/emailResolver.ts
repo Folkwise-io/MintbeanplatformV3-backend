@@ -59,8 +59,8 @@ const emailResolver = (
         };
         return emailService.sendEmail(testEmail);
       },
-      sendReminderEmailForMeet: async (_root, args, context: ServerContext) => {
-        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
+      sendReminderEmailForMeet: async (_root, { input }, context: ServerContext) => {
+        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: input.meetId }));
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
         return emailService.sendEmail(email);
       },
