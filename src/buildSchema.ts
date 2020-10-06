@@ -39,7 +39,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     meetResolver(meetResolverValidator, meetService, meetRegistrationService),
     projectResolver(projectResolverValidator, projectService, mediaAssetService, projectMediaAssetService),
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
-    emailResolver(emailResolverValidator, emailService),
+    emailResolver(emailResolverValidator, emailService, meetService),
     postResolver,
   ];
 

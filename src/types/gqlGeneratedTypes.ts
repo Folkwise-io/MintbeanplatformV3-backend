@@ -142,7 +142,10 @@ export type Mutation = {
   deleteProject: Scalars['Boolean'];
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
+  /** Sends a test email (admin-only) */
   sendTestEmail: Scalars['Boolean'];
+  /** Sends a reminder email to registrants of a meet (admin-only) */
+  sendReminderEmailForMeet: Scalars['Boolean'];
 };
 
 
@@ -184,6 +187,11 @@ export type MutationDeleteProjectArgs = {
 
 
 export type MutationRegisterForMeetArgs = {
+  meetId: Scalars['UUID'];
+};
+
+
+export type MutationSendReminderEmailForMeetArgs = {
   meetId: Scalars['UUID'];
 };
 
@@ -503,6 +511,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
   sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'meetId'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

@@ -2,8 +2,9 @@ import { Email } from "../../types/Email";
 import { EmailService } from "../../service/EmailService";
 import { Resolvers } from "../../types/gqlGeneratedTypes";
 import EmailResolverValidator from "../../validator/EmailResolverValidator";
+import MeetService from "../../service/MeetService";
 
-const emailResolver = (emailResolverValidator: EmailResolverValidator, emailService: EmailService): Resolvers => {
+const emailResolver = (emailResolverValidator: EmailResolverValidator, emailService: EmailService, meetService: MeetService): Resolvers => {
   return {
     Mutation: {
       sendTestEmail: (): Promise<boolean> => {
