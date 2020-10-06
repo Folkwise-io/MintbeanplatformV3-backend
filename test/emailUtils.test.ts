@@ -1,5 +1,5 @@
 import { Meet } from "../src/types/gqlGeneratedTypes";
-import { mapMeetToIcsEventAttributes } from "../src/util/emailUtils";
+import { mapMeetToIcsEventAttributes, generateIcsFileInBase64 } from "../src/util/emailUtils";
 
 const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -29,5 +29,13 @@ describe("Mapping a Meet object to ICS event attributes", () => {
     const meetStartTimeHour = new Date(PAPERJS.startTime).getHours();
     const icsStartTimeHour = paperJsIcsEvent.start[3] as number;
     expect(meetStartTimeHour - icsStartTimeHour).toBe(-4 || -5); // Toronto is -4 or -5
+  });
+});
+
+describe("Generating an ICS file in base 64", () => {
+  it("generates the file successfully", () => {
+    const paperJsIcsEvent = mapMeetToIcsEventAttributes(PAPERJS);
+    const icsFileInBase64 = generateIcsFileInBase64(paperJsIcsEvent);
+    expect(typeof icsFileInBase64).toBe('string')
   });
 });

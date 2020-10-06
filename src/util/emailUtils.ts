@@ -1,6 +1,7 @@
 import moment from "moment-timezone";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
+import * as ics from "ics";
 
 export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
   const { title, description, region, id, startTime, endTime } = meet;
@@ -19,13 +20,7 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
       startTimeUTC.hours(),
       startTimeUTC.minutes(),
     ],
-    end: [
-      endTimeUTC.year(),
-      endTimeUTC.month() + 1,
-      endTimeUTC.date(),
-      endTimeUTC.hours(),
-      endTimeUTC.minutes(),
-    ],
+    end: [endTimeUTC.year(), endTimeUTC.month() + 1, endTimeUTC.date(), endTimeUTC.hours(), endTimeUTC.minutes()],
     title,
     description,
     location: region,
@@ -35,4 +30,11 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
   };
 
   return IcsEventAttributes;
+};
+
+export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): string => {
+  const icsFile = ics.createEvent(icsEventAttribute).value;
+  const icsFileBuffered = Buffer.from(icsFile as string);
+  const icsFileBase64 = (icsFileBuffered as Buffer).toString("base64");
+  return icsFileBase64;
 };
