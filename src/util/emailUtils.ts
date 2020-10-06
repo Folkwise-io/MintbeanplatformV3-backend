@@ -2,6 +2,20 @@ import moment from "moment-timezone";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
 import * as ics from "ics";
+import { Attachment } from "../types/Email";
+
+export const generateIcsAttachments = (meet: Meet): Attachment[] => {
+  const icsEventAttribute = mapMeetToIcsEventAttributes(meet);
+  const icsFile = generateIcsFileInBase64(icsEventAttribute);
+  return [
+    {
+      content: icsFile,
+      filename: "invite.ics",
+      type: "application/calendar",
+      disposition: "attachment",
+    },
+  ];
+};
 
 export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
   const { title, description, region, id, startTime, endTime } = meet;
