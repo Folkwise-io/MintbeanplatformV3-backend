@@ -1,6 +1,8 @@
+import ics from "ics";
 import { EmailDao } from "../dao/EmailDao";
 import { Email } from "../types/Email";
 import { Meet } from "../types/gqlGeneratedTypes";
+import { EventAttributes } from "ics";
 
 export class EmailService {
   constructor(private emailDao: EmailDao) {}
