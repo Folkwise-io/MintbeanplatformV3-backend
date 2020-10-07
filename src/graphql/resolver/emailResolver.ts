@@ -31,9 +31,9 @@ const emailResolver = (
         return emailService.sendEmail(email);
       },
 
-      sendSampleInvitationForMeet: async (_root, args, context: ServerContext) => {
+      sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext) => {
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
-        const email = emailService.generateMeetInvitationEmail("jimmy.peng@mintbean.io", meet);
+        const email = emailService.generateMeetRegistrationEmail("jimmy.peng@mintbean.io", meet);
         return emailService.sendEmail(email);
       },
     },

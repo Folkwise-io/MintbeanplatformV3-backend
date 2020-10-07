@@ -56,10 +56,10 @@ export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): str
 export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
   const { id, title, description, startTime, endTime, region, coverImageUrl } = meet;
 
-  const startTimeUTC = moment.tz(startTime, region).utc();
-  const endTimeUTC = moment.tz(endTime, region).utc();
+  const startTimeUTC = moment.tz(startTime, region).format();
+  const endTimeUTC = moment.tz(endTime, region).format();
 
-  return `
+  const email = `
 <html>
   <head>
     <script type="application/ld+json">
@@ -75,8 +75,8 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
       "reservationFor": {
         "@type": "Event",
         "name": "${title} - https://mintbean.io/meets/${id}",
-        "startDate": ${startTimeUTC},
-        "endDate": ${endTimeUTC},
+        "startDate": "${startTimeUTC}",
+        "endDate": "${endTimeUTC}",
         "location": {
           "@type": "Place",
           "name": "Mintbean",
@@ -93,13 +93,15 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
   </head>
   <body>
     <p>
-      Thank you for registering for ${title}! Please join the Discord at the start time!
+      Thank you for registering for the <strong>${title}</strong>! Please join our Discord at the start time!
     </p>
-    <p>Event Details:</p>
+    <br/>
+    <em>Event Details:</em>
     <h1>${title}</h1>
-    <img src='${coverImageUrl}' width='600px' />
     <h3>${description}</h3>
+    <img src='${coverImageUrl}' width='600px' />
   </body>
 </html>
 `;
+  return email;
 };

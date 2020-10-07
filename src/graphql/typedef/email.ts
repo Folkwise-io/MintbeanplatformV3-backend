@@ -19,8 +19,8 @@ const email = gql`
     "Sends a reminder email to registrants of a meet (admin-only)"
     sendReminderEmailForMeet(input: MeetReminderEmailInput!): Boolean!
 
-    "Sends a sample invitation email with json-ld for approval (admin-only)"
-    sendSampleInvitationForMeet(meetId: UUID!): Boolean!
+    "Sends a sample registration email with json-ld for Google whitelist approval (admin-only)"
+    sendSampleRegistrationEmailForMeet(meetId: UUID!): Boolean!
   }
 `;
 

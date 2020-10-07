@@ -146,8 +146,8 @@ export type Mutation = {
   sendTestEmail: Scalars['Boolean'];
   /** Sends a reminder email to registrants of a meet (admin-only) */
   sendReminderEmailForMeet: Scalars['Boolean'];
-  /** Sends a sample invitation email with json-ld for approval (admin-only) */
-  sendSampleInvitationForMeet: Scalars['Boolean'];
+  /** Sends a sample registration email with json-ld for Google whitelist approval (admin-only) */
+  sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
 };
 
 
@@ -203,7 +203,7 @@ export type MutationSendReminderEmailForMeetArgs = {
 };
 
 
-export type MutationSendSampleInvitationForMeetArgs = {
+export type MutationSendSampleRegistrationEmailForMeetArgs = {
   meetId: Scalars['UUID'];
 };
 
@@ -539,7 +539,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
   sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
   sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
-  sendSampleInvitationForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleInvitationForMeetArgs, 'meetId'>>;
+  sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {

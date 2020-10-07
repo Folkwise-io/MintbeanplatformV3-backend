@@ -20,12 +20,12 @@ export class EmailService {
     return email;
   }
 
-  generateMeetInvitationEmail(recipientEmailAddress: string, meet: Meet): Email {
+  generateMeetRegistrationEmail(recipientEmailAddress: string, meet: Meet): Email {
     const { title, description } = meet;
     const email: Email = {
       to: recipientEmailAddress,
       from: senderEmail,
-      subject: `Invitation: ${title}`,
+      subject: `Registration Confirmation for ${title}`,
       html: generateJsonLdHtmlFromMeet(meet),
       attachments: generateIcsAttachments(meet),
     };
