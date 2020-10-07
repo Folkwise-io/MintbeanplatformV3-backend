@@ -22,6 +22,10 @@ import ProjectMediaAssetService from "./service/ProjectMediaAssetService";
 import MeetRegistrationDaoKnex from "./dao/MeetRegistrationDaoKnex";
 import MeetRegistrationDao from "./dao/MeetRegistrationDao";
 import MeetRegistrationService from "./service/MeetRegistrationService";
+import KanbanDaoKnex from "./dao/KanbanDaoKnex";
+import KanbanDao from "./dao/KanbanDao";
+import KanbanService from "./service/KanbanService";
+import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -30,6 +34,7 @@ export interface PersistenceContext {
   mediaAssetDao: MediaAssetDao;
   projectMediaAssetDao: ProjectMediaAssetDao;
   meetRegistrationDao: MeetRegistrationDao;
+  kanbanDao: KanbanDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -40,6 +45,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
+  const kanbanDao = new KanbanDaoKnex(knex);
 
   return {
     userDao,
@@ -48,6 +54,7 @@ export function buildPersistenceContext(): PersistenceContext {
     mediaAssetDao,
     projectMediaAssetDao,
     meetRegistrationDao,
+    kanbanDao,
   };
 }
 
@@ -61,11 +68,21 @@ export interface ResolverContext {
   mediaAssetResolverValidator: MediaAssetResolverValidator;
   mediaAssetService: MediaAssetService;
   projectMediaAssetService: ProjectMediaAssetService;
-  meetRegistrationService: MeetRegistrationService
+  meetRegistrationService: MeetRegistrationService;
+  kanbanResolverValidator: KanbanResolverValidator;
+  kanbanService: KanbanService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao, projectDao, mediaAssetDao, projectMediaAssetDao, meetRegistrationDao } = persistenceContext;
+  const {
+    userDao,
+    meetDao,
+    projectDao,
+    mediaAssetDao,
+    projectMediaAssetDao,
+    meetRegistrationDao,
+    kanbanDao,
+  } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
@@ -76,6 +93,8 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const mediaAssetService = new MediaAssetService(mediaAssetDao);
   const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
   const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
+  const kanbanResolverValidator = new KanbanResolverValidator(kanbanDao);
+  const kanbanService = new KanbanService(kanbanDao);
 
   return {
     userResolverValidator,
@@ -87,6 +106,8 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     mediaAssetResolverValidator,
     mediaAssetService,
     projectMediaAssetService,
-    meetRegistrationService
+    meetRegistrationService,
+    kanbanService,
+    kanbanResolverValidator,
   };
 }

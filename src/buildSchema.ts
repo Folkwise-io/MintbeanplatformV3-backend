@@ -15,6 +15,7 @@ import mediaAsset from "./graphql/typedef/mediaAsset";
 import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 import meetRegistration from "./graphql/typedef/meetRegistration";
 import kanban from "./graphql/typedef/kanban";
+import kanbanResolver from "./graphql/resolver/kanbanResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -28,6 +29,8 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     mediaAssetService,
     projectMediaAssetService,
     meetRegistrationService,
+    kanbanResolverValidator,
+    kanbanService,
   } = resolverContext;
   const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, kanban];
   const resolvers = [
@@ -36,6 +39,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     meetResolver(meetResolverValidator, meetService, meetRegistrationService),
     projectResolver(projectResolverValidator, projectService, mediaAssetService, projectMediaAssetService),
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
+    kanbanResolver(kanbanResolverValidator, kanbanService),
     postResolver,
   ];
 
