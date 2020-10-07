@@ -3,6 +3,7 @@ import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
 import * as ics from "ics";
 import { Attachment } from "../types/Email";
+const DISCORD_URL = "https://discord.gg/j7CjBAz";
 
 export const generateIcsAttachments = (meet: Meet): Attachment[] => {
   const icsEventAttribute = mapMeetToIcsEventAttributes(meet);
@@ -58,7 +59,7 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
 
   const startTimeUTC = moment.tz(startTime, region).format();
   const endTimeUTC = moment.tz(endTime, region).format();
-
+  const meetUrl = `https://mintbean.io/meets/${id}`;
   const email = `
 <html>
   <head>
@@ -74,7 +75,7 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
       },
       "reservationFor": {
         "@type": "Event",
-        "name": "${title} - https://mintbean.io/meets/${id}",
+        "name": "${title} - ${meetUrl}",
         "startDate": "${startTimeUTC}",
         "endDate": "${endTimeUTC}",
         "location": {
@@ -92,9 +93,14 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
     </script>
   </head>
   <body>
-    <p>
-      Thank you for registering for the <strong>${title}</strong>! Please join our Discord at the start time!
+    <p style='color:#4a5566;font-size:21px;line-height:28px;'>Hi Amy 👋</p>
+    <br/>
+    <p style='color:#4a5566;font-size:21px;line-height:28px;'>
+      Thank you for registering for the <strong><a href='${meetUrl}'>${title}</a></strong>! Please join our <a href='${DISCORD_URL}'>Discord</a> at the start time!
     </p>
+    <br/>
+    <p style='color:#4a5566;font-size:21px;line-height:28px;'>- Your friends at Mintbean</p>
+    <br/>
     <br/>
     <em>Event Details:</em>
     <h1>${title}</h1>
