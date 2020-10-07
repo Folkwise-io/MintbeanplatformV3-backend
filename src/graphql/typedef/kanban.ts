@@ -36,10 +36,10 @@ const kanban = gql`
 
   "Input that can be used to edit a kanban - all fields are optional"
   input EditKanbanInput {
-    title: String!
+    title: String
 
     "A short description about the kanban project"
-    description: String!
+    description: String
   }
 
   extend type Mutation {

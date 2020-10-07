@@ -380,9 +380,9 @@ export type CreateKanbanInput = {
 
 /** Input that can be used to edit a kanban - all fields are optional */
 export type EditKanbanInput = {
-  title: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
   /** A short description about the kanban project */
-  description: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 
