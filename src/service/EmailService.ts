@@ -2,7 +2,7 @@ import config from "../util/config";
 import { EmailDao } from "../dao/EmailDao";
 import { Email } from "../types/Email";
 import { Meet } from "../types/gqlGeneratedTypes";
-import { generateIcsAttachments } from "../util/emailUtils";
+import { generateIcsAttachments, generateJsonLdHtmlFromMeet } from "../util/emailUtils";
 
 const { senderEmail } = config;
 export class EmailService {
@@ -26,7 +26,7 @@ export class EmailService {
       to: recipientEmailAddress,
       from: senderEmail,
       subject: `Invitation: ${title}`,
-      html: `<h1>Invitation for <strong>${title}</strong><h1>`,
+      html: generateJsonLdHtmlFromMeet(meet),
       attachments: generateIcsAttachments(meet),
     };
 

@@ -52,3 +52,54 @@ export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): str
   const icsFileBase64 = (icsFileBuffered as Buffer).toString("base64");
   return icsFileBase64;
 };
+
+export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
+  const { id, title, description, startTime, endTime, region, coverImageUrl } = meet;
+
+  const startTimeUTC = moment.tz(startTime, region).utc();
+  const endTimeUTC = moment.tz(endTime, region).utc();
+
+  return `
+<html>
+  <head>
+    <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "EventReservation",
+      "reservationNumber": "E123456789",
+      "reservationStatus": "http://schema.org/Confirmed",
+      "underName": {
+        "@type": "Person",
+        "name": "John Smith"
+      },
+      "reservationFor": {
+        "@type": "Event",
+        "name": "${title} - https://mintbean.io/meets/${id}",
+        "startDate": ${startTimeUTC},
+        "endDate": ${endTimeUTC},
+        "location": {
+          "@type": "Place",
+          "name": "Mintbean",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Toronto",
+            "addressRegion": "ON"
+          },
+          "url": "https://mintbean.io"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <p>
+      Thank you for registering for ${title}! Please join the Discord at the start time!
+    </p>
+    <p>Event Details:</p>
+    <h1>${title}</h1>
+    <img src='${coverImageUrl}' width='600px' />
+    <h3>${description}</h3>
+  </body>
+</html>
+`;
+};
