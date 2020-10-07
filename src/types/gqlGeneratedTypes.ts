@@ -79,6 +79,10 @@ export type Query = {
   projects?: Maybe<Array<Maybe<Project>>>;
   /** Get a single project by its ID */
   project?: Maybe<Project>;
+  /** Get a kanban by ID */
+  kanban?: Maybe<Kanban>;
+  /** Gets all the kanbans */
+  kanbans?: Maybe<Array<Maybe<Kanban>>>;
 };
 
 
@@ -112,6 +116,11 @@ export type QueryProjectArgs = {
   id: Scalars['UUID'];
 };
 
+
+export type QueryKanbanArgs = {
+  id: Scalars['UUID'];
+};
+
 /** The fields needed for a new user to register */
 export type UserRegistrationInput = {
   /** Unique email */
@@ -142,6 +151,12 @@ export type Mutation = {
   deleteProject: Scalars['Boolean'];
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
+  /** Creates a new kanban (requires admin privileges) */
+  createKanban: Kanban;
+  /** Edits a kanban (requires admin privileges) */
+  editKanban: Kanban;
+  /** Deletes a kanban (requires admin privileges) */
+  deleteKanban: Scalars['Boolean'];
 };
 
 
@@ -184,6 +199,22 @@ export type MutationDeleteProjectArgs = {
 
 export type MutationRegisterForMeetArgs = {
   meetId: Scalars['UUID'];
+};
+
+
+export type MutationCreateKanbanArgs = {
+  input: CreateKanbanInput;
+};
+
+
+export type MutationEditKanbanArgs = {
+  id: Scalars['UUID'];
+  input: EditKanbanInput;
+};
+
+
+export type MutationDeleteKanbanArgs = {
+  id: Scalars['UUID'];
 };
 
 export type Post = {
@@ -326,6 +357,34 @@ export type MediaAsset = {
   updatedAt: Scalars['DateTime'];
 };
 
+/** A kanban that serves as a guide for projects. */
+export type Kanban = {
+  __typename?: 'Kanban';
+  /** ID of the Kanban in UUID */
+  id: Scalars['UUID'];
+  title: Scalars['String'];
+  /** A short description about the kanban project */
+  description: Scalars['String'];
+  /** DateTime that the kanban was created */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the kanban was modified */
+  updatedAt: Scalars['DateTime'];
+};
+
+/** The input needed to create a new kanban */
+export type CreateKanbanInput = {
+  title: Scalars['String'];
+  /** A short description about the kanban project */
+  description: Scalars['String'];
+};
+
+/** Input that can be used to edit a kanban - all fields are optional */
+export type EditKanbanInput = {
+  title: Scalars['String'];
+  /** A short description about the kanban project */
+  description: Scalars['String'];
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -421,6 +480,9 @@ export type ResolversTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: ResolverTypeWrapper<MediaAsset>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
+  Kanban: ResolverTypeWrapper<Kanban>;
+  CreateKanbanInput: CreateKanbanInput;
+  EditKanbanInput: EditKanbanInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -442,6 +504,9 @@ export type ResolversParentTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: MediaAsset;
   Int: Scalars['Int'];
+  Kanban: Kanban;
+  CreateKanbanInput: CreateKanbanInput;
+  EditKanbanInput: EditKanbanInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -489,6 +554,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
+  kanban?: Resolver<Maybe<ResolversTypes['Kanban']>, ParentType, ContextType, RequireFields<QueryKanbanArgs, 'id'>>;
+  kanbans?: Resolver<Maybe<Array<Maybe<ResolversTypes['Kanban']>>>, ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -501,6 +568,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
+  createKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationCreateKanbanArgs, 'input'>>;
+  editKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationEditKanbanArgs, 'id' | 'input'>>;
+  deleteKanban?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -556,6 +626,15 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type KanbanResolvers<ContextType = any, ParentType extends ResolversParentTypes['Kanban'] = ResolversParentTypes['Kanban']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -567,6 +646,7 @@ export type Resolvers<ContextType = any> = {
   Meet?: MeetResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
+  Kanban?: KanbanResolvers<ContextType>;
 };
 
 
