@@ -55,10 +55,13 @@ export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): str
 };
 
 export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
-  const { id, title, description, startTime, endTime, region, coverImageUrl } = meet;
+  const { id, title, description, startTime, endTime, region, coverImageUrl, registerLink } = meet;
 
-  const startTimeUTC = moment.tz(startTime, region).format();
-  const endTimeUTC = moment.tz(endTime, region).format();
+  const startTimeIsoWithTimezone = moment.tz(startTime, region).format();
+  const endTimeIsoWithTimezone = moment.tz(endTime, region).format();
+  const startTimeHumanized = moment.tz(startTime, region).format("dddd, MMMM Do YYYY, h:mm:ss a z");
+  const endTimeHumanized = moment.tz(endTime, region).format("dddd, MMMM Do YYYY, h:mm:ss a z");
+
   const meetUrl = `https://mintbean.io/meets/${id}`;
   const email = `
 <html>
@@ -76,8 +79,8 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
       "reservationFor": {
         "@type": "Event",
         "name": "${title} - ${meetUrl}",
-        "startDate": "${startTimeUTC}",
-        "endDate": "${endTimeUTC}",
+        "startDate": "${startTimeIsoWithTimezone}",
+        "endDate": "${endTimeIsoWithTimezone}",
         "location": {
           "@type": "Place",
           "name": "Mintbean",
@@ -93,19 +96,28 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
     </script>
   </head>
   <body>
-    <p style='color:#4a5566;font-size:21px;line-height:28px;'>Hi Amy 👋</p>
-    <br/>
     <p style='color:#4a5566;font-size:21px;line-height:28px;'>
-      Thank you for registering for the <strong><a href='${meetUrl}'>${title}</a></strong>! Please join our <a href='${DISCORD_URL}'>Discord</a> at the start time!
+      Hi Amy 👋 <br/>
+      <br/>
+      Thank you for registering for the <strong><a href='${meetUrl}'>${title}</a></strong>!<br/>
+      We are so excited for you to be joining us!<br/>
+      <br/>
+      <strong>Next Steps:</strong><br/>
+      1. <strong>Join our community on Discord!</strong> This is our main communication channel. Connect with other developers like yourself and get the latest notice of our upcoming, workshops, dev hangouts, and hackathons here: https://discord.gg/Njgt5rZ<br/>
+      <br/>
+      2. <strong>Join us on Zoom</strong> at the start of our hackathon for orientation and challenge release on Friday: ${registerLink} <br/>
+      <br/>
+      For any further questions or concerns, please reach out to us on Discord! See you on the flip side, minty bean! 😊
     </p>
     <br/>
-    <p style='color:#4a5566;font-size:21px;line-height:28px;'>- Your friends at Mintbean</p>
     <br/>
     <br/>
-    <em>Event Details:</em>
+    <h2>Event Details:</h2>
     <h1>${title}</h1>
-    <h3>${description}</h3>
     <img src='${coverImageUrl}' width='600px' />
+    <h2>${description}</h2>
+    <h3>Start Time: ${startTimeHumanized}</h3>
+    <h3>End Time: ${endTimeHumanized}</h3>
   </body>
 </html>
 `;

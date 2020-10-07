@@ -14,6 +14,8 @@ const emailResolver = (
 ): Resolvers => {
   return {
     Mutation: {
+      //TODO: check if admin for all these routes
+      //TODO: check yup validation of input in emailResolverValidator
       sendTestEmail: (_root, { input }, context: ServerContext): Promise<boolean> => {
         const { subject, body } = input;
         const testEmail: Email = {
