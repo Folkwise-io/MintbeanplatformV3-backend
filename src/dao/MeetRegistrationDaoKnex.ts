@@ -20,7 +20,10 @@ export default class MeetRegistrationDaoKnex implements MeetRegistrationDao {
   }
 
   addOne(args: MeetRegistrationServiceAddOneArgs): Promise<MeetRegistration> {
-    return handleDatabaseError(() => this.knex<MeetRegistration>("meetRegistrations").insert(args).returning("*"));
+    return handleDatabaseError(async () => {
+      const meetRegistrations = await this.knex<MeetRegistration>("meetRegistrations").insert(args).returning("*");
+      return meetRegistrations[0]; // Cannot chain .first() on insert statements
+    });
   }
 
   addMany(meetRegistrations: MeetRegistration[]): Promise<void> {
