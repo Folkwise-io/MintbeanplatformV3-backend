@@ -21,13 +21,13 @@ export class EmailService {
     return email;
   }
 
-  generateMeetRegistrationEmail(user: User, meet: Meet): Email {
+  generateMeetRegistrationEmail(user: User, meet: Meet, registrationId: string): Email {
     const { title, description } = meet;
     const email: Email = {
       to: user.email,
       from: senderEmail,
       subject: `Registration Confirmation for ${title}`,
-      html: generateJsonLdHtml(user, meet),
+      html: generateJsonLdHtml(user, meet, registrationId),
       attachments: generateIcsAttachments(meet),
     };
 

@@ -51,7 +51,7 @@ const emailResolver = (
           isAdmin: false,
         };
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
-        const email = emailService.generateMeetRegistrationEmail(user, meet);
+        const email = emailService.generateMeetRegistrationEmail(user, meet, "REGISTRATION_UUID_WILL_GO_HERE");
         return emailService.sendEmail(email);
       },
     },

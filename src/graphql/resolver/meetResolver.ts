@@ -59,10 +59,11 @@ const meetResolver = (
         return meetResolverValidator
           .registerForMeet(args)
           .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
-          .then(async ({ userId, meetId }) => {
+          .then(async ({ userId, meetId, id }) => {
             const user = await userService.getOne({ id: userId });
             const meet = await meetService.getOne({ id: meetId });
-            const email = emailService.generateMeetRegistrationEmail(user, meet);
+            const email = emailService.generateMeetRegistrationEmail(user, meet, id);
+
             return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
           })
           .then(() => true);

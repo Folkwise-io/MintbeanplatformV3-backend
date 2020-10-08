@@ -55,7 +55,7 @@ export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): str
   return icsFileBase64;
 };
 
-export const generateJsonLdHtml = (user: User, meet: Meet): string => {
+export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: string): string => {
   const { id, title, description, startTime, endTime, region, coverImageUrl, registerLink } = meet;
   const { firstName, lastName } = user;
   const startTimeIsoWithTimezone = moment.tz(startTime, region).format();
@@ -71,7 +71,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet): string => {
     {
       "@context": "http://schema.org",
       "@type": "EventReservation",
-      "reservationNumber": "E123456789",
+      "reservationNumber": "${registrationId}",
       "reservationStatus": "http://schema.org/Confirmed",
       "underName": {
         "@type": "Person",
