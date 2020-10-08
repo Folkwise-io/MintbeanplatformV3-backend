@@ -48,6 +48,11 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
         return kanbanService.getOne({ id: meet.kanbanId });
       },
     },
+    // Meets: {
+    //   kanban: (meet) => {
+    //     return kanbanService.getOne({ id: meet.kanbanId });
+    //   },
+    // },
   };
 };
 

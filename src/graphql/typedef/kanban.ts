@@ -21,6 +21,7 @@ const kanban = gql`
   extend type Meet {
     "The kanban associated with this meet (if provided)"
     kanban: Kanban
+    kanbanId: UUID
   }
 
   extend type Query {

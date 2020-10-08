@@ -262,6 +262,7 @@ export type Meet = {
   registrants?: Maybe<Array<PublicUser>>;
   /** The kanban associated with this meet (if provided) */
   kanban?: Maybe<Kanban>;
+  kanbanId?: Maybe<Scalars['UUID']>;
 };
 
 /** The input needed to create a new meet */
@@ -601,6 +602,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
   registrants?: Resolver<Maybe<Array<ResolversTypes['PublicUser']>>, ParentType, ContextType>;
   kanban?: Resolver<Maybe<ResolversTypes['Kanban']>, ParentType, ContextType>;
+  kanbanId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

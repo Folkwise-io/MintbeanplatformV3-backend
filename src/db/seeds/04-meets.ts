@@ -15,7 +15,7 @@ export async function seed(knex: Knex): Promise<void> {
       coverImageUrl: "https://www.grafik.com.au/wp-content/uploads/2019/06/think-design.png",
       startTime: "2020-09-30T13:00:00",
       endTime: "2020-09-30T17:00:00",
-      kanbanId: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
+      kanbanId: "00000000-0000-0000-0000-000000000000",
       createdAt: "2020-08-15",
     },
     {
