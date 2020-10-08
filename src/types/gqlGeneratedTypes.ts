@@ -132,7 +132,7 @@ export type QueryKanbanCardArgs = {
 
 
 export type QueryKanbanCardsArgs = {
-  id: Scalars['UUID'];
+  kanbanId: Scalars['UUID'];
 };
 
 /** The fields needed for a new user to register */
@@ -636,7 +636,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   kanban?: Resolver<Maybe<ResolversTypes['Kanban']>, ParentType, ContextType, RequireFields<QueryKanbanArgs, 'id'>>;
   kanbans?: Resolver<Maybe<Array<Maybe<ResolversTypes['Kanban']>>>, ParentType, ContextType>;
   kanbanCard?: Resolver<Maybe<ResolversTypes['KanbanCard']>, ParentType, ContextType, RequireFields<QueryKanbanCardArgs, 'id'>>;
-  kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanCardsArgs, 'id'>>;
+  kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanCardsArgs, 'kanbanId'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
