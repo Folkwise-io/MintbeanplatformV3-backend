@@ -83,6 +83,10 @@ export type Query = {
   kanban?: Maybe<Kanban>;
   /** Gets all the kanbans */
   kanbans?: Maybe<Array<Maybe<Kanban>>>;
+  /** Get a kanban card by ID */
+  kanbanCard?: Maybe<KanbanCard>;
+  /** Gets all the kanban cards for a given kanban */
+  kanbanCards?: Maybe<Array<Maybe<KanbanCard>>>;
 };
 
 
@@ -118,6 +122,16 @@ export type QueryProjectArgs = {
 
 
 export type QueryKanbanArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryKanbanCardArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryKanbanCardsArgs = {
   id: Scalars['UUID'];
 };
 
@@ -157,6 +171,12 @@ export type Mutation = {
   editKanban: Kanban;
   /** Deletes a kanban (requires admin privileges) */
   deleteKanban: Scalars['Boolean'];
+  /** Creates a new kanban card (requires admin privileges) */
+  createKanbanCard: KanbanCard;
+  /** Edits a kanban card (requires admin privileges) */
+  editKanbanCard: KanbanCard;
+  /** Deletes a kanban card (requires admin privileges) */
+  deleteKanbanCard: Scalars['Boolean'];
 };
 
 
@@ -214,6 +234,22 @@ export type MutationEditKanbanArgs = {
 
 
 export type MutationDeleteKanbanArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type MutationCreateKanbanCardArgs = {
+  input: CreateKanbanCardInput;
+};
+
+
+export type MutationEditKanbanCardArgs = {
+  id: Scalars['UUID'];
+  input: EditKanbanCardInput;
+};
+
+
+export type MutationDeleteKanbanCardArgs = {
   id: Scalars['UUID'];
 };
 
@@ -388,6 +424,40 @@ export type EditKanbanInput = {
   description?: Maybe<Scalars['String']>;
 };
 
+/** A kanban card that belongs to a kanban. */
+export type KanbanCard = {
+  __typename?: 'KanbanCard';
+  /** ID of the kanban card in UUID */
+  id: Scalars['UUID'];
+  title: Scalars['String'];
+  /** A markdown body of the kanban card content */
+  body: Scalars['String'];
+  /** A reference to the kanban this kanban card belongs to */
+  kanbanId: Scalars['UUID'];
+  /** DateTime that the kanban was created */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the kanban was modified */
+  updatedAt: Scalars['DateTime'];
+};
+
+/** The input needed to create a new kanban card */
+export type CreateKanbanCardInput = {
+  /** A reference to the kanban this kanban card belongs to */
+  kanbanId: Scalars['UUID'];
+  title: Scalars['String'];
+  /** A markdown body of the kanban card content */
+  body: Scalars['String'];
+};
+
+/** Input that can be used to edit a kanban card - all fields are optional */
+export type EditKanbanCardInput = {
+  /** A reference to the kanban this kanban card belongs to */
+  kanbanId?: Maybe<Scalars['UUID']>;
+  title?: Maybe<Scalars['String']>;
+  /** A markdown body of the kanban card content */
+  body?: Maybe<Scalars['String']>;
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -486,6 +556,9 @@ export type ResolversTypes = {
   Kanban: ResolverTypeWrapper<Kanban>;
   CreateKanbanInput: CreateKanbanInput;
   EditKanbanInput: EditKanbanInput;
+  KanbanCard: ResolverTypeWrapper<KanbanCard>;
+  CreateKanbanCardInput: CreateKanbanCardInput;
+  EditKanbanCardInput: EditKanbanCardInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -510,6 +583,9 @@ export type ResolversParentTypes = {
   Kanban: Kanban;
   CreateKanbanInput: CreateKanbanInput;
   EditKanbanInput: EditKanbanInput;
+  KanbanCard: KanbanCard;
+  CreateKanbanCardInput: CreateKanbanCardInput;
+  EditKanbanCardInput: EditKanbanCardInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -559,6 +635,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
   kanban?: Resolver<Maybe<ResolversTypes['Kanban']>, ParentType, ContextType, RequireFields<QueryKanbanArgs, 'id'>>;
   kanbans?: Resolver<Maybe<Array<Maybe<ResolversTypes['Kanban']>>>, ParentType, ContextType>;
+  kanbanCard?: Resolver<Maybe<ResolversTypes['KanbanCard']>, ParentType, ContextType, RequireFields<QueryKanbanCardArgs, 'id'>>;
+  kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanCardsArgs, 'id'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -574,6 +652,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationCreateKanbanArgs, 'input'>>;
   editKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationEditKanbanArgs, 'id' | 'input'>>;
   deleteKanban?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanArgs, 'id'>>;
+  createKanbanCard?: Resolver<ResolversTypes['KanbanCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanCardArgs, 'input'>>;
+  editKanbanCard?: Resolver<ResolversTypes['KanbanCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCardArgs, 'id' | 'input'>>;
+  deleteKanbanCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCardArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -640,6 +721,16 @@ export type KanbanResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCard'] = ResolversParentTypes['KanbanCard']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -652,6 +743,7 @@ export type Resolvers<ContextType = any> = {
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
   Kanban?: KanbanResolvers<ContextType>;
+  KanbanCard?: KanbanCardResolvers<ContextType>;
 };
 
 
