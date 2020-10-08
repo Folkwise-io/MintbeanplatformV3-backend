@@ -9,7 +9,7 @@ import {
   MutationEditKanbanArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
-import createKanbanInputSchema from "./yupSchemas/createKanbanInputSchema";
+import { createKanbanInputSchema } from "./yupSchemas/kanban";
 
 export default class KanbanResolverValidator {
   constructor(private kanbanDao: KanbanDao) {}

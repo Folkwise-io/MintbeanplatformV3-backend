@@ -24,6 +24,11 @@ const kanbanCard = gql`
     updatedAt: DateTime!
   }
 
+  extend type Kanban {
+    "The kanban cards that belong to a kanban"
+    kanbanCards: [KanbanCard]
+  }
+
   extend type Query {
     "Get a kanban card by ID"
     kanbanCard(id: UUID!): KanbanCard

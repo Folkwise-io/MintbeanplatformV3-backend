@@ -408,6 +408,8 @@ export type Kanban = {
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanban was modified */
   updatedAt: Scalars['DateTime'];
+  /** The kanban cards that belong to a kanban */
+  kanbanCards?: Maybe<Array<Maybe<KanbanCard>>>;
 };
 
 /** The input needed to create a new kanban */
@@ -724,6 +726,7 @@ export type KanbanResolvers<ContextType = any, ParentType extends ResolversParen
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

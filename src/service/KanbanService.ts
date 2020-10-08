@@ -19,6 +19,7 @@ export interface KanbanServiceEditOneInput {
 
 export default class KanbanService implements EntityService<Kanban> {
   constructor(private kanbanDao: KanbanDao) {}
+
   async getOne(args: KanbanServiceGetOneArgs): Promise<Kanban> {
     return this.kanbanDao.getOne(args);
   }
