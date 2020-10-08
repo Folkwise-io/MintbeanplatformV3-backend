@@ -26,7 +26,7 @@ const kanbanCard = gql`
     kanbanCard(id: UUID!): KanbanCard
 
     "Gets all the kanban cards for a given kanban"
-    kanbanCards(id: UUID!): [KanbanCard]
+    kanbanCards(kanbanId: UUID!): [KanbanCard]
   }
 
   "The input needed to create a new kanban card"

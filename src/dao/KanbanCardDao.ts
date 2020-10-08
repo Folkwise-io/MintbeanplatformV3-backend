@@ -1,11 +1,15 @@
 import { KanbanCard } from "../types/gqlGeneratedTypes";
-import { KanbanServiceAddOneInput, KanbanServiceEditOneInput, KanbanServiceGetOneArgs } from "../service/KanbanService";
+import {
+  KanbanCardServiceAddOneInput,
+  KanbanCardServiceEditOneInput,
+  KanbanCardServiceGetOneArgs,
+} from "../service/KanbanCardService";
 
-export default interface KanbanDao {
-  getOne(args: KanbanServiceGetOneArgs): Promise<KanbanCard>;
-  getMany(): Promise<KanbanCard[]>;
-  addOne(args: KanbanServiceAddOneInput): Promise<KanbanCard>;
-  editOne(id: string, input: KanbanServiceEditOneInput): Promise<KanbanCard>;
+export default interface KanbanCardDao {
+  getOne(args: KanbanCardServiceGetOneArgs): Promise<KanbanCard>;
+  getMany(args: KanbanCardServiceGetManyArgs): Promise<KanbanCard[]>;
+  addOne(args: KanbanCardServiceAddOneInput): Promise<KanbanCard>;
+  editOne(id: string, input: KanbanCardServiceEditOneInput): Promise<KanbanCard>;
   deleteOne(id: string): Promise<boolean>;
 
   // Below are TestManager methods
