@@ -432,6 +432,8 @@ export type KanbanCard = {
   title: Scalars['String'];
   /** A markdown body of the kanban card content */
   body: Scalars['String'];
+  /** The master index of this card in the kanban. Determines the order cards are presented to user on initial use */
+  index: Scalars['Int'];
   /** A reference to the kanban this kanban card belongs to */
   kanbanId: Scalars['UUID'];
   /** DateTime that the kanban was created */
@@ -445,6 +447,8 @@ export type CreateKanbanCardInput = {
   /** A reference to the kanban this kanban card belongs to */
   kanbanId: Scalars['UUID'];
   title: Scalars['String'];
+  /** The master index of this card in the kanban. Determines the order cards are presented to user on initial use */
+  index: Scalars['Int'];
   /** A markdown body of the kanban card content */
   body: Scalars['String'];
 };
@@ -454,6 +458,8 @@ export type EditKanbanCardInput = {
   /** A reference to the kanban this kanban card belongs to */
   kanbanId?: Maybe<Scalars['UUID']>;
   title?: Maybe<Scalars['String']>;
+  /** The master index of this card in the kanban. Determines the order cards are presented to user on initial use */
+  index?: Maybe<Scalars['Int']>;
   /** A markdown body of the kanban card content */
   body?: Maybe<Scalars['String']>;
 };
@@ -725,6 +731,7 @@ export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversP
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;

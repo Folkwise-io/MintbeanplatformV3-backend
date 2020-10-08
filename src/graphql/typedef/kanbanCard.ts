@@ -11,6 +11,9 @@ const kanbanCard = gql`
     "A markdown body of the kanban card content"
     body: String!
 
+    "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
+    index: Int!
+
     "A reference to the kanban this kanban card belongs to"
     kanbanId: UUID!
 
@@ -36,6 +39,9 @@ const kanbanCard = gql`
 
     title: String!
 
+    "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
+    index: Int!
+
     "A markdown body of the kanban card content"
     body: String!
   }
@@ -46,6 +52,9 @@ const kanbanCard = gql`
     kanbanId: UUID
 
     title: String
+
+    "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
+    index: Int
 
     "A markdown body of the kanban card content"
     body: String
