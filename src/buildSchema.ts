@@ -36,7 +36,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),
-    meetResolver(meetResolverValidator, meetService, meetRegistrationService),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationService, userService, emailService),
     projectResolver(projectResolverValidator, projectService, mediaAssetService, projectMediaAssetService),
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
     emailResolver(emailResolverValidator, emailService, meetService),
