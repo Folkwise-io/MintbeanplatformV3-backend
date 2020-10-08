@@ -1,5 +1,5 @@
 import { Resolvers } from "../../types/gqlGeneratedTypes";
-import { User, PublicUserDto, PrivateUserDto } from "../../types/user";
+import { User, PublicUserDto, PrivateUserDto } from "../../types/User";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";

@@ -1,8 +1,10 @@
 import { AuthenticationError } from "apollo-server-express";
 import { isContext } from "vm";
 import { ServerContext } from "../../buildServerContext";
+import { EmailService } from "../../service/EmailService";
 import MeetRegistrationService from "../../service/MeetRegistrationService";
 import MeetService from "../../service/MeetService";
+import UserService from "../../service/UserService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 
@@ -10,6 +12,8 @@ const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
   meetRegistrationService: MeetRegistrationService,
+  userService: UserService,
+  emailService: EmailService,
 ): Resolvers => {
   return {
     Query: {
@@ -45,7 +49,7 @@ const meetResolver = (
 
         return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
       },
-      registerForMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+      registerForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
         const currentUserId = context.getUserId();
 
         if (!currentUserId) {
@@ -55,6 +59,13 @@ const meetResolver = (
         return meetResolverValidator
           .registerForMeet(args)
           .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
+          .then(async ({ userId, meetId, id }) => {
+            const user = await userService.getOne({ id: userId });
+            const meet = await meetService.getOne({ id: meetId });
+            const email = emailService.generateMeetRegistrationEmail(user, meet, id);
+
+            return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
+          })
           .then(() => true);
       },
     },

@@ -36,4 +36,6 @@ export default {
   dbHost: hoc("DB_HOST"),
   dbPort: hoc("DB_PORT", { convert: CONVERTERS.toNumber }),
   jwtSecret: hoc("JWT_SECRET"),
+  sendGridKey: hoc("SENDGRID_KEY"),
+  senderEmail: hoc("SENDER_EMAIL"),
 };

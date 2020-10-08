@@ -26,7 +26,7 @@ module.exports = {
   coverageDirectory: "coverage",
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: ["/node_modules/", "/db/", "/test", "/src/types/", "src/index.ts", "src/graphql/schema.ts"],
+  coveragePathIgnorePatterns: ["/node_modules/", "/db/", "/test", "/src/types/", "src/index.ts", "src/graphql/schema.ts", "Dao.ts", "EntityService.ts"],
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: "v8",

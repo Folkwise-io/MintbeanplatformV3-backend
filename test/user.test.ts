@@ -17,7 +17,7 @@ import {
   NEW_USER_INPUT,
   REGISTER,
 } from "./src/userConstants";
-import { User } from "../src/types/user";
+import { User } from "../src/types/User";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();

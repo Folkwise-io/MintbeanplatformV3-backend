@@ -1,5 +1,5 @@
 import MeetRegistrationDao from "../dao/MeetRegistrationDao";
-import MeetRegistration from "../types/meetRegistration";
+import MeetRegistration from "../types/MeetRegistration";
 import { EntityService } from "./EntityService";
 
 export interface MeetRegistrationServiceAddOneArgs {

@@ -41,6 +41,8 @@ _[Docker](https://docs.docker.com/get-docker/) must be installed and running for
 
 - You can access the PostgreSQL CLI with `yarn psql`. All column names that are in camelCase need double quotation marks when used in raw SQL queries (i.e. `SELECT body, "userId" from posts;`).
 
+- If you want to, you can run postgres on your host machine and point to the port (usually 5432) in `.env`. If you do so, **you must configure postgres to use the UTC timezone (by editing `.conf` and restarting the postgres process)!** The docker postgres and most servers use UTC by default so it's not a problem, but your local postgres may be configured in your local timezone. If your postgres is not set to UTC, you will get a nasty bug when editing/creating Meets!
+
 ### Development workflow
 
 1. [Setting up the local database](#setting-up-the-local-database)
