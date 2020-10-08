@@ -1,15 +1,15 @@
 import * as Knex from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
-  await knex("kanbans").del();
+  await knex("kanbanCards").del();
 
-  await knex("kanbans").insert([
+  await knex("kanbanCards").insert([
     {
       id: "00000000-0000-0000-0000-000000000000",
       kanbanId: "00000000-0000-0000-0000-000000000000",
       index: 0,
       title: "Step 1",
-      description: "This is the **first** thing to do",
+      body: "This is the **first** thing to do",
       createdAt: "2020-10-15",
     },
     {
@@ -17,7 +17,7 @@ export async function seed(knex: Knex): Promise<void> {
       kanbanId: "00000000-0000-0000-0000-000000000000",
       index: 1,
       title: "Step 2",
-      description: "This is the **second** thing to do",
+      body: "This is the **second** thing to do",
       createdAt: "2020-10-15",
     },
     {
@@ -25,7 +25,7 @@ export async function seed(knex: Knex): Promise<void> {
       kanbanId: "00000000-0000-0000-0000-000000000000",
       index: 2,
       title: "Step 3",
-      description: "This is the **third** thing to do",
+      body: "This is the **third** thing to do",
       createdAt: "2020-10-15",
     },
   ]);
