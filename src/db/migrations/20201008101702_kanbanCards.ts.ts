@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("kanbanId").notNullable();
     table.text("title").notNullable();
     table.text("body").notNullable();
+    table.integer("index").notNullable();
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("deleted").notNullable().defaultTo(false);
