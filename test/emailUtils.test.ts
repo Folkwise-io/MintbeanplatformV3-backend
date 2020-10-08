@@ -21,7 +21,7 @@ describe("Mapping a Meet object to ICS event attributes", () => {
     const paperJsIcsEvent = mapMeetToIcsEventAttributes(PAPERJS);
     const { title, description, url } = paperJsIcsEvent;
     expect(PAPERJS).toMatchObject({ title, description });
-    expect(url).toBe(`https://mintbean.io/meets/${PAPERJS.id}`);
+    expect(url).toBe(PAPERJS.registerLink);
   });
 
   it("maps the time in UTC correctly", () => {
