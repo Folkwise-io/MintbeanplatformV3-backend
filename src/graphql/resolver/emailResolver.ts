@@ -6,6 +6,7 @@ import MeetService from "../../service/MeetService";
 import { ServerContext } from "../../buildServerContext";
 import { ensureExists } from "../../util/ensureExists";
 import { User } from "../../types/User";
+import ensureAdmin from "../../util/ensureAdmin";
 
 const emailResolver = (
   emailResolverValidator: EmailResolverValidator,
@@ -14,9 +15,9 @@ const emailResolver = (
 ): Resolvers => {
   return {
     Mutation: {
-      //TODO: check if admin for all these routes
       //TODO: check yup validation of input in emailResolverValidator
       sendTestEmail: (_root, { input }, context: ServerContext): Promise<boolean> => {
+        ensureAdmin(context);
         const { subject, body } = input;
         const testEmail: Email = {
           to: "jimmy.peng@mintbean.io",
@@ -28,12 +29,17 @@ const emailResolver = (
       },
 
       sendReminderEmailForMeet: async (_root, { input }, context: ServerContext) => {
-        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: input.meetId }));
+        ensureAdmin(context);
+        const { meetId, subject, body } = input;
+        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: meetId }));
+        // TODO: get users and map over their emails and send them all
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
         return emailService.sendEmail(email);
       },
 
       sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext) => {
+        ensureAdmin(context);
+
         const user: User = {
           id: "00000000-0000-0000-0000-000000000000",
           email: "jimmy.peng@mintbean.io",
