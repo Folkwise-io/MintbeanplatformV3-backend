@@ -5,7 +5,7 @@ import EmailResolverValidator from "../../validator/EmailResolverValidator";
 import MeetService from "../../service/MeetService";
 import { ServerContext } from "../../buildServerContext";
 import { ensureExists } from "../../util/ensureExists";
-import { generateJsonLdHtmlFromMeet } from "../../util/emailUtils";
+import { User } from "../../types/User";
 
 const emailResolver = (
   emailResolverValidator: EmailResolverValidator,
@@ -34,8 +34,18 @@ const emailResolver = (
       },
 
       sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext) => {
+        const user: User = {
+          id: "00000000-0000-0000-0000-000000000000",
+          email: "jimmy.peng@mintbean.io",
+          passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
+          firstName: "Jimmy",
+          lastName: "Peng",
+          createdAt: "2019-10-15",
+          updatedAt: "2019-10-15",
+          isAdmin: false,
+        };
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
-        const email = emailService.generateMeetRegistrationEmail("jimmy.peng@mintbean.io", meet);
+        const email = emailService.generateMeetRegistrationEmail(user, meet);
         return emailService.sendEmail(email);
       },
     },

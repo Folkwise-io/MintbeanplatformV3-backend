@@ -2,7 +2,8 @@ import config from "../util/config";
 import { EmailDao } from "../dao/EmailDao";
 import { Email } from "../types/Email";
 import { Meet } from "../types/gqlGeneratedTypes";
-import { generateIcsAttachments, generateJsonLdHtmlFromMeet } from "../util/emailUtils";
+import { generateIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
+import { User } from "../types/User";
 
 const { senderEmail } = config;
 export class EmailService {
@@ -20,13 +21,13 @@ export class EmailService {
     return email;
   }
 
-  generateMeetRegistrationEmail(recipientEmailAddress: string, meet: Meet): Email {
+  generateMeetRegistrationEmail(user: User, meet: Meet): Email {
     const { title, description } = meet;
     const email: Email = {
-      to: recipientEmailAddress,
+      to: user.email,
       from: senderEmail,
       subject: `Registration Confirmation for ${title}`,
-      html: generateJsonLdHtmlFromMeet(meet),
+      html: generateJsonLdHtml(user, meet),
       attachments: generateIcsAttachments(meet),
     };
 

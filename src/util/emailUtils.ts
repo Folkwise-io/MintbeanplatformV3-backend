@@ -3,6 +3,7 @@ import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
 import * as ics from "ics";
 import { Attachment } from "../types/Email";
+import { User } from "../types/User";
 const DISCORD_URL = "https://discord.gg/j7CjBAz";
 
 export const generateIcsAttachments = (meet: Meet): Attachment[] => {
@@ -19,7 +20,7 @@ export const generateIcsAttachments = (meet: Meet): Attachment[] => {
 };
 
 export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
-  const { title, description, region, id, startTime, endTime } = meet;
+  const { title, description, region, id, startTime, endTime, registerLink } = meet;
   const startTimeUTC = moment.tz(startTime, region).utc();
   const endTimeUTC = moment.tz(endTime, region).utc();
 
@@ -39,7 +40,7 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
     title,
     description,
     location: region,
-    url: `https://mintbean.io/meets/${id}`,
+    url: registerLink || `https://mintbean.io/meets/${id}`,
     status: "CONFIRMED",
     organizer: { name: "Mintbean", email: "info@mintbean.io" },
   };
@@ -54,9 +55,9 @@ export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): str
   return icsFileBase64;
 };
 
-export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
+export const generateJsonLdHtml = (user: User, meet: Meet): string => {
   const { id, title, description, startTime, endTime, region, coverImageUrl, registerLink } = meet;
-
+  const { firstName, lastName } = user;
   const startTimeIsoWithTimezone = moment.tz(startTime, region).format();
   const endTimeIsoWithTimezone = moment.tz(endTime, region).format();
   const startTimeHumanized = moment.tz(startTime, region).format("dddd, MMMM Do YYYY, h:mm:ss a z");
@@ -74,11 +75,11 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
       "reservationStatus": "http://schema.org/Confirmed",
       "underName": {
         "@type": "Person",
-        "name": "John Smith"
+        "name": "${firstName} ${lastName}"
       },
       "reservationFor": {
         "@type": "Event",
-        "name": "${title} - ${meetUrl}",
+        "name": "${title} - ${registerLink}",
         "startDate": "${startTimeIsoWithTimezone}",
         "endDate": "${endTimeIsoWithTimezone}",
         "location": {
@@ -97,15 +98,15 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
   </head>
   <body>
     <p style='color:#4a5566;font-size:21px;line-height:28px;'>
-      Hi Amy 👋 <br/>
+      Hi ${firstName} 👋 <br/>
       <br/>
       Thank you for registering for the <strong><a href='${meetUrl}'>${title}</a></strong>!<br/>
       We are so excited for you to be joining us!<br/>
       <br/>
       <strong>Next Steps:</strong><br/>
-      1. <strong>Join our community on Discord!</strong> This is our main communication channel. Connect with other developers like yourself and get the latest notice of our upcoming, workshops, dev hangouts, and hackathons here: https://discord.gg/Njgt5rZ<br/>
+      1. <strong>Join our community on Discord!</strong> This is our main communication channel. Connect with other developers like yourself and get the latest on our upcoming workshops, dev hangouts, and hackathons here: https://discord.gg/Njgt5rZ<br/>
       <br/>
-      2. <strong>Join us on Zoom</strong> at the start of our hackathon for orientation and challenge release on Friday: ${registerLink} <br/>
+      2. <strong>Join us on Zoom</strong> at the start time of our hackathon for orientation and challenge release: ${registerLink} <br/>
       <br/>
       For any further questions or concerns, please reach out to us on Discord! See you on the flip side, minty bean! 😊
     </p>
@@ -114,8 +115,8 @@ export const generateJsonLdHtmlFromMeet = (meet: Meet): string => {
     <br/>
     <h2>Event Details:</h2>
     <h1>${title}</h1>
-    <img src='${coverImageUrl}' width='600px' />
     <h2>${description}</h2>
+    <img src='${coverImageUrl}' width='600px' />
     <h3>Start Time: ${startTimeHumanized}</h3>
     <h3>End Time: ${endTimeHumanized}</h3>
   </body>
