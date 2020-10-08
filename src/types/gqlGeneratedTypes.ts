@@ -260,6 +260,8 @@ export type Meet = {
   projects?: Maybe<Array<Project>>;
   /** A list of users that are registered for the Meet */
   registrants?: Maybe<Array<PublicUser>>;
+  /** The kanban associated with this meet (if provided) */
+  kanban?: Maybe<Kanban>;
 };
 
 /** The input needed to create a new meet */
@@ -598,6 +600,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
   registrants?: Resolver<Maybe<Array<ResolversTypes['PublicUser']>>, ParentType, ContextType>;
+  kanban?: Resolver<Maybe<ResolversTypes['Kanban']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

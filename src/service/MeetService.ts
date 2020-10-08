@@ -35,6 +35,7 @@ export interface MeetServiceEditOneInput {
   startTime?: string | null;
   endTime?: string | null;
   region?: string | null;
+  kanbanId?: string;
 }
 
 export default class MeetService implements EntityService<Meet> {

@@ -18,6 +18,11 @@ const kanban = gql`
     updatedAt: DateTime!
   }
 
+  extend type Meet {
+    "The kanban associated with this meet (if provided)"
+    kanban: Kanban
+  }
+
   extend type Query {
     "Get a kanban by ID"
     kanban(id: UUID!): Kanban

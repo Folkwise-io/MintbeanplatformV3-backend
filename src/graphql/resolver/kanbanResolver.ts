@@ -41,10 +41,13 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
         return kanbanResolverValidator.deleteOne(args).then((id) => kanbanService.deleteOne(id));
       },
     },
-    // TODO:
-    // KanbanCards: {
-    //
-    // },
+
+    Meet: {
+      kanban: (meet) => {
+        console.log(meet);
+        return kanbanService.getOne({ id: meet.kanbanId });
+      },
+    },
   };
 };
 
