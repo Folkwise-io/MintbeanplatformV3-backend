@@ -9,6 +9,8 @@ import {
   KanbanCardServiceGetOneArgs,
 } from "../service/KanbanCardService";
 import {
+  CreateKanbanCardInput,
+  EditKanbanCardInput,
   KanbanCard,
   MutationCreateKanbanCardArgs,
   MutationDeleteKanbanCardArgs,
@@ -16,6 +18,7 @@ import {
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { ensureType } from "../util/ensureType";
+import { validateAgainstSchema } from "../util/validateAgainstSchema";
 import { createKanbanCardInputSchema, editKanbanCardInputSchema } from "./yupSchemas/kanbanCard";
 
 export default class KanbanCardResolverValidator {
@@ -23,16 +26,12 @@ export default class KanbanCardResolverValidator {
 
   async getOne({ id }: KanbanCardServiceGetOneArgs) {
     ensureType<string>(id, "id", "string");
-    // if (!id || typeof id !== "string") {
-    //   throw new UserInputError("Expected id with a string value");
-    // }
+
     return { id };
   }
   async getMany({ kanbanId }: KanbanCardServiceGetManyArgs) {
     ensureType<string>(kanbanId, "kanbanId", "string");
-    // if (!kanbanId || typeof kanbanId !== "string") {
-    //   throw new UserInputError("Expected kanbanId with a string value");
-    // }
+
     return { kanbanId };
   }
 
@@ -43,11 +42,7 @@ export default class KanbanCardResolverValidator {
     // Check if kanban card id exists in db
     await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
 
-    try {
-      createKanbanCardInputSchema.validateSync(input);
-    } catch (e) {
-      throw new UserInputError(e.message);
-    }
+    validateAgainstSchema<CreateKanbanCardInput>(createKanbanCardInputSchema, input);
 
     return input;
   }
@@ -69,11 +64,7 @@ export default class KanbanCardResolverValidator {
       throw new UserInputError("Must edit at least one field!");
     }
 
-    try {
-      editKanbanCardInputSchema.validateSync(input);
-    } catch (e) {
-      throw new UserInputError(e.message);
-    }
+    validateAgainstSchema<EditKanbanCardInput>(editKanbanCardInputSchema, input);
 
     return { id, input };
   }

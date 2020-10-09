@@ -3,24 +3,22 @@ import { ServerContext } from "../buildServerContext";
 import KanbanDao from "../dao/KanbanDao";
 import { KanbanServiceAddOneInput, KanbanServiceEditOneInput } from "../service/KanbanService";
 import {
+  CreateKanbanInput,
+  EditKanbanInput,
   Kanban,
   MutationCreateKanbanArgs,
   MutationDeleteKanbanArgs,
   MutationEditKanbanArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
-import { createKanbanInputSchema } from "./yupSchemas/kanban";
+import { validateAgainstSchema } from "../util/validateAgainstSchema";
+import { createKanbanInputSchema, editKanbanInputSchema } from "./yupSchemas/kanban";
 
 export default class KanbanResolverValidator {
   constructor(private kanbanDao: KanbanDao) {}
 
   async addOne({ input }: MutationCreateKanbanArgs, _context: ServerContext): Promise<KanbanServiceAddOneInput> {
-    try {
-      createKanbanInputSchema.validateSync(input);
-    } catch (e) {
-      throw new UserInputError(e.message);
-    }
-
+    validateAgainstSchema<CreateKanbanInput>(createKanbanInputSchema, input);
     return input;
   }
 
@@ -35,6 +33,7 @@ export default class KanbanResolverValidator {
     if (Object.keys(input).length === 0) {
       throw new UserInputError("Must edit at least one field!");
     }
+    validateAgainstSchema<EditKanbanInput>(editKanbanInputSchema, input);
 
     return { id, input };
   }
