@@ -15,21 +15,24 @@ import {
   MutationEditKanbanCardArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
+import { ensureType } from "../util/ensureType";
 import { createKanbanCardInputSchema, editKanbanCardInputSchema } from "./yupSchemas/kanbanCard";
 
 export default class KanbanCardResolverValidator {
   constructor(private kanbanCardDao: KanbanCardDao, private kanbanDao: KanbanDao) {}
 
   async getOne({ id }: KanbanCardServiceGetOneArgs) {
-    if (!id || typeof id !== "string") {
-      throw new UserInputError("Expected id with a string value");
-    }
+    ensureType<string>(id, "id", "string");
+    // if (!id || typeof id !== "string") {
+    //   throw new UserInputError("Expected id with a string value");
+    // }
     return { id };
   }
   async getMany({ kanbanId }: KanbanCardServiceGetManyArgs) {
-    if (!kanbanId || typeof kanbanId !== "string") {
-      throw new UserInputError("Expected kanbanId with a string value");
-    }
+    ensureType<string>(kanbanId, "kanbanId", "string");
+    // if (!kanbanId || typeof kanbanId !== "string") {
+    //   throw new UserInputError("Expected kanbanId with a string value");
+    // }
     return { kanbanId };
   }
 
