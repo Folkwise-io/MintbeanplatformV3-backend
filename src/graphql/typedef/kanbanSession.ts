@@ -50,7 +50,7 @@ const kanbanSession = gql`
   }
 
   "Input that can be used to edit a kanban session - all fields are optional"
-  input EditKanbanInput {
+  input EditKanbanSessionInput {
     kanbanId: UUID
     userId: UUID
     meetId: UUID

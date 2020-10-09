@@ -87,6 +87,10 @@ export type Query = {
   kanbanCard?: Maybe<KanbanCard>;
   /** Gets all the kanban cards for a given kanban */
   kanbanCards?: Maybe<Array<Maybe<KanbanCard>>>;
+  /** Get a kanban session matching given optional inputs */
+  kanbanSession?: Maybe<KanbanSession>;
+  /** Gets all kanban sessions matching given optional inputs */
+  kanbanSessions?: Maybe<Array<Maybe<KanbanSession>>>;
 };
 
 
@@ -135,6 +139,20 @@ export type QueryKanbanCardsArgs = {
   kanbanId: Scalars['UUID'];
 };
 
+
+export type QueryKanbanSessionArgs = {
+  kanbanId?: Maybe<Scalars['UUID']>;
+  userId?: Maybe<Scalars['UUID']>;
+  meetId?: Maybe<Scalars['UUID']>;
+};
+
+
+export type QueryKanbanSessionsArgs = {
+  kanbanId?: Maybe<Scalars['UUID']>;
+  userId?: Maybe<Scalars['UUID']>;
+  meetId?: Maybe<Scalars['UUID']>;
+};
+
 /** The fields needed for a new user to register */
 export type UserRegistrationInput = {
   /** Unique email */
@@ -177,6 +195,12 @@ export type Mutation = {
   editKanbanCard: KanbanCard;
   /** Deletes a kanban card (requires admin privileges) */
   deleteKanbanCard: Scalars['Boolean'];
+  /** Creates a new kanban session */
+  createKanbanSession: KanbanSession;
+  /** Edits a kanban session */
+  editKanbanSession: KanbanSession;
+  /** Deletes a kanban session */
+  deleteKanbanSession: Scalars['Boolean'];
 };
 
 
@@ -253,6 +277,22 @@ export type MutationDeleteKanbanCardArgs = {
   id: Scalars['UUID'];
 };
 
+
+export type MutationCreateKanbanSessionArgs = {
+  input: CreateKanbanSessionInput;
+};
+
+
+export type MutationEditKanbanSessionArgs = {
+  id: Scalars['UUID'];
+  input: EditKanbanSessionInput;
+};
+
+
+export type MutationDeleteKanbanSessionArgs = {
+  id: Scalars['UUID'];
+};
+
 export type Post = {
   __typename?: 'Post';
   /** ID of post in UUID */
@@ -299,6 +339,9 @@ export type Meet = {
   /** The kanban associated with this meet (if provided) */
   kanban?: Maybe<Kanban>;
   kanbanId?: Maybe<Scalars['UUID']>;
+  /** The kanban session (if exists) associated with this meet for the requesting user */
+  kanbanSession?: Maybe<KanbanSession>;
+  kanbanSessionId?: Maybe<Scalars['UUID']>;
 };
 
 /** The input needed to create a new meet */
@@ -466,6 +509,44 @@ export type EditKanbanCardInput = {
   body?: Maybe<Scalars['String']>;
 };
 
+/** A session that stores a view of given kanban with individualized card placement */
+export type KanbanSession = {
+  __typename?: 'KanbanSession';
+  /** ID of the kanban session in UUID */
+  id: Scalars['UUID'];
+  /** Id of master kanban this session is based off of */
+  kanbanId: Scalars['UUID'];
+  /** Id of user who has access to this kanban session */
+  userId: Scalars['UUID'];
+  /** (Optional) id of meet this kanban session is associated with */
+  meetId: Scalars['UUID'];
+  /** DateTime that the kanban session was created */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the kanban session was modified */
+  updatedAt: Scalars['DateTime'];
+};
+
+export type KanbanSessionSearchArgs = {
+  __typename?: 'KanbanSessionSearchArgs';
+  meetId?: Maybe<Scalars['UUID']>;
+  kanbanId?: Maybe<Scalars['UUID']>;
+  userId?: Maybe<Scalars['UUID']>;
+};
+
+/** The input needed to create a new kanban */
+export type CreateKanbanSessionInput = {
+  kanbanId: Scalars['UUID'];
+  userId: Scalars['UUID'];
+  meetId?: Maybe<Scalars['UUID']>;
+};
+
+/** Input that can be used to edit a kanban session - all fields are optional */
+export type EditKanbanSessionInput = {
+  kanbanId?: Maybe<Scalars['UUID']>;
+  userId?: Maybe<Scalars['UUID']>;
+  meetId?: Maybe<Scalars['UUID']>;
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -567,6 +648,10 @@ export type ResolversTypes = {
   KanbanCard: ResolverTypeWrapper<KanbanCard>;
   CreateKanbanCardInput: CreateKanbanCardInput;
   EditKanbanCardInput: EditKanbanCardInput;
+  KanbanSession: ResolverTypeWrapper<KanbanSession>;
+  KanbanSessionSearchArgs: ResolverTypeWrapper<KanbanSessionSearchArgs>;
+  CreateKanbanSessionInput: CreateKanbanSessionInput;
+  EditKanbanSessionInput: EditKanbanSessionInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -594,6 +679,10 @@ export type ResolversParentTypes = {
   KanbanCard: KanbanCard;
   CreateKanbanCardInput: CreateKanbanCardInput;
   EditKanbanCardInput: EditKanbanCardInput;
+  KanbanSession: KanbanSession;
+  KanbanSessionSearchArgs: KanbanSessionSearchArgs;
+  CreateKanbanSessionInput: CreateKanbanSessionInput;
+  EditKanbanSessionInput: EditKanbanSessionInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -645,6 +734,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   kanbans?: Resolver<Maybe<Array<Maybe<ResolversTypes['Kanban']>>>, ParentType, ContextType>;
   kanbanCard?: Resolver<Maybe<ResolversTypes['KanbanCard']>, ParentType, ContextType, RequireFields<QueryKanbanCardArgs, 'id'>>;
   kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanCardsArgs, 'kanbanId'>>;
+  kanbanSession?: Resolver<Maybe<ResolversTypes['KanbanSession']>, ParentType, ContextType, RequireFields<QueryKanbanSessionArgs, never>>;
+  kanbanSessions?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanSession']>>>, ParentType, ContextType, RequireFields<QueryKanbanSessionsArgs, never>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -663,6 +754,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createKanbanCard?: Resolver<ResolversTypes['KanbanCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanCardArgs, 'input'>>;
   editKanbanCard?: Resolver<ResolversTypes['KanbanCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCardArgs, 'id' | 'input'>>;
   deleteKanbanCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCardArgs, 'id'>>;
+  createKanbanSession?: Resolver<ResolversTypes['KanbanSession'], ParentType, ContextType, RequireFields<MutationCreateKanbanSessionArgs, 'input'>>;
+  editKanbanSession?: Resolver<ResolversTypes['KanbanSession'], ParentType, ContextType, RequireFields<MutationEditKanbanSessionArgs, 'id' | 'input'>>;
+  deleteKanbanSession?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanSessionArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -692,6 +786,8 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   registrants?: Resolver<Maybe<Array<ResolversTypes['PublicUser']>>, ParentType, ContextType>;
   kanban?: Resolver<Maybe<ResolversTypes['Kanban']>, ParentType, ContextType>;
   kanbanId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  kanbanSession?: Resolver<Maybe<ResolversTypes['KanbanSession']>, ParentType, ContextType>;
+  kanbanSessionId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -741,6 +837,23 @@ export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type KanbanSessionResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanSession'] = ResolversParentTypes['KanbanSession']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  meetId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type KanbanSessionSearchArgsResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanSessionSearchArgs'] = ResolversParentTypes['KanbanSessionSearchArgs']> = {
+  meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  kanbanId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -754,6 +867,8 @@ export type Resolvers<ContextType = any> = {
   MediaAsset?: MediaAssetResolvers<ContextType>;
   Kanban?: KanbanResolvers<ContextType>;
   KanbanCard?: KanbanCardResolvers<ContextType>;
+  KanbanSession?: KanbanSessionResolvers<ContextType>;
+  KanbanSessionSearchArgs?: KanbanSessionSearchArgsResolvers<ContextType>;
 };
 
 
