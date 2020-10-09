@@ -18,6 +18,7 @@ import kanban from "./graphql/typedef/kanban";
 import kanbanResolver from "./graphql/resolver/kanbanResolver";
 import kanbanCard from "./graphql/typedef/kanbanCard";
 import kanbanCardResolver from "./graphql/resolver/kanbanCardResolver";
+import kanbanSession from "./graphql/typedef/kanbanSession";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -36,7 +37,18 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCardResolverValidator,
     kanbanCardService,
   } = resolverContext;
-  const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, kanban, kanbanCard];
+  const typeDefs = [
+    customScalars,
+    user,
+    post,
+    meet,
+    project,
+    mediaAsset,
+    meetRegistration,
+    kanban,
+    kanbanCard,
+    kanbanSession,
+  ];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),
