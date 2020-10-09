@@ -15,6 +15,8 @@ export async function up(knex: Knex): Promise<void> {
     table.foreign("kanbanId").references("kanbans.id").onDelete("CASCADE");
     table.foreign("userId").references("users.id").onDelete("CASCADE");
     table.foreign("meetId").references("meets.id").onDelete("SET NULL");
+    // only one session per user per meet for any given kanban
+    table.unique(["kanbanId", "userId", "meetId"]);
   });
 }
 
