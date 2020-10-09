@@ -1,6 +1,7 @@
 import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCardDao from "../dao/KanbanCardDao";
+import KanbanDao from "../dao/KanbanDao";
 import {
   KanbanCardServiceAddOneInput,
   KanbanCardServiceEditOneInput,
@@ -17,7 +18,7 @@ import { ensureExists } from "../util/ensureExists";
 import { createKanbanCardInputSchema, editKanbanCardInputSchema } from "./yupSchemas/kanbanCard";
 
 export default class KanbanCardResolverValidator {
-  constructor(private kanbanCardDao: KanbanCardDao) {}
+  constructor(private kanbanCardDao: KanbanCardDao, private kanbanDao: KanbanDao) {}
 
   async getOne({ id }: KanbanCardServiceGetOneArgs) {
     if (!id || typeof id !== "string") {
@@ -36,6 +37,9 @@ export default class KanbanCardResolverValidator {
     { input }: MutationCreateKanbanCardArgs,
     _context: ServerContext,
   ): Promise<KanbanCardServiceAddOneInput> {
+    // Check if kanban card id exists in db
+    await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
+
     try {
       createKanbanCardInputSchema.validateSync(input);
     } catch (e) {
@@ -49,7 +53,12 @@ export default class KanbanCardResolverValidator {
     { id, input }: MutationEditKanbanCardArgs,
     _context: ServerContext,
   ): Promise<{ id: string; input: KanbanCardServiceEditOneInput }> {
-    // Check if kanban id exists in db
+    // If kanban id was changed, check that kanban exists
+    if (input.kanbanId) {
+      await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
+    }
+
+    // Check if kanban card id exists in db
     await this.kanbanCardDao.getOne({ id }).then((kanbanCard) => ensureExists("KanbanCard")(kanbanCard));
 
     // Handle when input has no fields to update (knex doesn't like this)

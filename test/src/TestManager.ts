@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { MediaAsset, Meet, Project, Kanban } from "../../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project, Kanban, KanbanCard } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/user";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
@@ -68,8 +68,13 @@ export default class TestManager {
   addProjects(projects: Project[]): Promise<TestManager> {
     return this.params.persistenceContext.projectDao.addMany(projects).then(() => this);
   }
+
   addKanbans(kanbans: Kanban[]): Promise<TestManager> {
     return this.params.persistenceContext.kanbanDao.addMany(kanbans).then(() => this);
+  }
+
+  addKanbanCards(kanbanCards: KanbanCard[]): Promise<TestManager> {
+    return this.params.persistenceContext.kanbanCardDao.addMany(kanbanCards).then(() => this);
   }
 
   addMediaAssets(mediaAssets: MediaAsset[]): Promise<MediaAsset[]> {

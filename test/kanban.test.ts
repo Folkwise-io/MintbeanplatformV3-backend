@@ -231,7 +231,6 @@ describe("Deleting kanbans", () => {
     cookies = await getAdminCookies();
   });
 
-  // Create a constant meet that will be edited and get its ID
   beforeEach(async () => {
     await testManager
       .getGraphQLResponse({
