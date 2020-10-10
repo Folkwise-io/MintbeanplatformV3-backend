@@ -6,6 +6,8 @@ import { Attachment } from "../types/Email";
 import { User } from "../types/User";
 const DISCORD_URL = "https://discord.gg/j7CjBAz";
 
+const generateMeetUrl = (id: string) => `https://mintbean.io/meets/${id}`;
+
 export const generateIcsAttachments = (meet: Meet): Attachment[] => {
   const icsEventAttribute = mapMeetToIcsEventAttributes(meet);
   const icsFile = generateIcsFileInBase64(icsEventAttribute);
@@ -20,7 +22,7 @@ export const generateIcsAttachments = (meet: Meet): Attachment[] => {
 };
 
 export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
-  const { title, description, region, id, startTime, endTime, registerLink } = meet;
+  const { title, description, region, id, startTime, endTime } = meet;
   const startTimeUTC = moment.tz(startTime, region).utc();
   const endTimeUTC = moment.tz(endTime, region).utc();
 
@@ -40,7 +42,7 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
     title,
     description,
     location: region,
-    url: registerLink || `https://mintbean.io/meets/${id}`,
+    url: generateMeetUrl(id),
     status: "CONFIRMED",
     organizer: { name: "Mintbean", email: "info@mintbean.io" },
   };
@@ -63,7 +65,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
   const startTimeHumanized = moment.tz(startTime, region).format("dddd, MMMM Do YYYY, h:mm:ss a z");
   const endTimeHumanized = moment.tz(endTime, region).format("dddd, MMMM Do YYYY, h:mm:ss a z");
 
-  const meetUrl = `https://mintbean.io/meets/${id}`;
+  const meetUrl = generateMeetUrl(id);
   const email = `
 <html>
   <head>
@@ -79,7 +81,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
       },
       "reservationFor": {
         "@type": "Event",
-        "name": "${title} - ${registerLink}",
+        "name": "${title} - ${meetUrl}",
         "startDate": "${startTimeIsoWithTimezone}",
         "endDate": "${endTimeIsoWithTimezone}",
         "location": {
@@ -106,7 +108,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
       <strong>Next Steps:</strong><br/>
       1. <strong>Join our community on Discord!</strong> This is our main communication channel. Connect with other developers like yourself and get the latest on our upcoming workshops, dev hangouts, and hackathons here: https://discord.gg/Njgt5rZ<br/>
       <br/>
-      2. <strong>Join us on Zoom</strong> at the start time of our hackathon for orientation and challenge release: ${registerLink} <br/>
+      2. <strong>Join us on Zoom</strong> at the start time of our hackathon for orientation and challenge release: ${meetUrl} <br/>
       <br/>
       For any further questions or concerns, please reach out to us on Discord! See you on the flip side, minty bean! 😊
     </p>

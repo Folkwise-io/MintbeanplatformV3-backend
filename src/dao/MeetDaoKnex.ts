@@ -10,12 +10,19 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import MeetDao from "./MeetDao";
 
 // Remove the ending Z (which denotes UTC) from startTime and endTime
-function formatMeets(meets: any[]) {
-  return meets.map((meet) => ({
-    ...meet,
-    startTime: meet.startTime.toISOString().slice(0, -1),
-    endTime: meet.endTime.toISOString().slice(0, -1),
-  }));
+function formatMeets(meets: any[]): Meet[] {
+  return meets.map((meet) => {
+    const startTime = meet.startTime.toISOString().slice(0, -1);
+    const endTime = meet.endTime.toISOString().slice(0, -1);
+    const registerLinkStatus = "OPEN";
+
+    return {
+      ...meet,
+      startTime,
+      endTime,
+      registerLinkStatus,
+    };
+  });
 }
 
 export default class MeetDaoKnex implements MeetDao {
@@ -28,8 +35,7 @@ export default class MeetDaoKnex implements MeetDao {
         .first();
       // TODO: clean this typescript-constrained mess
       if (meet) {
-        const [formattedMeet] = formatMeets([meet]);
-        return formattedMeet as Meet;
+        return formatMeets([meet]);
       }
       return meet as any;
     });

@@ -40,6 +40,7 @@ export const GET_MEETS_BY_ID = gql`
       description
       instructions
       registerLink
+      registerLinkStatus
       coverImageUrl
       startTime
       endTime
@@ -59,6 +60,7 @@ export const GET_ALL_MEETS = gql`
       description
       instructions
       registerLink
+      registerLinkStatus
       coverImageUrl
       startTime
       endTime
@@ -78,6 +80,7 @@ export const CREATE_MEET = gql`
       description
       instructions
       registerLink
+      registerLinkStatus
       coverImageUrl
       startTime
       endTime
@@ -109,6 +112,7 @@ export const EDIT_MEET = gql`
       description
       instructions
       registerLink
+      registerLinkStatus
       coverImageUrl
       startTime
       endTime

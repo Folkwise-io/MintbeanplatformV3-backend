@@ -1,6 +1,13 @@
 import { gql } from "apollo-server-express";
 
 const meet = gql`
+  "Whether registration is going to open, is open now, or is closed."
+  enum RegisterLinkStatus {
+    WAITING
+    OPEN
+    CLOSED
+  }
+
   "An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future"
   type Meet {
     "ID of the Meet in UUID"
@@ -18,6 +25,7 @@ const meet = gql`
     instructions: String!
 
     registerLink: String
+    registerLinkStatus: RegisterLinkStatus
     coverImageUrl: String!
 
     "Wallclock times"
@@ -56,6 +64,7 @@ const meet = gql`
     instructions: String!
 
     registerLink: String
+    registerLinkStatus: RegisterLinkStatus
     coverImageUrl: String!
 
     "Wallclock times"
@@ -80,6 +89,7 @@ const meet = gql`
     instructions: String
 
     registerLink: String
+    registerLinkStatus: RegisterLinkStatus
     coverImageUrl: String
 
     "Wallclock times"
