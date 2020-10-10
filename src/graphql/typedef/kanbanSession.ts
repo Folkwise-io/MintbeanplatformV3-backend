@@ -36,7 +36,7 @@ const kanbanSession = gql`
 
   extend type Query {
     "Get a kanban session matching given optional inputs"
-    kanbanSession(kanbanId: UUID, userId: UUID, meetId: UUID): KanbanSession
+    kanbanSession(id: UUID, kanbanId: UUID, userId: UUID, meetId: UUID): KanbanSession
 
     "Gets all kanban sessions matching given optional inputs"
     kanbanSessions(kanbanId: UUID, userId: UUID, meetId: UUID): [KanbanSession]

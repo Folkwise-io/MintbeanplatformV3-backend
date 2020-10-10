@@ -141,6 +141,7 @@ export type QueryKanbanCardsArgs = {
 
 
 export type QueryKanbanSessionArgs = {
+  id?: Maybe<Scalars['UUID']>;
   kanbanId?: Maybe<Scalars['UUID']>;
   userId?: Maybe<Scalars['UUID']>;
   meetId?: Maybe<Scalars['UUID']>;

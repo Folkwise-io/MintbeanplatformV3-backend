@@ -1,11 +1,16 @@
 import { KanbanSession } from "../types/gqlGeneratedTypes";
-import { KanbanServiceAddOneInput, KanbanServiceEditOneInput, KanbanServiceGetOneArgs } from "../service/KanbanService";
+import {
+  KanbanSessionServiceAddOneInput,
+  KanbanSessionServiceEditOneInput,
+  KanbanSessionServiceGetManyArgs,
+  KanbanSessionServiceGetOneArgs,
+} from "../service/KanbanSessionService";
 
 export default interface KanbanDao {
-  getOne(args: KanbanServiceGetOneArgs): Promise<KanbanSession>;
-  getMany(): Promise<KanbanSession[]>;
-  addOne(args: KanbanServiceAddOneInput): Promise<KanbanSession>;
-  editOne(id: string, input: KanbanServiceEditOneInput): Promise<KanbanSession>;
+  getOne(args: KanbanSessionServiceGetOneArgs): Promise<KanbanSession>;
+  getMany(args: KanbanSessionServiceGetManyArgs): Promise<KanbanSession[]>;
+  addOne(args: KanbanSessionServiceAddOneInput): Promise<KanbanSession>;
+  editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession>;
   deleteOne(id: string): Promise<boolean>;
 
   // Below are TestManager methods
