@@ -64,7 +64,6 @@ const meet = gql`
     instructions: String!
 
     registerLink: String
-    registerLinkStatus: RegisterLinkStatus
     coverImageUrl: String!
 
     "Wallclock times"
@@ -89,7 +88,6 @@ const meet = gql`
     instructions: String
 
     registerLink: String
-    registerLinkStatus: RegisterLinkStatus
     coverImageUrl: String
 
     "Wallclock times"
