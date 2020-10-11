@@ -8,13 +8,14 @@ import {
 import { Meet } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import MeetDao from "./MeetDao";
+import { calculateMeetRegisterLinkStatus } from "../util/timeUtils";
 
 // Remove the ending Z (which denotes UTC) from startTime and endTime
 function formatMeets(meets: any[]): Meet[] {
   return meets.map((meet) => {
     const startTime = meet.startTime.toISOString().slice(0, -1);
     const endTime = meet.endTime.toISOString().slice(0, -1);
-    const registerLinkStatus = "OPEN";
+    const registerLinkStatus = calculateMeetRegisterLinkStatus(meet);
 
     return {
       ...meet,
