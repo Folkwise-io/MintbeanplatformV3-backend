@@ -5,7 +5,7 @@ import {
   MeetServiceGetManyArgs,
   MeetServiceGetOneArgs,
 } from "../service/MeetService";
-import { Meet } from "../types/gqlGeneratedTypes";
+import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import MeetDao from "./MeetDao";
 import { calculateMeetRegisterLinkStatus } from "../util/timeUtils";
@@ -17,12 +17,18 @@ function formatMeets(meets: any[]): Meet[] {
     const endTime = meet.endTime.toISOString().slice(0, -1);
     const registerLinkStatus = calculateMeetRegisterLinkStatus(meet);
 
-    return {
+    const dto: Meet = {
       ...meet,
       startTime,
       endTime,
       registerLinkStatus,
     };
+
+    if (registerLinkStatus === RegisterLinkStatus.Closed) {
+      delete dto.registerLink;
+    }
+
+    return dto;
   });
 }
 
