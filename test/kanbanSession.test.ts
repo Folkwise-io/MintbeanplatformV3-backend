@@ -228,6 +228,23 @@ describe("Creating kanban sessions", () => {
       });
   });
 
+  it("does not allow more than one kanban session per user per kanban per meet", async () => {
+    await testManager.getGraphQLResponse({
+      query: CREATE_KANBAN_SESSION_MUTATION,
+      variables: { input: TEST_KANBAN_SESSION_ON_MEET_INPUT },
+      cookies: bobCookies,
+    });
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_SESSION_MUTATION,
+        variables: { input: TEST_KANBAN_SESSION_ON_MEET_INPUT },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/already/);
+      });
+  });
+
   it("returns an appropriate error message when a required field is missing", async () => {
     await testManager
       .getErrorMessage({

@@ -4,6 +4,8 @@ import KanbanSessionService from "../../service/KanbanSessionService";
 import { KanbanSession, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanSessionResolverValidator from "../../validator/KanbanSessionResolverValidator";
 
+// TODO: move admin/user permissions checks to ResolverValidator?
+
 const kanbanSessionResolver = (
   kanbanSessionResolverValidator: KanbanSessionResolverValidator,
   kanbanSessionService: KanbanSessionService,
@@ -45,7 +47,9 @@ const kanbanSessionResolver = (
 
     Mutation: {
       createKanbanSession: (_root, { input }, context: ServerContext): Promise<KanbanSession> => {
-        return kanbanSessionService.addOne(input);
+        return kanbanSessionResolverValidator
+          .addOne({ input }, context)
+          .then(async ({ input }) => kanbanSessionService.addOne(input));
       },
       editKanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
         return kanbanSessionResolverValidator.editOne(args, context).then(async ({ id, input }) => {
