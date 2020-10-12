@@ -9,22 +9,37 @@ const kanbanSessionResolver = (
   kanbanSessionService: KanbanSessionService,
 ): Resolvers => {
   // ensure the user of userId owns kanban session of id
-  const checkKanbanSessionOwnership = async (id: string, userId: string): Promise<void> => {
+  const isKanbanSessionOwner = async (id: string, userId: string): Promise<boolean> => {
     const { userId: kanbanSessionOwnerId } = await kanbanSessionService.getOne({ id });
-
-    if (userId !== kanbanSessionOwnerId) {
-      throw new AuthenticationError("You are not authorized to delete this kanban session!");
-    }
+    return userId === kanbanSessionOwnerId;
   };
 
   return {
     Query: {
       kanbanSessions: (_root, args, context: ServerContext): Promise<KanbanSession[]> => {
-        return kanbanSessionService.getMany(args);
+        // admins can get a given user's kanban sessions by specificying a userId in args
+        if (args.userId) {
+          if (!context.getIsAdmin()) {
+            throw new AuthenticationError("You are not authorized to get kanban sessions by user id!");
+          } else {
+            return kanbanSessionService.getMany(args);
+          }
+        }
+        // otherwise cookies are used to determine current user's id and get all kanban sessions for that user
+        return kanbanSessionService.getMany({ ...args, userId: context.getUserId() });
       },
 
       kanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
-        return kanbanSessionService.getOne(args);
+        // admins can get a given user's kanban sessions by specificying a userId in args
+        if (args.userId) {
+          if (!context.getIsAdmin()) {
+            throw new AuthenticationError("You are not authorized to get a kanban session by user id!");
+          } else {
+            return kanbanSessionService.getOne(args);
+          }
+        }
+        // otherwise cookies are used to determine current user's id
+        return kanbanSessionService.getOne({ ...args, userId: context.getUserId() });
       },
     },
 
@@ -34,13 +49,19 @@ const kanbanSessionResolver = (
       },
       editKanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
         return kanbanSessionResolverValidator.editOne(args, context).then(async ({ id, input }) => {
-          await checkKanbanSessionOwnership(id, context.getUserId());
+          const isOwner = await isKanbanSessionOwner(id, context.getUserId());
+          if (!isOwner) {
+            throw new AuthenticationError(`You are not authorized to edit this kanban session!`);
+          }
           return kanbanSessionService.editOne(id, input);
         });
       },
       deleteKanbanSession: (_root, args, context: ServerContext): Promise<boolean> => {
         return kanbanSessionResolverValidator.deleteOne(args).then(async (id) => {
-          await checkKanbanSessionOwnership(id, context.getUserId());
+          const isOwner = await isKanbanSessionOwner(id, context.getUserId());
+          if (!isOwner) {
+            throw new AuthenticationError(`You are not authorized to delete this kanban session!`);
+          }
           return kanbanSessionService.deleteOne(id);
         });
       },

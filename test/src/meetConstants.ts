@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-express";
 import { CreateMeetInput, EditMeetInput, Meet } from "../../src/types/gqlGeneratedTypes";
+import { TEST_KANBAN } from "./kanbanConstants";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -11,6 +12,7 @@ export const PAPERJS: Meet = {
   coverImageUrl: "https://www.grafik.com.au/wp-content/uploads/2019/06/think-design.png",
   startTime: "2020-09-30T13:00:00.000",
   endTime: "2020-09-30T17:00:00.000",
+  kanbanId: TEST_KANBAN.id,
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
   region: "America/Toronto",

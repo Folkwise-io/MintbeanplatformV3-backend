@@ -13,7 +13,7 @@ const kanbanSession = gql`
     userId: UUID!
 
     "(Optional) id of meet this kanban session is associated with"
-    meetId: UUID!
+    meetId: UUID
 
     "DateTime that the kanban session was created"
     createdAt: DateTime!
@@ -35,10 +35,10 @@ const kanbanSession = gql`
   }
 
   extend type Query {
-    "Get a kanban session matching given optional inputs"
+    "Get a kanban session matching given optional inputs. If no userId provided, uses userId from cookies. Only admins can get kanban session of other users"
     kanbanSession(id: UUID, kanbanId: UUID, userId: UUID, meetId: UUID): KanbanSession
 
-    "Gets all kanban sessions matching given optional inputs"
+    "Gets all kanban sessions matching given optional inputs. If no userId provided, uses userId from cookies. Only admins can get kanban sessions of other users."
     kanbanSessions(kanbanId: UUID, userId: UUID, meetId: UUID): [KanbanSession]
   }
 

@@ -1,5 +1,4 @@
 import { UserInputError } from "apollo-server-express";
-import { Server } from "http";
 import { ServerContext } from "../buildServerContext";
 import KanbanSessionDao from "../dao/KanbanSessionDao";
 import { KanbanSessionServiceEditOneInput } from "../service/KanbanSessionService";

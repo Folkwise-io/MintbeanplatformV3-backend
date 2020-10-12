@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { MediaAsset, Meet, Project, Kanban, KanbanCard } from "../../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project, Kanban, KanbanCard, KanbanSession } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/user";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
@@ -76,6 +76,9 @@ export default class TestManager {
   addKanbanCards(kanbanCards: KanbanCard[]): Promise<TestManager> {
     return this.params.persistenceContext.kanbanCardDao.addMany(kanbanCards).then(() => this);
   }
+  addKanbanSessions(kanbanSessions: KanbanSession[]): Promise<TestManager> {
+    return this.params.persistenceContext.kanbanSessionDao.addMany(kanbanSessions).then(() => this);
+  }
 
   addMediaAssets(mediaAssets: MediaAsset[]): Promise<MediaAsset[]> {
     return this.params.persistenceContext.mediaAssetDao.addMany(mediaAssets);
@@ -110,6 +113,9 @@ export default class TestManager {
   }
   deleteAllKanbans() {
     return this.params.persistenceContext.kanbanDao.deleteAll();
+  }
+  deleteAllKanbanSessions() {
+    return this.params.persistenceContext.kanbanSessionDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {

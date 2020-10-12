@@ -1,4 +1,5 @@
 import { MediaAsset } from "../src/types/gqlGeneratedTypes";
+import { TEST_KANBAN } from "./src/kanbanConstants";
 import {
   GET_PROJECT_WITH_NESTED_MEDIA_ASSETS,
   AMY_PAPERJS_MEDIA_ASSET_1,
@@ -20,6 +21,8 @@ beforeAll(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllProjects();
   await testManager.addUsers([AMY, BOB]);
+  // required because this kanban is referenced in PAPERJS
+  await testManager.addKanbans([TEST_KANBAN]);
   await testManager.addMeets([PAPERJS, ALGOLIA]);
   await testManager.addProjects([AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT]);
 });
@@ -31,6 +34,7 @@ beforeEach(async () => {
 afterAll(async () => {
   await testManager.deleteAllUsers();
   await testManager.deleteAllMeets();
+  await testManager.deleteAllKanbans();
   await testManager.deleteAllProjects();
   await testManager.deleteAllMediaAssets();
   await testManager.destroy();

@@ -1,4 +1,5 @@
 import { Meet } from "../src/types/gqlGeneratedTypes";
+import { TEST_KANBAN } from "./src/kanbanConstants";
 import {
   ALGOLIA,
   CREATE_MEET,
@@ -15,6 +16,11 @@ import { getAdminCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
+beforeAll(async () => {
+  // required because this kanban is referenced in PAPERJS
+  await testManager.addKanbans([TEST_KANBAN]);
+});
+
 beforeEach(async () => {
   await testManager.deleteAllMeets();
 });
@@ -22,6 +28,7 @@ beforeEach(async () => {
 afterAll(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllUsers();
+  await testManager.deleteAllKanbans();
   await testManager.destroy();
 });
 

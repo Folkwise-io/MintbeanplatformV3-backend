@@ -87,9 +87,9 @@ export type Query = {
   kanbanCard?: Maybe<KanbanCard>;
   /** Gets all the kanban cards for a given kanban */
   kanbanCards?: Maybe<Array<Maybe<KanbanCard>>>;
-  /** Get a kanban session matching given optional inputs */
+  /** Get a kanban session matching given optional inputs. If no userId provided, uses userId from cookies. Only admins can get kanban session of other users */
   kanbanSession?: Maybe<KanbanSession>;
-  /** Gets all kanban sessions matching given optional inputs */
+  /** Gets all kanban sessions matching given optional inputs. If no userId provided, uses userId from cookies. Only admins can get kanban sessions of other users. */
   kanbanSessions?: Maybe<Array<Maybe<KanbanSession>>>;
 };
 
@@ -520,7 +520,7 @@ export type KanbanSession = {
   /** Id of user who has access to this kanban session */
   userId: Scalars['UUID'];
   /** (Optional) id of meet this kanban session is associated with */
-  meetId: Scalars['UUID'];
+  meetId?: Maybe<Scalars['UUID']>;
   /** DateTime that the kanban session was created */
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanban session was modified */
@@ -842,7 +842,7 @@ export type KanbanSessionResolvers<ContextType = any, ParentType extends Resolve
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  meetId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
