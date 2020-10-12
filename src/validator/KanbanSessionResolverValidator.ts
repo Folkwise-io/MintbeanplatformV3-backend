@@ -17,7 +17,7 @@ export default class KanbanSessionResolverValidator {
     { input }: MutationCreateKanbanSessionArgs,
     _context: ServerContext,
   ): Promise<{ input: KanbanSessionServiceAddOneInput }> {
-    // For meet kanban sessions, throw error if kanban session for the user on that meet already exists in db
+    // For meet kanban sessions, throw error if user already has a kanban session for given meet
     if (input.meetId) {
       const existing = await this.kanbanSessionDao.getOne({ ...input });
       if (existing) throw new ForbiddenError("You already have a kanban session on this meet!");
