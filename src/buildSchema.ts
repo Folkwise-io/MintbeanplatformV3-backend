@@ -20,6 +20,7 @@ import kanbanCard from "./graphql/typedef/kanbanCard";
 import kanbanCardResolver from "./graphql/resolver/kanbanCardResolver";
 import kanbanSession from "./graphql/typedef/kanbanSession";
 import kanbanSessionResolver from "./graphql/resolver/kanbanSessionResolver";
+import kanbanSessionCard from "./graphql/typedef/kanbanSessionCard";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -51,6 +52,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanban,
     kanbanCard,
     kanbanSession,
+    kanbanSessionCard,
   ];
   const resolvers = [
     customScalarsResolver,
