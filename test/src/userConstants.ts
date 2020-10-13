@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
 import { UserRegistrationInput } from "../../src/types/gqlGeneratedTypes";
-import { User } from "../../src/types/user";
+import { User } from "../../src/types/User";
 
 // Will use generator factory / faker once more entities are added
 export const AMY: User = {
@@ -35,18 +35,9 @@ export const BOB_CREDENTIALS = {
   password: "password",
 };
 
-export const BAD_UUID_QUERY = gql`
-  query badUserId {
-    user(id: "000000") {
-      firstName
-      lastName
-    }
-  }
-`;
-
-export const GET_ONE_QUERY = gql`
-  query getOneUser {
-    user(id: "00000000-0000-0000-0000-000000000000") {
+export const GET_USER_QUERY = gql`
+  query getOneUser($id: UUID!) {
+    user(id: $id) {
       firstName
       lastName
     }

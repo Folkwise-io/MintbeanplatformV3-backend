@@ -1,5 +1,5 @@
 import { QueryUserArgs, MutationLoginArgs, MutationRegisterArgs } from "../types/gqlGeneratedTypes";
-import { User } from "../types/user";
+import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
 import { UserServiceAddOneArgs, UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";

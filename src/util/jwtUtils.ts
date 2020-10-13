@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from "jsonwebtoken";
-import { PrivateUserDto } from "../types/user";
+import { PrivateUserDto } from "../types/User";
 import config from "./config";
 
 const { jwtSecret } = config;

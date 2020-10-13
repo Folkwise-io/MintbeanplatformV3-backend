@@ -1,16 +1,14 @@
 import { MediaAsset } from "../types/gqlGeneratedTypes";
 import {
-  MediaAssetServiceAddOneInput,
-  MediaAssetServiceEditOneInput,
+  MediaAssetServiceAddOneArgs,
   MediaAssetServiceGetManyArgs,
+  MediaAssetServiceAddManyArgs
 } from "../service/MediaAssetService";
 
 export default interface MediaAssetDao {
-  getOne(args: UserServiceGetOneArgs): Promise<MediaAsset>;
   getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]>;
-  addOne(args: MediaAssetServiceAddOneInput): Promise<MediaAsset>;
-  addMany(mediaAssets: MediaAssetServiceAddManyInput): Promise<MediaAsset[]>;
-  editOne(id: string, input: MediaAssetServiceEditOneInput): Promise<MediaAsset>;
+  addOne(args: MediaAssetServiceAddOneArgs): Promise<MediaAsset>;
+  addMany(mediaAssets: MediaAssetServiceAddManyArgs): Promise<MediaAsset[]>;
   deleteOne(id: string): Promise<boolean>;
 
   // Below are TestManager methods

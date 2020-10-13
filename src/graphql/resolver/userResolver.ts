@@ -1,5 +1,5 @@
 import { Resolvers } from "../../types/gqlGeneratedTypes";
-import { User, PublicUserDto, PrivateUserDto } from "../../types/user";
+import { User, PublicUserDto, PrivateUserDto } from "../../types/User";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";
@@ -100,6 +100,11 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
     Project: {
       user: (project): Promise<PublicUserDto> => {
         return userService.getOne({ id: project.userId }).then(mapUserToPublicUser);
+      },
+    },
+    Meet: {
+      registrants: (meet): Promise<User[]> => {
+        return userService.getRegistrantsOfMeet(meet.id);
       },
     },
   };

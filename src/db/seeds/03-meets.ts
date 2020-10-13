@@ -1,13 +1,5 @@
 import * as Knex from "knex";
-
-const nDaysFromNow = (days: number, hour: number): string => {
-  const now = new Date();
-  now.setDate(now.getDate() + days);
-  now.setHours(hour);
-  now.setMinutes(0);
-  const timestamp = now.toISOString().replace(/Z$/, "");
-  return timestamp;
-};
+import { nDaysFromNowInWallClockTime } from "../../util/timeUtils";
 
 export async function seed(knex: Knex): Promise<void> {
   await knex("meets").del();
@@ -49,8 +41,8 @@ export async function seed(knex: Knex): Promise<void> {
       registerLink: "http://eventbrite.com",
       coverImageUrl:
         "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
-      startTime: nDaysFromNow(2, 12),
-      endTime: nDaysFromNow(2, 16),
+      startTime: nDaysFromNowInWallClockTime(2),
+      endTime: nDaysFromNowInWallClockTime(2),
       createdAt: "2020-08-15",
     },
     {
@@ -62,8 +54,8 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-      startTime: nDaysFromNow(4, 12),
-      endTime: nDaysFromNow(4, 16),
+      startTime: nDaysFromNowInWallClockTime(4),
+      endTime: nDaysFromNowInWallClockTime(4),
       createdAt: "2020-09-01",
     },
     {
@@ -75,8 +67,8 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://www.grafik.com.au/wp-content/uploads/2019/06/think-design.png",
-      startTime: "2020-09-10T13:00:00",
-      endTime: "2020-09-10T17:00:00",
+      startTime: nDaysFromNowInWallClockTime(7),
+      endTime: nDaysFromNowInWallClockTime(7),
       createdAt: "2020-09-01",
     },
     {
@@ -88,8 +80,8 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-      startTime: "2020-09-10T13:00:00",
-      endTime: "2020-09-10T17:00:00",
+      startTime: nDaysFromNowInWallClockTime(12),
+      endTime: nDaysFromNowInWallClockTime(12),
       createdAt: "2020-09-01",
     },
   ]);

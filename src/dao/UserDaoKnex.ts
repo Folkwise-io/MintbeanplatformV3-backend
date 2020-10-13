@@ -1,4 +1,4 @@
-import { User } from "../types/user";
+import { User } from "../types/User";
 import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao, { UserDaoAddOneArgs } from "./UserDao";
@@ -16,11 +16,22 @@ export default class UserDaoKnex implements UserDao {
   }
 
   async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    return handleDatabaseError(() =>
-      this.knex("users")
+    return handleDatabaseError(() => {
+      const { meetId } = args;
+      // Use meetRegistrations join table to get registrants
+      if (meetId) {
+        return this.knex
+          .select("users.*")
+          .from("users")
+          .join("meetRegistrations", "meetRegistrations.userId", "=", "users.id")
+          .where({ "meetRegistrations.meetId": meetId })
+          .orderBy("firstName");
+      }
+
+      return this.knex("users")
         .where({ ...args, deleted: false })
-        .orderBy("firstName"),
-    );
+        .orderBy("firstName");
+    });
   }
 
   async addOne(args: UserDaoAddOneArgs): Promise<User> {

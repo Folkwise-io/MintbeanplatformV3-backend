@@ -3,12 +3,12 @@ import {
   ProjectServiceGetManyArgs,
   ProjectServiceGetOneArgs,
 } from "../service/ProjectService";
+import { Project } from "../types/gqlGeneratedTypes";
 
 export default interface ProjectDao {
-  getOne(args: any): Promise<Project>;
+  getOne(args: ProjectServiceGetOneArgs): Promise<Project>;
   getMany(args: ProjectServiceGetManyArgs): Promise<Project[]>;
   addOne(args: ProjectServiceAddOneInput): Promise<Project>;
-  editOne(id: string, input: ProjectServiceEditOneInput): Promise<Project>;
   deleteOne(id: string): Promise<boolean>;
 
   // Below are TestManager methods

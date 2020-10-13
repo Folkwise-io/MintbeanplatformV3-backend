@@ -1,7 +1,7 @@
-import { User } from "../types/user";
-import { UserServiceAddOneArgs, UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
+import { User } from "../types/User";
+import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 
-interface UserDaoAddOneArgs {
+export interface UserDaoAddOneArgs {
   email: string;
   firstName: string;
   lastName: string;

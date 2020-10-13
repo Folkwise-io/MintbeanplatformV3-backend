@@ -21,6 +21,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "@sendgrid/mail": "7.2.6",
     "apollo-server-express": "2.17.0",
     "bcryptjs": "2.4.3",
     "cookie-parser": "1.4.5",
@@ -29,8 +30,10 @@
     "graphql": "15.3.0",
     "graphql-depth-limit": "1.1.0",
     "graphql-iso-date": "3.6.1",
+    "ics": "2.25.0",
     "jsonwebtoken": "8.5.1",
     "knex": "0.21.5",
+    "moment-timezone": "0.5.31",
     "pg": "8.3.2",
     "ts-node": "9.0.0",
     "yup": "0.29.3"
