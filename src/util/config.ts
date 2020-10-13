@@ -38,4 +38,5 @@ export default {
   jwtSecret: hoc("JWT_SECRET"),
   sendGridKey: hoc("SENDGRID_KEY"),
   senderEmail: hoc("SENDER_EMAIL"),
+  disableRegistrationEmail: hoc("DISABLE_REGISTRATION_EMAILS", { defaultValue: false, required: false }),
 };
