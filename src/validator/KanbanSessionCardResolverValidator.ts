@@ -36,6 +36,11 @@ export default class KanbanSessionCardResolverValidator {
     { input }: MutationCreateKanbanSessionCardArgs,
     _context: ServerContext,
   ): Promise<KanbanSessionCardServiceAddOneInput> {
+    // Make sure the given kanban session exists
+    await this.kanbanSessionDao
+      .getOne({ id: input.kanbanSessionId })
+      .then((kanbanSession) => ensureExists("KanbanSession")(kanbanSession));
+
     validateAgainstSchema<CreateKanbanSessionCardInput>(createKanbanSessionCardInputSchema, input);
 
     return input;

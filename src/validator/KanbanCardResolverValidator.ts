@@ -39,6 +39,9 @@ export default class KanbanCardResolverValidator {
     { input }: MutationCreateKanbanCardArgs,
     _context: ServerContext,
   ): Promise<KanbanCardServiceAddOneInput> {
+    // Make sure the given kanban exists
+    await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
+
     validateAgainstSchema<CreateKanbanCardInput>(createKanbanCardInputSchema, input);
 
     return input;
