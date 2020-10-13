@@ -91,6 +91,10 @@ export type Query = {
   kanbanSession?: Maybe<KanbanSession>;
   /** Gets all kanban sessions matching given optional inputs. If no userId provided, uses userId from cookies. Only admins can get kanban sessions of other users. */
   kanbanSessions?: Maybe<Array<Maybe<KanbanSession>>>;
+  /** Get a kanban session card by ID */
+  kanbanSessionCard?: Maybe<KanbanSessionCard>;
+  /** Gets all the kanban session cards for a given kanban session */
+  kanbanSessionCards?: Maybe<Array<Maybe<KanbanSessionCard>>>;
 };
 
 
@@ -154,6 +158,16 @@ export type QueryKanbanSessionsArgs = {
   meetId?: Maybe<Scalars['UUID']>;
 };
 
+
+export type QueryKanbanSessionCardArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryKanbanSessionCardsArgs = {
+  kanbanSessionId: Scalars['UUID'];
+};
+
 /** The fields needed for a new user to register */
 export type UserRegistrationInput = {
   /** Unique email */
@@ -202,6 +216,12 @@ export type Mutation = {
   editKanbanSession: KanbanSession;
   /** Deletes a kanban session */
   deleteKanbanSession: Scalars['Boolean'];
+  /** Creates a new kanban session card for the requesting user */
+  createKanbanSessionCard: KanbanSessionCard;
+  /** Edits a kanban session card (must be kanban session card owner) */
+  editKanbanSessionCard: KanbanSessionCard;
+  /** Deletes a kanban session card (must be kanban session card owner) */
+  deleteKanbanSessionCard: Scalars['Boolean'];
 };
 
 
@@ -291,6 +311,22 @@ export type MutationEditKanbanSessionArgs = {
 
 
 export type MutationDeleteKanbanSessionArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type MutationCreateKanbanSessionCardArgs = {
+  input: CreateKanbanSessionCardInput;
+};
+
+
+export type MutationEditKanbanSessionCardArgs = {
+  id: Scalars['UUID'];
+  input: EditKanbanSessionCardInput;
+};
+
+
+export type MutationDeleteKanbanSessionCardArgs = {
   id: Scalars['UUID'];
 };
 
@@ -525,6 +561,8 @@ export type KanbanSession = {
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanban session was modified */
   updatedAt: Scalars['DateTime'];
+  /** The kanban sessions cards that belong to a kanban session */
+  kanbanSessionCards?: Maybe<Array<Maybe<KanbanSessionCard>>>;
 };
 
 export type KanbanSessionSearchArgs = {
@@ -546,6 +584,56 @@ export type EditKanbanSessionInput = {
   kanbanId?: Maybe<Scalars['UUID']>;
   userId?: Maybe<Scalars['UUID']>;
   meetId?: Maybe<Scalars['UUID']>;
+};
+
+/** Possible statuses of a kanban session card */
+export enum KanbanSessionCardStatusEnum {
+  Todo = 'TODO',
+  Wip = 'WIP',
+  Done = 'DONE'
+}
+
+/** A kanban session card that belongs to a kanban session. */
+export type KanbanSessionCard = {
+  __typename?: 'KanbanSessionCard';
+  /** ID of the kanban card in UUID */
+  id: Scalars['UUID'];
+  /** A reference to the kanban session this kanban session card belongs to */
+  kanbanSessionId: Scalars['UUID'];
+  /** A reference to the kanban card this kanban session card points to */
+  kanbanCardId: Scalars['UUID'];
+  /** Determines the numerical order cards are presented to user in the fiven status column */
+  index: Scalars['Int'];
+  /** Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE') */
+  status: KanbanSessionCardStatusEnum;
+  /** DateTime that the kanban session was created */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the kanban session was modified */
+  updatedAt: Scalars['DateTime'];
+};
+
+/** The input needed to create a new kanban session card */
+export type CreateKanbanSessionCardInput = {
+  /** A reference to the kanban session this kanban card belongs to */
+  kanbanSessionId: Scalars['UUID'];
+  /** A reference to the kanban card this kanban session card points to */
+  kanbanCardId: Scalars['UUID'];
+  /** Determines the numerical order cards are presented to user in the fiven status column */
+  index: Scalars['Int'];
+  /** Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE') */
+  status: KanbanSessionCardStatusEnum;
+};
+
+/** Input that can be used to edit a kanban session card - all fields are optional */
+export type EditKanbanSessionCardInput = {
+  /** A reference to the kanban session this kanban card belongs to */
+  kanbanSessionId?: Maybe<Scalars['UUID']>;
+  /** A reference to the kanban card this kanban session card points to */
+  kanbanCardId?: Maybe<Scalars['UUID']>;
+  /** Determines the numerical order cards are presented to user in the fiven status column */
+  index?: Maybe<Scalars['Int']>;
+  /** Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE') */
+  status?: Maybe<KanbanSessionCardStatusEnum>;
 };
 
 
@@ -653,6 +741,10 @@ export type ResolversTypes = {
   KanbanSessionSearchArgs: ResolverTypeWrapper<KanbanSessionSearchArgs>;
   CreateKanbanSessionInput: CreateKanbanSessionInput;
   EditKanbanSessionInput: EditKanbanSessionInput;
+  KanbanSessionCardStatusEnum: KanbanSessionCardStatusEnum;
+  KanbanSessionCard: ResolverTypeWrapper<KanbanSessionCard>;
+  CreateKanbanSessionCardInput: CreateKanbanSessionCardInput;
+  EditKanbanSessionCardInput: EditKanbanSessionCardInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -684,6 +776,9 @@ export type ResolversParentTypes = {
   KanbanSessionSearchArgs: KanbanSessionSearchArgs;
   CreateKanbanSessionInput: CreateKanbanSessionInput;
   EditKanbanSessionInput: EditKanbanSessionInput;
+  KanbanSessionCard: KanbanSessionCard;
+  CreateKanbanSessionCardInput: CreateKanbanSessionCardInput;
+  EditKanbanSessionCardInput: EditKanbanSessionCardInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -737,6 +832,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanCardsArgs, 'kanbanId'>>;
   kanbanSession?: Resolver<Maybe<ResolversTypes['KanbanSession']>, ParentType, ContextType, RequireFields<QueryKanbanSessionArgs, never>>;
   kanbanSessions?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanSession']>>>, ParentType, ContextType, RequireFields<QueryKanbanSessionsArgs, never>>;
+  kanbanSessionCard?: Resolver<Maybe<ResolversTypes['KanbanSessionCard']>, ParentType, ContextType, RequireFields<QueryKanbanSessionCardArgs, 'id'>>;
+  kanbanSessionCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanSessionCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanSessionCardsArgs, 'kanbanSessionId'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -758,6 +855,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createKanbanSession?: Resolver<ResolversTypes['KanbanSession'], ParentType, ContextType, RequireFields<MutationCreateKanbanSessionArgs, 'input'>>;
   editKanbanSession?: Resolver<ResolversTypes['KanbanSession'], ParentType, ContextType, RequireFields<MutationEditKanbanSessionArgs, 'id' | 'input'>>;
   deleteKanbanSession?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanSessionArgs, 'id'>>;
+  createKanbanSessionCard?: Resolver<ResolversTypes['KanbanSessionCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanSessionCardArgs, 'input'>>;
+  editKanbanSessionCard?: Resolver<ResolversTypes['KanbanSessionCard'], ParentType, ContextType, RequireFields<MutationEditKanbanSessionCardArgs, 'id' | 'input'>>;
+  deleteKanbanSessionCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanSessionCardArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -845,6 +945,7 @@ export type KanbanSessionResolvers<ContextType = any, ParentType extends Resolve
   meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  kanbanSessionCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanSessionCard']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -852,6 +953,17 @@ export type KanbanSessionSearchArgsResolvers<ContextType = any, ParentType exten
   meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   kanbanId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   userId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type KanbanSessionCardResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanSessionCard'] = ResolversParentTypes['KanbanSessionCard']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  kanbanSessionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  kanbanCardId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['KanbanSessionCardStatusEnum'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -870,6 +982,7 @@ export type Resolvers<ContextType = any> = {
   KanbanCard?: KanbanCardResolvers<ContextType>;
   KanbanSession?: KanbanSessionResolvers<ContextType>;
   KanbanSessionSearchArgs?: KanbanSessionSearchArgsResolvers<ContextType>;
+  KanbanSessionCard?: KanbanSessionCardResolvers<ContextType>;
 };
 
 

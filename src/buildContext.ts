@@ -34,6 +34,10 @@ import KanbanSessionDaoKnex from "./dao/KanbanSessionDaoKnex";
 import KanbanSessionDao from "./dao/KanbanSessionDao";
 import KanbanSessionService from "./service/KanbanSessionService";
 import KanbanSessionResolverValidator from "./validator/KanbanSessionResolverValidator";
+import KanbanSessionCardDaoKnex from "./dao/KanbanSessionCardDaoKnex";
+import KanbanSessionCardDao from "./dao/KanbanSessionCardDao";
+import KanbanSessionCardService from "./service/KanbanSessionCardService";
+import KanbanSessionCardResolverValidator from "./validator/KanbanSessionCardResolverValidator";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -45,6 +49,7 @@ export interface PersistenceContext {
   kanbanDao: KanbanDao;
   kanbanCardDao: KanbanCardDao;
   kanbanSessionDao: KanbanSessionDao;
+  kanbanSessionCardDao: KanbanSessionCardDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -58,6 +63,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const kanbanDao = new KanbanDaoKnex(knex);
   const kanbanCardDao = new KanbanCardDaoKnex(knex);
   const kanbanSessionDao = new KanbanSessionDaoKnex(knex);
+  const kanbanSessionCardDao = new KanbanSessionCardDaoKnex(knex);
 
   return {
     userDao,
@@ -69,6 +75,7 @@ export function buildPersistenceContext(): PersistenceContext {
     kanbanDao,
     kanbanCardDao,
     kanbanSessionDao,
+    kanbanSessionCardDao,
   };
 }
 
@@ -89,6 +96,8 @@ export interface ResolverContext {
   kanbanCardService: KanbanCardService;
   kanbanSessionResolverValidator: KanbanSessionResolverValidator;
   kanbanSessionService: KanbanSessionService;
+  kanbanSessionCardResolverValidator: KanbanSessionCardResolverValidator;
+  kanbanSessionCardService: KanbanSessionCardService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -102,6 +111,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanDao,
     kanbanCardDao,
     kanbanSessionDao,
+    kanbanSessionCardDao,
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
@@ -119,6 +129,11 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const kanbanCardService = new KanbanCardService(kanbanCardDao);
   const kanbanSessionResolverValidator = new KanbanSessionResolverValidator(kanbanSessionDao);
   const kanbanSessionService = new KanbanSessionService(kanbanSessionDao);
+  const kanbanSessionCardResolverValidator = new KanbanSessionCardResolverValidator(
+    kanbanSessionCardDao,
+    kanbanSessionDao,
+  );
+  const kanbanSessionCardService = new KanbanSessionCardService(kanbanSessionCardDao);
 
   return {
     userResolverValidator,
@@ -137,5 +152,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanCardResolverValidator,
     kanbanSessionService,
     kanbanSessionResolverValidator,
+    kanbanSessionCardService,
+    kanbanSessionCardResolverValidator,
   };
 }

@@ -88,3 +88,14 @@ const kanbanSessionCard = gql`
 `;
 
 export default kanbanSessionCard;
+
+// type KanbanSessionCardCategories {
+//     todoCards: [KanbanSessionCard]
+//     wipCards: [KanbanSessionCard]
+//     doneCards: [KanbanSessionCard]
+//   }
+
+//   extend type KanbanSession {
+//     "The kanban sessions cards that belong to a kanban session"
+//     kanbanSessionCards: KanbanSessionCardCategories
+//   }

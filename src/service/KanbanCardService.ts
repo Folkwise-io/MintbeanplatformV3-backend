@@ -11,7 +11,7 @@ export interface KanbanCardServiceGetManyArgs {
 }
 
 export interface KanbanCardServiceAddOneInput {
-  kanbanId: string | null;
+  kanbanId: string;
   title: string;
   body: string;
   index: number;

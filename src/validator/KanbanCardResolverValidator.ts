@@ -39,9 +39,6 @@ export default class KanbanCardResolverValidator {
     { input }: MutationCreateKanbanCardArgs,
     _context: ServerContext,
   ): Promise<KanbanCardServiceAddOneInput> {
-    // Check if kanban card id exists in db
-    await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
-
     validateAgainstSchema<CreateKanbanCardInput>(createKanbanCardInputSchema, input);
 
     return input;
@@ -51,13 +48,13 @@ export default class KanbanCardResolverValidator {
     { id, input }: MutationEditKanbanCardArgs,
     _context: ServerContext,
   ): Promise<{ id: string; input: KanbanCardServiceEditOneInput }> {
+    // Check if kanban card id exists in db
+    await this.kanbanCardDao.getOne({ id }).then((kanbanCard) => ensureExists("KanbanCard")(kanbanCard));
+
     // If kanban id was changed, check that kanban exists
     if (input.kanbanId) {
       await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
     }
-
-    // Check if kanban card id exists in db
-    await this.kanbanCardDao.getOne({ id }).then((kanbanCard) => ensureExists("KanbanCard")(kanbanCard));
 
     // Handle when input has no fields to update (knex doesn't like this)
     if (Object.keys(input).length === 0) {
