@@ -69,6 +69,7 @@ const meetResolver = (
             return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
           })
           .then((meet) => {
+            // TODO: Need to pass in the Meet/User/id context to generate template
             emailObserver.dispatch("afterRegistration");
           })
           .then(() => true);
