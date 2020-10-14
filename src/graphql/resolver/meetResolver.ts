@@ -1,5 +1,4 @@
 import { AuthenticationError } from "apollo-server-express";
-import { isContext } from "vm";
 import { ServerContext } from "../../buildServerContext";
 import { EmailService } from "../../service/EmailService";
 import MeetRegistrationService from "../../service/MeetRegistrationService";
@@ -7,6 +6,8 @@ import MeetService from "../../service/MeetService";
 import UserService from "../../service/UserService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
+import config from "../../util/config";
+const { disableRegistrationEmail } = config;
 
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
@@ -62,6 +63,10 @@ const meetResolver = (
           .registerForMeet(args)
           .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
           .then(async ({ userId, meetId, id }) => {
+            if (disableRegistrationEmail) {
+              return true;
+            }
+
             const user = await userService.getOne({ id: userId });
             const meet = await meetService.getOne({ id: meetId });
             const email = emailService.generateMeetRegistrationEmail(user, meet, id);
