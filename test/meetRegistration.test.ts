@@ -36,7 +36,7 @@ afterAll(async () => {
   await testManager.destroy();
 });
 
-describe.skip("Querying to find registrants of meets", () => {
+describe("Querying to find registrants of meets", () => {
   it("returns a list of meets that a user has registered for", async () => {
     await testManager.addMeetRegistrations([AMY_ANIMATION_TOYS_2_REGISTRATION]);
     await testManager
@@ -63,7 +63,7 @@ describe.skip("Querying to find registrants of meets", () => {
   });
 });
 
-describe.skip("Registering for a meet", () => {
+describe("Registering for a meet", () => {
   beforeAll(async () => {});
 
   it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {

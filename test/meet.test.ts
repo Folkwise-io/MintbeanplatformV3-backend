@@ -25,7 +25,7 @@ afterAll(async () => {
   await testManager.destroy();
 });
 
-describe.skip("Querying meets", () => {
+describe("Querying meets", () => {
   it("gets a meet by id", async () => {
     await testManager
       .addMeets([PAPERJS])
@@ -69,7 +69,7 @@ describe.skip("Querying meets", () => {
   });
 });
 
-describe.skip("Creating meets", () => {
+describe("Creating meets", () => {
   let adminCookies: string[];
 
   beforeAll(async () => {
@@ -122,7 +122,7 @@ describe.skip("Creating meets", () => {
   });
 });
 
-describe.skip("Editing meets", () => {
+describe("Editing meets", () => {
   let cookies: string[];
   let meetId: string;
 
@@ -237,7 +237,7 @@ describe.skip("Editing meets", () => {
   });
 });
 
-describe.skip("Deleting meets", () => {
+describe("Deleting meets", () => {
   let cookies: string[];
   let meetId: string;
 
