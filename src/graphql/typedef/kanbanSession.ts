@@ -6,6 +6,12 @@ const kanbanSession = gql`
     "ID of the kanban session in UUID"
     id: UUID!
 
+    "The title found on the referenced kanban"
+    title: String!
+
+    "The desciption found on the referenced kanban"
+    description: String!
+
     "Id of master kanban this session is based off of"
     kanbanId: UUID!
 

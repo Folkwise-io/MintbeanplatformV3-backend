@@ -19,8 +19,14 @@ const kanbanSessionCard = gql`
     "A reference to the kanban card this kanban session card points to"
     kanbanCardId: UUID!
 
-    "Determines the numerical order cards are presented to user in the fiven status column"
-    index: Int!
+    "The title of the referenced kanban card"
+    title: String!
+
+    "The body of the referenced kanban card"
+    body: String!
+
+    # "Determines the numerical order cards are presented to user in the fiven status column"
+    # index: Int!
 
     "Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE')"
     status: KanbanSessionCardStatusEnum!
@@ -53,8 +59,8 @@ const kanbanSessionCard = gql`
     "A reference to the kanban card this kanban session card points to"
     kanbanCardId: UUID!
 
-    "Determines the numerical order cards are presented to user in the fiven status column"
-    index: Int!
+    # "Determines the numerical order cards are presented to user in the fiven status column"
+    # index: Int!
 
     "Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE')"
     status: KanbanSessionCardStatusEnum!
@@ -68,8 +74,8 @@ const kanbanSessionCard = gql`
     "A reference to the kanban card this kanban session card points to"
     kanbanCardId: UUID
 
-    "Determines the numerical order cards are presented to user in the fiven status column"
-    index: Int
+    # "Determines the numerical order cards are presented to user in the fiven status column"
+    # index: Int
 
     "Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE')"
     status: KanbanSessionCardStatusEnum

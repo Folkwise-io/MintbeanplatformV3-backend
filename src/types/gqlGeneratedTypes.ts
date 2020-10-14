@@ -547,6 +547,10 @@ export type KanbanSession = {
   __typename?: 'KanbanSession';
   /** ID of the kanban session in UUID */
   id: Scalars['UUID'];
+  /** The title found on the referenced kanban */
+  title: Scalars['String'];
+  /** The desciption found on the referenced kanban */
+  description: Scalars['String'];
   /** Id of master kanban this session is based off of */
   kanbanId: Scalars['UUID'];
   /** Id of user who has access to this kanban session */
@@ -935,6 +939,8 @@ export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversP
 
 export type KanbanSessionResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanSession'] = ResolversParentTypes['KanbanSession']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
