@@ -40,7 +40,7 @@ export default class MeetDaoKnex implements MeetDao {
       const meet = await this.knex("meets")
         .where({ ...args, deleted: false })
         .first();
-      console.log(meet);
+
       // TODO: clean this typescript-constrained mess
       if (meet) {
         return formatMeets([meet])[0];

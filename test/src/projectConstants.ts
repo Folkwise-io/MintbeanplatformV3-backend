@@ -98,7 +98,6 @@ export const GET_ALL_MEETS_WITH_NESTED_PROJECTS = gql`
       description
       instructions
       registerLink
-      registerLinkStatus
       coverImageUrl
       startTime
       endTime
@@ -137,7 +136,6 @@ export const GET_PROJECT_WITH_NESTED_MEET = gql`
         description
         instructions
         registerLink
-        registerLinkStatus
         coverImageUrl
         startTime
         endTime
