@@ -22,7 +22,7 @@ export const generateIcsAttachments = (meet: Meet): Attachment[] => {
 };
 
 export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
-  const { title, description, region, id, startTime, endTime } = meet;
+  const { title, description, region, id, startTime, endTime, registerLink } = meet;
   const startTimeUTC = moment.tz(startTime, region).utc();
   const endTimeUTC = moment.tz(endTime, region).utc();
 
@@ -42,7 +42,7 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
     title,
     description,
     location: region,
-    url: generateMeetUrl(id),
+    url: registerLink || generateMeetUrl(id),
     status: "CONFIRMED",
     organizer: { name: "Mintbean", email: "info@mintbean.io" },
   };
@@ -81,7 +81,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
       },
       "reservationFor": {
         "@type": "Event",
-        "name": "${title} - ${meetUrl}",
+        "name": "${title} - ${registerLink}",
         "startDate": "${startTimeIsoWithTimezone}",
         "endDate": "${endTimeIsoWithTimezone}",
         "location": {
