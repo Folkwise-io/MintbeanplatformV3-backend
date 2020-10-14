@@ -27,7 +27,7 @@ afterAll(async () => {
 });
 
 describe("Querying kanban cards", () => {
-  it("gets a kanban by id", async () => {
+  it("gets a kanban card by id", async () => {
     await testManager
       .addKanbanCards([TEST_KANBAN_CARD_1])
       .then(() =>
@@ -79,21 +79,21 @@ describe("Querying kanban cards", () => {
         expect(kanbanCards[0].kanbanId).toBe(TEST_KANBAN.id);
       });
   });
-
-  it("returns kanban cards on a kanban in order of smallest to largest index", async () => {
-    await testManager
-      .addKanbanCards([TEST_KANBAN_CARD_2, TEST_KANBAN_CARD_1])
-      .then(() =>
-        testManager
-          .getGraphQLResponse({ query: GET_KANBAN_CARDS_ON_KANBAN_QUERY, variables: { kanbanId: TEST_KANBAN.id } })
-          .then(testManager.parseData),
-      )
-      .then(({ kanbanCards }) => {
-        expect(kanbanCards).toHaveLength(2);
-        expect(kanbanCards[0].id).toBe(TEST_KANBAN_CARD_1.id);
-        expect(kanbanCards[1].id).toBe(TEST_KANBAN_CARD_2.id);
-      });
-  });
+  // TODO: revists after card indexing system determined
+  // it("returns kanban cards on a kanban in order of smallest to largest index", async () => {
+  //   await testManager
+  //     .addKanbanCards([TEST_KANBAN_CARD_2, TEST_KANBAN_CARD_1])
+  //     .then(() =>
+  //       testManager
+  //         .getGraphQLResponse({ query: GET_KANBAN_CARDS_ON_KANBAN_QUERY, variables: { kanbanId: TEST_KANBAN.id } })
+  //         .then(testManager.parseData),
+  //     )
+  //     .then(({ kanbanCards }) => {
+  //       expect(kanbanCards).toHaveLength(2);
+  //       expect(kanbanCards[0].id).toBe(TEST_KANBAN_CARD_1.id);
+  //       expect(kanbanCards[1].id).toBe(TEST_KANBAN_CARD_2.id);
+  //     });
+  // });
 });
 
 describe("Creating kanban cards", () => {
@@ -191,8 +191,8 @@ describe("Editing kanban cards", () => {
       })
       .then(testManager.parseData)
       .then(({ editKanbanCard }) => {
-        expect(editKanbanCard.index).not.toBe(TEST_KANBAN_CARD_1.index);
-        expect(editKanbanCard.index).toBe(EDIT_KANBAN_CARD_INPUT.index);
+        expect(editKanbanCard.title).not.toBe(TEST_KANBAN_CARD_1.title);
+        expect(editKanbanCard.title).toBe(EDIT_KANBAN_CARD_INPUT.title);
       });
   });
 

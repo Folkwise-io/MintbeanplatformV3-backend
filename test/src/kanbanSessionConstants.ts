@@ -16,7 +16,7 @@ export const TEST_KANBAN_SESSION_ON_MEET: KanbanSession = {
 };
 
 export const TEST_KANBAN_SESSION_ISOLATED: KanbanSession = {
-  id: "00000000-0000-0000-0000-000000000000",
+  id: "00000000-0000-4000-a000-000000000000",
   kanbanId: TEST_KANBAN.id,
   userId: BOB.id,
   meetId: null,

@@ -1,5 +1,6 @@
 import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
+import KanbanDao from "../dao/KanbanDao";
 import MeetDao from "../dao/MeetDao";
 import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
 import {
@@ -12,7 +13,7 @@ import {
 import { ensureExists } from "../util/ensureExists";
 
 export default class MeetResolverValidator {
-  constructor(private meetDao: MeetDao) {}
+  constructor(private meetDao: MeetDao, private kanbanDao: KanbanDao) {}
 
   async getMany(args: {}, _context: ServerContext): Promise<MeetServiceGetManyArgs> {
     // TODO: Validate the search query arguments later
@@ -30,6 +31,11 @@ export default class MeetResolverValidator {
   ): Promise<{ id: string; input: MeetServiceEditOneInput }> {
     // Check if meet id exists in db
     await this.meetDao.getOne({ id }).then((meet) => ensureExists("Meet")(meet));
+
+    // If kanbanId specified, ensure kanban is valid
+    if (input.kanbanId) {
+      await this.kanbanDao.getOne({ id: input.kanbanId }).then((kanban) => ensureExists("Kanban")(kanban));
+    }
 
     // Handle when input has no fields to update (knex doesn't like this)
     if (Object.keys(input).length === 0) {

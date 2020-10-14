@@ -88,6 +88,9 @@ const meet = gql`
 
     "The IANA region used with wallclock time"
     region: String
+
+    "The optional kanban associated with this meet"
+    kanbanId: UUID
   }
 
   extend type Mutation {

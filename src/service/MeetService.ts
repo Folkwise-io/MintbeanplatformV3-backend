@@ -1,6 +1,6 @@
 import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
-import { Meet } from "../types/gqlGeneratedTypes";
+import { Kanban, Meet } from "../types/gqlGeneratedTypes";
 import { Args, EntityService } from "./EntityService";
 
 // Only allow ID lookup for now

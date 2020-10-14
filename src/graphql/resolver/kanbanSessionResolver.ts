@@ -1,8 +1,10 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
+import KanbanSessionCardService from "../../service/KanbanSessionCardService";
 import KanbanSessionService from "../../service/KanbanSessionService";
 import { KanbanSession, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanSessionResolverValidator from "../../validator/KanbanSessionResolverValidator";
+import kanbanSessionCard from "../typedef/kanbanSessionCard";
 
 // TODO: move admin/user permissions checks to ResolverValidator?
 

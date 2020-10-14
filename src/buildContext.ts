@@ -115,7 +115,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
-  const meetResolverValidator = new MeetResolverValidator(meetDao);
+  const meetResolverValidator = new MeetResolverValidator(meetDao, kanbanDao);
   const meetService = new MeetService(meetDao);
   const projectResolverValidator = new ProjectResolverValidator(projectDao);
   const projectService = new ProjectService(projectDao);

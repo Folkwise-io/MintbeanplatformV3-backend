@@ -23,9 +23,8 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
 
   async getMany(args: KanbanCardServiceGetManyArgs): Promise<KanbanCard[]> {
     return handleDatabaseError(async () => {
-      const kanbanCards: KanbanCard[] = await this.knex("kanbanCards")
-        .where({ ...args, deleted: false })
-        .orderBy("index", "asc");
+      const kanbanCards: KanbanCard[] = await this.knex("kanbanCards").where({ ...args, deleted: false });
+      // .orderBy("index", "asc");
       return kanbanCards;
     });
   }

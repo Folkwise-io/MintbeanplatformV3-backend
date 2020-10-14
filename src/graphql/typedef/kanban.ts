@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 
 const kanban = gql`
-  "A kanban that serves as a guide for projects."
+  "The master definition of a kanban that serves as a guide for projects."
   type Kanban {
     "ID of the Kanban in UUID"
     id: UUID!

@@ -1,5 +1,4 @@
 import { AuthenticationError } from "apollo-server-express";
-import { isContext } from "vm";
 import { ServerContext } from "../../buildServerContext";
 import MeetRegistrationService from "../../service/MeetRegistrationService";
 import MeetService from "../../service/MeetService";

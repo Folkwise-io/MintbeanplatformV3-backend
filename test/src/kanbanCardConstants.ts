@@ -6,7 +6,7 @@ export const TEST_KANBAN_CARD_1: KanbanCard = {
   kanbanId: "00000000-0000-0000-0000-000000000000",
   title: "Test Kanban Card 1",
   body: "This is a **pointless** kanban card for testing",
-  index: 0,
+  // index: 0,
   createdAt: "2019-10-15",
   updatedAt: "2019-10-15",
 };
@@ -15,7 +15,7 @@ export const TEST_KANBAN_CARD_2: KanbanCard = {
   kanbanId: "00000000-0000-0000-0000-000000000000",
   title: "Test Kanban Card 2",
   body: "This is another **pointless** kanban card for testing",
-  index: 1,
+  // index: 1,
   createdAt: "2019-10-15",
   updatedAt: "2019-10-15",
 };
@@ -24,13 +24,13 @@ export const TEST_KANBAN_CARD_INPUT_1: CreateKanbanCardInput = {
   kanbanId: "00000000-0000-0000-0000-000000000000",
   title: "Test Test Kanban Card 1",
   body: "This is a **pointless** kanban card for testing",
-  index: 0,
+  // index: 0,
 };
 export const TEST_KANBAN_CARD_INPUT_2: CreateKanbanCardInput = {
   kanbanId: "00000000-0000-0000-0000-000000000000",
   title: "Test Test Kanban Card 2",
   body: "This is another **pointless** kanban card for testing",
-  index: 1,
+  // index: 1,
 };
 
 export const GET_KANBAN_CARD_QUERY = gql`
@@ -40,7 +40,6 @@ export const GET_KANBAN_CARD_QUERY = gql`
       kanbanId
       title
       body
-      index
     }
   }
 `;
@@ -52,7 +51,6 @@ export const GET_KANBAN_CARDS_ON_KANBAN_QUERY = gql`
       kanbanId
       title
       body
-      index
     }
   }
 `;
@@ -64,13 +62,12 @@ export const CREATE_KANBAN_CARD_MUTATION = gql`
       kanbanId
       title
       body
-      index
     }
   }
 `;
 
 export const EDIT_KANBAN_CARD_INPUT: EditKanbanCardInput = {
-  index: 99,
+  title: "A totally new title",
 };
 
 export const EDIT_KANBAN_CARD_MUTATION = gql`
@@ -80,7 +77,6 @@ export const EDIT_KANBAN_CARD_MUTATION = gql`
       kanbanId
       title
       body
-      index
       createdAt
       updatedAt
     }

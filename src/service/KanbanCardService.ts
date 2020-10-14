@@ -14,7 +14,7 @@ export interface KanbanCardServiceAddOneInput {
   kanbanId: string;
   title: string;
   body: string;
-  index: number;
+  index?: number | null;
 }
 
 export interface KanbanCardServiceEditOneInput {
