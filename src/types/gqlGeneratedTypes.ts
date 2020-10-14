@@ -223,6 +223,13 @@ export type Post = {
   user?: Maybe<PublicUser>;
 };
 
+/** Whether registration is going to open, is open now, or is closed. */
+export enum RegisterLinkStatus {
+  Waiting = 'WAITING',
+  Open = 'OPEN',
+  Closed = 'CLOSED'
+}
+
 /** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */
 export type Meet = {
   __typename?: 'Meet';
@@ -236,6 +243,7 @@ export type Meet = {
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
+  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl: Scalars['String'];
   /** Wallclock times */
   startTime: Scalars['String'];
@@ -262,6 +270,7 @@ export type CreateMeetInput = {
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
+  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl: Scalars['String'];
   /** Wallclock times */
   startTime: Scalars['String'];
@@ -280,6 +289,7 @@ export type EditMeetInput = {
   /** The instructions in markdown format */
   instructions?: Maybe<Scalars['String']>;
   registerLink?: Maybe<Scalars['String']>;
+  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl?: Maybe<Scalars['String']>;
   /** Wallclock times */
   startTime?: Maybe<Scalars['String']>;
@@ -446,6 +456,7 @@ export type ResolversTypes = {
   UserRegistrationInput: UserRegistrationInput;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
+  RegisterLinkStatus: RegisterLinkStatus;
   Meet: ResolverTypeWrapper<Meet>;
   CreateMeetInput: CreateMeetInput;
   EditMeetInput: EditMeetInput;
@@ -559,6 +570,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   registerLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  registerLinkStatus?: Resolver<Maybe<ResolversTypes['RegisterLinkStatus']>, ParentType, ContextType>;
   coverImageUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   startTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   endTime?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
