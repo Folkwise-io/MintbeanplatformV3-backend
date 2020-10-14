@@ -1,5 +1,4 @@
-import kanbanSession from "../src/graphql/typedef/kanbanSession";
-import { Kanban, KanbanSession } from "../src/types/gqlGeneratedTypes";
+import { KanbanSession } from "../src/types/gqlGeneratedTypes";
 import { TEST_KANBAN } from "./src/kanbanConstants";
 import {
   CREATE_KANBAN_SESSION_MUTATION,
@@ -14,7 +13,7 @@ import {
 } from "./src/kanbanSessionConstants";
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB, GET_USER_QUERY } from "./src/userConstants";
+import { AMY, BOB } from "./src/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();

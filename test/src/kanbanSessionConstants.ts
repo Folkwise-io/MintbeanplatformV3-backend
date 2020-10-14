@@ -9,6 +9,8 @@ import { BOB } from "./userConstants";
 export const TEST_KANBAN_SESSION_ON_MEET: KanbanSession = {
   id: "00000000-0000-0000-0000-000000000000",
   kanbanId: TEST_KANBAN.id,
+  title: TEST_KANBAN.title,
+  description: TEST_KANBAN.description,
   userId: BOB.id,
   meetId: PAPERJS.id,
   createdAt: "2019-09-15T12:00:00.000Z",
@@ -18,6 +20,8 @@ export const TEST_KANBAN_SESSION_ON_MEET: KanbanSession = {
 export const TEST_KANBAN_SESSION_ISOLATED: KanbanSession = {
   id: "00000000-0000-4000-a000-000000000000",
   kanbanId: TEST_KANBAN.id,
+  title: TEST_KANBAN.title,
+  description: TEST_KANBAN.description,
   userId: BOB.id,
   meetId: null,
   createdAt: "2019-09-15T12:00:00.000Z",
@@ -39,6 +43,8 @@ export const GET_KANBAN_SESSION_QUERY = gql`
     kanbanSession(userId: $userId, kanbanId: $kanbanId, meetId: $meetId) {
       id
       kanbanId
+      title
+      description
       userId
       meetId
       createdAt
@@ -52,6 +58,8 @@ export const CREATE_KANBAN_SESSION_MUTATION = gql`
     createKanbanSession(input: $input) {
       id
       kanbanId
+      title
+      description
       userId
       meetId
     }
@@ -69,6 +77,8 @@ export const EDIT_KANBAN_SESSION_MUTATION = gql`
     editKanbanSession(id: $id, input: $input) {
       id
       kanbanId
+      title
+      description
       userId
       meetId
       createdAt

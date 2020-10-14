@@ -8,14 +8,28 @@ import {
 import { KanbanSession } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanSessionDao from "./KanbanSessionDao";
+import { prefixKeys } from "../util/prefixKeys";
 
 export default class KanbanSessionDaoKnex implements KanbanSessionDao {
   constructor(private knex: Knex) {}
 
+  // TODO: figure out how to make get kanban sessions queries DRY (resuse query)
   async getOne(args: KanbanSessionServiceGetOneArgs): Promise<KanbanSession> {
     return handleDatabaseError(async () => {
-      const kanbanSession = await this.knex("kanbanSessions")
-        .where({ ...args, deleted: false })
+      // Create a logical entity of KanbanSessionCard via join on kanbanCards
+      const kanbanSession = await this.knex
+        .from("kanbanSessions")
+        .innerJoin("kanbans", "kanbanSessions.kanbanId", "kanbans.id")
+        .innerJoin("users", "kanbanSessions.userId", "users.id")
+        .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
+        .select(
+          { id: "kanbanSessions.id" },
+          { title: "kanbans.title" },
+          { description: "kanbans.description" },
+          { createdAt: "kanbanSessions.createdAt" },
+          { updatedAt: "kanbanSessions.updatedAt" },
+        )
+        .where(prefixKeys("kanbanSessions", { ...args, deleted: false }))
         .first();
       return kanbanSession;
     });
@@ -23,7 +37,20 @@ export default class KanbanSessionDaoKnex implements KanbanSessionDao {
 
   async getMany(args: KanbanSessionServiceGetManyArgs): Promise<KanbanSession[]> {
     return handleDatabaseError(async () => {
-      const kanbanSessions: KanbanSession[] = await this.knex("kanbanSessions").where({ ...args, deleted: false });
+      // Create a logical entity of KanbanSessionCard via join on kanbanCards
+      const kanbanSessions: KanbanSession[] = await this.knex
+        .from("kanbanSessions")
+        .innerJoin("kanbans", "kanbanSessions.kanbanId", "kanbans.id")
+        .innerJoin("users", "kanbanSessions.userId", "users.id")
+        .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
+        .select(
+          { id: "kanbanSessions.id" },
+          { title: "kanbans.title" },
+          { description: "kanbans.description" },
+          { createdAt: "kanbanSessions.createdAt" },
+          { updatedAt: "kanbanSessions.updatedAt" },
+        )
+        .where(prefixKeys("kanbanSessions", { ...args, deleted: false }));
       return kanbanSessions;
     });
   }

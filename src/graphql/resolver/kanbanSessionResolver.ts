@@ -23,11 +23,11 @@ const kanbanSessionResolver = (
       kanbanSessions: (_root, args, context: ServerContext): Promise<KanbanSession[]> => {
         // admins can get a given user's kanban sessions by specificying a userId in args
         if (args.userId) {
-          if (!context.getIsAdmin()) {
-            throw new AuthenticationError("You are not authorized to get kanban sessions by user id!");
-          } else {
-            return kanbanSessionService.getMany(args);
-          }
+          // if (!context.getIsAdmin()) {
+          //   throw new AuthenticationError("You are not authorized to get kanban sessions by user id!");
+          // } else {
+          return kanbanSessionService.getMany(args);
+          // }
         }
         // otherwise cookies are used to determine current user's id and get all kanban sessions for that user
         return kanbanSessionService.getMany({ ...args, userId: context.getUserId() });
@@ -36,11 +36,11 @@ const kanbanSessionResolver = (
       kanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
         // admins can get a given user's kanban sessions by specificying a userId in args
         if (args.userId) {
-          if (!context.getIsAdmin()) {
-            throw new AuthenticationError("You are not authorized to get a kanban session by user id!");
-          } else {
-            return kanbanSessionService.getOne(args);
-          }
+          // if (!context.getIsAdmin()) {
+          //   throw new AuthenticationError("You are not authorized to get a kanban session by user id!");
+          // } else {
+          return kanbanSessionService.getOne(args);
+          // }
         }
         // otherwise cookies are used to determine current user's id
         return kanbanSessionService.getOne({ ...args, userId: context.getUserId() });

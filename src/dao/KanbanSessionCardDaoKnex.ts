@@ -7,6 +7,7 @@ import {
 } from "../service/KanbanSessionCardService";
 import { KanbanSessionCard } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
+import { prefixKeys } from "../util/prefixKeys";
 import KanbanSessionCardDao from "./KanbanSessionCardDao";
 
 export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
@@ -14,8 +15,18 @@ export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
 
   async getOne(args: KanbanSessionCardServiceGetOneArgs): Promise<KanbanSessionCard> {
     return handleDatabaseError(async () => {
-      const kanbanSession = await this.knex("kanbanSessionCards")
-        .where({ ...args, deleted: false })
+      const kanbanSession = await this.knex
+        .from("kanbanSessionCards")
+        .innerJoin("kanbanCards", "kanbanSessionCards.kanbanCardId", "kanbanCards.id")
+        .select(
+          { id: "kanbanSessionCards.id" },
+          { title: "kanbanCards.title" },
+          { body: "kanbanCards.body" },
+          { status: "kanbanSessionCards.status" },
+          { createdAt: "kanbanSessionCards.createdAt" },
+          { updatedAt: "kanbanSessionCards.updatedAt" },
+        )
+        .where(prefixKeys("kanbanSessionCards", { ...args, deleted: false }))
         .first();
       return kanbanSession;
     });
@@ -23,9 +34,19 @@ export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
 
   async getMany(args: KanbanSessionCardServiceGetManyArgs): Promise<KanbanSessionCard[]> {
     return handleDatabaseError(async () => {
-      const kanbanSessionCards: KanbanSessionCard[] = await this.knex("kanbanSessionCards")
-        .where({ ...args, deleted: false })
-        .orderBy("index", "asc");
+      const kanbanSessionCards: KanbanSessionCard[] = await this.knex
+        .from("kanbanSessionCards")
+        .innerJoin("kanbanCards", "kanbanSessionCards.kanbanCardId", "kanbanCards.id")
+        .select(
+          { id: "kanbanSessionCards.id" },
+          { title: "kanbanCards.title" },
+          { body: "kanbanCards.body" },
+          { status: "kanbanSessionCards.status" },
+          { createdAt: "kanbanSessionCards.createdAt" },
+          { updatedAt: "kanbanSessionCards.updatedAt" },
+        )
+        .where(prefixKeys("kanbanSessionCards", { ...args, deleted: false }));
+      // .orderBy("index", "asc");
       return kanbanSessionCards;
     });
   }

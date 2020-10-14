@@ -1,9 +1,10 @@
 import { gql } from "apollo-server-express";
 import { KanbanCard, CreateKanbanCardInput, EditKanbanCardInput } from "../../src/types/gqlGeneratedTypes";
+import { TEST_KANBAN } from "./kanbanConstants";
 
 export const TEST_KANBAN_CARD_1: KanbanCard = {
   id: "00000000-0000-0000-0000-000000000000",
-  kanbanId: "00000000-0000-0000-0000-000000000000",
+  kanbanId: TEST_KANBAN.id,
   title: "Test Kanban Card 1",
   body: "This is a **pointless** kanban card for testing",
   // index: 0,
@@ -11,7 +12,7 @@ export const TEST_KANBAN_CARD_1: KanbanCard = {
   updatedAt: "2019-10-15",
 };
 export const TEST_KANBAN_CARD_2: KanbanCard = {
-  id: "00000000-0000-4000-a000-000000000000",
+  id: TEST_KANBAN.id,
   kanbanId: "00000000-0000-0000-0000-000000000000",
   title: "Test Kanban Card 2",
   body: "This is another **pointless** kanban card for testing",
@@ -21,13 +22,13 @@ export const TEST_KANBAN_CARD_2: KanbanCard = {
 };
 
 export const TEST_KANBAN_CARD_INPUT_1: CreateKanbanCardInput = {
-  kanbanId: "00000000-0000-0000-0000-000000000000",
+  kanbanId: TEST_KANBAN.id,
   title: "Test Test Kanban Card 1",
   body: "This is a **pointless** kanban card for testing",
   // index: 0,
 };
 export const TEST_KANBAN_CARD_INPUT_2: CreateKanbanCardInput = {
-  kanbanId: "00000000-0000-0000-0000-000000000000",
+  kanbanId: TEST_KANBAN.id,
   title: "Test Test Kanban Card 2",
   body: "This is another **pointless** kanban card for testing",
   // index: 1,
