@@ -1,5 +1,5 @@
 import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
-import moment from "moment";
+import moment from "moment-timezone";
 
 export const nDaysFromNowInWallClockTime = (days: number, hour: number = 0): string => {
   const now = new Date();
