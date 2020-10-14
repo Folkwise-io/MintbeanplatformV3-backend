@@ -129,3 +129,12 @@ export const DELETE_MEET = gql`
     deleteMeet(id: $id)
   }
 `;
+
+export const GET_REGISTERLINK_STATUS = gql`
+  query getMeetRegisterLinkStatusById($id: UUID!) {
+    meet(id: $id) {
+      registerLink
+      registerLinkStatus
+    }
+  }
+`;

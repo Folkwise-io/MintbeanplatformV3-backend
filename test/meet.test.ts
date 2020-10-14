@@ -1,4 +1,4 @@
-import { Meet } from "../src/types/gqlGeneratedTypes";
+import { Meet, RegisterLinkStatus } from "../src/types/gqlGeneratedTypes";
 import {
   ALGOLIA,
   CREATE_MEET,
@@ -7,6 +7,7 @@ import {
   EDIT_MEET_INPUT,
   GET_ALL_MEETS,
   GET_MEETS_BY_ID,
+  GET_REGISTERLINK_STATUS,
   NEW_MEET_INPUT,
   PAPERJS,
 } from "./src/meetConstants";
@@ -296,6 +297,20 @@ describe("Deleting meets", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+});
+
+describe("Getting the registerLink and registerLinkStatus", () => {
+  it("returns register link of null and status of closed if meet has ended", async () => {
+    const pastMeet: Meet = { ...ALGOLIA, startTime: "2019-10-13", endTime: "2019-10-14" };
+
+    await testManager.addMeets([pastMeet]);
+    await testManager
+      .getGraphQLData({ query: GET_REGISTERLINK_STATUS, variables: { id: pastMeet.id } })
+      .then(({ meet }) => {
+        expect(meet.registerLink).toBe(null);
+        expect(meet.registerLinkStatus).toBe(RegisterLinkStatus.Closed);
       });
   });
 });
