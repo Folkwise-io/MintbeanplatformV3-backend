@@ -1,5 +1,5 @@
 import * as Knex from "knex";
-import { nDaysFromNowInWallClockTime } from "../../util/timeUtils";
+import { nDaysAndHoursFromNowInWallClockTime } from "../../util/timeUtils";
 
 export async function seed(knex: Knex): Promise<void> {
   await knex("meets").del();
@@ -38,8 +38,8 @@ export async function seed(knex: Knex): Promise<void> {
       registerLink: "http://eventbrite.com",
       coverImageUrl:
         "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
-      startTime: nDaysFromNowInWallClockTime(2),
-      endTime: nDaysFromNowInWallClockTime(2),
+      startTime: nDaysAndHoursFromNowInWallClockTime(2),
+      endTime: nDaysAndHoursFromNowInWallClockTime(2),
       createdAt: "2020-08-15",
     },
     {
@@ -50,8 +50,8 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-      startTime: nDaysFromNowInWallClockTime(4),
-      endTime: nDaysFromNowInWallClockTime(4),
+      startTime: nDaysAndHoursFromNowInWallClockTime(4),
+      endTime: nDaysAndHoursFromNowInWallClockTime(4),
       createdAt: "2020-09-01",
     },
     {
@@ -62,8 +62,8 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://www.grafik.com.au/wp-content/uploads/2019/06/think-design.png",
-      startTime: nDaysFromNowInWallClockTime(7),
-      endTime: nDaysFromNowInWallClockTime(7),
+      startTime: nDaysAndHoursFromNowInWallClockTime(7),
+      endTime: nDaysAndHoursFromNowInWallClockTime(7),
       createdAt: "2020-09-01",
     },
     {
@@ -74,8 +74,8 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-      startTime: nDaysFromNowInWallClockTime(12),
-      endTime: nDaysFromNowInWallClockTime(12),
+      startTime: nDaysAndHoursFromNowInWallClockTime(12),
+      endTime: nDaysAndHoursFromNowInWallClockTime(12),
       createdAt: "2020-09-01",
     },
   ]);

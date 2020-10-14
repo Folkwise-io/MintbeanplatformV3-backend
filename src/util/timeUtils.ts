@@ -1,13 +1,24 @@
 import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import moment from "moment-timezone";
+const MILLISECONDS_IN_ONE_HOUR = 60 * 60 * 1000;
+const MILLISECONDS_IN_ONE_DAY = 24 * MILLISECONDS_IN_ONE_HOUR;
 
-export const nDaysFromNowInWallClockTime = (days: number, hour: number = 0): string => {
+export const nDaysAndHoursFromNowInWallClockTime = (days: number, hours: number = 0): string => {
   const now = new Date();
   now.setDate(now.getDate() + days);
-  now.setHours(hour);
+  now.setHours(now.getHours() + hours);
   now.setMinutes(0);
   const timestamp = now.toISOString().replace(/Z$/, "");
   return timestamp;
+};
+
+export const nDaysAndHoursFromNowInUtcTime = (days: number, hours: number = 0): string => {
+  const now = new Date();
+  const newTime = new Date();
+  const totalMillisecondsOffset = days * MILLISECONDS_IN_ONE_DAY + hours * MILLISECONDS_IN_ONE_HOUR;
+  newTime.setTime(now.getTime() + totalMillisecondsOffset);
+
+  return newTime.toISOString();
 };
 
 export const calculateMeetRegisterLinkStatus = (meet: Meet): RegisterLinkStatus => {
