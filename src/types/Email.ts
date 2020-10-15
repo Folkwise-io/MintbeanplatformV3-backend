@@ -13,9 +13,17 @@ export interface Attachment {
   disposition: string;
 }
 
+// Do not change the string literals after scheduleEmails has been created on staging/prod
+export enum EmailTemplateName {
+  MEET_REGISTRATION = "meetRegistration",
+  WELCOME = "welcome",
+  CHECK_IN_AFTER_SIGN_UP = "checkInAfterSignup",
+  ALL = "all",
+}
+
 export interface ScheduledEmail {
   id: string;
-  templateName: "meetRegistration" | "signup" | "checkInAfterSignup" | "all";
+  templateName: EmailTemplateName;
   userId?: string | null;
   meetId?: string | null;
   sendAt: string;
