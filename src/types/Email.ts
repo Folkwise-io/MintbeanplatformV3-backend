@@ -12,3 +12,13 @@ export interface Attachment {
   type: string;
   disposition: string;
 }
+
+export interface ScheduledEmail {
+  id: string;
+  templateName: "meetRegistration" | "signup" | "checkInAfterSignup" | "all";
+  userId?: string | null;
+  meetId?: string | null;
+  sendAt: string;
+  sent: boolean;
+  createdAt: string;
+}
