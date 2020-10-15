@@ -10,6 +10,17 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanSessionDao from "./KanbanSessionDao";
 import { prefixKeys } from "../util/prefixKeys";
 
+// For test manager method
+export interface KanbanSessionRaw {
+  id: string;
+  kanbanId: string;
+  userId: string;
+  meetId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deleted?: boolean;
+}
+
 export default class KanbanSessionDaoKnex implements KanbanSessionDao {
   constructor(private knex: Knex) {}
 
@@ -24,6 +35,9 @@ export default class KanbanSessionDaoKnex implements KanbanSessionDao {
         .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
         .select(
           { id: "kanbanSessions.id" },
+          { kanbanId: "kanbans.id" },
+          { userId: "users.id" },
+          { meetId: "meets.id" },
           { title: "kanbans.title" },
           { description: "kanbans.description" },
           { createdAt: "kanbanSessions.createdAt" },
@@ -45,6 +59,9 @@ export default class KanbanSessionDaoKnex implements KanbanSessionDao {
         .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
         .select(
           { id: "kanbanSessions.id" },
+          { kanbanId: "kanbans.id" },
+          { userId: "users.id" },
+          { meetId: "meets.id" },
           { title: "kanbans.title" },
           { description: "kanbans.description" },
           { createdAt: "kanbanSessions.createdAt" },
@@ -80,8 +97,8 @@ export default class KanbanSessionDaoKnex implements KanbanSessionDao {
   }
 
   // Testing methods below, for TestManager to call
-  async addMany(kanbanSessions: KanbanSession[]): Promise<void> {
-    return this.knex<KanbanSession>("kanbanSessions").insert(kanbanSessions);
+  async addMany(kanbanSessions: KanbanSessionRaw[]): Promise<void> {
+    return this.knex<KanbanSessionRaw>("kanbanSessions").insert(kanbanSessions);
   }
 
   deleteAll(): Promise<void> {

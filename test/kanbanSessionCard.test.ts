@@ -14,7 +14,12 @@ import {
   TEST_ISOLATED_KANBAN_SESSION_CARD_1_INPUT,
 } from "./src/kanbanSessionCardConstants";
 import { TEST_KANBAN } from "./src/kanbanConstants";
-import { TEST_KANBAN_SESSION_ISOLATED, TEST_KANBAN_SESSION_ON_MEET } from "./src/kanbanSessionConstants";
+import {
+  TEST_KANBAN_SESSION_ISOLATED_RAW,
+  TEST_KANBAN_SESSION_ISOLATED_COMPOSED,
+  TEST_KANBAN_SESSION_ON_MEET_RAW,
+  TEST_KANBAN_SESSION_ON_MEET_COMPOSED,
+} from "./src/kanbanSessionConstants";
 import { PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
@@ -51,7 +56,7 @@ afterAll(async () => {
 
 describe.skip("Querying kanban session cards", () => {
   it("gets a meet kanban session card by id", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET]);
+    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET_RAW]);
     await testManager
       .addKanbanSessionCards([TEST_MEET_KANBAN_SESSION_CARD_1])
       .then(() =>
@@ -68,7 +73,7 @@ describe.skip("Querying kanban session cards", () => {
   });
 
   it("gets an isolated kanban session card by id", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED]);
+    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED_RAW]);
     await testManager
       .addKanbanSessionCards([TEST_ISOLATED_KANBAN_SESSION_CARD_1])
       .then(() =>

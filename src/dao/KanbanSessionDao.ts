@@ -5,6 +5,7 @@ import {
   KanbanSessionServiceGetManyArgs,
   KanbanSessionServiceGetOneArgs,
 } from "../service/KanbanSessionService";
+import { KanbanSessionRaw } from "./KanbanSessionDaoKnex";
 
 export default interface KanbanDao {
   getOne(args: KanbanSessionServiceGetOneArgs): Promise<KanbanSession>;
@@ -15,5 +16,5 @@ export default interface KanbanDao {
 
   // Below are TestManager methods
   deleteAll(): Promise<void>;
-  addMany(kanbans: KanbanSession[]): Promise<void>;
+  addMany(kanbans: KanbanSessionRaw[]): Promise<void>;
 }

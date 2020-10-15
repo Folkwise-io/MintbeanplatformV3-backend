@@ -11,21 +11,14 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import {
-  MediaAsset,
-  Meet,
-  Project,
-  Kanban,
-  KanbanCard,
-  KanbanSession,
-  KanbanSessionCard,
-} from "../../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project, Kanban, KanbanCard, KanbanSessionCard } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/user";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/projectMediaAsset";
 import MeetRegistration from "../../src/types/meetRegistration";
+import { KanbanSessionRaw } from "../../src/dao/KanbanSessionDaoKnex";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -85,7 +78,7 @@ export default class TestManager {
     return this.params.persistenceContext.kanbanCardDao.addMany(kanbanCards).then(() => this);
   }
 
-  addKanbanSessions(kanbanSessions: KanbanSession[]): Promise<TestManager> {
+  addKanbanSessions(kanbanSessions: KanbanSessionRaw[]): Promise<TestManager> {
     return this.params.persistenceContext.kanbanSessionDao.addMany(kanbanSessions).then(() => this);
   }
 

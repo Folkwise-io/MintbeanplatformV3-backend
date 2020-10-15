@@ -1,4 +1,4 @@
-import { KanbanSession } from "../src/types/gqlGeneratedTypes";
+import { KanbanSessionRaw } from "../src/dao/KanbanSessionDaoKnex";
 import { TEST_KANBAN } from "./src/kanbanConstants";
 import {
   CREATE_KANBAN_SESSION_MUTATION,
@@ -6,10 +6,12 @@ import {
   EDIT_KANBAN_SESSION_INPUT,
   EDIT_KANBAN_SESSION_MUTATION,
   GET_KANBAN_SESSION_QUERY,
-  TEST_KANBAN_SESSION_ISOLATED,
+  TEST_KANBAN_SESSION_ISOLATED_RAW,
   TEST_KANBAN_SESSION_ISOLATED_INPUT,
-  TEST_KANBAN_SESSION_ON_MEET,
+  TEST_KANBAN_SESSION_ON_MEET_RAW,
   TEST_KANBAN_SESSION_ON_MEET_INPUT,
+  TEST_KANBAN_SESSION_ISOLATED_COMPOSED,
+  TEST_KANBAN_SESSION_ON_MEET_COMPOSED,
 } from "./src/kanbanSessionConstants";
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
@@ -48,102 +50,103 @@ describe("Querying kanban sessions", () => {
   });
 
   it("gets a meet kanban session by kanbanId, meetId and cookies", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET]).then((tm) =>
+    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET_RAW]).then((tm) =>
       tm
         .getGraphQLResponse({
           query: GET_KANBAN_SESSION_QUERY,
           variables: {
-            kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-            meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
+            kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+            meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
           },
           cookies: bobCookies,
         })
         .then(testManager.parseData)
         .then(({ kanbanSession }) => {
-          expect(TEST_KANBAN_SESSION_ON_MEET).toMatchObject(kanbanSession);
+          expect(TEST_KANBAN_SESSION_ON_MEET_COMPOSED).toMatchObject(kanbanSession);
         }),
     );
   });
 
   it("gets a meet kanban session by kanbanId, meetId, and userId if logged in as admin", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET]).then((tm) =>
+    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET_RAW]).then((tm) =>
       tm
         .getGraphQLResponse({
           query: GET_KANBAN_SESSION_QUERY,
           variables: {
-            kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-            meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
-            userId: TEST_KANBAN_SESSION_ON_MEET.userId,
+            kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+            meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
+            userId: TEST_KANBAN_SESSION_ON_MEET_RAW.userId,
           },
           cookies: adminCookies,
         })
         .then(testManager.parseData)
         .then(({ kanbanSession }) => {
-          expect(TEST_KANBAN_SESSION_ON_MEET).toMatchObject(kanbanSession);
+          expect(TEST_KANBAN_SESSION_ON_MEET_COMPOSED).toMatchObject(kanbanSession);
         }),
     );
   });
+
   it("gets an isolated kanban session by kanbanId and cookies", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED]).then((tm) =>
+    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED_RAW]).then((tm) =>
       tm
         .getGraphQLResponse({
           query: GET_KANBAN_SESSION_QUERY,
           variables: {
-            kanbanId: TEST_KANBAN_SESSION_ISOLATED.kanbanId,
+            kanbanId: TEST_KANBAN_SESSION_ISOLATED_RAW.kanbanId,
           },
           cookies: bobCookies,
         })
         .then(testManager.parseData)
         .then(({ kanbanSession }) => {
-          expect(TEST_KANBAN_SESSION_ISOLATED).toMatchObject(kanbanSession);
+          expect(TEST_KANBAN_SESSION_ISOLATED_COMPOSED).toMatchObject(kanbanSession);
         }),
     );
   });
 
   it("gets an isolated kanban session by kanbanId and userId if logged in as admin", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED]).then((tm) =>
+    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED_RAW]).then((tm) =>
       tm
         .getGraphQLResponse({
           query: GET_KANBAN_SESSION_QUERY,
           variables: {
-            kanbanId: TEST_KANBAN_SESSION_ISOLATED.kanbanId,
-            userId: TEST_KANBAN_SESSION_ISOLATED.userId,
+            kanbanId: TEST_KANBAN_SESSION_ISOLATED_RAW.kanbanId,
+            userId: TEST_KANBAN_SESSION_ISOLATED_RAW.userId,
           },
           cookies: adminCookies,
         })
         .then(testManager.parseData)
         .then(({ kanbanSession }) => {
-          expect(TEST_KANBAN_SESSION_ISOLATED).toMatchObject(kanbanSession);
+          expect(TEST_KANBAN_SESSION_ISOLATED_COMPOSED).toMatchObject(kanbanSession);
         }),
     );
   });
 
   it("gets an admin's own meet kanban session by kanbanId, meetId, and cookies when no userId provided", async () => {
-    await testManager.addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET, userId: AMY.id }]).then((tm) =>
+    await testManager.addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET_RAW, userId: AMY.id }]).then((tm) =>
       tm
         .getGraphQLResponse({
           query: GET_KANBAN_SESSION_QUERY,
           variables: {
-            kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-            meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
+            kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+            meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
           },
           cookies: adminCookies,
         })
         .then(testManager.parseData)
         .then(({ kanbanSession }) => {
-          expect({ ...TEST_KANBAN_SESSION_ON_MEET, userId: AMY.id }).toMatchObject(kanbanSession);
+          expect({ ...TEST_KANBAN_SESSION_ON_MEET_COMPOSED, userId: AMY.id }).toMatchObject(kanbanSession);
         }),
     );
   });
 
   it("returns an 'unauthorized' error message if a non-admin user tries to get another user's kanban session", async () => {
-    await testManager.addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET, userId: AMY.id }]).then((tm) =>
+    await testManager.addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET_RAW, userId: AMY.id }]).then((tm) =>
       tm
         .getErrorMessage({
           query: GET_KANBAN_SESSION_QUERY,
           variables: {
-            kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-            meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
+            kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+            meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
             userId: AMY.id,
           },
           cookies: bobCookies,
@@ -159,8 +162,8 @@ describe("Querying kanban sessions", () => {
       .getGraphQLResponse({
         query: GET_KANBAN_SESSION_QUERY,
         variables: {
-          kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-          meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
+          kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+          meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
         },
         cookies: bobCookies,
       })
@@ -171,22 +174,24 @@ describe("Querying kanban sessions", () => {
   });
 
   it("does not retrieve deleted a kanban session", async () => {
-    await testManager.addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET, deleted: true } as KanbanSession]).then(() =>
-      testManager
-        .getGraphQLResponse({
-          query: GET_KANBAN_SESSION_QUERY,
-          variables: {
-            kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-            meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
-            userId: TEST_KANBAN_SESSION_ON_MEET.userId,
-          },
-          cookies: adminCookies,
-        })
-        .then(testManager.parseData)
-        .then(({ kanbanSession }) => {
-          expect(kanbanSession).toBe(null);
-        }),
-    );
+    await testManager
+      .addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET_RAW, deleted: true } as KanbanSessionRaw])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({
+            query: GET_KANBAN_SESSION_QUERY,
+            variables: {
+              kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+              meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
+              userId: TEST_KANBAN_SESSION_ON_MEET_RAW.userId,
+            },
+            cookies: adminCookies,
+          })
+          .then(testManager.parseData)
+          .then(({ kanbanSession }) => {
+            expect(kanbanSession).toBe(null);
+          }),
+      );
   });
 });
 
@@ -316,8 +321,8 @@ describe("Editing kanban sessions", () => {
       .getGraphQLData({
         query: GET_KANBAN_SESSION_QUERY,
         variables: {
-          kanbanId: TEST_KANBAN_SESSION_ON_MEET.kanbanId,
-          meetId: TEST_KANBAN_SESSION_ON_MEET.meetId,
+          kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+          meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
         },
         cookies: bobCookies,
       })
