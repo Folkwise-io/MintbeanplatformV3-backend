@@ -341,7 +341,6 @@ describe("Getting the registerLink and registerLinkStatus", () => {
       startTime: nDaysAndHoursFromNowInWallClockTime(0),
       endTime: nDaysAndHoursFromNowInWallClockTime(0, 3),
     };
-    console.log({ currentMeet });
     await testManager.addMeets([currentMeet]);
     await testManager
       .getGraphQLData({ query: GET_REGISTERLINK_STATUS, variables: { id: currentMeet.id } })
