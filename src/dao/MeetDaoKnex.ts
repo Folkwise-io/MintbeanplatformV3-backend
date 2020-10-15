@@ -15,7 +15,7 @@ function formatMeets(meets: any[]): Meet[] {
   return meets.map((meet) => {
     const startTime = meet.startTime.toISOString().slice(0, -1);
     const endTime = meet.endTime.toISOString().slice(0, -1);
-    const registerLinkStatus = calculateMeetRegisterLinkStatus(meet);
+    const registerLinkStatus = calculateMeetRegisterLinkStatus({ ...meet, startTime, endTime });
 
     const dto: Meet = {
       ...meet,

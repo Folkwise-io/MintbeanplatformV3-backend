@@ -3,11 +3,10 @@ import moment from "moment-timezone";
 const MILLISECONDS_IN_ONE_HOUR = 60 * 60 * 1000;
 const MILLISECONDS_IN_ONE_DAY = 24 * MILLISECONDS_IN_ONE_HOUR;
 
-export const nDaysAndHoursFromNowInWallClockTime = (days: number, hours: number = 0): string => {
+export const nDaysAndHoursFromNowInWallClockTime = (days: number, hour: number = 0): string => {
   const now = new Date();
   now.setDate(now.getDate() + days);
-  now.setHours(now.getHours() + hours);
-  now.setMinutes(0);
+  now.setUTCHours(now.getHours() + hour);
   const timestamp = now.toISOString().replace(/Z$/, "");
   return timestamp;
 };
