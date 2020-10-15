@@ -108,7 +108,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
       <strong>Next Steps:</strong><br/>
       1. <strong>Join our community on Discord!</strong> This is our main communication channel. Connect with other developers like yourself and get the latest on our upcoming workshops, dev hangouts, and hackathons here: https://discord.gg/Njgt5rZ<br/>
       <br/>
-      2. <strong>Join us on Zoom</strong> at the start time of our hackathon for orientation and challenge release: ${meetUrl} <br/>
+      2. <strong>Join us on Zoom</strong> at the start time of our hackathon for orientation and challenge release: ${registerLink} <br/>
       <br/>
       For any further questions or concerns, please reach out to us on Discord! See you on the flip side, minty bean! 😊
     </p>
