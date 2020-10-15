@@ -338,8 +338,8 @@ describe("Getting the registerLink and registerLinkStatus", () => {
   it("returns a good register link and status of open if meet is in progress", async () => {
     const currentMeet: Meet = {
       ...ALGOLIA,
-      startTime: nDaysAndHoursFromNowInWallClockTime(0),
-      endTime: nDaysAndHoursFromNowInWallClockTime(0, 3),
+      startTime: nDaysAndHoursFromNowInWallClockTime(0, -1),
+      endTime: nDaysAndHoursFromNowInWallClockTime(0, 1),
     };
     await testManager.addMeets([currentMeet]);
     await testManager
