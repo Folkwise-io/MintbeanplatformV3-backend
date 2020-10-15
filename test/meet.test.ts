@@ -324,6 +324,7 @@ describe("Getting the registerLink and registerLinkStatus", () => {
       ...ALGOLIA,
       startTime: nDaysAndHoursFromNowInWallClockTime(2),
       endTime: nDaysAndHoursFromNowInWallClockTime(3),
+      region: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
 
     await testManager.addMeets([futureMeet]);
@@ -340,6 +341,7 @@ describe("Getting the registerLink and registerLinkStatus", () => {
       ...ALGOLIA,
       startTime: nDaysAndHoursFromNowInWallClockTime(0, -1),
       endTime: nDaysAndHoursFromNowInWallClockTime(0, 1),
+      region: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
     await testManager.addMeets([currentMeet]);
     await testManager
