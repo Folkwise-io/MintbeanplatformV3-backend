@@ -1,11 +1,10 @@
 import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import moment from "moment-timezone";
 
-export const nDaysFromNowInWallClockTime = (days: number, hour: number = 0): string => {
+export const nDaysAndHoursFromNowInWallClockTime = (days: number, hour: number = 0): string => {
   const now = new Date();
   now.setDate(now.getDate() + days);
-  now.setHours(hour);
-  now.setMinutes(0);
+  now.setUTCHours(now.getHours() + hour);
   const timestamp = now.toISOString().replace(/Z$/, "");
   return timestamp;
 };

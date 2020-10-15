@@ -1,4 +1,4 @@
-import { nDaysFromNowInWallClockTime } from "../src/util/timeUtils";
+import { nDaysAndHoursFromNowInWallClockTime } from "../src/util/timeUtils";
 import { Meet, RegisterLinkStatus } from "../src/types/gqlGeneratedTypes";
 import {
   ALGOLIA,
@@ -306,8 +306,8 @@ describe("Getting the registerLink and registerLinkStatus", () => {
   it("returns register link of null and status of closed if meet has ended", async () => {
     const pastMeet: Meet = {
       ...ALGOLIA,
-      startTime: nDaysFromNowInWallClockTime(-4),
-      endTime: nDaysFromNowInWallClockTime(-3),
+      startTime: nDaysAndHoursFromNowInWallClockTime(-4),
+      endTime: nDaysAndHoursFromNowInWallClockTime(-3),
     };
 
     await testManager.addMeets([pastMeet]);
@@ -322,8 +322,8 @@ describe("Getting the registerLink and registerLinkStatus", () => {
   it("returns a good register link and status of waiting if meet has not started", async () => {
     const futureMeet: Meet = {
       ...ALGOLIA,
-      startTime: nDaysFromNowInWallClockTime(2),
-      endTime: nDaysFromNowInWallClockTime(3),
+      startTime: nDaysAndHoursFromNowInWallClockTime(2),
+      endTime: nDaysAndHoursFromNowInWallClockTime(3),
     };
 
     await testManager.addMeets([futureMeet]);
@@ -338,10 +338,10 @@ describe("Getting the registerLink and registerLinkStatus", () => {
   it("returns a good register link and status of open if meet is in progress", async () => {
     const currentMeet: Meet = {
       ...ALGOLIA,
-      startTime: nDaysFromNowInWallClockTime(0),
-      endTime: nDaysFromNowInWallClockTime(1),
+      startTime: nDaysAndHoursFromNowInWallClockTime(0),
+      endTime: nDaysAndHoursFromNowInWallClockTime(0, 3),
     };
-
+    console.log({ currentMeet });
     await testManager.addMeets([currentMeet]);
     await testManager
       .getGraphQLData({ query: GET_REGISTERLINK_STATUS, variables: { id: currentMeet.id } })
