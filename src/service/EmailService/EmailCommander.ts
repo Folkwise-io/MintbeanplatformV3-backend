@@ -8,10 +8,10 @@ export default class EmailCommander {
   templates: {
     [key in EmailTemplateName]: EmailTemplate;
   } = {
-    [MEET_REGISTRATION]: new MeetRegistrationEmailTemplate(),
-    [WELCOME]: new MeetRegistrationEmailTemplate(),
-    [ALL]: new MeetRegistrationEmailTemplate(),
-    [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(),
+    [MEET_REGISTRATION]: new MeetRegistrationEmailTemplate(this.emailDao),
+    [WELCOME]: new MeetRegistrationEmailTemplate(this.emailDao),
+    [ALL]: new MeetRegistrationEmailTemplate(this.emailDao),
+    [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(this.emailDao),
   };
 
   // This is called upon triggering inside a controller or service
@@ -23,7 +23,10 @@ export default class EmailCommander {
   async dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars) {
     const template = this.templates[templateName];
     const email = template.generateEmail(emailVars);
-    this.emailDao.sendEmail(email);
-    this.emailDao.deleteScheduledEmail(id);
+
+    const successfullySentEmail = this.emailDao.sendEmail(email);
+    if (successfullySentEmail) {
+      this.emailDao.deleteScheduledEmail(id);
+    }
   }
 }

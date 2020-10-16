@@ -55,6 +55,6 @@ export interface EmailTemplate {
   /** Generates the email object */
   generateEmail(emailVars: EmailVars): Email;
 
-  /** Sends the email */
-  sendEmail(email: Email): Promise<void>;
+  /** Sends the emails to one or several emails, as appropriate, based on the template. Returns whether the emails were successfully sent. */
+  dispatch(emailVars: EmailVars): Promise<boolean>;
 }
