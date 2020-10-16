@@ -16,15 +16,15 @@ export default class EmailCommander {
 
   // This is called upon triggering inside a controller or service
   queue(templateName: EmailTemplateName, emailVars: EmailVars) {
-    this.emailDao.queue(templateName, emailVars);
+    const template = this.templates[templateName];
+    template.queue(emailVars);
   }
 
   // This is called by the cron scheduler
   async dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars) {
     const template = this.templates[templateName];
-    const email = template.generateEmail(emailVars);
 
-    const successfullySentEmail = this.emailDao.sendEmail(email);
+    const successfullySentEmail = template.dispatch(emailVars);
     if (successfullySentEmail) {
       this.emailDao.deleteScheduledEmail(id);
     }
