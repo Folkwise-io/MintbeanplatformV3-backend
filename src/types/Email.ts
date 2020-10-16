@@ -1,3 +1,4 @@
+/** The email object expected by SendGrid */
 export interface Email {
   to: string;
   from: string;
@@ -6,6 +7,7 @@ export interface Email {
   attachments?: Attachment[];
 }
 
+/** The email attachment object expected by SendGrid */
 export interface Attachment {
   content: string;
   filename: string;
@@ -13,7 +15,8 @@ export interface Attachment {
   disposition: string;
 }
 
-// Do not change the string literals after scheduleEmails has been created on staging/prod
+// Do not change the string literals after scheduleEmails has been created on staging/prod!
+/** Possible names for the email templates. Each generates different html, which may be based on userId and meetId */
 export enum EmailTemplateName {
   MEET_REGISTRATION = "meetRegistration",
   WELCOME = "welcome",
@@ -21,6 +24,7 @@ export enum EmailTemplateName {
   ALL = "all",
 }
 
+/** The database representation of a scheduled email */
 export interface ScheduledEmail {
   id: string;
   templateName: EmailTemplateName;
