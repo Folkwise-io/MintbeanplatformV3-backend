@@ -1,9 +1,12 @@
 import { EmailVars, Email } from "../../../types/Email";
+import { Meet } from "../../../types/gqlGeneratedTypes";
+import { User } from "../../../types/User";
 import AbstractEmailTemplate from "./AbstractEmailTemplate";
 
 interface MeetRegistrationEmailVars extends EmailVars {
-  userId: string;
-  meetId: string;
+  user: User;
+  meet: Meet;
+  users: never;
   html: never;
 }
 

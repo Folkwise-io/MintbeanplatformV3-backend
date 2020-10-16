@@ -1,3 +1,6 @@
+import { Meet } from "./gqlGeneratedTypes";
+import { User } from "./User";
+
 /** The email object expected by SendGrid */
 export interface Email {
   to: string;
@@ -38,8 +41,9 @@ export interface ScheduledEmail {
 
 /** Variables needed to generate an email template */
 export interface EmailVars {
-  userId?: string;
-  meetId?: string;
+  user?: User;
+  users?: User[];
+  meet?: Meet;
   html?: string;
 }
 
