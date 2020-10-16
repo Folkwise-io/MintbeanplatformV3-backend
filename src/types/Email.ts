@@ -26,6 +26,7 @@ export interface ScheduledEmail {
   templateName: EmailTemplateName;
   userId?: string | null;
   meetId?: string | null;
+  html?: string;
   sendAt: string;
   sent: boolean;
   createdAt: string;

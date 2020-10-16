@@ -30,6 +30,13 @@ export async function seed(knex: Knex): Promise<void> {
       templateName: ALL,
       userId: null,
       meetId: null,
+      html: `
+      <html>
+        <body>
+          Hello world
+        </body>
+      </html>
+      `,
       sendAt: nDaysAndHoursFromNowInUtcTime(3),
     },
   ]);

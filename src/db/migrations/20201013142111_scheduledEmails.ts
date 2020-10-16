@@ -6,6 +6,7 @@ export async function up(knex: Knex): Promise<void> {
     table.text("templateName").notNullable();
     table.uuid("userId");
     table.uuid("meetId");
+    table.text("html");
     table.timestamp("sendAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("sent").notNullable().defaultTo(false);
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
