@@ -6,11 +6,11 @@ import {
   EditKanbanSessionCardInput,
 } from "../../src/types/gqlGeneratedTypes";
 import { TEST_KANBAN_CARD_1, TEST_KANBAN_CARD_2 } from "./kanbanCardConstants";
-import { TEST_KANBAN_SESSION_ISOLATED, TEST_KANBAN_SESSION_ON_MEET } from "./kanbanSessionConstants";
+import { TEST_KANBAN_SESSION_ISOLATED_RAW, TEST_KANBAN_SESSION_ON_MEET_RAW } from "./kanbanSessionConstants";
 
 export const TEST_MEET_KANBAN_SESSION_CARD_1: KanbanSessionCard = {
   id: "00000000-0000-0000-0000-000000000000",
-  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_1.id,
   index: 0,
   status: KanbanSessionCardStatusEnum["Todo"],
@@ -20,7 +20,7 @@ export const TEST_MEET_KANBAN_SESSION_CARD_1: KanbanSessionCard = {
 
 export const TEST_MEET_KANBAN_SESSION_CARD_2: KanbanSessionCard = {
   id: "00000000-0000-4000-a000-000000000000",
-  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_2.id,
   index: 1,
   status: KanbanSessionCardStatusEnum["Todo"],
@@ -30,7 +30,7 @@ export const TEST_MEET_KANBAN_SESSION_CARD_2: KanbanSessionCard = {
 
 export const TEST_ISOLATED_KANBAN_SESSION_CARD_1: KanbanSessionCard = {
   id: "00000000-0000-0000-0000-000000000000",
-  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_1.id,
   index: 0,
   status: KanbanSessionCardStatusEnum["Todo"],
@@ -40,7 +40,7 @@ export const TEST_ISOLATED_KANBAN_SESSION_CARD_1: KanbanSessionCard = {
 
 export const TEST_ISOLATED_KANBAN_SESSION_CARD_2: KanbanSessionCard = {
   id: "00000000-0000-4000-a000-000000000000",
-  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_2.id,
   index: 1,
   status: KanbanSessionCardStatusEnum["Todo"],
@@ -49,26 +49,26 @@ export const TEST_ISOLATED_KANBAN_SESSION_CARD_2: KanbanSessionCard = {
 };
 
 export const TEST_MEET_KANBAN_SESSION_CARD_1_INPUT: CreateKanbanSessionCardInput = {
-  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_1.id,
   index: 0,
   status: KanbanSessionCardStatusEnum["Wip"],
 };
 export const TEST_MEET_KANBAN_SESSION_CARD_2_INPUT: CreateKanbanSessionCardInput = {
-  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_2.id,
   index: 0,
   status: KanbanSessionCardStatusEnum["Todo"],
 };
 
 export const TEST_ISOLATED_KANBAN_SESSION_CARD_1_INPUT: CreateKanbanSessionCardInput = {
-  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_1.id,
   index: 0,
   status: KanbanSessionCardStatusEnum["Wip"],
 };
 export const TEST_ISOLATED_KANBAN_SESSION_CARD_2_INPUT: CreateKanbanSessionCardInput = {
-  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED.id,
+  kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED_RAW.id,
   kanbanCardId: TEST_KANBAN_CARD_2.id,
   index: 0,
   status: KanbanSessionCardStatusEnum["Todo"],

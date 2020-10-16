@@ -74,18 +74,22 @@ export default class KanbanSessionDaoKnex implements KanbanSessionDao {
 
   async addOne(args: KanbanSessionServiceAddOneInput): Promise<KanbanSession> {
     return handleDatabaseError(async () => {
-      const newKanbanSessions = (await this.knex("kanbanSessions").insert(args).returning("*")) as KanbanSession[];
-      return newKanbanSessions[0];
+      const newKanban = await this.knex("kanbanSessions")
+        .insert(args)
+        .returning("*")
+        .then((kanbanSessions) => this.getOne({ id: kanbanSessions[0].id }));
+      return newKanban;
     });
   }
 
   async editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession> {
     return handleDatabaseError(async () => {
-      const newKanbanSessions = (await this.knex("kanbanSessions")
+      const updatedKanbanSession = await this.knex("kanbanSessions")
         .where({ id })
         .update({ ...input, updatedAt: this.knex.fn.now() })
-        .returning("*")) as KanbanSession[];
-      return newKanbanSessions[0];
+        .returning("*")
+        .then((kanbanSessions) => this.getOne({ id: kanbanSessions[0].id }));
+      return updatedKanbanSession;
     });
   }
 
