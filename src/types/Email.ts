@@ -30,8 +30,27 @@ export interface ScheduledEmail {
   templateName: EmailTemplateName;
   userId?: string | null;
   meetId?: string | null;
-  html?: string;
-  sendAt: string;
+  html?: string | null;
   sent: boolean;
   createdAt: string;
+  sendAt: string;
+}
+
+/** Variables needed to generate an email template */
+export interface EmailVars {
+  userId?: string;
+  meetId?: string;
+  html?: string;
+}
+
+/** A class that can queue itself to the scheduledEmail db, generate the email object, and send the email */
+export interface EmailTemplate {
+  /** Adds the email as an entry to the scheduledEmails db */
+  queue(emailVars: EmailVars): Promise<void>;
+
+  /** Generates the email object */
+  generateEmail(emailVars: EmailVars): Email;
+
+  /** Sends the email */
+  send(email: Email): Promise<void>;
 }
