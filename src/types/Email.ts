@@ -52,5 +52,5 @@ export interface EmailTemplate {
   generateEmail(emailVars: EmailVars): Email;
 
   /** Sends the email */
-  send(email: Email): Promise<void>;
+  sendEmail(email: Email): Promise<void>;
 }
