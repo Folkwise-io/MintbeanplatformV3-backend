@@ -48,8 +48,6 @@ const meetResolver = (
           throw new AuthenticationError("You are not authorized to delete meets!");
         }
 
-        emailObserver.dispatch("deleteMeet");
-
         return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
       },
       registerForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
@@ -72,10 +70,6 @@ const meetResolver = (
             const email = emailService.generateMeetRegistrationEmail(user, meet, id);
 
             return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
-          })
-          .then((meet) => {
-            // TODO: Need to pass in the Meet/User/id context to generate template
-            emailObserver.dispatch("afterRegistration");
           })
           .then(() => true);
       },
