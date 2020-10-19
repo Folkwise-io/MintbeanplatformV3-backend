@@ -2,7 +2,7 @@ import sgMail from "@sendgrid/mail";
 import Knex from "knex";
 import { Email, ScheduledEmail } from "../types/Email";
 
-export class EmailDao {
+export default class EmailDao {
   constructor(private apiKey: string, private knex: Knex) {}
 
   async queue(scheduledEmailVars: ScheduledEmail): Promise<void> {

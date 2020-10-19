@@ -1,5 +1,5 @@
 import { Email } from "../../types/Email";
-import { EmailService } from "../../service/EmailService";
+import EmailService from "../../service/EmailService";
 import { Meet, Resolvers } from "../../types/gqlGeneratedTypes";
 import EmailResolverValidator from "../../validator/EmailResolverValidator";
 import MeetService from "../../service/MeetService";

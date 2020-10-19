@@ -1,12 +1,12 @@
 import config from "../../util/config";
-import { EmailDao } from "../../dao/EmailDao";
+import EmailDao from "../../dao/EmailDao";
 import { Email } from "../../types/Email";
 import { Meet } from "../../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../../util/emailUtils";
 import { User } from "../../types/User";
 
 const { senderEmail } = config;
-export class EmailService {
+export default class EmailService {
   constructor(private emailDao: EmailDao) {}
 
   generateMeetReminderEmail(recipientEmailAddress: string, meet: Meet): Email {

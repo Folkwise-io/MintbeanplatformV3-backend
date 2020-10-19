@@ -22,8 +22,8 @@ import ProjectMediaAssetService from "./service/ProjectMediaAssetService";
 import MeetRegistrationDaoKnex from "./dao/MeetRegistrationDaoKnex";
 import MeetRegistrationDao from "./dao/MeetRegistrationDao";
 import MeetRegistrationService from "./service/MeetRegistrationService";
-import { EmailService } from "./service/EmailService";
-import { EmailDao } from "./dao/EmailDao";
+import EmailService from "./service/EmailService";
+import EmailDao from "./dao/EmailDao";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
 
 import config from "./util/config";

@@ -1,4 +1,4 @@
-import { EmailDao } from "../../dao/EmailDao";
+import EmailDao from "../../dao/EmailDao";
 import { EmailCommander, EmailTemplate, EmailTemplateName, EmailVars, ScheduledEmail } from "../../types/Email";
 import MeetRegistrationEmailTemplate from "./templates/MeetRegistrationEmailTemplate";
 

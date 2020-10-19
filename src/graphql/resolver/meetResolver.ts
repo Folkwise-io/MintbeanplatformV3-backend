@@ -1,6 +1,6 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import { EmailService } from "../../service/EmailService";
+import EmailService from "../../service/EmailService";
 import MeetRegistrationService from "../../service/MeetRegistrationService";
 import MeetService from "../../service/MeetService";
 import UserService from "../../service/UserService";

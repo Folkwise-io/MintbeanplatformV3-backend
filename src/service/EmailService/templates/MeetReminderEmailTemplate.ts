@@ -1,4 +1,4 @@
-import { EmailDao } from "../../../dao/EmailDao";
+import EmailDao from "../../../dao/EmailDao";
 import { EmailVars, Email, EmailTemplate } from "../../../types/Email";
 import { Meet } from "../../../types/gqlGeneratedTypes";
 import { User } from "../../../types/User";
