@@ -27,6 +27,7 @@ import EmailDao from "./dao/EmailDao";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
 import EmailCommanderImpl from "./service/EmailService/EmailCommander";
 import { EmailCommander } from "./types/Email";
+import EmailDaoSendgridKnex from "./dao/EmailDaoSendgridKnex";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -46,7 +47,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
-  const emailDao = new EmailDao(knex);
+  const emailDao = new EmailDaoSendgridKnex(knex);
 
   return {
     userDao,
