@@ -14,7 +14,7 @@ export interface EmailResponse {
 
 export default interface EmailDao {
   /** Queues an email template to be sent (i.e. by persisting in a db) */
-  queue(scheduledEmailVars: ScheduledEmail): Promise<void>;
+  queue(scheduledEmail: ScheduledEmail | ScheduledEmail[]): Promise<void>;
 
   /** Retrieves scheduled emails that have not been sent */
   getUnsentScheduledEmails(): Promise<ScheduledEmail[]>;
@@ -27,4 +27,7 @@ export default interface EmailDao {
 
   /** Sends an email */
   sendEmail(email: Email): Promise<EmailResponse>;
+
+  /** For TestManager to call */
+  deleteAll(): Promise<void>;
 }

@@ -12,9 +12,9 @@ sgMail.setApiKey(sendgridKey);
 export default class EmailDaoSendgridKnex implements EmailDao {
   constructor(private knex: Knex) {}
 
-  queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
+  queue(scheduledEmail: ScheduledEmail | ScheduledEmail[]): Promise<void> {
     return handleDatabaseError(() => {
-      return this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmailVars);
+      return this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmail);
     });
   }
 
@@ -55,5 +55,9 @@ export default class EmailDaoSendgridKnex implements EmailDao {
         };
       },
     );
+  }
+
+  deleteAll(): Promise<void>{
+    return this.knex<ScheduledEmail>("scheduledEmails").delete();
   }
 }
