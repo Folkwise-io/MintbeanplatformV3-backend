@@ -3,6 +3,7 @@ import { Email, ScheduledEmail } from "../types/Email";
 import sgMail from "@sendgrid/mail";
 import config from "../util/config";
 import EmailDao, { EmailResponse, EmailResponseStatus } from "./EmailDao";
+import handleDatabaseError from "../util/handleDatabaseError";
 
 const { SUCCESS, REQUEST_ERROR, SERVER_ERROR } = EmailResponseStatus;
 const { sendgridKey } = config;
@@ -12,11 +13,15 @@ export default class EmailDaoSendgridKnex implements EmailDao {
   constructor(private knex: Knex) {}
 
   queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
-    throw new Error("Not yet implemented");
+    return handleDatabaseError(() => {
+      return this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmailVars);
+    });
   }
 
   deleteScheduledEmail(id: string): Promise<void> {
-    throw new Error("Not yet implemented");
+    return handleDatabaseError(() => {
+      return this.knex<ScheduledEmail>("scheduledEmails").update({ sent: true }).where({ id });
+    });
   }
 
   sendEmail(email: Email): Promise<EmailResponse> {
