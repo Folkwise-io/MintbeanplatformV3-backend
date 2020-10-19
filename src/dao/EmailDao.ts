@@ -1,26 +1,30 @@
-import sgMail from "@sendgrid/mail";
 import Knex from "knex";
 import { Email, ScheduledEmail } from "../types/Email";
+import sgMail from "@sendgrid/mail";
+import config from "../util/config";
+const { sendgridKey } = config;
+sgMail.setApiKey(sendgridKey);
 
+export interface SendgridResponse {
+  status: "SUCCESS" | "FAILURE";
+}
 export default class EmailDao {
-  constructor(private apiKey: string, private knex: Knex) {}
+  constructor(private knex: Knex) {}
 
-  async queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
+  queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
     throw new Error("Not yet implemented");
   }
 
-  async deleteScheduledEmail(id: string): Promise<void> {
+  deleteScheduledEmail(id: string): Promise<void> {
     throw new Error("Not yet implemented");
   }
 
-  async sendEmail(email: Email): Promise<boolean> {
-    sgMail.setApiKey(this.apiKey);
+  async sendEmail(email: Email): Promise<SendgridResponse> {
     try {
       await sgMail.send(email);
-      return true;
+      return { status: "SUCCESS" };
     } catch (e) {
-      console.log(e);
-      return false;
+      return { status: "FAILURE" };
     }
   }
 }

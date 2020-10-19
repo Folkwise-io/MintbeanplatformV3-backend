@@ -1,5 +1,5 @@
 import config from "../../util/config";
-import EmailDao from "../../dao/EmailDao";
+import EmailDao, { SendgridResponse } from "../../dao/EmailDao";
 import { Email } from "../../types/Email";
 import { Meet } from "../../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../../util/emailUtils";
@@ -34,7 +34,7 @@ export default class EmailService {
     return email;
   }
 
-  async sendEmail(email: Email): Promise<boolean> {
+  async sendEmail(email: Email): Promise<SendgridResponse> {
     return this.emailDao.sendEmail(email);
   }
 }

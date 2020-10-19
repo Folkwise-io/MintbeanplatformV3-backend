@@ -16,7 +16,7 @@ const emailResolver = (
   return {
     Mutation: {
       //TODO: check yup validation of input in emailResolverValidator
-      sendTestEmail: (_root, { input }, context: ServerContext): Promise<boolean> => {
+      sendTestEmail: async (_root, { input }, context: ServerContext): Promise<boolean> => {
         ensureAdmin(context);
         const { subject, body } = input;
         const testEmail: Email = {
@@ -25,16 +25,29 @@ const emailResolver = (
           subject: subject,
           html: body,
         };
-        return emailService.sendEmail(testEmail);
+        await emailService.sendEmail(testEmail).then((res) => {
+          if (res.status === "SUCCESS") {
+            return true;
+          }
+        });
+
+        return false;
       },
 
-      sendReminderEmailForMeet: async (_root, { input }, context: ServerContext) => {
+      sendReminderEmailForMeet: async (_root, { input }, context: ServerContext): Promise<boolean> => {
         ensureAdmin(context);
         const { meetId, subject, body } = input;
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: meetId }));
         // TODO: get users and map over their emails and send them all
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
-        return emailService.sendEmail(email);
+
+        await emailService.sendEmail(email).then((res) => {
+          if (res.status === "SUCCESS") {
+            return true;
+          }
+        });
+
+        return false;
       },
 
       sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext) => {
@@ -52,7 +65,13 @@ const emailResolver = (
         };
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
         const email = emailService.generateMeetRegistrationEmail(user, meet, "REGISTRATION_UUID_WILL_GO_HERE");
-        return emailService.sendEmail(email);
+        await emailService.sendEmail(email).then((res) => {
+          if (res.status === "SUCCESS") {
+            return true;
+          }
+        });
+
+        return false;
       },
     },
   };
