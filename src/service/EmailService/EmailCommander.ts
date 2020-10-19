@@ -5,6 +5,7 @@ import MeetRegistrationEmailTemplate from "./templates/MeetRegistrationEmailTemp
 const { MEET_REGISTRATION, WELCOME, ALL, CHECK_IN_AFTER_SIGN_UP } = EmailTemplateName;
 export default class EmailCommanderImpl implements EmailCommander {
   constructor(private emailDao: EmailDao) {}
+
   templates: {
     [key in EmailTemplateName]: EmailTemplate;
   } = {
@@ -14,18 +15,16 @@ export default class EmailCommanderImpl implements EmailCommander {
     [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(this.emailDao),
   };
 
-  // This is called upon triggering inside a controller or service
   queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
     return this.emailDao.queue(scheduledEmailVars);
   }
 
-  // This is called by the cron scheduler
-  async dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars) {
+  async dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<boolean> {
     const template = this.templates[templateName];
 
-    const successfullySentEmail = template.dispatch(emailVars);
+    const successfullySentEmail = await template.dispatch(emailVars);
     if (successfullySentEmail) {
-      this.emailDao.deleteScheduledEmail(id);
+      await this.emailDao.deleteScheduledEmail(id);
     }
 
     return successfullySentEmail;
