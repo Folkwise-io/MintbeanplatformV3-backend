@@ -1,8 +1,9 @@
 import sgMail from "@sendgrid/mail";
-import { Email, EmailTemplateName, EmailVars, ScheduledEmail } from "../types/Email";
+import Knex from "knex";
+import { Email, ScheduledEmail } from "../types/Email";
 
 export class EmailDao {
-  constructor(private apiKey: string) {}
+  constructor(private apiKey: string, private knex: Knex) {}
 
   async queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
     throw new Error("Not yet implemented");

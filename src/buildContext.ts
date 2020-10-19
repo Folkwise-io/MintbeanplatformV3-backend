@@ -24,8 +24,12 @@ import MeetRegistrationDao from "./dao/MeetRegistrationDao";
 import MeetRegistrationService from "./service/MeetRegistrationService";
 import { EmailService } from "./service/EmailService";
 import { EmailDao } from "./dao/EmailDao";
-import config from "./util/config";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
+
+import config from "./util/config";
+import EmailCommanderImpl from "./service/EmailService/EmailCommander";
+import { EmailCommander } from "./types/Email";
+const { sendGridKey } = config;
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -34,6 +38,7 @@ export interface PersistenceContext {
   mediaAssetDao: MediaAssetDao;
   projectMediaAssetDao: ProjectMediaAssetDao;
   meetRegistrationDao: MeetRegistrationDao;
+  emailDao: EmailDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -44,6 +49,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
+  const emailDao = new EmailDao(sendGridKey, knex);
 
   return {
     userDao,
@@ -52,6 +58,7 @@ export function buildPersistenceContext(): PersistenceContext {
     mediaAssetDao,
     projectMediaAssetDao,
     meetRegistrationDao,
+    emailDao,
   };
 }
 
@@ -68,10 +75,19 @@ export interface ResolverContext {
   meetRegistrationService: MeetRegistrationService;
   emailResolverValidator: EmailResolverValidator;
   emailService: EmailService;
+  emailCommander: EmailCommander;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao, projectDao, mediaAssetDao, projectMediaAssetDao, meetRegistrationDao } = persistenceContext;
+  const {
+    userDao,
+    meetDao,
+    projectDao,
+    mediaAssetDao,
+    projectMediaAssetDao,
+    meetRegistrationDao,
+    emailDao,
+  } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
@@ -82,11 +98,9 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const mediaAssetService = new MediaAssetService(mediaAssetDao);
   const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
   const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
-
-  const { sendGridKey } = config;
-  const emailResolverValidator = new EmailResolverValidator();
-  const emailDao = new EmailDao(sendGridKey);
   const emailService = new EmailService(emailDao);
+  const emailCommander = new EmailCommanderImpl(emailDao);
+  const emailResolverValidator = new EmailResolverValidator();
 
   return {
     userResolverValidator,
@@ -101,5 +115,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetRegistrationService,
     emailResolverValidator,
     emailService,
+    emailCommander,
   };
 }
