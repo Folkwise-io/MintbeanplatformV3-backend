@@ -39,6 +39,15 @@ export interface ScheduledEmail {
   sendAt: string;
 }
 
+/** The necessary input to create a new scheduled email */
+export interface ScheduledEmailInput {
+  templateName: EmailTemplateName;
+  userId?: string | null;
+  meetId?: string | null;
+  html?: string | null;
+  sendAt: string;
+}
+
 /** Variables needed to generate an email template */
 export interface EmailVars {
   user?: User;

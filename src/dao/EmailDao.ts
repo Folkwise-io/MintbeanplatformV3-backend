@@ -1,4 +1,4 @@
-import { Email, ScheduledEmail } from "../types/Email";
+import { Email, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
 
 export enum EmailResponseStatus {
   SUCCESS = "EMAIL_SUCCESS",
@@ -14,7 +14,7 @@ export interface EmailResponse {
 
 export default interface EmailDao {
   /** Queues an email template to be sent (i.e. by persisting in a db) */
-  queue(scheduledEmail: ScheduledEmail | ScheduledEmail[]): Promise<void>;
+  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void>;
 
   /** Retrieves scheduled emails that have not been sent */
   getUnsentScheduledEmails(): Promise<ScheduledEmail[]>;

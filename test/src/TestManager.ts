@@ -18,7 +18,7 @@ import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
-import { ScheduledEmail } from "../../src/types/Email";
+import { ScheduledEmailInput } from "../../src/types/Email";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -184,7 +184,7 @@ export default class TestManager {
     return this.params.persistenceContext.emailDao.deleteAll();
   }
 
-  queue(scheduledEmails: ScheduledEmail | ScheduledEmail[]): Promise<void> {
+  queue(scheduledEmails: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
     return this.params.persistenceContext.emailDao.queue(scheduledEmails);
   }
 

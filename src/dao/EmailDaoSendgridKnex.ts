@@ -1,5 +1,5 @@
 import Knex from "knex";
-import { Email, ScheduledEmail } from "../types/Email";
+import { Email, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
 import sgMail from "@sendgrid/mail";
 import config from "../util/config";
 import EmailDao, { EmailResponse, EmailResponseStatus } from "./EmailDao";
@@ -12,7 +12,7 @@ sgMail.setApiKey(sendgridKey);
 export default class EmailDaoSendgridKnex implements EmailDao {
   constructor(private knex: Knex) {}
 
-  queue(scheduledEmail: ScheduledEmail | ScheduledEmail[]): Promise<void> {
+  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
     return handleDatabaseError(() => {
       return this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmail);
     });
@@ -57,7 +57,7 @@ export default class EmailDaoSendgridKnex implements EmailDao {
     );
   }
 
-  deleteAll(): Promise<void>{
+  deleteAll(): Promise<void> {
     return this.knex<ScheduledEmail>("scheduledEmails").delete();
   }
 }
