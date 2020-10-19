@@ -13,10 +13,6 @@ interface MeetReminderEmailVars extends EmailVars {
 export default class MeetReminderEmailTemplate implements EmailTemplate {
   constructor(emailDao: EmailDao) {}
 
-  queue(emailVars: MeetReminderEmailVars): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-
   generateEmail(emailVars: MeetReminderEmailVars): Email {
     throw new Error("Method not implemented.");
   }

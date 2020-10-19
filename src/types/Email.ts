@@ -47,14 +47,20 @@ export interface EmailVars {
   html?: string;
 }
 
-/** A class that can queue itself to the scheduledEmail db, generate the email object, and send the email */
+/** Generates the email object according to its template and send the email depending on template needs */
 export interface EmailTemplate {
-  /** Adds the email as an entry to the scheduledEmails db */
-  queue(emailVars: EmailVars): Promise<void>;
-
   /** Generates the email object */
   generateEmail(emailVars: EmailVars): Email;
 
   /** Sends the emails to one or several emails, as appropriate, based on the template. Returns whether the emails were successfully sent. */
   dispatch(emailVars: EmailVars): Promise<boolean>;
+}
+
+/** Queues email templates to the scheduledEmail db and coordinates sending of the email */
+export interface EmailCommander {
+  /** Adds the email as an entry to the scheduledEmails db, called upon triggering inside a controller or service */
+  queue(scheduledEmailVars: ScheduledEmail): Promise<void>;
+
+  /** Called by the cron scheduler to coordinate generation/sending of emails. */
+  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<boolean>;
 }

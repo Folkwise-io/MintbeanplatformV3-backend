@@ -1,9 +1,9 @@
 import { EmailDao } from "../../dao/EmailDao";
-import { EmailTemplate, EmailTemplateName, EmailVars } from "../../types/Email";
+import { EmailCommander, EmailTemplate, EmailTemplateName, EmailVars, ScheduledEmail } from "../../types/Email";
 import MeetRegistrationEmailTemplate from "./templates/MeetRegistrationEmailTemplate";
 
 const { MEET_REGISTRATION, WELCOME, ALL, CHECK_IN_AFTER_SIGN_UP } = EmailTemplateName;
-export default class EmailCommander {
+export default class EmailCommanderImpl implements EmailCommander {
   constructor(private emailDao: EmailDao) {}
   templates: {
     [key in EmailTemplateName]: EmailTemplate;
@@ -15,9 +15,8 @@ export default class EmailCommander {
   };
 
   // This is called upon triggering inside a controller or service
-  queue(templateName: EmailTemplateName, emailVars: EmailVars) {
-    const template = this.templates[templateName];
-    template.queue(emailVars);
+  queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
+    return this.emailDao.queue(scheduledEmailVars);
   }
 
   // This is called by the cron scheduler
@@ -28,5 +27,7 @@ export default class EmailCommander {
     if (successfullySentEmail) {
       this.emailDao.deleteScheduledEmail(id);
     }
+
+    return successfullySentEmail;
   }
 }

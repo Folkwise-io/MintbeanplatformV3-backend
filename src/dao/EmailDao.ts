@@ -1,10 +1,10 @@
 import sgMail from "@sendgrid/mail";
-import { Email, EmailTemplateName, EmailVars } from "../types/Email";
+import { Email, EmailTemplateName, EmailVars, ScheduledEmail } from "../types/Email";
 
 export class EmailDao {
   constructor(private apiKey: string) {}
 
-  async queue(templateName: EmailTemplateName, emailVars: EmailVars): Promise<void> {
+  async queue(scheduledEmailVars: ScheduledEmail): Promise<void> {
     throw new Error("Not yet implemented");
   }
 
