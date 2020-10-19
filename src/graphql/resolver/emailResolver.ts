@@ -25,13 +25,13 @@ const emailResolver = (
           subject: subject,
           html: body,
         };
-        await emailService.sendEmail(testEmail).then((res) => {
+        return emailService.sendEmail(testEmail).then((res) => {
           if (res.status === "SUCCESS") {
             return true;
+          } else {
+            return false;
           }
         });
-
-        return false;
       },
 
       sendReminderEmailForMeet: async (_root, { input }, context: ServerContext): Promise<boolean> => {
@@ -41,16 +41,16 @@ const emailResolver = (
         // TODO: get users and map over their emails and send them all
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
 
-        await emailService.sendEmail(email).then((res) => {
+        return emailService.sendEmail(email).then((res) => {
           if (res.status === "SUCCESS") {
             return true;
+          } else {
+            return false;
           }
         });
-
-        return false;
       },
 
-      sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext) => {
+      sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
         ensureAdmin(context);
 
         const user: User = {
@@ -65,13 +65,13 @@ const emailResolver = (
         };
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
         const email = emailService.generateMeetRegistrationEmail(user, meet, "REGISTRATION_UUID_WILL_GO_HERE");
-        await emailService.sendEmail(email).then((res) => {
+        return emailService.sendEmail(email).then((res) => {
           if (res.status === "SUCCESS") {
             return true;
+          } else {
+            return false;
           }
         });
-
-        return false;
       },
     },
   };
