@@ -19,14 +19,12 @@ export default class EmailCommanderImpl implements EmailCommander {
     return this.emailDao.queue(scheduledEmailVars);
   }
 
-  async dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<boolean> {
+  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<void> {
     const template = this.templates[templateName];
-
-    const successfullySentEmail = await template.dispatch(emailVars);
-    if (successfullySentEmail) {
-      await this.emailDao.deleteScheduledEmail(id);
+    if (!template) {
+      throw new Error(`ILLEGAL STATE: Template name [${template}] not implemented.`);
     }
 
-    return successfullySentEmail;
+    return template.dispatch(emailVars).then(() => this.emailDao.deleteScheduledEmail(id));
   }
 }

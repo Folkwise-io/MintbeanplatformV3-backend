@@ -53,7 +53,7 @@ export interface EmailTemplate {
   generateEmail(emailVars: EmailVars): Email;
 
   /** Sends the emails to one or several emails, as appropriate, based on the template. Returns whether the emails were successfully sent. */
-  dispatch(emailVars: EmailVars): Promise<boolean>;
+  dispatch(emailVars: EmailVars): Promise<void>;
 }
 
 /** Queues email templates to the scheduledEmail db and coordinates sending of the email */
@@ -62,5 +62,5 @@ export interface EmailCommander {
   queue(scheduledEmailVars: ScheduledEmail): Promise<void>;
 
   /** Called by the cron scheduler to coordinate generation/sending of emails. */
-  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<boolean>;
+  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<void>;
 }

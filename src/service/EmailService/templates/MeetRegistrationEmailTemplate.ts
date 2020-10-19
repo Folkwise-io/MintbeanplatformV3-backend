@@ -17,7 +17,7 @@ export default class MeetRegistrationEmailTemplate implements EmailTemplate {
     throw new Error("Method not implemented.");
   }
 
-  dispatch(emailVars: MeetRegistrationEmailVars): Promise<boolean> {
+  dispatch(emailVars: MeetRegistrationEmailVars): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }

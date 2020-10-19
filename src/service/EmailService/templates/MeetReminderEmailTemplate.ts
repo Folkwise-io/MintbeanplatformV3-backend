@@ -11,13 +11,13 @@ interface MeetReminderEmailVars extends EmailVars {
 }
 
 export default class MeetReminderEmailTemplate implements EmailTemplate {
-  constructor(emailDao: EmailDao) {}
+  constructor(private emailDao: EmailDao) {}
 
   generateEmail(emailVars: MeetReminderEmailVars): Email {
     throw new Error("Method not implemented.");
   }
 
-  dispatch(emailVars: MeetReminderEmailVars): Promise<boolean> {
+  dispatch(emailVars: MeetReminderEmailVars): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }
