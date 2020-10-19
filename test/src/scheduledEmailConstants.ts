@@ -10,7 +10,7 @@ export const AMY_ALGOLIA_SCHEDULED_EMAIL: ScheduledEmail = {
   templateName: MEET_REGISTRATION,
   userId: AMY.id,
   meetId: ALGOLIA.id,
-  sendAt: nDaysAndHoursFromNowInUtcTime(0, 1),
+  sendAt: nDaysAndHoursFromNowInUtcTime(0),
   sent: false,
   createdAt: nDaysAndHoursFromNowInUtcTime(0),
 };

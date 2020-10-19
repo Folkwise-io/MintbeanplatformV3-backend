@@ -38,7 +38,7 @@ interface PostParams {
 }
 
 export default class TestManager {
-  private constructor(private params: TestManagerParams) {}
+  private constructor(public params: TestManagerParams) {}
 
   static build() {
     const persistenceContext = buildPersistenceContext();
