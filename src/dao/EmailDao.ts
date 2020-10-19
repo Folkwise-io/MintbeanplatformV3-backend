@@ -5,12 +5,18 @@ import config from "../util/config";
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
 
-export interface EmailResponse {
-  statusCode: number;
-  status: "SUCCESS" | "FAILURE";
-  errorMessage?: string;
+export enum EmailResponseStatus {
+  SUCCESS = "EMAIL_SUCCESS",
+  REQUEST_ERROR = "EMAIL_REQUEST_ERROR",
+  SERVER_ERROR = "EMAIL_SERVER_ERROR",
 }
 
+export interface EmailResponse {
+  statusCode: number;
+  status: EmailResponseStatus;
+  errorMessage?: string;
+}
+const { SUCCESS, REQUEST_ERROR, SERVER_ERROR } = EmailResponseStatus;
 export default class EmailDao {
   constructor(private knex: Knex) {}
 
@@ -24,12 +30,14 @@ export default class EmailDao {
 
   sendEmail(email: Email): Promise<EmailResponse> {
     return sgMail.send(email).then(
-      ([res, _]) => ({ statusCode: res.statusCode, status: "SUCCESS" }),
+      ([res, _]) => ({ statusCode: res.statusCode, status: SUCCESS }),
+
       (error) => {
         console.log(JSON.stringify(error, null, 2));
         return {
           statusCode: error.code || 400,
-          status: "FAILURE",
+          // Sendgrid error codes: https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html
+          status: error?.code < 500 ? REQUEST_ERROR : SERVER_ERROR,
           errorMessage: error?.response?.body?.errors[0]?.message || "Unknown error",
         };
       },

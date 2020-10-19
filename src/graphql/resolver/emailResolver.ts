@@ -7,6 +7,18 @@ import { ServerContext } from "../../buildServerContext";
 import { ensureExists } from "../../util/ensureExists";
 import { User } from "../../types/User";
 import ensureAdmin from "../../util/ensureAdmin";
+import { EmailResponse, EmailResponseStatus } from "../../dao/EmailDao";
+import { ApolloError } from "apollo-server-express";
+
+const { SUCCESS } = EmailResponseStatus;
+
+const handleEmailResponse = (res: EmailResponse): boolean => {
+  if (res.status === SUCCESS) {
+    return true;
+  } else {
+    throw new ApolloError(res.errorMessage || "INTERNAL SERVER ERROR", res.status);
+  }
+};
 
 const emailResolver = (
   emailResolverValidator: EmailResolverValidator,
@@ -25,13 +37,7 @@ const emailResolver = (
           subject: subject,
           html: body,
         };
-        return emailService.sendEmail(testEmail).then((res) => {
-          if (res.status === "SUCCESS") {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        return emailService.sendEmail(testEmail).then(handleEmailResponse);
       },
 
       sendReminderEmailForMeet: async (_root, { input }, context: ServerContext): Promise<boolean> => {
@@ -41,13 +47,7 @@ const emailResolver = (
         // TODO: get users and map over their emails and send them all
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
 
-        return emailService.sendEmail(email).then((res) => {
-          if (res.status === "SUCCESS") {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        return emailService.sendEmail(email).then(handleEmailResponse);
       },
 
       sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
@@ -65,13 +65,7 @@ const emailResolver = (
         };
         const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
         const email = emailService.generateMeetRegistrationEmail(user, meet, "REGISTRATION_UUID_WILL_GO_HERE");
-        return emailService.sendEmail(email).then((res) => {
-          if (res.status === "SUCCESS") {
-            return true;
-          } else {
-            return false;
-          }
-        });
+        return emailService.sendEmail(email).then(handleEmailResponse);
       },
     },
   };
