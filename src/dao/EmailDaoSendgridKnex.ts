@@ -18,6 +18,23 @@ export default class EmailDaoSendgridKnex implements EmailDao {
     });
   }
 
+  getUnsentScheduledEmails(): Promise<ScheduledEmail[]> {
+    return handleDatabaseError(() => {
+      return this.knex<ScheduledEmail>("scheduledEmails").where({ sent: false }).orderBy("sendAt");
+    });
+  }
+
+  getOverdueScheduledEmails(): Promise<ScheduledEmail[]> {
+    const now = new Date();
+
+    return handleDatabaseError(() => {
+      return this.knex<ScheduledEmail>("scheduledEmails")
+        .where({ sent: false })
+        .andWhere("sendAt", "<=", now)
+        .orderBy("sendAt");
+    });
+  }
+
   deleteScheduledEmail(id: string): Promise<void> {
     return handleDatabaseError(() => {
       return this.knex<ScheduledEmail>("scheduledEmails").update({ sent: true }).where({ id });
