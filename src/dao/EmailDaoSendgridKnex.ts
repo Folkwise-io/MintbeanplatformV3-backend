@@ -2,22 +2,12 @@ import Knex from "knex";
 import { Email, ScheduledEmail } from "../types/Email";
 import sgMail from "@sendgrid/mail";
 import config from "../util/config";
-import EmailDao from "./EmailDao";
+import EmailDao, { EmailResponse, EmailResponseStatus } from "./EmailDao";
+
+const { SUCCESS, REQUEST_ERROR, SERVER_ERROR } = EmailResponseStatus;
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
 
-export enum EmailResponseStatus {
-  SUCCESS = "EMAIL_SUCCESS",
-  REQUEST_ERROR = "EMAIL_REQUEST_ERROR",
-  SERVER_ERROR = "EMAIL_SERVER_ERROR",
-}
-
-export interface EmailResponse {
-  statusCode: number;
-  status: EmailResponseStatus;
-  errorMessage?: string;
-}
-const { SUCCESS, REQUEST_ERROR, SERVER_ERROR } = EmailResponseStatus;
 export default class EmailDaoSendgridKnex implements EmailDao {
   constructor(private knex: Knex) {}
 
