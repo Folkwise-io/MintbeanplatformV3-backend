@@ -1,6 +1,6 @@
 import config from "../../util/config";
-import EmailDao, { EmailResponse } from "../../dao/EmailDao";
-import { Email } from "../../types/Email";
+import EmailDao from "../../dao/EmailDao";
+import { Email, EmailResponse } from "../../types/Email";
 import { Meet } from "../../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../../util/emailUtils";
 import { User } from "../../types/User";

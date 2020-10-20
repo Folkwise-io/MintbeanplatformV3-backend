@@ -1,4 +1,4 @@
-import { Email } from "../../types/Email";
+import { Email, EmailResponse, EmailResponseStatus } from "../../types/Email";
 import EmailService from "../../service/EmailService";
 import { Meet, Resolvers } from "../../types/gqlGeneratedTypes";
 import EmailResolverValidator from "../../validator/EmailResolverValidator";
@@ -7,7 +7,6 @@ import { ServerContext } from "../../buildServerContext";
 import { ensureExists } from "../../util/ensureExists";
 import { User } from "../../types/User";
 import ensureAdmin from "../../util/ensureAdmin";
-import { EmailResponse, EmailResponseStatus } from "../../dao/EmailDao";
 import { ApolloError } from "apollo-server-express";
 
 const { SUCCESS } = EmailResponseStatus;

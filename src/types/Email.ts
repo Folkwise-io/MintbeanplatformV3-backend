@@ -50,10 +50,23 @@ export interface ScheduledEmailInput {
 
 /** Variables needed to generate an email template */
 export interface EmailVars {
+  id: string;
   user?: User;
   users?: User[];
   meet?: Meet;
   html?: string;
+}
+
+export enum EmailResponseStatus {
+  SUCCESS = "EMAIL_SUCCESS",
+  REQUEST_ERROR = "EMAIL_REQUEST_ERROR",
+  SERVER_ERROR = "EMAIL_SERVER_ERROR",
+}
+
+export interface EmailResponse {
+  statusCode: number;
+  status: EmailResponseStatus;
+  errorMessage?: string;
 }
 
 /** Generates the email object according to its template and send the email depending on template needs */
@@ -62,7 +75,7 @@ export interface EmailTemplate {
   generateEmail(emailVars: EmailVars): Email;
 
   /** Sends the emails to one or several emails, as appropriate, based on the template. Returns whether the emails were successfully sent. */
-  dispatch(emailVars: EmailVars): Promise<void>;
+  dispatch(emailVars: EmailVars): Promise<EmailResponse[]>;
 }
 
 /** Queues email templates to the scheduledEmail db and coordinates sending of the email */

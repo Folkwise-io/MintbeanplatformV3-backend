@@ -1,8 +1,8 @@
 import Knex from "knex";
-import { Email, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
+import { Email, EmailResponse, EmailResponseStatus, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
 import sgMail from "@sendgrid/mail";
 import config from "../util/config";
-import EmailDao, { EmailResponse, EmailResponseStatus } from "./EmailDao";
+import EmailDao from "./EmailDao";
 import handleDatabaseError from "../util/handleDatabaseError";
 
 const { SUCCESS, REQUEST_ERROR, SERVER_ERROR } = EmailResponseStatus;

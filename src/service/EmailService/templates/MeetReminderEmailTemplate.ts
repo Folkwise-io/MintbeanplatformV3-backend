@@ -1,5 +1,5 @@
 import EmailDao from "../../../dao/EmailDao";
-import { EmailVars, Email, EmailTemplate } from "../../../types/Email";
+import { EmailVars, Email, EmailTemplate, EmailResponse } from "../../../types/Email";
 import { Meet } from "../../../types/gqlGeneratedTypes";
 import { User } from "../../../types/User";
 
@@ -17,7 +17,7 @@ export default class MeetReminderEmailTemplate implements EmailTemplate {
     throw new Error("Method not implemented.");
   }
 
-  dispatch(emailVars: MeetReminderEmailVars): Promise<void> {
+  dispatch(emailVars: MeetReminderEmailVars): Promise<EmailResponse[]> {
     throw new Error("Method not implemented.");
   }
 }
