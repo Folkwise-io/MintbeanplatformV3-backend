@@ -28,6 +28,7 @@ import EmailResolverValidator from "./validator/EmailResolverValidator";
 import EmailCommanderImpl from "./service/EmailService/EmailCommander";
 import { EmailCommander } from "./types/Email";
 import EmailDaoSendgridKnex from "./dao/EmailDaoSendgridKnex";
+import CronService from "./service/CronService";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -74,6 +75,7 @@ export interface ResolverContext {
   emailResolverValidator: EmailResolverValidator;
   emailService: EmailService;
   emailCommander: EmailCommander;
+  cronService: CronService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -99,6 +101,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailService = new EmailService(emailDao);
   const emailCommander = new EmailCommanderImpl(emailDao, userDao, meetDao);
   const emailResolverValidator = new EmailResolverValidator();
+  const cronService = new CronService(emailCommander);
 
   return {
     userResolverValidator,
@@ -114,5 +117,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     emailResolverValidator,
     emailService,
     emailCommander,
+    cronService,
   };
 }

@@ -9,5 +9,8 @@ const resolverContext = buildResolverContext(persistenceContext);
 const schema = buildSchema(resolverContext);
 const apolloServer = buildApolloServer(schema, buildExpressServerContext);
 const app = buildExpressServer(apolloServer);
+const { cronService } = resolverContext;
+// Start email cron service
+cronService.start();
 
 app.listen({ port: 4000 }, () => console.log(`Server ready at http://localhost:4000${apolloServer.graphqlPath}`));
