@@ -5,10 +5,10 @@ import { Meet } from "../../../types/gqlGeneratedTypes";
 import { User } from "../../../types/User";
 
 interface MeetReminderEmailVars extends EmailVars {
-  user: never;
+  user?: never;
   meet: Meet;
   users: User[];
-  html: never;
+  html?: never;
 }
 
 export default class MeetReminderEmailTemplate implements EmailTemplate {

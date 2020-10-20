@@ -11,15 +11,26 @@ const { senderEmail } = config;
 interface MeetRegistrationEmailVars extends EmailVars {
   user: User;
   meet: Meet;
-  users: never;
-  html: never;
+  users?: never;
+  html?: never;
 }
 
 export default class MeetRegistrationEmailTemplate implements EmailTemplate {
   constructor(private userDao: UserDao, private meetDao: MeetDao) {}
 
-  inflateVars(scheduledEmail: ScheduledEmail): Promise<MeetRegistrationEmailVars> {
-    throw new Error("Method not implemented.");
+  ensureVars(scheduledEmail: ScheduledEmail) {
+    const { id, userId, meetId } = scheduledEmail;
+    if (!(userId && meetId)) {
+      throw new Error(`ILLEGAL STATE: scheduledEmail id=${id} (Meet Registration) does not have required fields`);
+    }
+    return { ...scheduledEmail, userId, meetId };
+  }
+
+  async inflateVars(scheduledEmail: ScheduledEmail): Promise<MeetRegistrationEmailVars> {
+    const { id, userId, meetId } = this.ensureVars(scheduledEmail);
+    const user: User = await this.userDao.getOne({ id: userId });
+    const meet: Meet = await this.meetDao.getOne({ id: meetId });
+    return { id, user, meet };
   }
 
   generateEmails(emailVars: MeetRegistrationEmailVars): Email[] {
