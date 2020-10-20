@@ -1,11 +1,8 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import KanbanSessionCardService from "../../service/KanbanSessionCardService";
 import KanbanSessionService from "../../service/KanbanSessionService";
 import { KanbanSession, Resolvers } from "../../types/gqlGeneratedTypes";
-import { ensureExists } from "../../util/ensureExists";
 import KanbanSessionResolverValidator from "../../validator/KanbanSessionResolverValidator";
-import kanbanSessionCard from "../typedef/kanbanSessionCard";
 
 // TODO: move admin/user permissions checks to ResolverValidator?
 
@@ -15,7 +12,7 @@ const kanbanSessionResolver = (
 ): Resolvers => {
   // ensure the user of userId owns kanban session of id
   const isKanbanSessionOwner = async (id: string, userId: string): Promise<boolean> => {
-    const { userId: kanbanSessionOwnerId } = await kanbanSessionService.getOne({ id });
+    const kanbanSessionOwnerId = await kanbanSessionService.getOne({ id }).then((kbs) => kbs?.userId);
     return userId === kanbanSessionOwnerId;
   };
 
@@ -34,7 +31,7 @@ const kanbanSessionResolver = (
         return kanbanSessionService.getMany({ ...args, userId: context.getUserId() });
       },
 
-      kanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
+      kanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession | null> => {
         // admins can get a given user's kanban sessions by specificying a userId in args
         if (args.userId) {
           // if (!context.getIsAdmin()) {
