@@ -11,6 +11,7 @@ const { emailDao } = testManager.params.persistenceContext;
 beforeAll(async () => {
   await testManager.deleteAllUsers();
   await testManager.deleteAllMeets();
+  await testManager.deleteAllEmails();
   await testManager.addUsers([AMY]);
   await testManager.addMeets([ALGOLIA]);
 });
