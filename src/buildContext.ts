@@ -97,7 +97,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
   const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
   const emailService = new EmailService(emailDao);
-  const emailCommander = new EmailCommanderImpl(emailDao);
+  const emailCommander = new EmailCommanderImpl(emailDao, userDao, meetDao);
   const emailResolverValidator = new EmailResolverValidator();
 
   return {

@@ -1,4 +1,6 @@
 import EmailDao from "../../dao/EmailDao";
+import MeetDao from "../../dao/MeetDao";
+import UserDao from "../../dao/UserDao";
 import {
   EmailCommander,
   EmailResponse,
@@ -9,18 +11,20 @@ import {
   ScheduledEmailInput,
 } from "../../types/Email";
 import MeetRegistrationEmailTemplate from "./templates/MeetRegistrationEmailTemplate";
+import MeetReminderEmailTemplate from "./templates/MeetReminderEmailTemplate";
 
-const { MEET_REGISTRATION, WELCOME, ALL, CHECK_IN_AFTER_SIGN_UP } = EmailTemplateName;
+const { MEET_REGISTRATION, MEET_REMINDER, WELCOME, ALL, CHECK_IN_AFTER_SIGN_UP } = EmailTemplateName;
 export default class EmailCommanderImpl implements EmailCommander {
-  constructor(private emailDao: EmailDao) {}
+  constructor(private emailDao: EmailDao, private userDao: UserDao, private meetDao: MeetDao) {}
 
   templates: {
     [key in EmailTemplateName]: EmailTemplate;
   } = {
-    [MEET_REGISTRATION]: new MeetRegistrationEmailTemplate(this.emailDao),
-    [WELCOME]: new MeetRegistrationEmailTemplate(this.emailDao),
-    [ALL]: new MeetRegistrationEmailTemplate(this.emailDao),
-    [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(this.emailDao),
+    [MEET_REGISTRATION]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
+    [MEET_REMINDER]: new MeetReminderEmailTemplate(this.userDao, this.meetDao),
+    [WELCOME]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
+    [ALL]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
+    [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
   };
 
   queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {

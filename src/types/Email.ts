@@ -22,6 +22,7 @@ export interface Attachment {
 /** Possible names for the email templates. Each generates different html, which may be based on userId and meetId */
 export enum EmailTemplateName {
   MEET_REGISTRATION = "meetRegistration",
+  MEET_REMINDER = "meetReminder",
   WELCOME = "welcome",
   CHECK_IN_AFTER_SIGN_UP = "checkInAfterSignup",
   ALL = "all",
