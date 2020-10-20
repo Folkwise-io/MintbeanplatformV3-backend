@@ -84,5 +84,5 @@ export interface EmailCommander {
   queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void>;
 
   /** Called by the cron scheduler to coordinate generation/sending of emails. */
-  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<void>;
+  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<EmailResponse[]>;
 }

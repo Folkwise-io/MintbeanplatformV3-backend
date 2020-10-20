@@ -4,7 +4,7 @@ import { Meet } from "../../../types/gqlGeneratedTypes";
 import { User } from "../../../types/User";
 
 interface MeetReminderEmailVars extends EmailVars {
-  user: User;
+  user: never;
   meet: Meet;
   users: User[];
   html: never;
