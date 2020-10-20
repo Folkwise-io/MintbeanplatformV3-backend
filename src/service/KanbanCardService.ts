@@ -1,28 +1,21 @@
 import KanbanCardDao from "../dao/KanbanCardDao";
-import { KanbanCard } from "../types/gqlGeneratedTypes";
+import {
+  CreateKanbanCardInput,
+  EditKanbanCardInput,
+  KanbanCard,
+  QueryKanbanCardArgs,
+  QueryKanbanCardsArgs,
+} from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 // Only allow ID lookup for now
-export interface KanbanCardServiceGetOneArgs {
-  id: string;
-}
-export interface KanbanCardServiceGetManyArgs {
-  kanbanId: string;
-}
+export interface KanbanCardServiceGetOneArgs extends QueryKanbanCardArgs {}
 
-export interface KanbanCardServiceAddOneInput {
-  kanbanId: string;
-  title: string;
-  body: string;
-  index?: number | null;
-}
+export interface KanbanCardServiceGetManyArgs extends QueryKanbanCardsArgs {}
 
-export interface KanbanCardServiceEditOneInput {
-  kanbanId?: string | null;
-  title?: string | null;
-  body?: string | null;
-  index?: number | null;
-}
+export interface KanbanCardServiceAddOneInput extends CreateKanbanCardInput {}
+
+export interface KanbanCardServiceEditOneInput extends EditKanbanCardInput {}
 
 export default class KanbanCardService implements EntityService<KanbanCard> {
   constructor(private kanbanCardDao: KanbanCardDao) {}

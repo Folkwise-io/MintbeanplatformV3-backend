@@ -6,12 +6,14 @@ import {
   EDIT_KANBAN_SESSION_CARD_MUTATION,
   GET_KANBAN_SESSION_CARDS_ON_KANBAN_SESSION_QUERY,
   GET_KANBAN_SESSION_CARD_QUERY,
-  TEST_MEET_KANBAN_SESSION_CARD_1,
-  TEST_MEET_KANBAN_SESSION_CARD_2,
-  TEST_ISOLATED_KANBAN_SESSION_CARD_1,
-  TEST_ISOLATED_KANBAN_SESSION_CARD_2,
+  TEST_MEET_KANBAN_SESSION_CARD_1_RAW,
+  TEST_ISOLATED_KANBAN_SESSION_CARD_1_RAW,
   TEST_MEET_KANBAN_SESSION_CARD_1_INPUT,
   TEST_ISOLATED_KANBAN_SESSION_CARD_1_INPUT,
+  TEST_ISOLATED_KANBAN_SESSION_CARD_1_COMPOSED,
+  TEST_MEET_KANBAN_SESSION_CARD_1_COMPOSED,
+  TEST_MEET_KANBAN_SESSION_CARD_2_RAW,
+  TEST_ISOLATED_KANBAN_SESSION_CARD_2_RAW,
 } from "./src/kanbanSessionCardConstants";
 import { TEST_KANBAN } from "./src/kanbanConstants";
 import {
@@ -19,152 +21,185 @@ import {
   TEST_KANBAN_SESSION_ISOLATED_COMPOSED,
   TEST_KANBAN_SESSION_ON_MEET_RAW,
   TEST_KANBAN_SESSION_ON_MEET_COMPOSED,
+  CREATE_KANBAN_SESSION_MUTATION,
+  TEST_KANBAN_SESSION_ON_MEET_INPUT,
+  GET_KANBAN_SESSION_QUERY,
 } from "./src/kanbanSessionConstants";
 import { PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
-import { getAdminCookies } from "./src/util";
-import { BOB } from "./src/userConstants";
+import { getAdminCookies, getBobCookies } from "./src/util";
+import { AMY, BOB, GET_USER_QUERY } from "./src/userConstants";
 import { TEST_KANBAN_CARD_1, TEST_KANBAN_CARD_2 } from "./src/kanbanCardConstants";
+import { KanbanSessionCardRaw } from "../src/dao/KanbanSessionCardDaoKnex";
 
 const testManager = TestManager.build();
 
+let adminCookies: string[];
+let bobCookies: string[];
+
 beforeAll(async () => {
-  await testManager.addUsers([BOB]);
+  adminCookies = await getAdminCookies();
+  bobCookies = await getBobCookies();
+  await testManager.addUsers([BOB, AMY]);
 });
 
 beforeEach(async () => {
-  await testManager.deleteAllKanbanSessions();
+  // Deleting kanbans cascades on kanban cards, kanban sessions and kanban session cards
   await testManager.deleteAllKanbans();
   await testManager.deleteAllMeets();
 
   await testManager.addKanbans([TEST_KANBAN]);
   await testManager.addKanbanCards([TEST_KANBAN_CARD_1, TEST_KANBAN_CARD_2]);
   await testManager.addMeets([PAPERJS]);
-});
-
-afterEach(async () => {
-  await testManager.deleteAllKanbanSessions();
+  await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET_RAW, TEST_KANBAN_SESSION_ISOLATED_RAW]);
 });
 
 afterAll(async () => {
-  await testManager.deleteAllKanbanSessions();
   await testManager.deleteAllMeets();
   await testManager.deleteAllKanbans();
   await testManager.deleteAllUsers();
   await testManager.destroy();
 });
 
-describe.skip("Querying kanban session cards", () => {
+describe("Querying kanban session cards", () => {
   it("gets a meet kanban session card by id", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ON_MEET_RAW]);
     await testManager
-      .addKanbanSessionCards([TEST_MEET_KANBAN_SESSION_CARD_1])
+      .addKanbanSessionCards([TEST_MEET_KANBAN_SESSION_CARD_1_RAW])
       .then(() =>
         testManager
           .getGraphQLResponse({
             query: GET_KANBAN_SESSION_CARD_QUERY,
-            variables: { id: TEST_MEET_KANBAN_SESSION_CARD_1.id },
+            variables: { id: TEST_MEET_KANBAN_SESSION_CARD_1_RAW.id },
           })
           .then(testManager.parseData),
       )
       .then(({ kanbanSessionCard }) => {
-        expect(TEST_MEET_KANBAN_SESSION_CARD_1).toMatchObject(kanbanSessionCard);
+        console.log({ kanbanSessionCard });
+        expect(TEST_MEET_KANBAN_SESSION_CARD_1_COMPOSED).toMatchObject(kanbanSessionCard);
+      });
+  });
+
+  it.only("gets a meet kanban session's cards by kanban session id", async () => {
+    await testManager;
+    testManager
+      .getGraphQLResponse({
+        query: GET_KANBAN_SESSION_QUERY,
+        variables: {
+          kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+          userId: TEST_KANBAN_SESSION_ON_MEET_RAW.userId,
+          meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
+        },
+      })
+      .then(testManager.parseData)
+      .then(({ kanbanSession }) => {
+        console.log({ kanbanSession });
+        expect(TEST_MEET_KANBAN_SESSION_CARD_1_COMPOSED).toMatchObject(kanbanSession.kanbanSessionCards[0]);
       });
   });
 
   it("gets an isolated kanban session card by id", async () => {
-    await testManager.addKanbanSessions([TEST_KANBAN_SESSION_ISOLATED_RAW]);
     await testManager
-      .addKanbanSessionCards([TEST_ISOLATED_KANBAN_SESSION_CARD_1])
+      .addKanbanSessionCards([TEST_ISOLATED_KANBAN_SESSION_CARD_1_RAW])
       .then(() =>
         testManager
           .getGraphQLResponse({
             query: GET_KANBAN_SESSION_CARD_QUERY,
-            variables: { id: TEST_ISOLATED_KANBAN_SESSION_CARD_1.id },
+            variables: { id: TEST_ISOLATED_KANBAN_SESSION_CARD_1_RAW.id },
           })
           .then(testManager.parseData),
       )
       .then(({ kanbanSessionCard }) => {
-        expect(TEST_ISOLATED_KANBAN_SESSION_CARD_1).toMatchObject(kanbanSessionCard);
+        expect(TEST_ISOLATED_KANBAN_SESSION_CARD_1_COMPOSED).toMatchObject(kanbanSessionCard);
       });
   });
 
-  // it("returns empty array if there are no kanban session cards on a kanban session", async () => {
-  //   await testManager
-  //     .addKanbanSessionCards([])
-  //     .then(() =>
-  //       testManager
-  //         .getGraphQLResponse({ query: GET_KANBAN_CARDS_ON_KANBAN_QUERY, variables: { kanbanId: TEST_KANBAN.id } })
-  //         .then(testManager.parseData),
-  //     )
-  //     .then(({ kanbanCards }) => {
-  //       expect(kanbanCards).toHaveLength(0);
-  //     });
-  // });
+  it("does not retrieve deleted meet kanban session cards", async () => {
+    await testManager
+      .addKanbanSessionCards([{ ...TEST_MEET_KANBAN_SESSION_CARD_1_RAW, deleted: true } as KanbanSessionCardRaw])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({
+            query: GET_KANBAN_SESSION_CARDS_ON_KANBAN_SESSION_QUERY,
+            variables: { kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET_RAW.id },
+          })
+          .then(testManager.parseData),
+      )
+      .then(({ kanbanSessionCards }) => {
+        expect(kanbanSessionCards).toHaveLength(0);
+      });
+  });
 
-  //   it("does not retrieve deleted kanban cards", async () => {
-  //     await testManager
-  //       .addKanbanSessionCards([{ ...TEST_KANBAN_CARD_1, deleted: true } as KanbanSessionCard])
-  //       .then(() =>
-  //         testManager
-  //           .getGraphQLResponse({ query: GET_KANBAN_CARDS_ON_KANBAN_QUERY, variables: { kanbanId: TEST_KANBAN.id } })
-  //           .then(testManager.parseData),
-  //       )
-  //       .then(({ kanbanCards }) => {
-  //         expect(kanbanCards).toHaveLength(0);
-  //       });
-  //   });
-  //   it("returns kanban cards on a kanban", async () => {
-  //     await testManager
-  //       .addKanbanSessionCards([TEST_KANBAN_CARD_1])
-  //       .then(() =>
-  //         testManager
-  //           .getGraphQLResponse({ query: GET_KANBAN_CARDS_ON_KANBAN_QUERY, variables: { kanbanId: TEST_KANBAN.id } })
-  //           .then(testManager.parseData),
-  //       )
-  //       .then(({ kanbanCards }) => {
-  //         expect(kanbanCards).toHaveLength(1);
-  //         expect(kanbanCards[0].title).toBe(TEST_KANBAN_CARD_1.title);
-  //         expect(kanbanCards[0].kanbanId).toBe(TEST_KANBAN.id);
-  //       });
-  //   });
+  it("does not retrieve deleted isolated kanban session cards", async () => {
+    await testManager
+      .addKanbanSessionCards([{ ...TEST_ISOLATED_KANBAN_SESSION_CARD_1_RAW, deleted: true } as KanbanSessionCardRaw])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({
+            query: GET_KANBAN_SESSION_CARDS_ON_KANBAN_SESSION_QUERY,
+            variables: { kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED_RAW.id },
+          })
+          .then(testManager.parseData),
+      )
+      .then(({ kanbanSessionCards }) => {
+        expect(kanbanSessionCards).toHaveLength(0);
+      });
+  });
 
-  //   it("returns kanban cards on a kanban in order of smallest to largest index", async () => {
-  //     await testManager
-  //       .addKanbanSessionCards([TEST_KANBAN_CARD_2, TEST_KANBAN_CARD_1])
-  //       .then(() =>
-  //         testManager
-  //           .getGraphQLResponse({ query: GET_KANBAN_CARDS_ON_KANBAN_QUERY, variables: { kanbanId: TEST_KANBAN.id } })
-  //           .then(testManager.parseData),
-  //       )
-  //       .then(({ kanbanCards }) => {
-  //         expect(kanbanCards).toHaveLength(2);
-  //         expect(kanbanCards[0].id).toBe(TEST_KANBAN_CARD_1.id);
-  //         expect(kanbanCards[1].id).toBe(TEST_KANBAN_CARD_2.id);
-  //       });
-  //   });
+  it("returns kanban session cards on a meet kanban session", async () => {
+    await testManager
+      .addKanbanSessionCards([TEST_MEET_KANBAN_SESSION_CARD_1_RAW, TEST_MEET_KANBAN_SESSION_CARD_2_RAW])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({
+            query: GET_KANBAN_SESSION_CARDS_ON_KANBAN_SESSION_QUERY,
+            variables: { kanbanSessionId: TEST_KANBAN_SESSION_ON_MEET_RAW.id },
+          })
+          .then(testManager.parseData),
+      )
+      .then(({ kanbanSessionCards }) => {
+        expect(kanbanSessionCards).toHaveLength(2);
+        expect(kanbanSessionCards[0].title).toBe(TEST_MEET_KANBAN_SESSION_CARD_1_COMPOSED.title);
+        expect(kanbanSessionCards[0].kanbanSessionId).toBe(TEST_KANBAN_SESSION_ON_MEET_RAW.id);
+      });
+  });
+
+  it("returns kanban session cards on an isolated kanban session", async () => {
+    await testManager
+      .addKanbanSessionCards([TEST_ISOLATED_KANBAN_SESSION_CARD_1_RAW, TEST_ISOLATED_KANBAN_SESSION_CARD_2_RAW])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({
+            query: GET_KANBAN_SESSION_CARDS_ON_KANBAN_SESSION_QUERY,
+            variables: { kanbanSessionId: TEST_KANBAN_SESSION_ISOLATED_RAW.id },
+          })
+          .then(testManager.parseData),
+      )
+      .then(({ kanbanSessionCards }) => {
+        expect(kanbanSessionCards).toHaveLength(2);
+        expect(kanbanSessionCards[0].title).toBe(TEST_ISOLATED_KANBAN_SESSION_CARD_1_COMPOSED.title);
+        expect(kanbanSessionCards[0].kanbanSessionId).toBe(TEST_KANBAN_SESSION_ISOLATED_RAW.id);
+      });
+  });
+
+  // TODO once card indexing system decided
+  // it("returns kanban session cards on a kanban session in order of smallest to largest index", async () => {})
+  //
 });
 
-// describe("Creating kanban cards", () => {
-//   let adminCookies: string[];
-
-//   beforeAll(async () => {
-//     adminCookies = await getAdminCookies();
-//   });
-
-//   it("creates a kanban card successfully when admin is logged in", async () => {
+// describe("Creating kanban session cards", () => {
+//   it("creates kanban session cards for user automatically when kanban session is created", async () => {
 //     await testManager
 //       .getGraphQLResponse({
-//         query: CREATE_KANBAN_CARD_MUTATION,
-//         variables: { input: TEST_KANBAN_CARD_INPUT_1 },
-//         cookies: adminCookies,
+//         query: CREATE_KANBAN_SESSION_MUTATION,
+//         variables: { input: TEST_KANBAN_SESSION_ON_MEET_INPUT },
+//         cookies: bobCookies,
 //       })
 //       .then(testManager.parseData)
-//       .then(({ createKanbanSessionCard }) => {
-//         expect(createKanbanSessionCard).toMatchObject(TEST_KANBAN_CARD_INPUT_1);
+//       .then(({ createKanbanSession }) => {
+//         expect(createKanbanSession).toMatchObject(TEST_KANBAN_SESSION_ON_MEET_COMPOSED);
 //       });
 //   });
-
+// });
 //   it("returns an 'unauthorized' error message when creating a kanban card without admin cookies", async () => {
 //     await testManager
 //       .getErrorMessage({ query: CREATE_KANBAN_CARD_MUTATION, variables: { input: TEST_KANBAN_CARD_INPUT_1 } })

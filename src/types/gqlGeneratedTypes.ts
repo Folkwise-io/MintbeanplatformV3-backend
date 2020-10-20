@@ -212,8 +212,6 @@ export type Mutation = {
   deleteKanbanCard: Scalars['Boolean'];
   /** Creates a new kanban session */
   createKanbanSession: KanbanSession;
-  /** Edits a kanban session */
-  editKanbanSession: KanbanSession;
   /** Deletes a kanban session */
   deleteKanbanSession: Scalars['Boolean'];
   /** Creates a new kanban session card for the requesting user */
@@ -301,12 +299,6 @@ export type MutationDeleteKanbanCardArgs = {
 
 export type MutationCreateKanbanSessionArgs = {
   input: CreateKanbanSessionInput;
-};
-
-
-export type MutationEditKanbanSessionArgs = {
-  id: Scalars['UUID'];
-  input: EditKanbanSessionInput;
 };
 
 
@@ -508,6 +500,13 @@ export type EditKanbanInput = {
   description?: Maybe<Scalars['String']>;
 };
 
+/** Possible initial statuses of a kanban card. Defaults to TODO, unless specified otherwise */
+export enum KanbanCardStatusEnum {
+  Todo = 'TODO',
+  Wip = 'WIP',
+  Done = 'DONE'
+}
+
 /** A kanban card that belongs to a kanban. */
 export type KanbanCard = {
   __typename?: 'KanbanCard';
@@ -516,6 +515,8 @@ export type KanbanCard = {
   title: Scalars['String'];
   /** A markdown body of the kanban card content */
   body: Scalars['String'];
+  /** The initial status column this kanbanCard should appear in */
+  status: KanbanCardStatusEnum;
   /** A reference to the kanban this kanban card belongs to */
   kanbanId: Scalars['UUID'];
   /** DateTime that the kanban was created */
@@ -529,6 +530,8 @@ export type CreateKanbanCardInput = {
   /** A reference to the kanban this kanban card belongs to */
   kanbanId: Scalars['UUID'];
   title: Scalars['String'];
+  /** (Optional) The column this card will initailly appear in. Defaults to TODO */
+  status?: Maybe<KanbanCardStatusEnum>;
   /** A markdown body of the kanban card content */
   body: Scalars['String'];
 };
@@ -538,6 +541,8 @@ export type EditKanbanCardInput = {
   /** A reference to the kanban this kanban card belongs to */
   kanbanId?: Maybe<Scalars['UUID']>;
   title?: Maybe<Scalars['String']>;
+  /** The column this card will initailly appear in. Defaults to TODO */
+  status?: Maybe<KanbanCardStatusEnum>;
   /** A markdown body of the kanban card content */
   body?: Maybe<Scalars['String']>;
 };
@@ -575,23 +580,8 @@ export type KanbanSessionSearchArgs = {
 /** The input needed to create a new kanban */
 export type CreateKanbanSessionInput = {
   kanbanId: Scalars['UUID'];
-  userId: Scalars['UUID'];
   meetId?: Maybe<Scalars['UUID']>;
 };
-
-/** Input that can be used to edit a kanban session - all fields are optional */
-export type EditKanbanSessionInput = {
-  kanbanId?: Maybe<Scalars['UUID']>;
-  userId?: Maybe<Scalars['UUID']>;
-  meetId?: Maybe<Scalars['UUID']>;
-};
-
-/** Possible statuses of a kanban session card */
-export enum KanbanSessionCardStatusEnum {
-  Todo = 'TODO',
-  Wip = 'WIP',
-  Done = 'DONE'
-}
 
 /** A kanban session card that belongs to a kanban session. */
 export type KanbanSessionCard = {
@@ -602,10 +592,12 @@ export type KanbanSessionCard = {
   kanbanSessionId: Scalars['UUID'];
   /** A reference to the kanban card this kanban session card points to */
   kanbanCardId: Scalars['UUID'];
-  /** Determines the numerical order cards are presented to user in the fiven status column */
-  index: Scalars['Int'];
+  /** The title of the referenced kanban card */
+  title: Scalars['String'];
+  /** The body of the referenced kanban card */
+  body: Scalars['String'];
   /** Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE') */
-  status: KanbanSessionCardStatusEnum;
+  status: KanbanCardStatusEnum;
   /** DateTime that the kanban session was created */
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanban session was modified */
@@ -618,22 +610,14 @@ export type CreateKanbanSessionCardInput = {
   kanbanSessionId: Scalars['UUID'];
   /** A reference to the kanban card this kanban session card points to */
   kanbanCardId: Scalars['UUID'];
-  /** Determines the numerical order cards are presented to user in the fiven status column */
-  index: Scalars['Int'];
-  /** Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE') */
-  status: KanbanSessionCardStatusEnum;
+  /** Status of the card, representing which kanban column it currently resides in ('TODO', 'WIP' or 'DONE') */
+  status: KanbanCardStatusEnum;
 };
 
 /** Input that can be used to edit a kanban session card - all fields are optional */
 export type EditKanbanSessionCardInput = {
-  /** A reference to the kanban session this kanban card belongs to */
-  kanbanSessionId?: Maybe<Scalars['UUID']>;
-  /** A reference to the kanban card this kanban session card points to */
-  kanbanCardId?: Maybe<Scalars['UUID']>;
-  /** Determines the numerical order cards are presented to user in the fiven status column */
-  index?: Maybe<Scalars['Int']>;
-  /** Status of the card, representing which kanban column it resides in ('TODO', 'WIP' or 'DONE') */
-  status?: Maybe<KanbanSessionCardStatusEnum>;
+  /** Status of the card, representing which kanban column it currently resides in ('TODO', 'WIP' or 'DONE') */
+  status?: Maybe<KanbanCardStatusEnum>;
 };
 
 
@@ -734,14 +718,13 @@ export type ResolversTypes = {
   Kanban: ResolverTypeWrapper<Kanban>;
   CreateKanbanInput: CreateKanbanInput;
   EditKanbanInput: EditKanbanInput;
+  KanbanCardStatusEnum: KanbanCardStatusEnum;
   KanbanCard: ResolverTypeWrapper<KanbanCard>;
   CreateKanbanCardInput: CreateKanbanCardInput;
   EditKanbanCardInput: EditKanbanCardInput;
   KanbanSession: ResolverTypeWrapper<KanbanSession>;
   KanbanSessionSearchArgs: ResolverTypeWrapper<KanbanSessionSearchArgs>;
   CreateKanbanSessionInput: CreateKanbanSessionInput;
-  EditKanbanSessionInput: EditKanbanSessionInput;
-  KanbanSessionCardStatusEnum: KanbanSessionCardStatusEnum;
   KanbanSessionCard: ResolverTypeWrapper<KanbanSessionCard>;
   CreateKanbanSessionCardInput: CreateKanbanSessionCardInput;
   EditKanbanSessionCardInput: EditKanbanSessionCardInput;
@@ -775,7 +758,6 @@ export type ResolversParentTypes = {
   KanbanSession: KanbanSession;
   KanbanSessionSearchArgs: KanbanSessionSearchArgs;
   CreateKanbanSessionInput: CreateKanbanSessionInput;
-  EditKanbanSessionInput: EditKanbanSessionInput;
   KanbanSessionCard: KanbanSessionCard;
   CreateKanbanSessionCardInput: CreateKanbanSessionCardInput;
   EditKanbanSessionCardInput: EditKanbanSessionCardInput;
@@ -853,7 +835,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   editKanbanCard?: Resolver<ResolversTypes['KanbanCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCardArgs, 'id' | 'input'>>;
   deleteKanbanCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCardArgs, 'id'>>;
   createKanbanSession?: Resolver<ResolversTypes['KanbanSession'], ParentType, ContextType, RequireFields<MutationCreateKanbanSessionArgs, 'input'>>;
-  editKanbanSession?: Resolver<ResolversTypes['KanbanSession'], ParentType, ContextType, RequireFields<MutationEditKanbanSessionArgs, 'id' | 'input'>>;
   deleteKanbanSession?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanSessionArgs, 'id'>>;
   createKanbanSessionCard?: Resolver<ResolversTypes['KanbanSessionCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanSessionCardArgs, 'input'>>;
   editKanbanSessionCard?: Resolver<ResolversTypes['KanbanSessionCard'], ParentType, ContextType, RequireFields<MutationEditKanbanSessionCardArgs, 'id' | 'input'>>;
@@ -931,6 +912,7 @@ export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversP
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['KanbanCardStatusEnum'], ParentType, ContextType>;
   kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -961,8 +943,9 @@ export type KanbanSessionCardResolvers<ContextType = any, ParentType extends Res
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   kanbanSessionId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   kanbanCardId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['KanbanSessionCardStatusEnum'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['KanbanCardStatusEnum'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;

@@ -3,8 +3,6 @@ import { TEST_KANBAN } from "./src/kanbanConstants";
 import {
   CREATE_KANBAN_SESSION_MUTATION,
   DELETE_KANBAN_SESSION_MUTATION,
-  EDIT_KANBAN_SESSION_INPUT,
-  EDIT_KANBAN_SESSION_MUTATION,
   GET_KANBAN_SESSION_QUERY,
   TEST_KANBAN_SESSION_ISOLATED_RAW,
   TEST_KANBAN_SESSION_ISOLATED_INPUT,
@@ -274,131 +272,131 @@ describe("Creating kanban sessions", () => {
   });
 });
 
-describe("Editing kanban sessions", () => {
-  let kanbanSessionId: string;
+// describe("Editing kanban sessions", () => {
+//   let kanbanSessionId: string;
 
-  beforeAll(async () => {
-    await testManager.deleteAllKanbans();
-    await testManager.deleteAllUsers();
-    await testManager.deleteAllMeets();
+//   beforeAll(async () => {
+//     await testManager.deleteAllKanbans();
+//     await testManager.deleteAllUsers();
+//     await testManager.deleteAllMeets();
 
-    await testManager.addKanbans([TEST_KANBAN]);
-    await testManager.addUsers([AMY, BOB]);
-    await testManager.addMeets([PAPERJS, ALGOLIA]);
-  });
+//     await testManager.addKanbans([TEST_KANBAN]);
+//     await testManager.addUsers([AMY, BOB]);
+//     await testManager.addMeets([PAPERJS, ALGOLIA]);
+//   });
 
-  beforeEach(async () => {
-    await testManager.deleteAllKanbanSessions();
-    await testManager
-      .getGraphQLResponse({
-        query: CREATE_KANBAN_SESSION_MUTATION,
-        variables: { input: TEST_KANBAN_SESSION_ON_MEET_INPUT },
-        cookies: bobCookies,
-      })
-      .then(testManager.parseData)
-      .then(({ createKanbanSession }) => {
-        kanbanSessionId = createKanbanSession.id;
-      });
-  });
+//   beforeEach(async () => {
+//     await testManager.deleteAllKanbanSessions();
+//     await testManager
+//       .getGraphQLResponse({
+//         query: CREATE_KANBAN_SESSION_MUTATION,
+//         variables: { input: TEST_KANBAN_SESSION_ON_MEET_INPUT },
+//         cookies: bobCookies,
+//       })
+//       .then(testManager.parseData)
+//       .then(({ createKanbanSession }) => {
+//         kanbanSessionId = createKanbanSession.id;
+//       });
+//   });
 
-  it("edits a kanban session of currently logged in user successfully", async () => {
-    await testManager
-      .getGraphQLResponse({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: kanbanSessionId, input: EDIT_KANBAN_SESSION_INPUT },
-        cookies: bobCookies,
-      })
-      .then(testManager.parseData)
-      .then(({ editKanbanSession }) => {
-        expect(editKanbanSession.meetId).not.toBe(TEST_KANBAN_SESSION_ON_MEET_INPUT.meetId);
-        expect(editKanbanSession.meetId).toBe(EDIT_KANBAN_SESSION_INPUT.meetId);
-      });
-  });
+//   it("edits a kanban session of currently logged in user successfully", async () => {
+//     await testManager
+//       .getGraphQLResponse({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: kanbanSessionId, input: EDIT_KANBAN_SESSION_INPUT },
+//         cookies: bobCookies,
+//       })
+//       .then(testManager.parseData)
+//       .then(({ editKanbanSession }) => {
+//         expect(editKanbanSession.meetId).not.toBe(TEST_KANBAN_SESSION_ON_MEET_INPUT.meetId);
+//         expect(editKanbanSession.meetId).toBe(EDIT_KANBAN_SESSION_INPUT.meetId);
+//       });
+//   });
 
-  it("updates the updatedAt timestamp after editing a kanban session", async () => {
-    // Check that createdAt is initially equal to updatedAt
-    await testManager
-      .getGraphQLData({
-        query: GET_KANBAN_SESSION_QUERY,
-        variables: {
-          kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
-          meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
-        },
-        cookies: bobCookies,
-      })
-      .then(({ kanbanSession }) => expect(kanbanSession.createdAt).toBe(kanbanSession.updatedAt));
+//   it("updates the updatedAt timestamp after editing a kanban session", async () => {
+//     // Check that createdAt is initially equal to updatedAt
+//     await testManager
+//       .getGraphQLData({
+//         query: GET_KANBAN_SESSION_QUERY,
+//         variables: {
+//           kanbanId: TEST_KANBAN_SESSION_ON_MEET_RAW.kanbanId,
+//           meetId: TEST_KANBAN_SESSION_ON_MEET_RAW.meetId,
+//         },
+//         cookies: bobCookies,
+//       })
+//       .then(({ kanbanSession }) => expect(kanbanSession.createdAt).toBe(kanbanSession.updatedAt));
 
-    await testManager
-      .getGraphQLData({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: kanbanSessionId, input: EDIT_KANBAN_SESSION_INPUT },
-        cookies: bobCookies,
-      })
-      .then(({ editKanbanSession }) => {
-        expect(editKanbanSession.createdAt < editKanbanSession.updatedAt).toBe(true);
-      });
-  });
+//     await testManager
+//       .getGraphQLData({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: kanbanSessionId, input: EDIT_KANBAN_SESSION_INPUT },
+//         cookies: bobCookies,
+//       })
+//       .then(({ editKanbanSession }) => {
+//         expect(editKanbanSession.createdAt < editKanbanSession.updatedAt).toBe(true);
+//       });
+//   });
 
-  it.skip("returns an 'unauthorized' error message when editing a kanban session without cookies that match userId", async () => {
-    await testManager
-      .getErrorMessage({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: kanbanSessionId, input: EDIT_KANBAN_SESSION_INPUT },
-        cookies: adminCookies,
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
-      });
-  });
+//   it.skip("returns an 'unauthorized' error message when editing a kanban session without cookies that match userId", async () => {
+//     await testManager
+//       .getErrorMessage({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: kanbanSessionId, input: EDIT_KANBAN_SESSION_INPUT },
+//         cookies: adminCookies,
+//       })
+//       .then((errorMessage) => {
+//         expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+//       });
+//   });
 
-  it("gives an error message from validator when the id of the kanban does not exist", async () => {
-    await testManager
-      .getErrorMessage({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_KANBAN_SESSION_INPUT },
-        cookies: bobCookies,
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
-      });
-  });
+//   it("gives an error message from validator when the id of the kanban does not exist", async () => {
+//     await testManager
+//       .getErrorMessage({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_KANBAN_SESSION_INPUT },
+//         cookies: bobCookies,
+//       })
+//       .then((errorMessage) => {
+//         expect(errorMessage).toMatch(/not exist/i);
+//       });
+//   });
 
-  it("gives an error message when no edit fields are specified in the mutation", async () => {
-    await testManager
-      .getErrorMessage({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: kanbanSessionId, input: {} },
-        cookies: bobCookies,
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/field/i);
-      });
-  });
+//   it("gives an error message when no edit fields are specified in the mutation", async () => {
+//     await testManager
+//       .getErrorMessage({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: kanbanSessionId, input: {} },
+//         cookies: bobCookies,
+//       })
+//       .then((errorMessage) => {
+//         expect(errorMessage).toMatch(/field/i);
+//       });
+//   });
 
-  it("gives an error message when trying to edit a non-existent field", async () => {
-    await testManager
-      .getErrorMessage({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: kanbanSessionId, input: { nonexistent: "hello" } },
-        cookies: bobCookies,
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
-      });
-  });
+//   it("gives an error message when trying to edit a non-existent field", async () => {
+//     await testManager
+//       .getErrorMessage({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: kanbanSessionId, input: { nonexistent: "hello" } },
+//         cookies: bobCookies,
+//       })
+//       .then((errorMessage) => {
+//         expect(errorMessage).toMatch(/invalid/i);
+//       });
+//   });
 
-  it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
-    await testManager
-      .getErrorMessage({
-        query: EDIT_KANBAN_SESSION_MUTATION,
-        variables: { id: kanbanSessionId, input: { deleted: true } },
-        cookies: bobCookies,
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
-      });
-  });
-});
+//   it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
+//     await testManager
+//       .getErrorMessage({
+//         query: EDIT_KANBAN_SESSION_MUTATION,
+//         variables: { id: kanbanSessionId, input: { deleted: true } },
+//         cookies: bobCookies,
+//       })
+//       .then((errorMessage) => {
+//         expect(errorMessage).toMatch(/invalid/i);
+//       });
+//   });
+// });
 
 describe("Deleting kanban sessions", () => {
   let kanbanSessionId: string;

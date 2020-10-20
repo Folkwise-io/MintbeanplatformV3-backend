@@ -1,31 +1,21 @@
 import KanbanSessionDao from "../dao/KanbanSessionDao";
-import { KanbanSession } from "../types/gqlGeneratedTypes";
+import {
+  CreateKanbanSessionInput,
+  KanbanSession,
+  QueryKanbanSessionArgs,
+  QueryKanbanSessionsArgs,
+} from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
-export interface KanbanSessionServiceGetOneArgs {
-  id?: string;
-  kanbanId?: string;
-  userId?: string;
-  meetId?: string;
-}
+export interface KanbanSessionServiceGetOneArgs extends QueryKanbanSessionArgs {}
 
-export interface KanbanSessionServiceGetManyArgs {
-  kanbanId?: string;
-  userId?: string;
-  meetId?: string;
-}
+export interface KanbanSessionServiceGetManyArgs extends QueryKanbanSessionsArgs {}
 
-export interface KanbanSessionServiceAddOneInput {
-  kanbanId: string;
+export interface KanbanSessionServiceAddOneInput extends CreateKanbanSessionInput {
   userId: string;
-  meetId?: string;
 }
 
-export interface KanbanSessionServiceEditOneInput {
-  kanbanId?: string | null;
-  userId?: string | null;
-  meetId?: string | null;
-}
+// export interface KanbanSessionServiceEditOneInput extends EditKanbanSessionInput {}
 
 export default class KanbanSessionService implements EntityService<KanbanSession> {
   constructor(private kanbanSessionDao: KanbanSessionDao) {}
@@ -42,9 +32,9 @@ export default class KanbanSessionService implements EntityService<KanbanSession
     return this.kanbanSessionDao.addOne(input);
   }
 
-  async editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession> {
-    return this.kanbanSessionDao.editOne(id, input);
-  }
+  // async editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession> {
+  //   return this.kanbanSessionDao.editOne(id, input);
+  // }
 
   async deleteOne(id: string): Promise<boolean> {
     return this.kanbanSessionDao.deleteOne(id);

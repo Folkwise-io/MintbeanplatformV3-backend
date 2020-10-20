@@ -55,13 +55,6 @@ export default class KanbanSessionCardResolverValidator {
       .getOne({ id })
       .then((kanbanSessionCard) => ensureExists("KanbanSessionCard")(kanbanSessionCard));
 
-    // If kanban session id was changed, check that kanban session exists
-    if (input.kanbanSessionId) {
-      await this.kanbanSessionDao
-        .getOne({ id: input.kanbanSessionId })
-        .then((kanbanSession) => ensureExists("KanbanSession")(kanbanSession));
-    }
-
     // Handle when input has no fields to update (knex doesn't like this)
     if (Object.keys(input).length === 0) {
       throw new UserInputError("Must edit at least one field!");

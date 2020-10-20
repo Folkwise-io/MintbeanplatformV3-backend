@@ -1,8 +1,9 @@
-import { AuthenticationError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import KanbanSessionCardService from "../../service/KanbanSessionCardService";
 import KanbanSessionService from "../../service/KanbanSessionService";
 import { KanbanSession, Resolvers } from "../../types/gqlGeneratedTypes";
+import { ensureExists } from "../../util/ensureExists";
 import KanbanSessionResolverValidator from "../../validator/KanbanSessionResolverValidator";
 import kanbanSessionCard from "../typedef/kanbanSessionCard";
 
@@ -49,19 +50,21 @@ const kanbanSessionResolver = (
 
     Mutation: {
       createKanbanSession: (_root, { input }, context: ServerContext): Promise<KanbanSession> => {
+        const userId = context.getUserId();
+        const inputWithUserId = { ...input, userId };
         return kanbanSessionResolverValidator
-          .addOne({ input }, context)
+          .addOne({ input: inputWithUserId }, context)
           .then(async ({ input }) => kanbanSessionService.addOne(input));
       },
-      editKanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
-        return kanbanSessionResolverValidator.editOne(args, context).then(async ({ id, input }) => {
-          const isOwner = await isKanbanSessionOwner(id, context.getUserId());
-          if (!isOwner) {
-            throw new AuthenticationError(`You are not authorized to edit this kanban session!`);
-          }
-          return kanbanSessionService.editOne(id, input);
-        });
-      },
+      // editKanbanSession: (_root, args, context: ServerContext): Promise<KanbanSession> => {
+      //   return kanbanSessionResolverValidator.editOne(args, context).then(async ({ id, input }) => {
+      //     const isOwner = await isKanbanSessionOwner(id, context.getUserId());
+      //     if (!isOwner) {
+      //       throw new AuthenticationError(`You are not authorized to edit this kanban session!`);
+      //     }
+      //     return kanbanSessionService.editOne(id, input);
+      //   });
+      // },
       deleteKanbanSession: (_root, args, context: ServerContext): Promise<boolean> => {
         return kanbanSessionResolverValidator.deleteOne(args).then(async (id) => {
           const isOwner = await isKanbanSessionOwner(id, context.getUserId());

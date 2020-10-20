@@ -1,6 +1,13 @@
 import { gql } from "apollo-server-express";
 
 const kanbanCard = gql`
+  "Possible initial statuses of a kanban card. Defaults to TODO, unless specified otherwise"
+  enum KanbanCardStatusEnum {
+    TODO
+    WIP
+    DONE
+  }
+
   "A kanban card that belongs to a kanban."
   type KanbanCard {
     "ID of the kanban card in UUID"
@@ -11,8 +18,8 @@ const kanbanCard = gql`
     "A markdown body of the kanban card content"
     body: String!
 
-    # "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
-    # index: Int!
+    "The initial status column this kanbanCard should appear in"
+    status: KanbanCardStatusEnum!
 
     "A reference to the kanban this kanban card belongs to"
     kanbanId: UUID!
@@ -44,6 +51,9 @@ const kanbanCard = gql`
 
     title: String!
 
+    "(Optional) The column this card will initailly appear in. Defaults to TODO"
+    status: KanbanCardStatusEnum
+
     # "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
     # index: Int
 
@@ -57,6 +67,9 @@ const kanbanCard = gql`
     kanbanId: UUID
 
     title: String
+
+    "The column this card will initailly appear in. Defaults to TODO"
+    status: KanbanCardStatusEnum
 
     # "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
     # index: Int

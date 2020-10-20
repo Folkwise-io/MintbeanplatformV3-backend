@@ -19,6 +19,7 @@ import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/projectMediaAsset";
 import MeetRegistration from "../../src/types/meetRegistration";
 import { KanbanSessionRaw } from "../../src/dao/KanbanSessionDaoKnex";
+import { KanbanSessionCardRaw } from "../../src/dao/KanbanSessionCardDaoKnex";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -82,7 +83,7 @@ export default class TestManager {
     return this.params.persistenceContext.kanbanSessionDao.addMany(kanbanSessions).then(() => this);
   }
 
-  addKanbanSessionCards(kanbanSessionCards: KanbanSessionCard[]): Promise<TestManager> {
+  addKanbanSessionCards(kanbanSessionCards: KanbanSessionCardRaw[]): Promise<TestManager> {
     return this.params.persistenceContext.kanbanSessionCardDao.addMany(kanbanSessionCards).then(() => this);
   }
 
@@ -121,6 +122,9 @@ export default class TestManager {
     return this.params.persistenceContext.kanbanDao.deleteAll();
   }
   deleteAllKanbanSessions() {
+    return this.params.persistenceContext.kanbanSessionDao.deleteAll();
+  }
+  deleteAllKanbanSessionCards() {
     return this.params.persistenceContext.kanbanSessionDao.deleteAll();
   }
 

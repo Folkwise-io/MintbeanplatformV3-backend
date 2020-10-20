@@ -1,21 +1,18 @@
 import Knex from "knex";
 import {
   KanbanSessionServiceAddOneInput,
-  KanbanSessionServiceEditOneInput,
   KanbanSessionServiceGetOneArgs,
   KanbanSessionServiceGetManyArgs,
 } from "../service/KanbanSessionService";
-import { KanbanSession } from "../types/gqlGeneratedTypes";
+import { CreateKanbanSessionInput, KanbanSession } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanSessionDao from "./KanbanSessionDao";
 import { prefixKeys } from "../util/prefixKeys";
 
-// For test manager method
-export interface KanbanSessionRaw {
+// For test manager add many method
+export interface KanbanSessionRaw extends CreateKanbanSessionInput {
   id: string;
-  kanbanId: string;
   userId: string;
-  meetId: string | null;
   createdAt: string;
   updatedAt: string;
   deleted?: boolean;
@@ -82,16 +79,16 @@ export default class KanbanSessionDaoKnex implements KanbanSessionDao {
     });
   }
 
-  async editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession> {
-    return handleDatabaseError(async () => {
-      const updatedKanbanSession = await this.knex("kanbanSessions")
-        .where({ id })
-        .update({ ...input, updatedAt: this.knex.fn.now() })
-        .returning("*")
-        .then((kanbanSessions) => this.getOne({ id: kanbanSessions[0].id }));
-      return updatedKanbanSession;
-    });
-  }
+  // async editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession> {
+  //   return handleDatabaseError(async () => {
+  //     const updatedKanbanSession = await this.knex("kanbanSessions")
+  //       .where({ id })
+  //       .update({ ...input, updatedAt: this.knex.fn.now() })
+  //       .returning("*")
+  //       .then((kanbanSessions) => this.getOne({ id: kanbanSessions[0].id }));
+  //     return updatedKanbanSession;
+  //   });
+  // }
 
   async deleteOne(id: string): Promise<boolean> {
     return handleDatabaseError(async () => {

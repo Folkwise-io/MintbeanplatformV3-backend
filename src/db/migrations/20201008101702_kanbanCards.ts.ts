@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { KanbanCardStatusEnum } from "../../types/gqlGeneratedTypes";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("kanbanCards", (table) => {
@@ -6,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("kanbanId").notNullable();
     table.text("title").notNullable();
     table.text("body").notNullable();
-    // table.integer("index").notNullable();
+    table.text("status").notNullable().defaultTo(KanbanCardStatusEnum.Todo);
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("deleted").notNullable().defaultTo(false);

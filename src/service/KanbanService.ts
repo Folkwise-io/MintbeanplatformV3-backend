@@ -1,21 +1,13 @@
 import KanbanDao from "../dao/KanbanDao";
-import { Kanban } from "../types/gqlGeneratedTypes";
+import { CreateKanbanInput, EditKanbanInput, Kanban, QueryKanbanArgs } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 // Only allow ID lookup for now
-export interface KanbanServiceGetOneArgs {
-  id: string;
-}
+export interface KanbanServiceGetOneArgs extends QueryKanbanArgs {}
 
-export interface KanbanServiceAddOneInput {
-  title: string;
-  description: string;
-}
+export interface KanbanServiceAddOneInput extends CreateKanbanInput {}
 
-export interface KanbanServiceEditOneInput {
-  title?: string | null;
-  description?: string | null;
-}
+export interface KanbanServiceEditOneInput extends EditKanbanInput {}
 
 export default class KanbanService implements EntityService<Kanban> {
   constructor(private kanbanDao: KanbanDao) {}

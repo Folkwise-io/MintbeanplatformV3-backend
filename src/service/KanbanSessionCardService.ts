@@ -1,31 +1,20 @@
 import KanbanSessionCardDao from "../dao/KanbanSessionCardDao";
-import { KanbanSessionCard } from "../types/gqlGeneratedTypes";
+import {
+  CreateKanbanSessionCardInput,
+  EditKanbanSessionCardInput,
+  KanbanSessionCard,
+  QueryKanbanSessionCardArgs,
+  QueryKanbanSessionCardsArgs,
+} from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 // Only allow ID lookup for now
-export interface KanbanSessionCardServiceGetOneArgs {
-  id: string;
-}
-export interface KanbanSessionCardServiceGetManyArgs {
-  kanbanSessionId: string;
-}
+export interface KanbanSessionCardServiceGetOneArgs extends QueryKanbanSessionCardArgs {}
+export interface KanbanSessionCardServiceGetManyArgs extends QueryKanbanSessionCardsArgs {}
 
-// to Enum?
-export type KanbanSessionCardStatuses = "TODO" | "WIP" | "DONE";
+export interface KanbanSessionCardServiceAddOneInput extends CreateKanbanSessionCardInput {}
 
-export interface KanbanSessionCardServiceAddOneInput {
-  kanbanSessionId: string;
-  kanbanCardId: string;
-  index: number;
-  status: KanbanSessionCardStatuses;
-}
-
-export interface KanbanSessionCardServiceEditOneInput {
-  kanbanSessionId?: string | null;
-  kanbanCardId?: string | null;
-  index?: number | null;
-  status?: KanbanSessionCardStatuses | null;
-}
+export interface KanbanSessionCardServiceEditOneInput extends EditKanbanSessionCardInput {}
 
 export default class KanbanSessionCardService implements EntityService<KanbanSessionCard> {
   constructor(private kanbanSessionCardDao: KanbanSessionCardDao) {}

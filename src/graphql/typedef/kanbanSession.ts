@@ -51,23 +51,23 @@ const kanbanSession = gql`
   "The input needed to create a new kanban"
   input CreateKanbanSessionInput {
     kanbanId: UUID!
-    userId: UUID!
     meetId: UUID
   }
 
-  "Input that can be used to edit a kanban session - all fields are optional"
-  input EditKanbanSessionInput {
-    kanbanId: UUID
-    userId: UUID
-    meetId: UUID
-  }
+  # Edit not needed?
+
+  # "Input that can be used to edit a kanban session - all fields are optional"
+  # input EditKanbanSessionInput {
+  #   kanbanId: UUID
+  #   meetId: UUID
+  # }
 
   extend type Mutation {
     "Creates a new kanban session"
     createKanbanSession(input: CreateKanbanSessionInput!): KanbanSession!
 
-    "Edits a kanban session"
-    editKanbanSession(id: UUID!, input: EditKanbanSessionInput!): KanbanSession!
+    # "Edits a kanban session"
+    # editKanbanSession(id: UUID!, input: EditKanbanSessionInput!): KanbanSession!
 
     "Deletes a kanban session"
     deleteKanbanSession(id: UUID!): Boolean!
