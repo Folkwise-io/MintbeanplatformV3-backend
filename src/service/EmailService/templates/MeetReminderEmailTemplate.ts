@@ -1,5 +1,5 @@
 import EmailDao from "../../../dao/EmailDao";
-import { EmailVars, Email, EmailTemplate, EmailResponse } from "../../../types/Email";
+import { EmailVars, Email, EmailTemplate, EmailResponse, ScheduledEmail } from "../../../types/Email";
 import { Meet } from "../../../types/gqlGeneratedTypes";
 import { User } from "../../../types/User";
 
@@ -12,6 +12,9 @@ interface MeetReminderEmailVars extends EmailVars {
 
 export default class MeetReminderEmailTemplate implements EmailTemplate {
   constructor(private emailDao: EmailDao) {}
+  inflateVars(scheduledEmail: ScheduledEmail): Promise<MeetReminderEmailVars> {
+    throw new Error("Method not implemented.");
+  }
 
   generateEmails(emailVars: MeetReminderEmailVars): Email[] {
     throw new Error("Method not implemented.");

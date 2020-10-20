@@ -71,6 +71,9 @@ export interface EmailResponse {
 
 /** Generates the email object according to its template and send the email depending on template needs */
 export interface EmailTemplate {
+  /** Converts the db entry into emailVars with User/Meet objects */
+  inflateVars(scheduledEmail: ScheduledEmail): Promise<EmailVars>;
+
   /** Generates an array of email objects (always an array even if it should only generate one) */
   generateEmails(emailVars: EmailVars): Email[];
 
@@ -84,5 +87,5 @@ export interface EmailCommander {
   queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void>;
 
   /** Called by the cron scheduler to coordinate generation/sending of emails. */
-  dispatch(id: string, templateName: EmailTemplateName, emailVars: EmailVars): Promise<EmailResponse[]>;
+  dispatch(scheduledEmail: ScheduledEmail): Promise<EmailResponse[]>;
 }
