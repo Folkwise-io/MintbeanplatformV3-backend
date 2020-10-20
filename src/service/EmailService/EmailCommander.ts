@@ -31,6 +31,10 @@ export default class EmailCommanderImpl implements EmailCommander {
     return this.emailDao.queue(scheduledEmail);
   }
 
+  getOverdueScheduledEmails(): Promise<ScheduledEmail[]> {
+    return this.emailDao.getOverdueScheduledEmails();
+  }
+
   dispatch(scheduledEmail: ScheduledEmail): Promise<EmailResponse[]> {
     const { templateName, id } = scheduledEmail;
     const template = this.templates[templateName];
