@@ -13,8 +13,8 @@ export async function up(knex: Knex): Promise<void> {
 
     // Constraints and indices
     table.primary(["id"]);
-    table.foreign("userId").references("users.id").onDelete("SET NULL");
-    table.foreign("meetId").references("meets.id").onDelete("SET NULL");
+    table.foreign("userId").references("users.id").onDelete("CASCADE");
+    table.foreign("meetId").references("meets.id").onDelete("CASCADE");
   });
 }
 
