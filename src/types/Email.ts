@@ -71,8 +71,8 @@ export interface EmailResponse {
 
 /** Generates the email object according to its template and send the email depending on template needs */
 export interface EmailTemplate {
-  /** Generates the email object */
-  generateEmail(emailVars: EmailVars): Email;
+  /** Generates an array of email objects (always an array even if it should only generate one) */
+  generateEmails(emailVars: EmailVars): Email[];
 
   /** Sends the emails to one or several emails, as appropriate, based on the template. Returns whether the emails were successfully sent. */
   dispatch(emailVars: EmailVars): Promise<EmailResponse[]>;

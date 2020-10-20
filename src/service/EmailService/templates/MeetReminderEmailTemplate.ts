@@ -13,7 +13,7 @@ interface MeetReminderEmailVars extends EmailVars {
 export default class MeetReminderEmailTemplate implements EmailTemplate {
   constructor(private emailDao: EmailDao) {}
 
-  generateEmail(emailVars: MeetReminderEmailVars): Email {
+  generateEmails(emailVars: MeetReminderEmailVars): Email[] {
     throw new Error("Method not implemented.");
   }
 

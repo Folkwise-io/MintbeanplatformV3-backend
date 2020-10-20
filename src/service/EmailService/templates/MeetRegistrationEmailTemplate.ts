@@ -17,7 +17,7 @@ interface MeetRegistrationEmailVars extends EmailVars {
 export default class MeetRegistrationEmailTemplate implements EmailTemplate {
   constructor(private emailDao: EmailDao) {}
 
-  generateEmail(emailVars: MeetRegistrationEmailVars): Email {
+  generateEmails(emailVars: MeetRegistrationEmailVars): Email[] {
     const { user, meet, id } = emailVars;
     const { title } = meet;
     const email: Email = {
@@ -28,7 +28,7 @@ export default class MeetRegistrationEmailTemplate implements EmailTemplate {
       attachments: generateIcsAttachments(meet),
     };
 
-    return email;
+    return [email];
   }
 
   dispatch(emailVars: MeetRegistrationEmailVars): Promise<EmailResponse[]> {
