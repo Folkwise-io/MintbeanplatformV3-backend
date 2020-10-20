@@ -7,14 +7,16 @@ import UserService from "../../service/UserService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 import config from "../../util/config";
+import { EmailCommander, ScheduledEmailInput } from "../../types/Email";
 const { disableRegistrationEmail } = config;
+import { EmailTemplateName } from "../../types/Email";
+const { MEET_REGISTRATION } = EmailTemplateName;
 
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
   meetRegistrationService: MeetRegistrationService,
-  userService: UserService,
-  emailService: EmailService,
+  emailCommander: EmailCommander,
 ): Resolvers => {
   return {
     Query: {
@@ -60,16 +62,18 @@ const meetResolver = (
         return meetResolverValidator
           .registerForMeet(args)
           .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
-          .then(async ({ userId, meetId, id }) => {
+          .then(async ({ userId, meetId }) => {
             if (disableRegistrationEmail) {
               return true;
             }
+            const scheduledEmail: ScheduledEmailInput = {
+              templateName: MEET_REGISTRATION,
+              userId,
+              meetId,
+              sendAt: new Date().toISOString(),
+            };
 
-            const user = await userService.getOne({ id: userId });
-            const meet = await meetService.getOne({ id: meetId });
-            const email = emailService.generateMeetRegistrationEmail(user, meet, id);
-
-            return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
+            return emailCommander.queue(scheduledEmail);
           })
           .then(() => true);
       },
