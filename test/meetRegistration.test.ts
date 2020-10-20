@@ -1,3 +1,4 @@
+import { EmailTemplateName, ScheduledEmail } from "../src/types/Email";
 import { ALGOLIA } from "./src/meetConstants";
 import {
   ALGOLIA_3,
@@ -13,6 +14,7 @@ import { AMY, BOB } from "./src/userConstants";
 import { getBobCookies, getAdminCookies } from "./src/util";
 
 const testManager = TestManager.build();
+const { emailDao } = testManager.params.persistenceContext;
 let bobCookies: string[];
 let adminCookies: string[];
 
@@ -27,6 +29,7 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await testManager.deleteAllMeetRegistrations();
+  await testManager.deleteAllEmails();
 });
 
 afterAll(async () => {
@@ -68,7 +71,11 @@ describe("Registering for a meet", () => {
 
   it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
     await testManager
-      .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ANIMATION_TOYS_2.id }, cookies: adminCookies })
+      .getGraphQLData({
+        query: REGISTER_FOR_MEET_QUERY,
+        variables: { meetId: ANIMATION_TOYS_2.id },
+        cookies: adminCookies,
+      })
       .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
 
     // Check for registeredMeets in me query
@@ -93,7 +100,11 @@ describe("Registering for a meet", () => {
 
   it("returns an error message if trying to register without being logged in", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ANIMATION_TOYS_2.id }, cookies: undefined })
+      .getErrorMessage({
+        query: REGISTER_FOR_MEET_QUERY,
+        variables: { meetId: ANIMATION_TOYS_2.id },
+        cookies: undefined,
+      })
       .then((errorMsg) => expect(errorMsg).toMatch(/not authorized/i));
   });
 
@@ -101,5 +112,28 @@ describe("Registering for a meet", () => {
     await testManager
       .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
       .then((errorMsg) => expect(errorMsg).toMatch(/exist/i));
+  });
+});
+
+describe("Email queue after registering for a meet", () => {
+  it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
+    await testManager
+      .getGraphQLData({
+        query: REGISTER_FOR_MEET_QUERY,
+        variables: { meetId: ANIMATION_TOYS_2.id },
+        cookies: adminCookies,
+      })
+      .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
+
+    // Check that an email is queued in the db for immediate sending
+    await emailDao.getOverdueScheduledEmails().then((scheduledEmails: ScheduledEmail[]) => {
+      expect(scheduledEmails).toHaveLength(1);
+
+      expect(scheduledEmails[0]).toMatchObject({
+        templateName: EmailTemplateName.MEET_REGISTRATION,
+        userId: AMY.id,
+        meetId: ANIMATION_TOYS_2.id,
+      });
+    });
   });
 });
