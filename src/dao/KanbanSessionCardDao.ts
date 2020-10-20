@@ -5,7 +5,7 @@ import {
   KanbanSessionCardServiceGetOneArgs,
   KanbanSessionCardServiceGetManyArgs,
 } from "../service/KanbanSessionCardService";
-import { KanbanSessionCardRaw } from "./KanbanSessionCardDaoKnex";
+import { KanbanSessionCardAddManyInput, KanbanSessionCardRaw } from "./KanbanSessionCardDaoKnex";
 
 export default interface KanbanSessionCardDao {
   getOne(args: KanbanSessionCardServiceGetOneArgs): Promise<KanbanSessionCard>;
@@ -15,5 +15,5 @@ export default interface KanbanSessionCardDao {
   deleteOne(id: string): Promise<boolean>;
   // Below are TestManager methods
   deleteAll(): Promise<void>;
-  addMany(kanbanCards: KanbanSessionCardRaw[]): Promise<void>;
+  addMany(kanbanCards: KanbanSessionCardRaw[] | KanbanSessionCardAddManyInput[]): Promise<void>;
 }

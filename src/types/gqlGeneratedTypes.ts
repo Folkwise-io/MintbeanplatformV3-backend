@@ -611,7 +611,7 @@ export type CreateKanbanSessionCardInput = {
   /** A reference to the kanban card this kanban session card points to */
   kanbanCardId: Scalars['UUID'];
   /** Status of the card, representing which kanban column it currently resides in ('TODO', 'WIP' or 'DONE') */
-  status: KanbanCardStatusEnum;
+  status?: Maybe<KanbanCardStatusEnum>;
 };
 
 /** Input that can be used to edit a kanban session card - all fields are optional */

@@ -50,7 +50,7 @@ const kanbanSessionCard = gql`
     kanbanCardId: UUID!
 
     "Status of the card, representing which kanban column it currently resides in ('TODO', 'WIP' or 'DONE')"
-    status: KanbanCardStatusEnum!
+    status: KanbanCardStatusEnum
   }
 
   "Input that can be used to edit a kanban session card - all fields are optional"

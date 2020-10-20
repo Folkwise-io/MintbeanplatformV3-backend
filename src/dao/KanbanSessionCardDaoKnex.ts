@@ -21,6 +21,12 @@ export interface KanbanSessionCardRaw {
   deleted?: boolean;
 }
 
+export interface KanbanSessionCardAddManyInput {
+  kanbanSessionId: string;
+  kanbanCardId: string;
+  status?: KanbanCardStatusEnum;
+}
+
 export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
   constructor(private knex: Knex) {}
 
@@ -47,18 +53,6 @@ export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
 
   async getMany(args: KanbanSessionCardServiceGetManyArgs): Promise<KanbanSessionCard[]> {
     return handleDatabaseError(async () => {
-      // Create kanban session cards mirrors of kanban cards for those that don't yet have
-      const kanbanCardIdsWithoutKanbanSessionCards = await this.knex.raw(
-        `SELECT "kanbanCards"."id" FROM "kanbanCards"
-           LEFT JOIN "kanbanSessionCards" ON "kanbanSessionCards"."kanbanCardId" = "kanbanCards"."id"
-           WHERE "kanbanSessionCards"."id" IS NULL`,
-      );
-      console.log({ kanbanCardIdsWithoutKanbanSessionCards });
-      if (kanbanCardIdsWithoutKanbanSessionCards) {
-        kanbanCardIdsWithoutKanbanSessionCards.forEach((kbc: { id: string }) => {
-          this.addOne({ ...args, kanbanCardId: kbc.id, status: KanbanCardStatusEnum.Todo });
-        });
-      }
       const kanbanSessionCards: KanbanSessionCard[] = await this.knex
         .from("kanbanCards")
         // Do a left join here so that if a corresponding kanbanSessionCard does not yet exist (meaning the kanbanCard hasn't been moved yet by user) the value coalesces to the default value (kanbanCards.status)
@@ -106,11 +100,14 @@ export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
     });
   }
 
-  // Testing methods below, for TestManager to call
-  async addMany(kanbanSessionCards: KanbanSessionCardRaw[]): Promise<void> {
-    return this.knex<KanbanSessionCardRaw>("kanbanSessionCards").insert(kanbanSessionCards);
+  // KanbanSessionCardRaw[] is for test manager
+  async addMany(kanbanSessionCards: KanbanSessionCardRaw[] | KanbanSessionCardAddManyInput[]): Promise<void> {
+    return this.knex<KanbanSessionCardRaw | KanbanSessionCardAddManyInput>("kanbanSessionCards").insert(
+      kanbanSessionCards,
+    );
   }
 
+  // Testing methods below, for TestManager to call
   deleteAll(): Promise<void> {
     return this.knex<KanbanSessionCard>("kanbanSessionCards").delete();
   }

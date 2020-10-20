@@ -61,7 +61,7 @@ afterAll(async () => {
   await testManager.destroy();
 });
 
-describe("Querying kanban session cards", () => {
+describe.skip("Querying kanban session cards", () => {
   it("gets a meet kanban session card by id", async () => {
     await testManager
       .addKanbanSessionCards([TEST_MEET_KANBAN_SESSION_CARD_1_RAW])
@@ -79,7 +79,7 @@ describe("Querying kanban session cards", () => {
       });
   });
 
-  it.only("gets a meet kanban session's cards by kanban session id", async () => {
+  it("gets a meet kanban session's cards by kanban session id", async () => {
     await testManager;
     testManager
       .getGraphQLResponse({
