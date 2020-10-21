@@ -35,7 +35,7 @@ export default class EmailDaoSendgridKnex implements EmailDao {
     });
   }
 
-  deleteScheduledEmail(id: string): Promise<void> {
+  markAsSent(id: string): Promise<void> {
     return handleDatabaseError(() => {
       return this.knex<ScheduledEmail>("scheduledEmails").update({ sent: true }).where({ id });
     });

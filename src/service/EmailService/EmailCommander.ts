@@ -51,7 +51,9 @@ export default class EmailCommanderImpl implements EmailCommander {
         // Q: Now we need to delete the scheduledEmail entry, is it better to do it here or in cron scheduler?
         /* Q: How to decide for when to delete the entry? (i.e. wrong email address vs. sendgrid servers are down).
       I think sendgrid server errors (500 codes) = don't delete, request errors like wrong email (400 codes) = delete */
-        await this.emailDao.deleteScheduledEmail(id);
+
+        // TODO: write logic that checks emailResponses to decide when to delete the scheduled email from entry
+        await this.emailDao.markAsSent(id);
         return emailResponses;
       });
   };

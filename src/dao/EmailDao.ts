@@ -10,8 +10,8 @@ export default interface EmailDao {
   /** Retrieves overdue scheduled emails that should be sent right away */
   getOverdueScheduledEmails(): Promise<ScheduledEmail[]>;
 
-  /** Deletes a queued email */
-  deleteScheduledEmail(id: string): Promise<void>;
+  /** Marks a scheduled email as sent */
+  markAsSent(id: string): Promise<void>;
 
   /** Sends an email */
   sendEmail(email: Email): Promise<EmailResponse>;
