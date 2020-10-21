@@ -12,7 +12,11 @@ export default class CronService {
       .getOverdueScheduledEmails()
       .then((scheduledEmails) => scheduledEmails.map(this.emailCommander.dispatch))
       .then((emailResponsePromises) => Promise.all(emailResponsePromises))
-      .then((emailResponses) => console.log(emailResponses));
+      .then((emailResponses) => {
+        if (emailResponses.length > 0) {
+          console.log(emailResponses);
+        }
+      });
   };
 
   start() {
