@@ -35,7 +35,7 @@ export default class EmailCommanderImpl implements EmailCommander {
     return this.emailDao.getOverdueScheduledEmails();
   }
 
-  dispatch(scheduledEmail: ScheduledEmail): Promise<EmailResponse[]> {
+  dispatch = (scheduledEmail: ScheduledEmail): Promise<EmailResponse[]> => {
     const { templateName, id } = scheduledEmail;
     const template = this.templates[templateName];
     if (!template) {
@@ -44,8 +44,8 @@ export default class EmailCommanderImpl implements EmailCommander {
 
     return template
       .inflateVars(scheduledEmail)
-      .then((emailVars) => template.generateEmails(emailVars))
-      .then((emails) => emails.map((email) => this.emailDao.sendEmail(email)))
+      .then(template.generateEmails)
+      .then((emails) => emails.map(this.emailDao.sendEmail))
       .then((emailPromises) => Promise.all(emailPromises))
       .then(async (emailResponses) => {
         // Q: Now we need to delete the scheduledEmail entry, is it better to do it here or in cron scheduler?
@@ -54,5 +54,5 @@ export default class EmailCommanderImpl implements EmailCommander {
         await this.emailDao.deleteScheduledEmail(id);
         return emailResponses;
       });
-  }
+  };
 }
