@@ -1,5 +1,5 @@
 import { EmailTemplateName, ScheduledEmail } from "../src/types/Email";
-import { ALGOLIA } from "./src/meetConstants";
+import { ALGOLIA, DELETE_MEET } from "./src/meetConstants";
 import {
   ALGOLIA_3,
   AMY_ANIMATION_TOYS_2_REGISTRATION,
@@ -116,14 +116,12 @@ describe("Registering for a meet", () => {
 });
 
 describe("Email queue after registering for a meet", () => {
-  it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
-    await testManager
-      .getGraphQLData({
-        query: REGISTER_FOR_MEET_QUERY,
-        variables: { meetId: ANIMATION_TOYS_2.id },
-        cookies: adminCookies,
-      })
-      .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
+  it("lets a logged in user register for a meet and then the email gets queued as is part of the overdue scheduled emails", async () => {
+    await testManager.getGraphQLData({
+      query: REGISTER_FOR_MEET_QUERY,
+      variables: { meetId: ANIMATION_TOYS_2.id },
+      cookies: adminCookies,
+    });
 
     // Check that an email is queued in the db for immediate sending
     await emailDao.getOverdueScheduledEmails().then((scheduledEmails: ScheduledEmail[]) => {
@@ -134,6 +132,24 @@ describe("Email queue after registering for a meet", () => {
         userId: AMY.id,
         meetId: ANIMATION_TOYS_2.id,
       });
+    });
+  });
+
+  it("doesn't find the scheduled email if admin deletes meet after the user registers", async () => {
+    await testManager.getGraphQLData({
+      query: REGISTER_FOR_MEET_QUERY,
+      variables: { meetId: ANIMATION_TOYS_2.id },
+      cookies: adminCookies,
+    });
+
+    await testManager.getGraphQLData({
+      query: DELETE_MEET,
+      variables: { id: ANIMATION_TOYS_2.id },
+      cookies: adminCookies,
+    });
+
+    await emailDao.getOverdueScheduledEmails().then((scheduledEmails: ScheduledEmail[]) => {
+      expect(scheduledEmails).toHaveLength(0);
     });
   });
 });
