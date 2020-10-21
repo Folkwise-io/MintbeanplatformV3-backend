@@ -11,8 +11,8 @@ export default class CronService {
     return this.emailCommander
       .getOverdueScheduledEmails()
       .then((scheduledEmails) => scheduledEmails.map(this.emailCommander.dispatch))
-      .then((responsePromises) => Promise.all(responsePromises))
-      .then((responses) => console.log(responses));
+      .then((emailResponsePromises) => Promise.all(emailResponsePromises))
+      .then((emailResponses) => console.log(emailResponses));
   };
 
   start() {

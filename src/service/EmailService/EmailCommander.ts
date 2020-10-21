@@ -46,7 +46,7 @@ export default class EmailCommanderImpl implements EmailCommander {
       .inflateVars(scheduledEmail)
       .then(template.generateEmails)
       .then((emails) => emails.map(this.emailDao.sendEmail))
-      .then((emailPromises) => Promise.all(emailPromises))
+      .then((emailResponsePromises) => Promise.all(emailResponsePromises))
       .then(async (emailResponses) => {
         // Q: Now we need to delete the scheduledEmail entry, is it better to do it here or in cron scheduler?
         /* Q: How to decide for when to delete the entry? (i.e. wrong email address vs. sendgrid servers are down).
