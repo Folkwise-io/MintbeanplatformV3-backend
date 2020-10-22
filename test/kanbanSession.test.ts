@@ -137,7 +137,7 @@ describe("Querying kanban sessions", () => {
     );
   });
 
-  it.skip("returns an 'unauthorized' error message if a non-admin user tries to get another user's kanban session", async () => {
+  it("returns an 'unauthorized' error message if a non-admin user tries to get another user's kanban session", async () => {
     await testManager.addKanbanSessions([{ ...TEST_KANBAN_SESSION_ON_MEET_RAW, userId: AMY.id }]).then((tm) =>
       tm
         .getErrorMessage({

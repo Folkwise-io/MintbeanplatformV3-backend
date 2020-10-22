@@ -15,12 +15,12 @@ export async function up(knex: Knex): Promise<void> {
     table.boolean("deleted").notNullable().defaultTo(false);
 
     // Constraints and indices
-    table.primary(["id"]);
+    table.primary(["kanbanCardId", "kanbanSessionId"]);
     table.foreign("kanbanCardId").references("kanbanCards.id").onDelete("CASCADE");
     table.foreign("kanbanSessionId").references("kanbanSessions.id").onDelete("CASCADE");
-    // can only store one reference to a kanban card in a kanban session
-    table.unique(["kanbanCardId", "kanbanSessionId"]);
   });
 }
+// // can only store one reference to a kanban card in a kanban session
+// table.unique(["kanbanCardId", "kanbanSessionId"]);
 
 export async function down(knex: Knex): Promise<void> {}

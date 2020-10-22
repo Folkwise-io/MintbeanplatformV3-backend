@@ -27,48 +27,33 @@ export interface KanbanSessionCardAddManyInput {
   status?: KanbanCardStatusEnum;
 }
 
+const buildQuery = (knex: Knex<any, unknown[]>, args: any) =>
+  knex
+    .from("kanbanCards")
+    .innerJoin("kanbanSessionCards", "kanbanSessionCards.kanbanCardId", "kanbanCards.id")
+    .select(
+      { id: "kanbanSessionCards.id" },
+      { title: "kanbanCards.title" },
+      { body: "kanbanCards.body" },
+      { status: "kanbanSessionCards.status" },
+      { createdAt: "kanbanSessionCards.createdAt" },
+      { updatedAt: "kanbanSessionCards.updatedAt" },
+      { kanbanSessionId: "kanbanSessionCards.kanbanSessionId" },
+      { kanbanCardId: "kanbanSessionCards.kanbanCardId" },
+    )
+    .where(prefixKeys("kanbanCards", { ...args, deleted: false }));
+// .where({ , deleted: false }));
+
 export default class KanbanSessionCardDaoKnex implements KanbanSessionCardDao {
   constructor(private knex: Knex) {}
 
   async getOne(args: KanbanSessionCardServiceGetOneArgs): Promise<KanbanSessionCard> {
-    return handleDatabaseError(async () => {
-      const kanbanSession = await this.knex
-        .from("kanbanSessionCards")
-        .innerJoin("kanbanCards", "kanbanSessionCards.kanbanCardId", "kanbanCards.id")
-        .select(
-          { id: "kanbanSessionCards.id" },
-          { title: "kanbanCards.title" },
-          { body: "kanbanCards.body" },
-          { status: "kanbanSessionCards.status" },
-          { createdAt: "kanbanSessionCards.createdAt" },
-          { updatedAt: "kanbanSessionCards.updatedAt" },
-          { kanbanSessionId: "kanbanSessionCards.kanbanSessionId" },
-          { kanbanCardId: "kanbanSessionCards.kanbanCardId" },
-        )
-        .where(prefixKeys("kanbanSessionCards", { ...args, deleted: false }))
-        .first();
-      return kanbanSession;
-    });
+    return handleDatabaseError(async () => buildQuery(this.knex, args).first().then);
   }
 
   async getMany(args: KanbanSessionCardServiceGetManyArgs): Promise<KanbanSessionCard[]> {
     return handleDatabaseError(async () => {
-      const kanbanSessionCards: KanbanSessionCard[] = await this.knex
-        .from("kanbanCards")
-        // Do a left join here so that if a corresponding kanbanSessionCard does not yet exist (meaning the kanbanCard hasn't been moved yet by user) the value coalesces to the default value (kanbanCards.status)
-        .leftJoin("kanbanSessionCards", "kanbanCards.id", "kanbanSessionCards.kanbanCardId")
-        .select(
-          { id: "kanbanSessionCards.id" },
-          { title: "kanbanCards.title" },
-          { body: "kanbanCards.body" },
-          { status: this.knex.raw(`COALESCE("kanbanSessionCards"."status", "kanbanCards"."status")`) },
-          { createdAt: "kanbanSessionCards.createdAt" },
-          { updatedAt: "kanbanSessionCards.updatedAt" },
-          { kanbanSessionId: "kanbanSessionCards.kanbanSessionId" },
-          { kanbanCardId: "kanbanSessionCards.kanbanCardId" },
-        )
-        .where(prefixKeys("kanbanSessionCards", { ...args, deleted: false }));
-      return kanbanSessionCards;
+      return buildQuery(this.knex, args);
     });
   }
 

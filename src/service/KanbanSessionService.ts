@@ -17,12 +17,12 @@ export interface KanbanSessionServiceAddOneInput extends CreateKanbanSessionInpu
   userId: string;
 }
 
-export interface KanbanSessionServiceCheckForNewKanbanCardsArgs {
+export interface KanbanSessionServiceSyncKanbanCardsArgs {
   kanbanSessionId: string;
   kanbanId: string;
 }
 
-export interface KanbanSessionServiceSyncNewKanbanCardsArgs {
+export interface KanbanSessionServiceAddUnsyncedKanbanSessionCardsArgs {
   kanbanSessionId: string;
   orphanedCardIds: string[];
 }
@@ -40,30 +40,30 @@ export default class KanbanSessionService implements EntityService<KanbanSession
   async getOne(args: KanbanSessionServiceGetOneArgs): Promise<KanbanSession | null> {
     // get kanbanSession so we know kanbanId
     const kanbanSession = await this.kanbanSessionDao.getOne(args);
-    if (!kanbanSession) return null;
+    if (!kanbanSession) return null; // user has not yet created a kanban session
 
-    // check to see if kanbanSessionCard sync is necessary
-    const orphanedCardIds = await this.getOrphanedCardIds({
-      kanbanSessionId: kanbanSession.id,
-      kanbanId: kanbanSession.kanbanId,
-    });
+    this.syncKanbanCards({ kanbanSessionId: kanbanSession.id, kanbanId: kanbanSession.kanbanId });
 
-    // create new kanbanSessionCards if necessary
-    if (orphanedCardIds.length) {
-      await this.syncNewKanbanCards({ kanbanSessionId: kanbanSession.id, orphanedCardIds });
-    }
     return kanbanSession;
   }
 
   async getMany(args: KanbanSessionServiceGetManyArgs): Promise<KanbanSession[]> {
+    // TODO: implement the same kanban card syncing as getOne on getMany requests?
     return this.kanbanSessionDao.getMany(args);
   }
 
+  async addOne(input: KanbanSessionServiceAddOneInput): Promise<KanbanSession> {
+    return this.kanbanSessionDao.addOne(input);
+  }
+
   // Finds and returns array ids of kanbanCards that do not yet have a corresponding kanbanSessionCard
-  private async getOrphanedCardIds(args: KanbanSessionServiceCheckForNewKanbanCardsArgs): Promise<string[]> {
-    const kanbanCards = await this.kanbanCardDao.getMany({ kanbanId: args.kanbanId });
+  private async getOrphanedCardIds({
+    kanbanId,
+    kanbanSessionId,
+  }: KanbanSessionServiceSyncKanbanCardsArgs): Promise<string[]> {
+    const kanbanCards = await this.kanbanCardDao.getMany({ kanbanId });
     const kanbanCardIds: string[] = kanbanCards.map((kbc) => kbc.id);
-    const kanbanSessionCards = await this.kanbanSessionCardDao.getMany({ kanbanSessionId: args.kanbanSessionId });
+    const kanbanSessionCards = await this.kanbanSessionCardDao.getMany({ kanbanSessionId });
     const kanbanSessionCardKanbanCardIds: string[] = kanbanSessionCards.map((kbsc) => kbsc.kanbanCardId);
 
     const orphanedCardIds = kanbanCardIds.filter((kbcid) => !kanbanSessionCardKanbanCardIds.includes(kbcid));
@@ -71,10 +71,10 @@ export default class KanbanSessionService implements EntityService<KanbanSession
   }
 
   // Add missing kanbanSessionCards to mirror kanbanCards
-  private async syncNewKanbanCards({
+  private async addUnsyncedKanbanSessionCards({
     kanbanSessionId,
     orphanedCardIds,
-  }: KanbanSessionServiceSyncNewKanbanCardsArgs): Promise<void> {
+  }: KanbanSessionServiceAddUnsyncedKanbanSessionCardsArgs): Promise<void> {
     const newKanbanCardsInput = orphanedCardIds.map((kanbanCardId) => ({
       kanbanSessionId,
       kanbanCardId,
@@ -83,10 +83,20 @@ export default class KanbanSessionService implements EntityService<KanbanSession
     await this.kanbanSessionCardDao.addMany(newKanbanCardsInput);
   }
 
-  async addOne(input: KanbanSessionServiceAddOneInput): Promise<KanbanSession> {
-    return this.kanbanSessionDao.addOne(input);
+  private async syncKanbanCards({ kanbanSessionId, kanbanId }: KanbanSessionServiceSyncKanbanCardsArgs): Promise<void> {
+    // get ids of kanbanCards that do not have a corresponding kanbanSessionCard in this session
+    const orphanedCardIds = await this.getOrphanedCardIds({
+      kanbanSessionId,
+      kanbanId,
+    });
+
+    // create new kanbanSessionCards if necessary
+    if (orphanedCardIds.length) {
+      await this.addUnsyncedKanbanSessionCards({ kanbanSessionId, orphanedCardIds });
+    }
   }
 
+  // No use case?
   // async editOne(id: string, input: KanbanSessionServiceEditOneInput): Promise<KanbanSession> {
   //   return this.kanbanSessionDao.editOne(id, input);
   // }
