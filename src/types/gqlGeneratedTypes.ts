@@ -83,6 +83,10 @@ export type Query = {
   kanbanCanon?: Maybe<KanbanCanon>;
   /** Gets all the kanbanCanons */
   kanbanCanons?: Maybe<Array<Maybe<KanbanCanon>>>;
+  /** Get a kanban card by ID */
+  kanbanCanonCard?: Maybe<KanbanCanonCard>;
+  /** Gets all the kanban cards for a given kanban */
+  kanbanCanonCards?: Maybe<Array<Maybe<KanbanCanonCard>>>;
 };
 
 
@@ -119,6 +123,16 @@ export type QueryProjectArgs = {
 
 export type QueryKanbanCanonArgs = {
   id: Scalars['UUID'];
+};
+
+
+export type QueryKanbanCanonCardArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryKanbanCanonCardsArgs = {
+  kanbanCanonId: Scalars['UUID'];
 };
 
 /** The fields needed for a new user to register */
@@ -412,6 +426,8 @@ export type KanbanCanon = {
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanbanCanon was modified */
   updatedAt: Scalars['DateTime'];
+  /** The kanban cards that belong to a kanban */
+  kanbanCanonCards?: Maybe<Array<Maybe<KanbanCanonCard>>>;
 };
 
 /** The input needed to create a new kanbanCanon */
@@ -426,6 +442,31 @@ export type EditKanbanCanonInput = {
   title?: Maybe<Scalars['String']>;
   /** A short description about the kanban project */
   description?: Maybe<Scalars['String']>;
+};
+
+/** Possible initial statuses of a kanban card. Defaults to TODO, unless specified otherwise */
+export enum KanbanCanonCardStatusEnum {
+  Todo = 'TODO',
+  Wip = 'WIP',
+  Done = 'DONE'
+}
+
+/** A kanban card that belongs to a kanban. */
+export type KanbanCanonCard = {
+  __typename?: 'KanbanCanonCard';
+  /** ID of the kanban card in UUID */
+  id: Scalars['UUID'];
+  title: Scalars['String'];
+  /** A markdown body of the kanban card content */
+  body: Scalars['String'];
+  /** The initial status column this kanbanCanonCard should appear in */
+  status: KanbanCanonCardStatusEnum;
+  /** A reference to the kanban this kanban card belongs to */
+  kanbanCanonId: Scalars['UUID'];
+  /** DateTime that the kanban was created */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the kanban was modified */
+  updatedAt: Scalars['DateTime'];
 };
 
 
@@ -529,6 +570,8 @@ export type ResolversTypes = {
   KanbanCanon: ResolverTypeWrapper<KanbanCanon>;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
+  KanbanCanonCardStatusEnum: KanbanCanonCardStatusEnum;
+  KanbanCanonCard: ResolverTypeWrapper<KanbanCanonCard>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -555,6 +598,7 @@ export type ResolversParentTypes = {
   KanbanCanon: KanbanCanon;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
+  KanbanCanonCard: KanbanCanonCard;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -604,6 +648,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
   kanbanCanon?: Resolver<Maybe<ResolversTypes['KanbanCanon']>, ParentType, ContextType, RequireFields<QueryKanbanCanonArgs, 'id'>>;
   kanbanCanons?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanon']>>>, ParentType, ContextType>;
+  kanbanCanonCard?: Resolver<Maybe<ResolversTypes['KanbanCanonCard']>, ParentType, ContextType, RequireFields<QueryKanbanCanonCardArgs, 'id'>>;
+  kanbanCanonCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanonCard']>>>, ParentType, ContextType, RequireFields<QueryKanbanCanonCardsArgs, 'kanbanCanonId'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -686,6 +732,18 @@ export type KanbanCanonResolvers<ContextType = any, ParentType extends Resolvers
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  kanbanCanonCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanonCard']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type KanbanCanonCardResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCanonCard'] = ResolversParentTypes['KanbanCanonCard']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['KanbanCanonCardStatusEnum'], ParentType, ContextType>;
+  kanbanCanonId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -701,6 +759,7 @@ export type Resolvers<ContextType = any> = {
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
   KanbanCanon?: KanbanCanonResolvers<ContextType>;
+  KanbanCanonCard?: KanbanCanonCardResolvers<ContextType>;
 };
 
 

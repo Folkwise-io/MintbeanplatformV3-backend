@@ -8,19 +8,19 @@ export async function seed(knex: Knex): Promise<void> {
       id: "00000000-0000-0000-0000-000000000000",
       title: "Animation Toys 1 Kanban",
       description: "Building impressive portfolio projects with PaperJS.",
-      createdAt: "2020-10-15",
+      createdAt: "2020-08-15T12:00:00.000Z",
     },
     {
       id: "00000000-0000-4000-a000-000000000000",
       title: "Algolia gives you super powers 1 Kanban",
       description: "Building impressive portfolio projects with PaperJS.",
-      createdAt: "2020-10-15",
+      createdAt: "2020-08-15T12:00:00.000Z",
     },
     {
       id: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
       title: "Hack the Hack Kanban",
       description: "Building impressive portfolio projects with PaperJS.",
-      createdAt: "2020-10-15",
+      createdAt: "2020-08-15T12:00:00.000Z",
     },
   ]);
 }
