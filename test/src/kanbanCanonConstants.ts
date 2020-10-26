@@ -1,17 +1,17 @@
 import { gql } from "apollo-server-express";
 import { KanbanCanon } from "../../src/types/gqlGeneratedTypes";
 
-export const KANBAN_CANON_MEET: KanbanCanon = {
+export const KANBAN_CANON_1: KanbanCanon = {
   id: "00000000-0000-0000-0000-000000000000",
-  title: "Test Kanban Canon on Meet",
+  title: "Test Kanban Canon 1",
   description: "Lorem ipsum whatever",
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
 };
 
-export const KANBAN_CANON_ISOLATED: KanbanCanon = {
+export const KANBAN_CANON_2: KanbanCanon = {
   id: "00000000-0000-4000-a000-000000000000",
-  title: "Test Kanban Canon Isolated",
+  title: "Test Kanban Canon 2",
   description: "Lorem ipsum whatever",
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",

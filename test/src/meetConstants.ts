@@ -46,6 +46,12 @@ export const GET_MEETS_BY_ID = gql`
       createdAt
       updatedAt
       region
+      kanbanCanonId
+      kanbanCanon {
+        id
+        title
+        description
+      }
     }
   }
 `;
@@ -65,6 +71,12 @@ export const GET_ALL_MEETS = gql`
       createdAt
       updatedAt
       region
+      kanbanCanonId
+      kanbanCanon {
+        id
+        title
+        description
+      }
     }
   }
 `;

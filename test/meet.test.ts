@@ -14,16 +14,19 @@ import {
 } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
+import { KANBAN_CANON_1 } from "./src/kanbanCanonConstants";
 
 const testManager = TestManager.build();
 
 beforeEach(async () => {
   await testManager.deleteAllMeets();
+  await testManager.deleteAllKanbanCanons();
 });
 
 afterAll(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllUsers();
+  await testManager.deleteAllKanbanCanons();
   await testManager.destroy();
 });
 
@@ -37,7 +40,23 @@ describe("Querying meets", () => {
           .then(testManager.parseData),
       )
       .then(({ meet }) => {
-        expect(PAPERJS).toMatchObject(meet);
+        expect(meet).toMatchObject(PAPERJS);
+      });
+  });
+  it("gets a meet by id with kanbanCanon if provided", async () => {
+    const MEET_WITH_KANBAN_CANON = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1.id };
+    await testManager.addKanbanCanons([KANBAN_CANON_1]);
+    await testManager
+      .addMeets([MEET_WITH_KANBAN_CANON])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({ query: GET_MEETS_BY_ID, variables: { id: PAPERJS.id } })
+          .then(testManager.parseData),
+      )
+      .then(({ meet }) => {
+        expect(meet).toMatchObject(MEET_WITH_KANBAN_CANON);
+        expect(meet.kanbanCanonId).toBe(MEET_WITH_KANBAN_CANON.kanbanCanonId);
+        expect(meet.kanbanCanon).not.toBe(null);
       });
   });
 

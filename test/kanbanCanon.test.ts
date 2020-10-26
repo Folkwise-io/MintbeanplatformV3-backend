@@ -1,8 +1,8 @@
 import {
   GET_KANBAN_CANONS_QUERY,
   GET_KANBAN_CANON_QUERY,
-  KANBAN_CANON_ISOLATED,
-  KANBAN_CANON_MEET,
+  KANBAN_CANON_1,
+  KANBAN_CANON_2,
 } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
 
@@ -22,19 +22,19 @@ afterAll(async () => {
 describe("Querying kanbanCanons", () => {
   it("gets a kanbanCanon by id", async () => {
     await testManager
-      .addKanbanCanons([KANBAN_CANON_MEET])
+      .addKanbanCanons([KANBAN_CANON_1])
       .then(() =>
         testManager
-          .getGraphQLResponse({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_MEET.id } })
+          .getGraphQLResponse({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1.id } })
           .then(testManager.parseData),
       )
       .then(({ kanbanCanon }) => {
-        expect(kanbanCanon).toMatchObject(KANBAN_CANON_MEET);
+        expect(kanbanCanon).toMatchObject(KANBAN_CANON_1);
       });
   });
   it("gets all kanbanCanons", async () => {
     await testManager
-      .addKanbanCanons([KANBAN_CANON_MEET, KANBAN_CANON_ISOLATED])
+      .addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2])
       .then(() => testManager.getGraphQLResponse({ query: GET_KANBAN_CANONS_QUERY }).then(testManager.parseData))
       .then(({ kanbanCanons }) => {
         expect(kanbanCanons).toHaveLength(2);
@@ -49,7 +49,7 @@ describe("Querying kanbanCanons", () => {
       });
   });
   it("does not retrieve deleted kanbanCanons", async () => {
-    await testManager.addKanbanCanons([{ ...KANBAN_CANON_ISOLATED, deleted: true } as any]);
+    await testManager.addKanbanCanons([{ ...KANBAN_CANON_2, deleted: true } as any]);
     await testManager
       .getGraphQLResponse({ query: GET_KANBAN_CANONS_QUERY })
       .then(testManager.parseData)
