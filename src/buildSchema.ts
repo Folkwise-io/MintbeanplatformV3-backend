@@ -16,6 +16,7 @@ import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 import meetRegistration from "./graphql/typedef/meetRegistration";
 import email from "./graphql/typedef/email";
 import emailResolver from "./graphql/resolver/emailResolver";
+import kanbanCanon from "./graphql/typedef/kanbanCanon";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -30,9 +31,9 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectMediaAssetService,
     meetRegistrationService,
     emailResolverValidator,
-    emailService
+    emailService,
   } = resolverContext;
-  const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, email];
+  const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, email, kanbanCanon];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),

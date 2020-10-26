@@ -79,6 +79,10 @@ export type Query = {
   projects?: Maybe<Array<Maybe<Project>>>;
   /** Get a single project by its ID */
   project?: Maybe<Project>;
+  /** Get a kanbanCanon by ID */
+  kanbanCanon?: Maybe<KanbanCanon>;
+  /** Gets all the kanbanCanons */
+  kanbanCanons?: Maybe<Array<Maybe<KanbanCanon>>>;
 };
 
 
@@ -109,6 +113,11 @@ export type QueryProjectsArgs = {
 
 
 export type QueryProjectArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryKanbanCanonArgs = {
   id: Scalars['UUID'];
 };
 
@@ -148,6 +157,12 @@ export type Mutation = {
   sendReminderEmailForMeet: Scalars['Boolean'];
   /** Sends a sample registration email with json-ld for Google whitelist approval (admin-only) */
   sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
+  /** Creates a new kanbanCanon (requires admin privileges) */
+  createKanbanCanon: KanbanCanon;
+  /** Edits a kanbanCanon (requires admin privileges) */
+  editKanbanCanon: KanbanCanon;
+  /** Deletes a kanbanCanon (requires admin privileges) */
+  deleteKanbanCanon: Scalars['Boolean'];
 };
 
 
@@ -207,6 +222,22 @@ export type MutationSendSampleRegistrationEmailForMeetArgs = {
   meetId: Scalars['UUID'];
 };
 
+
+export type MutationCreateKanbanCanonArgs = {
+  input: CreateKanbanCanonInput;
+};
+
+
+export type MutationEditKanbanCanonArgs = {
+  id: Scalars['UUID'];
+  input: EditKanbanCanonInput;
+};
+
+
+export type MutationDeleteKanbanCanonArgs = {
+  id: Scalars['UUID'];
+};
+
 export type Post = {
   __typename?: 'Post';
   /** ID of post in UUID */
@@ -258,6 +289,9 @@ export type Meet = {
   projects?: Maybe<Array<Project>>;
   /** A list of users that are registered for the Meet */
   registrants?: Maybe<Array<PublicUser>>;
+  /** The kanbanCanon associated with this meet (if provided) */
+  kanbanCanon?: Maybe<KanbanCanon>;
+  kanbanCanonId?: Maybe<Scalars['UUID']>;
 };
 
 /** The input needed to create a new meet */
@@ -270,7 +304,6 @@ export type CreateMeetInput = {
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
-  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl: Scalars['String'];
   /** Wallclock times */
   startTime: Scalars['String'];
@@ -289,7 +322,6 @@ export type EditMeetInput = {
   /** The instructions in markdown format */
   instructions?: Maybe<Scalars['String']>;
   registerLink?: Maybe<Scalars['String']>;
-  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl?: Maybe<Scalars['String']>;
   /** Wallclock times */
   startTime?: Maybe<Scalars['String']>;
@@ -366,6 +398,34 @@ export type MeetReminderEmailInput = {
   meetId: Scalars['UUID'];
   subject: Scalars['String'];
   body: Scalars['String'];
+};
+
+/** The master definition of a kanban that serves as a guide for projects. */
+export type KanbanCanon = {
+  __typename?: 'KanbanCanon';
+  /** ID of the KanbanCanon in UUID */
+  id: Scalars['UUID'];
+  title: Scalars['String'];
+  /** A short cannonical description about the kanban project */
+  description: Scalars['String'];
+  /** DateTime that the kanbanCanon was created */
+  createdAt: Scalars['DateTime'];
+  /** DateTime that the kanbanCanon was modified */
+  updatedAt: Scalars['DateTime'];
+};
+
+/** The input needed to create a new kanbanCanon */
+export type CreateKanbanCanonInput = {
+  title: Scalars['String'];
+  /** A short cannonical description about the kanban project */
+  description: Scalars['String'];
+};
+
+/** Input that can be used to edit a kanban - all fields are optional */
+export type EditKanbanCanonInput = {
+  title?: Maybe<Scalars['String']>;
+  /** A short description about the kanban project */
+  description?: Maybe<Scalars['String']>;
 };
 
 
@@ -466,6 +526,9 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  KanbanCanon: ResolverTypeWrapper<KanbanCanon>;
+  CreateKanbanCanonInput: CreateKanbanCanonInput;
+  EditKanbanCanonInput: EditKanbanCanonInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -489,6 +552,9 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  KanbanCanon: KanbanCanon;
+  CreateKanbanCanonInput: CreateKanbanCanonInput;
+  EditKanbanCanonInput: EditKanbanCanonInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -536,6 +602,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
+  kanbanCanon?: Resolver<Maybe<ResolversTypes['KanbanCanon']>, ParentType, ContextType, RequireFields<QueryKanbanCanonArgs, 'id'>>;
+  kanbanCanons?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanon']>>>, ParentType, ContextType>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -551,6 +619,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
   sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
   sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
+  createKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonArgs, 'input'>>;
+  editKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonArgs, 'id' | 'input'>>;
+  deleteKanbanCanon?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonArgs, 'id'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -579,6 +650,8 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   region?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>;
   registrants?: Resolver<Maybe<Array<ResolversTypes['PublicUser']>>, ParentType, ContextType>;
+  kanbanCanon?: Resolver<Maybe<ResolversTypes['KanbanCanon']>, ParentType, ContextType>;
+  kanbanCanonId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -607,6 +680,15 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type KanbanCanonResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCanon'] = ResolversParentTypes['KanbanCanon']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -618,6 +700,7 @@ export type Resolvers<ContextType = any> = {
   Meet?: MeetResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
+  KanbanCanon?: KanbanCanonResolvers<ContextType>;
 };
 
 

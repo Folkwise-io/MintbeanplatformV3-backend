@@ -1,7 +1,7 @@
 import * as Knex from "knex";
 
 export async function up(knex: Knex): Promise<void> {
-  return knex.schema.createTable("kanbans", (table) => {
+  return knex.schema.createTable("kanbanCanons", (table) => {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
     table.text("title").notNullable();
     table.text("description").notNullable();
@@ -15,5 +15,5 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  return knex.schema.dropTable("kanbans");
+  return knex.schema.dropTable("kanbanCanons");
 }

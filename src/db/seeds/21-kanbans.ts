@@ -1,9 +1,9 @@
 import * as Knex from "knex";
 
 export async function seed(knex: Knex): Promise<void> {
-  await knex("kanbans").del();
+  await knex("kanbanCanons").del();
 
-  await knex("kanbans").insert([
+  await knex("kanbanCanons").insert([
     {
       id: "00000000-0000-0000-0000-000000000000",
       title: "Animation Toys 1 Kanban",
