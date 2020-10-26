@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
+import { KanbanCanon, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
@@ -77,8 +77,11 @@ export default class TestManager {
     return this.params.persistenceContext.projectMediaAssetDao.addMany(projectMediaAssets);
   }
 
-  addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void>{
+  addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void> {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
+  }
+  addKanbanCanons(kanbanCanons: KanbanCanon[]): Promise<void> {
+    return this.params.persistenceContext.kanbanCanonDao.addMany(kanbanCanons);
   }
 
   deleteAllUsers(): Promise<void> {
@@ -97,7 +100,7 @@ export default class TestManager {
     return this.params.persistenceContext.mediaAssetDao.deleteAll();
   }
 
-  deleteAllMeetRegistrations(){
+  deleteAllMeetRegistrations() {
     return this.params.persistenceContext.meetRegistrationDao.deleteAll();
   }
 
