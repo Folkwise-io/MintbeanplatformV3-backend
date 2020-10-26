@@ -26,6 +26,9 @@ import { EmailService } from "./service/EmailService";
 import { EmailDao } from "./dao/EmailDao";
 import config from "./util/config";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
+import KanbanCanonDao from "./dao/KanbanCanonDao";
+import KanbanCanonDaoKnex from "./dao/KanbanCanonDaoKnex";
+import KanbanCanonService from "./service/KanbanCanonService";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -34,6 +37,7 @@ export interface PersistenceContext {
   mediaAssetDao: MediaAssetDao;
   projectMediaAssetDao: ProjectMediaAssetDao;
   meetRegistrationDao: MeetRegistrationDao;
+  kanbanCanonDao: KanbanCanonDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -44,6 +48,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
+  const kanbanCanonDao = new KanbanCanonDaoKnex(knex);
 
   return {
     userDao,
@@ -52,6 +57,7 @@ export function buildPersistenceContext(): PersistenceContext {
     mediaAssetDao,
     projectMediaAssetDao,
     meetRegistrationDao,
+    kanbanCanonDao,
   };
 }
 
@@ -68,10 +74,19 @@ export interface ResolverContext {
   meetRegistrationService: MeetRegistrationService;
   emailResolverValidator: EmailResolverValidator;
   emailService: EmailService;
+  kanbanCanonService: KanbanCanonService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
-  const { userDao, meetDao, projectDao, mediaAssetDao, projectMediaAssetDao, meetRegistrationDao } = persistenceContext;
+  const {
+    userDao,
+    meetDao,
+    projectDao,
+    mediaAssetDao,
+    projectMediaAssetDao,
+    meetRegistrationDao,
+    kanbanCanonDao,
+  } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
   const meetResolverValidator = new MeetResolverValidator(meetDao);
@@ -82,6 +97,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const mediaAssetService = new MediaAssetService(mediaAssetDao);
   const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
   const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
+  const kanbanCanonService = new KanbanCanonService(kanbanCanonDao);
 
   const { sendGridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
@@ -101,5 +117,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetRegistrationService,
     emailResolverValidator,
     emailService,
+    kanbanCanonService,
   };
 }
