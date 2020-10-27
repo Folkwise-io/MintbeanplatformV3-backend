@@ -10,6 +10,7 @@ export async function seed(knex: Knex): Promise<void> {
       title: "Kanban Card 1",
       body: "This is the **first** thing to do",
       createdAt: "2020-08-15T12:00:00.000Z",
+      updatedAt: "2020-08-15T12:00:00.000Z",
     },
     {
       id: "00000000-0000-4000-a000-000000000000",
@@ -17,6 +18,7 @@ export async function seed(knex: Knex): Promise<void> {
       title: "Kanban Card 2",
       body: "This is the **second** thing to do",
       createdAt: "2020-08-15T12:00:00.000Z",
+      updatedAt: "2020-08-15T12:00:00.000Z",
     },
     {
       id: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
@@ -24,6 +26,7 @@ export async function seed(knex: Knex): Promise<void> {
       title: "Kanban Card 3",
       body: "This is the **third** thing to do",
       createdAt: "2020-08-15T12:00:00.000Z",
+      updatedAt: "2020-08-15T12:00:00.000Z",
     },
   ]);
 }
