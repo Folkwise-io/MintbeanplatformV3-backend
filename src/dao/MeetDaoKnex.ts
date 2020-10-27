@@ -5,17 +5,31 @@ import {
   MeetServiceGetManyArgs,
   MeetServiceGetOneArgs,
 } from "../service/MeetService";
-import { Meet } from "../types/gqlGeneratedTypes";
+import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import MeetDao from "./MeetDao";
+import { calculateMeetRegisterLinkStatus } from "../util/timeUtils";
 
 // Remove the ending Z (which denotes UTC) from startTime and endTime
-function formatMeets(meets: any[]) {
-  return meets.map((meet) => ({
-    ...meet,
-    startTime: meet.startTime.toISOString().slice(0, -1),
-    endTime: meet.endTime.toISOString().slice(0, -1),
-  }));
+function formatMeets(meets: any[]): Meet[] {
+  return meets.map((meet) => {
+    const startTime = meet.startTime.toISOString().slice(0, -1);
+    const endTime = meet.endTime.toISOString().slice(0, -1);
+    const registerLinkStatus = calculateMeetRegisterLinkStatus({ ...meet, startTime, endTime });
+
+    const dto: Meet = {
+      ...meet,
+      startTime,
+      endTime,
+      registerLinkStatus,
+    };
+
+    if (registerLinkStatus === RegisterLinkStatus.Closed) {
+      delete dto.registerLink;
+    }
+
+    return dto;
+  });
 }
 
 export default class MeetDaoKnex implements MeetDao {
@@ -26,10 +40,10 @@ export default class MeetDaoKnex implements MeetDao {
       const meet = await this.knex("meets")
         .where({ ...args, deleted: false })
         .first();
+
       // TODO: clean this typescript-constrained mess
       if (meet) {
-        const [formattedMeet] = formatMeets([meet]);
-        return formattedMeet as Meet;
+        return formatMeets([meet])[0];
       }
       return meet as any;
     });

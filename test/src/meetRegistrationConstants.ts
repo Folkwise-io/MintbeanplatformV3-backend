@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
 import { Meet } from "../../src/types/gqlGeneratedTypes";
-import { nDaysFromNowInWallClockTime } from "../../src/util/timeUtils";
+import { nDaysAndHoursFromNowInWallClockTime } from "../../src/util/timeUtils";
 import MeetRegistration from "../../src/types/MeetRegistration";
 import { AMY } from "./userConstants";
 
@@ -61,8 +61,8 @@ export const ANIMATION_TOYS_2: Meet = {
   instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
   registerLink: "http://eventbrite.com",
   coverImageUrl: "https://www.grafik.com.au/wp-content/uploads/2019/06/think-design.png",
-  startTime: nDaysFromNowInWallClockTime(7),
-  endTime: nDaysFromNowInWallClockTime(7),
+  startTime: nDaysAndHoursFromNowInWallClockTime(7),
+  endTime: nDaysAndHoursFromNowInWallClockTime(7),
   createdAt: "2020-09-01",
   updatedAt: "2020-09-01",
   region: "America/Toronto",
@@ -76,8 +76,8 @@ export const ALGOLIA_3: Meet = {
   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
   registerLink: "http://eventbrite.com",
   coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-  startTime: nDaysFromNowInWallClockTime(12),
-  endTime: nDaysFromNowInWallClockTime(12),
+  startTime: nDaysAndHoursFromNowInWallClockTime(12),
+  endTime: nDaysAndHoursFromNowInWallClockTime(12),
   createdAt: "2020-09-01",
   updatedAt: "2020-09-01",
   region: "America/Toronto",
