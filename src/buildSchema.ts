@@ -19,6 +19,7 @@ import emailResolver from "./graphql/resolver/emailResolver";
 import kanbanCanon from "./graphql/typedef/kanbanCanon";
 import kanbanCanonResolver from "./graphql/resolver/kanbanCanonResolver";
 import kanbanCanonCard from "./graphql/typedef/kanbanCanonCard";
+import kanbanCanonCardResolver from "./graphql/resolver/kanbanCanonCardResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -35,6 +36,8 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     emailResolverValidator,
     emailService,
     kanbanCanonService,
+    kanbanCanonCardService,
+    kanbanCanonCardResolverValidator,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -56,6 +59,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
     emailResolver(emailResolverValidator, emailService, meetService),
     kanbanCanonResolver(kanbanCanonService),
+    kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService),
     postResolver,
   ];
 

@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { KanbanCanon, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
+import { KanbanCanon, KanbanCanonCard, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
@@ -82,6 +82,9 @@ export default class TestManager {
   }
   addKanbanCanons(kanbanCanons: KanbanCanon[]): Promise<void> {
     return this.params.persistenceContext.kanbanCanonDao.addMany(kanbanCanons);
+  }
+  addKanbanCanonCards(kanbanCanonCards: KanbanCanonCard[]): Promise<void> {
+    return this.params.persistenceContext.kanbanCanonCardDao.addMany(kanbanCanonCards);
   }
 
   deleteAllUsers(): Promise<void> {

@@ -1,14 +1,6 @@
-import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import { EmailService } from "../../service/EmailService";
-import MeetRegistrationService from "../../service/MeetRegistrationService";
-import MeetService from "../../service/MeetService";
-import UserService from "../../service/UserService";
 import { KanbanCanon, Resolvers } from "../../types/gqlGeneratedTypes";
-import MeetResolverValidator from "../../validator/MeetResolverValidator";
-import config from "../../util/config";
 import KanbanCanonService from "../../service/KanbanCanonService";
-const { disableRegistrationEmail } = config;
 
 const kanbanCanonResolver = (kanbanCanonService: KanbanCanonService): Resolvers => {
   return {
