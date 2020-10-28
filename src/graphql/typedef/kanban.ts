@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 
 const kanban = gql`
-  "A personalized view of a kanbanCanon that holds the positions of kanban cards"
+  "A personalized view of a kanbanCanon that holds the positions of kanban cards for the session owner"
   type Kanban {
     "ID of the kanban in UUID"
     id: UUID!

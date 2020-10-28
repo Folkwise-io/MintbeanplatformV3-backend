@@ -338,7 +338,7 @@ export type Meet = {
   /** The kanbanCanon associated with this meet (if provided) */
   kanbanCanon?: Maybe<KanbanCanon>;
   kanbanCanonId?: Maybe<Scalars['UUID']>;
-  /** The kanban (if exists) associated with this meet for the requesting user */
+  /** The personalized kanban view (if exists) associated with this meet for the requesting user */
   kanban?: Maybe<Kanban>;
   kanbanId?: Maybe<Scalars['UUID']>;
 };
@@ -486,7 +486,7 @@ export enum KanbanCanonCardStatusEnum {
   Done = 'DONE'
 }
 
-/** A kanban card that belongs to a kanban. */
+/** A canonical kanban card that belongs to a kanban. */
 export type KanbanCanonCard = {
   __typename?: 'KanbanCanonCard';
   /** ID of the kanban card in UUID */
@@ -504,7 +504,7 @@ export type KanbanCanonCard = {
   updatedAt: Scalars['DateTime'];
 };
 
-/** A personalized view of a kanbanCanon that holds the positions of kanban cards */
+/** A personalized view of a kanbanCanon that holds the positions of kanban cards for the session owner */
 export type Kanban = {
   __typename?: 'Kanban';
   /** ID of the kanban in UUID */

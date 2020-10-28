@@ -1,14 +1,8 @@
 import { gql } from "apollo-server-express";
 
-const kanbanCanonCard = gql`
-  "Possible initial statuses of a kanban card. Defaults to TODO, unless specified otherwise"
-  enum KanbanCanonCardStatusEnum {
-    TODO
-    WIP
-    DONE
-  }
-  "A canonical kanban card that belongs to a kanban."
-  type KanbanCanonCard {
+const kanbanCard = gql`
+  "A kanban card on a kanban. Holds personalized positioning data."
+  type KanbanCard {
     "ID of the kanban card in UUID"
     id: UUID!
     title: String!
@@ -18,26 +12,26 @@ const kanbanCanonCard = gql`
     status: KanbanCanonCardStatusEnum!
     "A reference to the kanban this kanban card belongs to"
     kanbanCanonId: UUID!
-    "DateTime that the kanban was created"
+    "DateTime that the kanban card was created"
     createdAt: DateTime!
-    "DateTime that the kanban was modified"
+    "DateTime that the kanban card was modified"
     updatedAt: DateTime!
   }
 
-  extend type KanbanCanon {
+  extend type Kanban {
     "The kanban cards that belong to a kanban"
-    kanbanCanonCards: [KanbanCanonCard]
+    kanbanCards: [KanbanCard]
   }
 
   extend type Query {
     "Get a kanban card by ID"
-    kanbanCanonCard(id: UUID!): KanbanCanonCard
+    kanbanCard(id: UUID!): KanbanCard
     "Gets all the kanban cards for a given kanban"
-    kanbanCanonCards(kanbanCanonId: UUID!): [KanbanCanonCard]
+    kanbanCards(kanbanId: UUID!): [KanbanCard]
   }
 `;
 
-export default kanbanCanonCard;
+export default kanbanCard;
 
 // FOR LATER
 
