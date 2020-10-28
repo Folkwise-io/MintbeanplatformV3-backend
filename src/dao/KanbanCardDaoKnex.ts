@@ -3,6 +3,7 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCardDao, { KanbanSessionCardRaw } from "./KanbanCardDao";
 import { KanbanCard } from "../types/gqlGeneratedTypes";
 import { KanbanCardServiceGetManyArgs } from "../service/KanbanCardService";
+import { prefixKeys } from "../util/prefixKeys";
 
 export default class KanbanCardDaoKnex implements KanbanCardDao {
   constructor(private knex: Knex) {}
@@ -12,14 +13,14 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
       return this.knex("kanbanCanonCards")
         .select(
           this.knex.raw(`
-               ksc."id" as "id",
+               "kanbanSessionCards"."id" as "id",
                "kanbanCanonCards"."title" as "title",
                "kanbanCanonCards"."body" as "body",
-               COALESCE(ksc."status", "kanbanCanonCards"."status") as "status",
-               ksc."createdAt" as "createdAt",
-               ksc."updatedAt" as "updatedAt",
-               ksc."kanbanSessionId" as "kanbanId",
-               ksc."kanbanCanonCardId" as "kanbanCanonCardId"
+               COALESCE("kanbanSessionCards"."status", "kanbanCanonCards"."status") as "status",
+               "kanbanSessionCards"."createdAt" as "createdAt",
+               "kanbanSessionCards"."updatedAt" as "updatedAt",
+               "kanbanSessionCards"."kanbanSessionId" as "kanbanId",
+               "kanbanSessionCards"."kanbanCanonCardId" as "kanbanCanonCardId"
                `),
         )
         .leftJoin(
@@ -27,10 +28,10 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
                select
                  *
                from "kanbanSessionCards"
-            ) as ksc
-            on ksc."kanbanCanonCardId" = "kanbanCanonCards"."id"`),
+            ) as "kanbanSessionCards"
+            on "kanbanSessionCards"."kanbanCanonCardId" = "kanbanCanonCards"."id"`),
         )
-        .where({ "ksc.kanbanSessionId": args.kanbanId, "ksc.deleted": false });
+        .where(prefixKeys("kanbanSessionCards", { kanbanSessionId: args.kanbanId, deleted: false }));
     });
   }
   async addMany(kanbanCards: KanbanSessionCardRaw[]): Promise<void> {
