@@ -22,12 +22,13 @@ export const ISOLATED_KANBAN_RAW_2: KanbanSessionRaw = {
 };
 
 export const GET_KANBAN_BY_ID_QUERY = gql`
-  query getKanbanById($id: UUID) {
+  query getKanbanById($id: UUID!) {
     kanban(id: $id) {
       id
       title
       description
       userId
+      meetId
       kanbanCanonId
       createdAt
       updatedAt
@@ -41,6 +42,7 @@ export const GET_KANBAN_BY_COMPOSITE_MEET_QUERY = gql`
       title
       description
       userId
+      meetId
       kanbanCanonId
       createdAt
       updatedAt
@@ -54,6 +56,7 @@ export const GET_KANBAN_BY_COMPOSITE_ISOLATED_QUERY = gql`
       title
       description
       userId
+      meetId
       kanbanCanonId
       createdAt
       updatedAt
@@ -68,6 +71,7 @@ export const GET_KANBAN_QUERY_BAD = gql`
       title
       description
       userId
+      meetId
       kanbanCanonId
       createdAt
       updatedAt

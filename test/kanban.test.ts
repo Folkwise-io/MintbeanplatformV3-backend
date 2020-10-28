@@ -34,7 +34,6 @@ afterAll(async () => {
 
 describe("Querying kanbans", () => {
   it.only("gets a kanbanCanon by id when logged in user matches kanban owner", async () => {
-    console.log({ bobCookies });
     await testManager
       .addKanbans([MEET_KANBAN_RAW_1])
       .then(() =>
@@ -47,7 +46,7 @@ describe("Querying kanbans", () => {
           .then(testManager.parseData),
       )
       .then(({ kanban }) => {
-        expect(MEET_KANBAN_RAW_1).toMatchObject(kanban);
+        expect(kanban).toMatchObject(MEET_KANBAN_RAW_1);
       });
   });
   // it("gets all kanbanCanons", async () => {

@@ -23,6 +23,7 @@ export default class KanbanResolverValidator {
 
     let kanbanOwnerId: string | undefined = undefined;
     const isAdmin = context.getIsAdmin();
+    const currUserId = context.getUserId();
 
     await this.kanbanDao
       .getOne(args)
@@ -30,12 +31,10 @@ export default class KanbanResolverValidator {
       .then((kanban) => (kanbanOwnerId = kanban.userId));
 
     // only admin can get kanbans of other users
-    // if()
-    // if (userId !== kanbanOwnerId && !isAdmin)
-    //   throw new AuthenticationError("You are not authorized to view other kanbans of other users!");
+    if (currUserId !== kanbanOwnerId && !isAdmin)
+      throw new AuthenticationError("You are not authorized to view other kanbans of other users!");
 
-    // make meetId explicitly null if not specified in composite args
-    return { ...args, meetId: isByCompositeArgs ? args.meetId || null : undefined };
+    return args;
   }
 
   async getMany(args: KanbanServiceGetManyArgs, context: ServerContext): Promise<KanbanServiceGetManyArgs> {

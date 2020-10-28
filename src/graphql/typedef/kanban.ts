@@ -19,7 +19,7 @@ const kanban = gql`
     updatedAt: DateTime!
   }
   extend type Meet {
-    "The kanban (if exists) associated with this meet for the requesting user"
+    "The personalized kanban view (if exists) associated with this meet for the requesting user"
     kanban: Kanban
     kanbanId: UUID
   }
