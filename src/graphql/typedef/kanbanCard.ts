@@ -11,7 +11,7 @@ const kanbanCard = gql`
     "The initial status column this kanbanCanonCard should appear in"
     status: KanbanCanonCardStatusEnum!
     "A reference to the kanban this kanban card belongs to"
-    kanbanCanonId: UUID!
+    kanbanId: UUID!
     "DateTime that the kanban card was created"
     createdAt: DateTime!
     "DateTime that the kanban card was modified"
