@@ -1,7 +1,7 @@
 import { ServerContext } from "../../buildServerContext";
 import { Kanban, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanService from "../../service/KanbanService";
-import KanbanResolverValidator from "../../validator/kanbanResolverValidator";
+import KanbanResolverValidator from "../../validator/KanbanResolverValidator";
 
 const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanbanService: KanbanService): Resolvers => {
   return {

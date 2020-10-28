@@ -17,6 +17,7 @@ export default interface KanbanDao {
   getOne(args: KanbanServiceGetOneArgs): Promise<Kanban>;
   getMany(args: KanbanServiceGetManyArgs): Promise<Kanban[]>;
   //   addOne(args: KanbanServiceAddOneArgs): Promise<Kanban>;
+
   // Testing methods for TestManager to call
   addMany(kanbans: KanbanSessionRaw[]): Promise<void>;
   deleteAll(): Promise<void>;

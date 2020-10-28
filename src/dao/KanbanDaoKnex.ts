@@ -11,8 +11,6 @@ import { prefixKeys } from "../util/prefixKeys";
 //     knex
 //       .from("kanbanSessions")
 //       .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
-//       // .innerJoin("users", "kanbanSessions.userId", "users.id")
-//       .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
 //       .select(
 //         { id: "kanbanSessions.id" },
 //         { kanbanCanonId: "kanbanSessions.kanbanCanonId" },

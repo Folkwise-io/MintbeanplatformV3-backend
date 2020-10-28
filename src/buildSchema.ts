@@ -23,6 +23,7 @@ import kanbanCanonCardResolver from "./graphql/resolver/kanbanCanonCardResolver"
 import kanban from "./graphql/typedef/kanban";
 import kanbanResolver from "./graphql/resolver/kanbanResolver";
 import kanbanCard from "./graphql/typedef/kanbanCard";
+import kanbanCardResolver from "./graphql/resolver/kanbanCardResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -43,6 +44,8 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCanonCardResolverValidator,
     kanbanService,
     kanbanResolverValidator,
+    kanbanCardService,
+    kanbanCardResolverValidator,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -68,6 +71,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCanonResolver(kanbanCanonService),
     kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService),
     kanbanResolver(kanbanResolverValidator, kanbanService),
+    kanbanCardResolver(kanbanCardResolverValidator, kanbanCardService),
     postResolver,
   ];
 

@@ -1,7 +1,7 @@
 import { ServerContext } from "../../buildServerContext";
 import { KanbanCanonCard, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanCanonCardService from "../../service/KanbanCanonCardService";
-import KanbanCanonCardResolverValidator from "../../validator/kanbanCanonCardResolverValidator";
+import KanbanCanonCardResolverValidator from "../../validator/KanbanCanonCardResolverValidator";
 
 const kanbanCanonCardResolver = (
   kanbanCanonCardResolverValidator: KanbanCanonCardResolverValidator,
