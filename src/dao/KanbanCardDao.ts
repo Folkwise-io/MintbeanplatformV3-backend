@@ -1,4 +1,4 @@
-import { KanbanCardServiceGetManyArgs, KanbanCardServiceGetOneArgs } from "../service/KanbanCardService";
+import { KanbanCardServiceGetManyArgs } from "../service/KanbanCardService";
 import { KanbanCard } from "../types/gqlGeneratedTypes";
 
 // for adding many kanbans in test manager
