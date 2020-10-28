@@ -18,6 +18,7 @@ import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
+import { KanbanSessionRaw } from "../../src/dao/KanbanDao";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -85,6 +86,9 @@ export default class TestManager {
   }
   addKanbanCanonCards(kanbanCanonCards: KanbanCanonCard[]): Promise<void> {
     return this.params.persistenceContext.kanbanCanonCardDao.addMany(kanbanCanonCards);
+  }
+  addKanbans(kanbans: KanbanSessionRaw[]): Promise<void> {
+    return this.params.persistenceContext.kanbanDao.addMany(kanbans);
   }
 
   deleteAllUsers(): Promise<void> {

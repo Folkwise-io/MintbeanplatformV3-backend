@@ -6,6 +6,6 @@ export default interface KanbanCanonDao {
   getMany(): Promise<KanbanCanon[]>;
   //   addOne(args: KanbanCanonServiceAddOneArgs): Promise<KanbanCanon>;
   // Testing methods for TestManager to call
-  addMany(users: KanbanCanon[]): Promise<void>;
+  addMany(kanbanCanons: KanbanCanon[]): Promise<void>;
   deleteAll(): Promise<void>;
 }

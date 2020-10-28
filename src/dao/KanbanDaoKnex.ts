@@ -1,6 +1,6 @@
 import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
-import KanbanDao from "./KanbanDao";
+import KanbanDao, { KanbanSessionRaw } from "./KanbanDao";
 import { Kanban } from "../types/gqlGeneratedTypes";
 import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs } from "../service/KanbanService";
 import { prefixKeys } from "../util/prefixKeys";
@@ -36,12 +36,12 @@ export default class KanbanDaoKnex implements KanbanDao {
         .from("kanbanSessions")
         .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
         // .innerJoin("users", "kanbanSessions.userId", "users.id")
-        .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
+        // .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
         .select(
           { id: "kanbanSessions.id" },
           { kanbanCanonId: "kanbanSessions.kanbanCanonId" },
           { userId: "kanbanSessions.userId" },
-          { meetId: "meets.id" },
+          { meetId: "kanbanSessions.meetId" },
           { title: "kanbanCanons.title" },
           { description: "kanbanCanons.description" },
           { createdAt: "kanbanSessions.createdAt" },
@@ -59,12 +59,12 @@ export default class KanbanDaoKnex implements KanbanDao {
         .from("kanbanSessions")
         .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
         // .innerJoin("users", "kanbanSessions.userId", "users.id")
-        .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
+        // .leftJoin("meets", "kanbanSessions.meetId", "meets.id")
         .select(
           { id: "kanbanSessions.id" },
           { kanbanCanonId: "kanbanSessions.kanbanCanonId" },
           { userId: "kanbanSessions.userId" },
-          { meetId: "meets.id" },
+          { meetId: "kanbanSessions.meetId" },
           { title: "kanbanCanons.title" },
           { description: "kanbanCanons.description" },
           { createdAt: "kanbanSessions.createdAt" },
@@ -85,11 +85,11 @@ export default class KanbanDaoKnex implements KanbanDao {
   //   }
 
   // Testing methods below, for TestManager to call
-  async addMany(kanbans: Kanban[]): Promise<void> {
-    return this.knex<Kanban>("kanbans").insert(kanbans);
+  async addMany(kanbans: KanbanSessionRaw[]): Promise<void> {
+    return this.knex<Kanban>("kanbanSessions").insert(kanbans);
   }
 
   async deleteAll(): Promise<void> {
-    return this.knex<Kanban>("kanbans").delete();
+    return this.knex<Kanban>("kanbanSessions").delete();
   }
 }
