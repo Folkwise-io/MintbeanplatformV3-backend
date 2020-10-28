@@ -30,6 +30,17 @@ export const BOB: User = {
   isAdmin: false,
 };
 
+export const DORTHY: User = {
+  id: "93808c2d-0297-45ec-84b5-a19ce790830a",
+  email: "d@d.com",
+  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
+  firstName: "Dorthy",
+  lastName: "Danes",
+  createdAt: "2020-04-15",
+  updatedAt: "2020-04-15",
+  isAdmin: false,
+};
+
 export const BOB_CREDENTIALS = {
   email: "b@b.com",
   password: "password",
