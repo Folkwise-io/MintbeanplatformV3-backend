@@ -1,10 +1,10 @@
 import { KanbanSessionRaw } from "../src/dao/KanbanDao";
-import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
+import { KanbanCanon, KanbanCanonCardStatusEnum } from "../src/types/gqlGeneratedTypes";
+import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
+import { GET_KANBAN_CANONS_QUERY, KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import {
   GET_KANBANS_QUERY,
-  GET_KANBAN_BY_COMPOSITE_ISOLATED_QUERY,
-  GET_KANBAN_BY_COMPOSITE_MEET_QUERY,
-  GET_KANBAN_BY_ID_QUERY,
+  GET_KANBAN_QUERY,
   ISOLATED_KANBAN_RAW_1,
   MEET_KANBAN_RAW_1,
   MEET_KANBAN_RAW_2,
@@ -28,10 +28,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await testManager.deleteAllMeets();
-  await testManager.deleteAllKanbanCanons();
+  await testManager.deleteAllKanbanCanons(); // deletes cards by CASCADE
 
-  await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]);
-  await testManager.addMeets([PAPERJS]);
+  await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_1 is the base for MEET_KANBAN_RAW_1 and 2
+  await testManager.addKanbanCanonCards([KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2]); // for KANBAN_CANON_1
+  await testManager.addMeets([PAPERJS]); // for KANBAN_CANON_1
 });
 
 afterAll(async () => {
@@ -43,19 +44,41 @@ afterAll(async () => {
 
 describe("Querying kanbans", () => {
   it("gets a kanban by id when logged in user matches kanban owner", async () => {
+    await testManager.addKanbans([MEET_KANBAN_RAW_1]);
     await testManager
-      .addKanbans([MEET_KANBAN_RAW_1])
+      .addKanbanCards([
+        {
+          id: MEET_KANBAN_RAW_1.id,
+          kanbanSessionId: MEET_KANBAN_RAW_1.id,
+          kanbanCanonCardId: KANBAN_CANON_CARD_1.id,
+          status: KanbanCanonCardStatusEnum.Wip,
+        },
+      ])
+
       .then(() =>
         testManager
           .getGraphQLResponse({
-            query: GET_KANBAN_BY_ID_QUERY,
+            query: GET_KANBAN_QUERY,
             variables: { id: MEET_KANBAN_RAW_1.id },
             cookies: bobCookies,
           })
           .then(testManager.parseData),
       )
       .then(({ kanban }) => {
+        console.log({ kanban });
         expect(kanban).toMatchObject(MEET_KANBAN_RAW_1);
+        expect(kanban.kanbanCards).toHaveLength(2);
+      });
+    await testManager
+      .getGraphQLResponse({
+        query: GET_KANBANS_QUERY,
+        // variables: { id: KANBAN_CANON_1.id },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+
+      .then(({ kanbans }) => {
+        console.log({ kanbans });
       });
   });
   it("gets an isolated kanban by composite args when logged in user matches kanban owner", async () => {
@@ -64,7 +87,7 @@ describe("Querying kanbans", () => {
       .then(() =>
         testManager
           .getGraphQLResponse({
-            query: GET_KANBAN_BY_COMPOSITE_ISOLATED_QUERY,
+            query: GET_KANBAN_QUERY,
             variables: {
               kanbanCanonId: ISOLATED_KANBAN_RAW_1.kanbanCanonId,
               userId: ISOLATED_KANBAN_RAW_1.userId,
@@ -83,7 +106,7 @@ describe("Querying kanbans", () => {
       .then(() =>
         testManager
           .getGraphQLResponse({
-            query: GET_KANBAN_BY_COMPOSITE_MEET_QUERY,
+            query: GET_KANBAN_QUERY,
             variables: {
               kanbanCanonId: MEET_KANBAN_RAW_1.kanbanCanonId,
               userId: MEET_KANBAN_RAW_1.userId,
@@ -102,7 +125,7 @@ describe("Querying kanbans", () => {
       .addKanbans([{ ...MEET_KANBAN_RAW_1, userId: DORTHY.id }])
       .then(() =>
         testManager.getErrorMessage({
-          query: GET_KANBAN_BY_ID_QUERY,
+          query: GET_KANBAN_QUERY,
           variables: { id: MEET_KANBAN_RAW_1.id },
           cookies: bobCookies,
         }),
@@ -117,7 +140,7 @@ describe("Querying kanbans", () => {
       .then(() =>
         testManager
           .getGraphQLResponse({
-            query: GET_KANBAN_BY_ID_QUERY,
+            query: GET_KANBAN_QUERY,
             variables: { id: MEET_KANBAN_RAW_1.id },
             cookies: adminCookies,
           })
@@ -132,7 +155,7 @@ describe("Querying kanbans", () => {
       .addKanbans([{ ...MEET_KANBAN_RAW_1 }])
       .then(() =>
         testManager.getErrorMessage({
-          query: GET_KANBAN_BY_COMPOSITE_MEET_QUERY,
+          query: GET_KANBAN_QUERY,
           variables: { kanbanCanonId: MEET_KANBAN_RAW_1.kanbanCanonId },
           cookies: adminCookies,
         }),

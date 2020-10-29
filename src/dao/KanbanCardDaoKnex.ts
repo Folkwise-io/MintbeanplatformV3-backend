@@ -3,35 +3,34 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCardDao, { KanbanSessionCardRaw } from "./KanbanCardDao";
 import { KanbanCard } from "../types/gqlGeneratedTypes";
 import { KanbanCardServiceGetManyArgs } from "../service/KanbanCardService";
-import { prefixKeys } from "../util/prefixKeys";
+
+const GET_MANY_QUERY = `
+  SELECT 
+    "kanbanCanonCards"."id" as "id",
+    "kanbanCanonCards"."title" as "title",
+    "kanbanCanonCards"."body" as "body",
+    COALESCE("kanbanSessionCards"."status", "kanbanCanonCards"."status") as "status",
+    "kanbanSessions"."id" as "kanbanId"
+  FROM "kanbanCanonCards" 
+  JOIN "kanbanSessions" ON "kanbanCanonCards"."kanbanCanonId" = "kanbanSessions"."kanbanCanonId"
+  LEFT JOIN (
+      SELECT
+          *
+      FROM "kanbanSessionCards"
+      WHERE "kanbanSessionCards"."deleted" = :deleted
+      AND "kanbanSessionCards"."kanbanSessionId" = :kanbanSessionId
+  ) AS "kanbanSessionCards"
+    ON "kanbanSessionCards"."kanbanCanonCardId" = "kanbanCanonCards"."id"
+  WHERE "kanbanSessions"."id" = :kanbanSessionId`;
 
 export default class KanbanCardDaoKnex implements KanbanCardDao {
   constructor(private knex: Knex) {}
 
   async getMany(args: KanbanCardServiceGetManyArgs): Promise<KanbanCard[]> {
-    return handleDatabaseError(() => {
-      return this.knex("kanbanCanonCards")
-        .select(
-          this.knex.raw(`
-               "kanbanSessionCards"."id" as "id",
-               "kanbanCanonCards"."title" as "title",
-               "kanbanCanonCards"."body" as "body",
-               COALESCE("kanbanSessionCards"."status", "kanbanCanonCards"."status") as "status",
-               "kanbanSessionCards"."createdAt" as "createdAt",
-               "kanbanSessionCards"."updatedAt" as "updatedAt",
-               "kanbanSessionCards"."kanbanSessionId" as "kanbanId",
-               "kanbanSessionCards"."kanbanCanonCardId" as "kanbanCanonCardId"
-               `),
-        )
-        .leftJoin(
-          this.knex.raw(`(
-               select
-                 *
-               from "kanbanSessionCards"
-            ) as "kanbanSessionCards"
-            on "kanbanSessionCards"."kanbanCanonCardId" = "kanbanCanonCards"."id"`),
-        )
-        .where(prefixKeys("kanbanSessionCards", { kanbanSessionId: args.kanbanId, deleted: false }));
+    return handleDatabaseError(async () => {
+      const queryResult = await this.knex.raw(GET_MANY_QUERY, { kanbanSessionId: args.kanbanId, deleted: false });
+
+      return queryResult.rows;
     });
   }
   async addMany(kanbanCards: KanbanSessionCardRaw[]): Promise<void> {
@@ -39,7 +38,7 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
   }
 
   async deleteAll(): Promise<void> {
-    return this.knex<KanbanCard>("kanbanSessionCards").delete();
+    return this.knex<KanbanSessionCardRaw>("kanbanSessionCards").delete();
   }
 }
 

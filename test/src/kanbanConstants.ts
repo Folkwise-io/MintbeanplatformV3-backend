@@ -29,43 +29,22 @@ export const ISOLATED_KANBAN_RAW_1: KanbanSessionRaw = {
   updatedAt: "2020-08-15T12:00:00.000Z",
 };
 
-export const GET_KANBAN_BY_ID_QUERY = gql`
-  query getKanbanById($id: UUID!) {
-    kanban(id: $id) {
+export const GET_KANBAN_QUERY = gql`
+  query getKanban($id: UUID, $meetId: UUID, $userId: UUID, $kanbanCanonId: UUID) {
+    kanban(id: $id, meetId: $meetId, userId: $userId, kanbanCanonId: $kanbanCanonId) {
       id
       title
       description
       userId
       meetId
       kanbanCanonId
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const GET_KANBAN_BY_COMPOSITE_MEET_QUERY = gql`
-  query getKanbanByCompositeMeet($meetId: UUID, $userId: UUID, $kanbanCanonId: UUID) {
-    kanban(meetId: $meetId, userId: $userId, kanbanCanonId: $kanbanCanonId) {
-      id
-      title
-      description
-      userId
-      meetId
-      kanbanCanonId
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const GET_KANBAN_BY_COMPOSITE_ISOLATED_QUERY = gql`
-  query getKanbanByCompositeIsolated($userId: UUID, $kanbanCanonId: UUID) {
-    kanban(userId: $userId, kanbanCanonId: $kanbanCanonId) {
-      id
-      title
-      description
-      userId
-      meetId
-      kanbanCanonId
+      kanbanCards {
+        id
+        title
+        body
+        status
+        kanbanId
+      }
       createdAt
       updatedAt
     }
@@ -80,6 +59,13 @@ export const GET_KANBANS_QUERY = gql`
       description
       userId
       meetId
+      kanbanCards {
+        id
+        title
+        body
+        status
+        kanbanId
+      }
     }
   }
 `;

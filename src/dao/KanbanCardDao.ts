@@ -3,9 +3,9 @@ import { KanbanCard } from "../types/gqlGeneratedTypes";
 
 // for adding many kanbans in test manager
 export interface KanbanSessionCardRaw {
-  id: string;
+  id?: string;
   kanbanCanonCardId: string;
-  kanbanId: string;
+  kanbanSessionId: string;
   status?: string;
   createdAt?: string;
   updatedAt?: string;

@@ -21,5 +21,12 @@ export async function seed(knex: Knex): Promise<void> {
       kanbanSessionId: "00000000-0000-0000-0000-000000000000",
       kanbanCanonCardId: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
     },
+
+    {
+      id: "b9e1050d-fa9b-461b-a4c7-64501ffd3db6",
+      kanbanSessionId: "00000000-0000-4000-a000-000000000000",
+      kanbanCanonCardId: "f799815e-7273-4ade-bd3a-025f487dfc21",
+      status: "WIP",
+    },
   ]);
 }
