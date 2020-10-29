@@ -91,7 +91,7 @@ export default class TestManager {
   addKanbans(kanbans: KanbanSessionRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanDao.addMany(kanbans);
   }
-  addKanbanCards(kanbanCards: KanbanSessionCardRaw[]): Promise<void> {
+  addKanbanSessionCards(kanbanCards: KanbanSessionCardRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanCardDao.addMany(kanbanCards);
   }
 

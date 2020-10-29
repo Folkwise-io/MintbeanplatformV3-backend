@@ -1,7 +1,6 @@
 import { KanbanSessionRaw } from "../src/dao/KanbanDao";
-import { KanbanCanon, KanbanCanonCardStatusEnum } from "../src/types/gqlGeneratedTypes";
 import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
-import { GET_KANBAN_CANONS_QUERY, KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
+import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import {
   GET_KANBANS_QUERY,
   GET_KANBAN_QUERY,
@@ -44,17 +43,8 @@ afterAll(async () => {
 
 describe("Querying kanbans", () => {
   it("gets a kanban by id when logged in user matches kanban owner", async () => {
-    await testManager.addKanbans([MEET_KANBAN_RAW_1]);
     await testManager
-      .addKanbanCards([
-        {
-          id: MEET_KANBAN_RAW_1.id,
-          kanbanSessionId: MEET_KANBAN_RAW_1.id,
-          kanbanCanonCardId: KANBAN_CANON_CARD_1.id,
-          status: KanbanCanonCardStatusEnum.Wip,
-        },
-      ])
-
+      .addKanbans([MEET_KANBAN_RAW_1])
       .then(() =>
         testManager
           .getGraphQLResponse({
@@ -65,20 +55,8 @@ describe("Querying kanbans", () => {
           .then(testManager.parseData),
       )
       .then(({ kanban }) => {
-        console.log({ kanban });
         expect(kanban).toMatchObject(MEET_KANBAN_RAW_1);
         expect(kanban.kanbanCards).toHaveLength(2);
-      });
-    await testManager
-      .getGraphQLResponse({
-        query: GET_KANBANS_QUERY,
-        // variables: { id: KANBAN_CANON_1.id },
-        cookies: adminCookies,
-      })
-      .then(testManager.parseData)
-
-      .then(({ kanbans }) => {
-        console.log({ kanbans });
       });
   });
   it("gets an isolated kanban by composite args when logged in user matches kanban owner", async () => {
