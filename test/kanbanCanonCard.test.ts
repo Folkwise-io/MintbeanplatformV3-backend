@@ -1,13 +1,21 @@
 import {
+  CREATE_KANBAN_CANON_CARD_MUTATION,
   GET_KANBAN_CANON_CARDS_QUERY,
   GET_KANBAN_CANON_CARD_QUERY,
   KANBAN_CANON_CARD_1,
+  KANBAN_CANON_CARD_1_INPUT,
   KANBAN_CANON_CARD_2,
 } from "./src/kanbanCanonCardConstants";
 import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
+import { getAdminCookies } from "./src/util";
 
 const testManager = TestManager.build();
+let adminCookies: string[];
+
+beforeAll(async () => {
+  adminCookies = await getAdminCookies();
+});
 
 beforeEach(async () => {
   await testManager.deleteAllMeets();
@@ -84,6 +92,57 @@ describe("Querying kanbanCanonCards", () => {
       .then(testManager.parseData)
       .then(({ kanbanCanonCards }) => {
         expect(kanbanCanonCards).toHaveLength(0);
+      });
+  });
+});
+
+describe("Creating kanbanCanonCards", () => {
+  it("creates a kanbanCanonCard successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: KANBAN_CANON_CARD_1_INPUT },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createKanbanCanonCard }) => {
+        expect(createKanbanCanonCard).toMatchObject(KANBAN_CANON_CARD_1_INPUT);
+      });
+  });
+
+  it("returns an 'unauthorized' error message when creating a kanbanCanonCard without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: KANBAN_CANON_CARD_1_INPUT },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)]authorized/i);
+      });
+  });
+
+  it("returns an appropriate error message when a field is missing", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: { ...KANBAN_CANON_CARD_1_INPUT, body: undefined } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/body/i);
+      });
+  });
+
+  it("returns an appropriate error message when a field is in wrong type", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: { ...KANBAN_CANON_CARD_1_INPUT, title: 100 } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/title/i);
       });
   });
 });
