@@ -84,11 +84,11 @@ export default class MeetDaoKnex implements MeetDao {
 
   async editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet> {
     return handleDatabaseError(async () => {
-      const newMeets = (await this.knex("meets")
+      const updatedMeets = (await this.knex("meets")
         .where({ id })
         .update({ ...input, updatedAt: this.knex.fn.now() })
         .returning("*")) as Meet[];
-      const formattedMeets = formatMeets(newMeets);
+      const formattedMeets = formatMeets(updatedMeets);
       return formattedMeets[0];
     });
   }

@@ -1,9 +1,12 @@
+import { Kanban, KanbanCanon } from "../src/types/gqlGeneratedTypes";
 import {
   CREATE_KANBAN_CANON_MUTATION,
+  EDIT_KANBAN_CANON_INPUT,
+  EDIT_KANBAN_CANON_MUTATION,
   GET_KANBAN_CANONS_QUERY,
   GET_KANBAN_CANON_QUERY,
   KANBAN_CANON_1,
-  KANBAN_CANON_1_INPUT,
+  CREATE_KANBAN_CANON_1_INPUT,
   KANBAN_CANON_2,
 } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
@@ -82,19 +85,19 @@ describe("Creating kanbanCanons", () => {
     await testManager
       .getGraphQLResponse({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: KANBAN_CANON_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_1_INPUT },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
       .then(({ createKanbanCanon }) => {
-        expect(createKanbanCanon).toMatchObject(KANBAN_CANON_1_INPUT);
+        expect(createKanbanCanon).toMatchObject(CREATE_KANBAN_CANON_1_INPUT);
       });
   });
   it("throws 'not authorized' error if createKanbanSession is called while user not logged in", async () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: KANBAN_CANON_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_1_INPUT },
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/[(not |un)]authorized/i);
@@ -104,7 +107,7 @@ describe("Creating kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: KANBAN_CANON_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_1_INPUT },
         cookies: bobCookies,
       })
       .then((errorMessage) => {
@@ -127,11 +130,107 @@ describe("Creating kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: { ...KANBAN_CANON_1_INPUT, title: 100 } },
+        variables: { input: { ...CREATE_KANBAN_CANON_1_INPUT, title: 100 } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/title/i);
+      });
+  });
+});
+
+describe("Editing kanbanCanons", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllKanbanCanons();
+    await testManager.addKanbanCanons([KANBAN_CANON_1]);
+  });
+  it("updates a kanbanCanon with valid input when admin is logged in", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_1.id, input: EDIT_KANBAN_CANON_INPUT },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ editKanbanCanon }) => {
+        expect(editKanbanCanon.title).not.toBe(KANBAN_CANON_1.title);
+        expect(editKanbanCanon.title).toBe(EDIT_KANBAN_CANON_INPUT.title);
+      });
+  });
+  it("updates the updatedAt timestamp after editing a kanban canon", async () => {
+    // Check that createdAt is initially equal to updatedAt
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1.id } })
+      .then(({ kanbanCanon }) => expect(kanbanCanon.createdAt).toBe(kanbanCanon.updatedAt));
+
+    await testManager
+      .getGraphQLData({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_1.id, input: EDIT_KANBAN_CANON_INPUT },
+        cookies: adminCookies,
+      })
+      .then(({ editKanbanCanon }) => {
+        expect(editKanbanCanon.createdAt < editKanbanCanon.updatedAt).toBe(true);
+      });
+  });
+
+  it("returns an 'unauthorized' error message when editing a kanbanCanon without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_1.id, input: EDIT_KANBAN_CANON_INPUT },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_KANBAN_CANON_INPUT },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+
+  it("gives an error message when no edit fields are specified in the mutation", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_1.id, input: {} },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/field/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a non-existent field", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_1.id, input: { nonexistent: "hello" } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_1.id, input: { deleted: true } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
       });
   });
 });

@@ -1,4 +1,3 @@
-import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
 import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
@@ -10,6 +9,7 @@ import {
   MutationRegisterForMeetArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
+import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
 
 export default class MeetResolverValidator {
   constructor(private meetDao: MeetDao) {}
@@ -32,9 +32,7 @@ export default class MeetResolverValidator {
     await this.meetDao.getOne({ id }).then((meet) => ensureExists("Meet")(meet));
 
     // Handle when input has no fields to update (knex doesn't like this)
-    if (Object.keys(input).length === 0) {
-      throw new UserInputError("Must edit at least one field!");
-    }
+    validateAtLeastOneFieldPresent(input);
 
     return { id, input };
   }

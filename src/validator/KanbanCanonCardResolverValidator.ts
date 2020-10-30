@@ -17,6 +17,7 @@ export default class KanbanCanonCardResolverValidator {
       .then((kanbanCanonCard) => ensureExists<KanbanCanonCard>("KanbanCanonCard")(kanbanCanonCard));
     return { id };
   }
+
   async getMany(
     { kanbanCanonId }: KanbanCanonCardServiceGetManyArgs,
     _context: ServerContext,

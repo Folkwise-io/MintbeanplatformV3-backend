@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { CreateKanbanCanonInput, KanbanCanon } from "../../src/types/gqlGeneratedTypes";
+import { CreateKanbanCanonInput, EditKanbanCanonInput, KanbanCanon } from "../../src/types/gqlGeneratedTypes";
 
 export const KANBAN_CANON_1: KanbanCanon = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -48,12 +48,12 @@ export const GET_KANBAN_CANONS_QUERY = gql`
   }
 `;
 
-export const KANBAN_CANON_1_INPUT: CreateKanbanCanonInput = {
+export const CREATE_KANBAN_CANON_1_INPUT: CreateKanbanCanonInput = {
   title: KANBAN_CANON_1.title,
   description: KANBAN_CANON_1.description,
 };
 
-export const KANBAN_CANON_2_INPUT: CreateKanbanCanonInput = {
+export const CREATE_KANBAN_CANON_2_INPUT: CreateKanbanCanonInput = {
   title: KANBAN_CANON_1.title,
   description: KANBAN_CANON_1.description,
 };
@@ -65,6 +65,22 @@ export const CREATE_KANBAN_CANON_MUTATION = gql`
       title
       description
       createdAt
+    }
+  }
+`;
+
+export const EDIT_KANBAN_CANON_INPUT: EditKanbanCanonInput = {
+  title: "New title!",
+};
+
+export const EDIT_KANBAN_CANON_MUTATION = gql`
+  mutation editKanbanCanon($id: UUID!, $input: EditKanbanCanonInput!) {
+    editKanbanCanon(id: $id, input: $input) {
+      id
+      title
+      description
+      createdAt
+      updatedAt
     }
   }
 `;

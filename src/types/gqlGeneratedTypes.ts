@@ -206,7 +206,7 @@ export type Mutation = {
   sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
   /** Creates a new kanbanCanon (requires admin privileges) */
   createKanbanCanon: KanbanCanon;
-  /** Edits a kanbanCanon (requires admin privileges) */
+  /** Edits an existing kanbanCanon (requires admin privileges) */
   editKanbanCanon: KanbanCanon;
   /** Deletes a kanbanCanon (requires admin privileges) */
   deleteKanbanCanon: Scalars['Boolean'];

@@ -25,15 +25,11 @@ const kanbanCanonResolver = (
           .then((input) => kanbanCanonService.addOne(input));
       },
 
-      // editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-      //   if (!context.getIsAdmin()) {
-      //     throw new AuthenticationError("You are not authorized to edit meets!");
-      //   }
-
-      //   return kanbanCanonResolverValidator
-      //     .editOne(args, context)
-      //     .then(({ id, input }) => meetService.editOne(id, input));
-      // },
+      editKanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
+        return kanbanCanonResolverValidator
+          .editOne(args, context)
+          .then(({ id, input }) => kanbanCanonService.editOne(id, input));
+      },
       // deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
       //   if (!context.getIsAdmin()) {
       //     throw new AuthenticationError("You are not authorized to delete meets!");

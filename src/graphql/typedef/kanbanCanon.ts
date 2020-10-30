@@ -42,7 +42,7 @@ const kanbanCanon = gql`
   extend type Mutation {
     "Creates a new kanbanCanon (requires admin privileges)"
     createKanbanCanon(input: CreateKanbanCanonInput!): KanbanCanon!
-    "Edits a kanbanCanon (requires admin privileges)"
+    "Edits an existing kanbanCanon (requires admin privileges)"
     editKanbanCanon(id: UUID!, input: EditKanbanCanonInput!): KanbanCanon!
     "Deletes a kanbanCanon (requires admin privileges)"
     deleteKanbanCanon(id: UUID!): Boolean!

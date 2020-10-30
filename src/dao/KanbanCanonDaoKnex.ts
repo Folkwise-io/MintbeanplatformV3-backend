@@ -2,7 +2,11 @@ import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCanonDao from "./KanbanCanonDao";
 import { KanbanCanon } from "../types/gqlGeneratedTypes";
-import { KanbanCanonServiceAddOneInput, KanbanCanonServiceGetOneArgs } from "../service/KanbanCanonService";
+import {
+  KanbanCanonServiceAddOneInput,
+  KanbanCanonServiceEditOneInput,
+  KanbanCanonServiceGetOneArgs,
+} from "../service/KanbanCanonService";
 
 export default class KanbanCanonDaoKnex implements KanbanCanonDao {
   constructor(private knex: Knex) {}
@@ -26,6 +30,16 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
         .insert(args)
         .returning("*")) as KanbanCanon[];
       return insertedKanbanCanons[0];
+    });
+  }
+
+  async editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon> {
+    return handleDatabaseError(async () => {
+      const updatedKanbanCanons = (await this.knex("kanbanCanons")
+        .where({ id })
+        .update({ ...input, updatedAt: this.knex.fn.now() })
+        .returning("*")) as KanbanCanon[];
+      return updatedKanbanCanons[0];
     });
   }
 
