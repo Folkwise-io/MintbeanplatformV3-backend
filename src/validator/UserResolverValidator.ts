@@ -7,6 +7,7 @@ import { ServerContext } from "../buildServerContext";
 import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-express";
 import registerSchema from "./yupSchemas/registerSchema";
 import loginSchema from "./yupSchemas/loginSchema";
+import { validateAgainstSchema } from "../util/validateAgainstSchema";
 
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
@@ -26,28 +27,20 @@ export default class UserResolverValidator {
   }
 
   async addOne({ input }: MutationRegisterArgs): Promise<UserServiceAddOneArgs> {
-    const { firstName, lastName, email, password } = input;
-    try {
-      registerSchema.validateSync(input);
-    } catch (e) {
-      throw new UserInputError(e.message);
-    }
+    validateAgainstSchema<UserServiceAddOneArgs>(registerSchema, input);
 
+    const { email } = input;
     const userWithSameEmail = await this.userDao.getOne({ email });
     if (userWithSameEmail) {
       throw new ApolloError("Email taken!");
     }
 
-    return { firstName, lastName, email, password };
+    return input;
   }
 
-  async login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {
-    try {
-      loginSchema.validateSync({ email, password });
-    } catch (e) {
-      throw new ApolloError(e.message);
-    }
+  async login(args: MutationLoginArgs, _context: ServerContext): Promise<UserServiceLoginArgs> {
+    validateAgainstSchema<UserServiceLoginArgs>(loginSchema, args);
 
-    return { email, password };
+    return args;
   }
 }
