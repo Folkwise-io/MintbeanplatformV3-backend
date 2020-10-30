@@ -47,11 +47,20 @@ const kanbanCanonCard = gql`
     body: String!
   }
 
+  input EditKanbanCanonCardInput {
+    title: String
+    "(Optional) The column this card will initailly appear in. Defaults to TODO"
+    status: KanbanCanonCardStatusEnum
+
+    "A markdown body of the kanbanCanonCard content"
+    body: String
+  }
+
   extend type Mutation {
     "Creates a new kanbanCanonCard (requires admin privileges)"
     createKanbanCanonCard(input: CreateKanbanCanonCardInput!): KanbanCanonCard!
-    # "Edits a kanban card (requires admin privileges)"
-    # editKanbanCard(id: UUID!, input: EditKanbanCardInput!): KanbanCard!
+    "Edits a kanban card (requires admin privileges)"
+    editKanbanCanonCard(id: UUID!, input: EditKanbanCanonCardInput!): KanbanCanonCard!
     # "Deletes a kanban card (requires admin privileges)"
     # deleteKanbanCard(id: UUID!): Boolean!
   }

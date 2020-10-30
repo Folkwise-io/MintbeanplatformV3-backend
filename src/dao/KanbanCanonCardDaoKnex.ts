@@ -6,6 +6,7 @@ import {
   KanbanCanonCardServiceGetOneArgs,
   KanbanCanonCardServiceGetManyArgs,
   KanbanCanonCardServiceAddOneInput,
+  KanbanCanonCardServiceEditOneInput,
 } from "../service/KanbanCanonCardService";
 
 export default class KanbanCanonCardDaoKnex implements KanbanCanonCardDao {
@@ -27,12 +28,22 @@ export default class KanbanCanonCardDaoKnex implements KanbanCanonCardDao {
     });
   }
 
-  async addOne(args: KanbanCanonCardServiceAddOneInput): Promise<KanbanCanonCard> {
+  async addOne(input: KanbanCanonCardServiceAddOneInput): Promise<KanbanCanonCard> {
     return handleDatabaseError(async () => {
       const insertedKanbanCanonCards = (await this.knex("kanbanCanonCards")
-        .insert(args)
+        .insert(input)
         .returning("*")) as KanbanCanonCard[];
       return insertedKanbanCanonCards[0];
+    });
+  }
+
+  async editOne(id: string, input: KanbanCanonCardServiceEditOneInput): Promise<KanbanCanonCard> {
+    return handleDatabaseError(async () => {
+      const updatedKanbanCanonCards = (await this.knex("kanbanCanonCards")
+        .where({ id })
+        .update({ ...input, updatedAt: this.knex.fn.now() })
+        .returning("*")) as KanbanCanonCard[];
+      return updatedKanbanCanonCards[0];
     });
   }
 

@@ -7,10 +7,12 @@ import {
   KanbanCanon,
   KanbanCanonCard,
   MutationCreateKanbanCanonCardArgs,
+  MutationEditKanbanCanonCardArgs,
   QueryKanbanCanonCardArgs,
   QueryKanbanCanonCardsArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
+import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
 
 export default class KanbanCanonCardResolverValidator {
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao, private kanbanCanonDao: KanbanCanonDao) {}
@@ -42,20 +44,24 @@ export default class KanbanCanonCardResolverValidator {
     return { input };
   }
 
-  //   async editOne(
-  //     { id, input }: MutationEditKanbanCanonCardArgs,
-  //     _context: ServerContext,
-  //   ): Promise<{ id: string; input: KanbanCanonCardServiceEditOneInput }> {
-  //     // Check if meet id exists in db
-  //     await this.kanbanCanonCardDao.getOne({ id }).then((meet) => ensureExists("KanbanCanonCard")(meet));
+  async editOne(
+    { id, input }: MutationEditKanbanCanonCardArgs,
+    context: ServerContext,
+  ): Promise<MutationEditKanbanCanonCardArgs> {
+    if (!context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to edit kanban canon cards!");
+    }
 
-  //     // Handle when input has no fields to update (knex doesn't like this)
-  //     if (Object.keys(input).length === 0) {
-  //       throw new UserInputError("Must edit at least one field!");
-  //     }
+    // Check if kanbanCanonCard id exists in db
+    await this.kanbanCanonCardDao
+      .getOne({ id })
+      .then((kanbanCanonCard) => ensureExists("Kanban Canon Card")(kanbanCanonCard));
 
-  //     return { id, input };
-  //   }
+    // Handle when input has no fields to update (knex doesn't like this)
+    validateAtLeastOneFieldPresent(input);
+
+    return { id, input };
+  }
 
   //   async deleteOne({ id }: MutationDeleteKanbanCanonCardArgs): Promise<string> {
   //     // Check if meet id exists in db

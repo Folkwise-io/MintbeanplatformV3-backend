@@ -106,6 +106,7 @@ describe("Creating kanbanCanonCards", () => {
       })
       .then(testManager.parseData)
       .then(({ createKanbanCanonCard }) => {
+        console.log({ createKanbanCanonCard });
         expect(createKanbanCanonCard).toMatchObject(KANBAN_CANON_CARD_1_INPUT);
       });
   });
