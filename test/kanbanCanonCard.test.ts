@@ -59,14 +59,14 @@ describe("Querying kanbanCanonCards", () => {
     await testManager
       .getErrorMessage({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
       .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/);
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
   it("throws an error if requested kanban canon does not exist", async () => {
     await testManager
       .getErrorMessage({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_2.id } })
       .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/);
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
   it("throws an error if requested kanban canon card has been deleted", async () => {
@@ -74,7 +74,7 @@ describe("Querying kanbanCanonCards", () => {
     await testManager
       .getErrorMessage({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
       .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/);
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
   it("does not retrieve deleted kanbanCanonCards", async () => {

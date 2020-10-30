@@ -60,7 +60,7 @@ describe("Querying kanbanCards", () => {
         variables: { kanbanId: "244e97e7-bd17-4456-804a-4a39276f2405" },
       })
       .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/);
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
 });
