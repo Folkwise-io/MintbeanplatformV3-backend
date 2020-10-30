@@ -7,7 +7,10 @@ import {
   KANBAN_CANON_1,
   CREATE_KANBAN_CANON_1_INPUT,
   KANBAN_CANON_2,
+  CREATE_KANBAN_CANON_2_INPUT,
+  DELETE_KANBAN_CANON_MUTATION,
 } from "./src/kanbanCanonConstants";
+import { GET_KANBANS_QUERY } from "./src/kanbanConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
@@ -230,6 +233,57 @@ describe("Editing kanbanCanons", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+});
+
+describe("Deleting kanbanCanons", () => {
+  // Create a constant meet that will be edited and get its ID
+  beforeEach(async () => {
+    await testManager.addKanbanCanons([KANBAN_CANON_2]);
+  });
+
+  it("deletes a kanbanCanon successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANONS_QUERY })
+      .then(({ kanbanCanons }) => expect(kanbanCanons).toHaveLength(1));
+
+    await testManager
+      .getGraphQLData({
+        query: DELETE_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_2.id },
+        cookies: adminCookies,
+      })
+      .then(({ deleteKanbanCanon }) => {
+        expect(deleteKanbanCanon).toBe(true);
+      });
+
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANONS_QUERY })
+      .then(({ kanbanCanons }) => expect(kanbanCanons).toHaveLength(0));
+  });
+
+  it("returns an 'unauthorized' error message when deleting a kanbanCanon without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_KANBAN_CANON_MUTATION,
+        variables: { id: KANBAN_CANON_2.id },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_KANBAN_CANON_MUTATION,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
 });

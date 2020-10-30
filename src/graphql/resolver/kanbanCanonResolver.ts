@@ -28,7 +28,7 @@ const kanbanCanonResolver = (
           .editOne(args, context)
           .then(({ id, input }) => kanbanCanonService.editOne(id, input));
       },
-      deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+      deleteKanbanCanon: (_root, args, context: ServerContext): Promise<boolean> => {
         return kanbanCanonResolverValidator.deleteOne(args, context).then(({ id }) => kanbanCanonService.deleteOne(id));
       },
     },

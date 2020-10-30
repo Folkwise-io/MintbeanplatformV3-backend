@@ -84,3 +84,9 @@ export const EDIT_KANBAN_CANON_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_KANBAN_CANON_MUTATION = gql`
+  mutation deleteKanbanCanon($id: UUID!) {
+    deleteKanbanCanon(id: $id)
+  }
+`;
