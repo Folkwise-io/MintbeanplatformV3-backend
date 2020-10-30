@@ -16,6 +16,8 @@ import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 import meetRegistration from "./graphql/typedef/meetRegistration";
 import email from "./graphql/typedef/email";
 import emailResolver from "./graphql/resolver/emailResolver";
+import badge from "./graphql/typedef/badge";
+import badgeResolver from "./graphql/resolver/badgeResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -30,9 +32,11 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectMediaAssetService,
     meetRegistrationService,
     emailResolverValidator,
-    emailService
+    emailService,
+    badgeResolverValidator,
+    badgeService,
   } = resolverContext;
-  const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, email];
+  const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, email, badge];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),
@@ -41,6 +45,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
     emailResolver(emailResolverValidator, emailService, meetService),
     postResolver,
+    badgeResolver(badgeResolverValidator, badgeService),
   ];
 
   return makeExecutableSchema({

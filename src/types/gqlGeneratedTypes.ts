@@ -79,6 +79,10 @@ export type Query = {
   projects?: Maybe<Array<Maybe<Project>>>;
   /** Get a single project by its ID */
   project?: Maybe<Project>;
+  /** Gets all the badges */
+  badges?: Maybe<Array<Maybe<Badge>>>;
+  /** gets one badge by id */
+  badge?: Maybe<Badge>;
 };
 
 
@@ -109,6 +113,11 @@ export type QueryProjectsArgs = {
 
 
 export type QueryProjectArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryBadgeArgs = {
   id: Scalars['UUID'];
 };
 
@@ -148,6 +157,8 @@ export type Mutation = {
   sendReminderEmailForMeet: Scalars['Boolean'];
   /** Sends a sample registration email with json-ld for Google whitelist approval (admin-only) */
   sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
+  /** Creates a new badge (requires admin privileges */
+  createBadge: Badge;
 };
 
 
@@ -205,6 +216,11 @@ export type MutationSendReminderEmailForMeetArgs = {
 
 export type MutationSendSampleRegistrationEmailForMeetArgs = {
   meetId: Scalars['UUID'];
+};
+
+
+export type MutationCreateBadgeArgs = {
+  input: CreateBadgeInput;
 };
 
 export type Post = {
@@ -270,7 +286,6 @@ export type CreateMeetInput = {
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
-  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl: Scalars['String'];
   /** Wallclock times */
   startTime: Scalars['String'];
@@ -289,7 +304,6 @@ export type EditMeetInput = {
   /** The instructions in markdown format */
   instructions?: Maybe<Scalars['String']>;
   registerLink?: Maybe<Scalars['String']>;
-  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl?: Maybe<Scalars['String']>;
   /** Wallclock times */
   startTime?: Maybe<Scalars['String']>;
@@ -366,6 +380,55 @@ export type MeetReminderEmailInput = {
   meetId: Scalars['UUID'];
   subject: Scalars['String'];
   body: Scalars['String'];
+};
+
+/** A list of the different border shapes a badge can have */
+export enum BadgeShapes {
+  Star = 'star',
+  Circle = 'circle',
+  Square = 'square'
+}
+
+/** A badge awarded by Mintbean for excellence within the Mintbean community! */
+export type Badge = {
+  __typename?: 'Badge';
+  /** ID of the badge in UUID */
+  id: Scalars['UUID'];
+  /** A user friendly :colon-surrounded: badge alias. */
+  alias: Scalars['String'];
+  badgeShape: BadgeShapes;
+  /** The hex code for the background color (all 6 digits, no # before code) */
+  backgroundHex?: Maybe<Scalars['String']>;
+  /** The hex code for the icon color (all 6 digits, no # before code) */
+  iconHex?: Maybe<Scalars['String']>;
+  /** the official title of the badge */
+  title: Scalars['String'];
+  /** the official description of the badge */
+  description?: Maybe<Scalars['String']>;
+  /** the weight of this badge */
+  weight?: Maybe<Scalars['Int']>;
+  /** when this badge was first created */
+  createdAt: Scalars['DateTime'];
+};
+
+/** the input needed to create a new badge */
+export type CreateBadgeInput = {
+  /** the id of the badge */
+  id: Scalars['String'];
+  /** the alias of the badge */
+  alias: Scalars['String'];
+  /** the shape of the badge */
+  badgeShape: BadgeShapes;
+  /** the background color of the badge(optional) */
+  backgroundHex?: Maybe<Scalars['String']>;
+  /** the color of the icon(optional) */
+  iconHex?: Maybe<Scalars['String']>;
+  /** the title of the badge */
+  title: Scalars['String'];
+  /** a description of the badge (optional) */
+  description?: Maybe<Scalars['String']>;
+  /** how heavily this badge should be weighted(optional) */
+  weight?: Maybe<Scalars['Int']>;
 };
 
 
@@ -466,6 +529,9 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  BadgeShapes: BadgeShapes;
+  Badge: ResolverTypeWrapper<Badge>;
+  CreateBadgeInput: CreateBadgeInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -489,6 +555,8 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  Badge: Badge;
+  CreateBadgeInput: CreateBadgeInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -536,6 +604,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
+  badges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Badge']>>>, ParentType, ContextType>;
+  badge?: Resolver<Maybe<ResolversTypes['Badge']>, ParentType, ContextType, RequireFields<QueryBadgeArgs, 'id'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -551,6 +621,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
   sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
   sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
+  createBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationCreateBadgeArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -607,6 +678,19 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type BadgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  alias?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  badgeShape?: Resolver<ResolversTypes['BadgeShapes'], ParentType, ContextType>;
+  backgroundHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  iconHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  weight?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -618,6 +702,7 @@ export type Resolvers<ContextType = any> = {
   Meet?: MeetResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
+  Badge?: BadgeResolvers<ContextType>;
 };
 
 
