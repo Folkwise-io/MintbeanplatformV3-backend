@@ -2,7 +2,7 @@ import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCanonDao from "./KanbanCanonDao";
 import { KanbanCanon } from "../types/gqlGeneratedTypes";
-import { KanbanCanonServiceGetOneArgs } from "../service/KanbanCanonService";
+import { KanbanCanonServiceAddOneInput, KanbanCanonServiceGetOneArgs } from "../service/KanbanCanonService";
 
 export default class KanbanCanonDaoKnex implements KanbanCanonDao {
   constructor(private knex: Knex) {}
@@ -20,14 +20,14 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
     });
   }
 
-  //   async addOne(args: KanbanCanonServiceAddOneArgs): Promise<KanbanCanon> {
-  //     return handleDatabaseError(async () => {
-  //       const insertedKanbanCanons = (await this.knex<KanbanCanon>("kanbanCanons")
-  //         .insert(args)
-  //         .returning("*")) as KanbanCanon[];
-  //       return insertedKanbanCanons[0];
-  //     });
-  //   }
+  async addOne(args: KanbanCanonServiceAddOneInput): Promise<KanbanCanon> {
+    return handleDatabaseError(async () => {
+      const insertedKanbanCanons = (await this.knex<KanbanCanon>("kanbanCanons")
+        .insert(args)
+        .returning("*")) as KanbanCanon[];
+      return insertedKanbanCanons[0];
+    });
+  }
 
   // Testing methods below, for TestManager to call
   async addMany(kanbanCanons: KanbanCanon[]): Promise<void> {

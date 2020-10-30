@@ -1,10 +1,4 @@
-import {
-  GET_KANBAN_CANON_CARDS_QUERY,
-  GET_KANBAN_CANON_CARD_QUERY,
-  KANBAN_CANON_CARD_1,
-  KANBAN_CANON_CARD_2,
-  KANBAN_CANON_CARD_3,
-} from "./src/kanbanCanonCardConstants";
+import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3 } from "./src/kanbanCanonCardConstants";
 import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import { GET_KANBAN_CARDS_QUERY, KANBAN_SESSION_CARD_RAW_1 } from "./src/kanbanCardConstants";
 import { ISOLATED_KANBAN_RAW_1, MEET_KANBAN_RAW_1 } from "./src/kanbanConstants";

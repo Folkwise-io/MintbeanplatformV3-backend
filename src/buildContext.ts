@@ -41,6 +41,7 @@ import KanbanCardDao from "./dao/KanbanCardDao";
 import KanbanCardDaoKnex from "./dao/KanbanCardDaoKnex";
 import KanbanCardResolverValidator from "./validator/KanbanCardResolverValidator";
 import KanbanCardService from "./service/KanbanCardService";
+import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -96,6 +97,7 @@ export interface ResolverContext {
   emailResolverValidator: EmailResolverValidator;
   emailService: EmailService;
   kanbanCanonService: KanbanCanonService;
+  kanbanCanonResolverValidator: KanbanCanonResolverValidator;
   kanbanCanonCardService: KanbanCanonCardService;
   kanbanCanonCardResolverValidator: KanbanCanonCardResolverValidator;
   kanbanService: KanbanService;
@@ -128,6 +130,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
   const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
   const kanbanCanonService = new KanbanCanonService(kanbanCanonDao);
+  const kanbanCanonResolverValidator = new KanbanCanonResolverValidator(kanbanCanonDao);
   const kanbanCanonCardService = new KanbanCanonCardService(kanbanCanonCardDao);
   const kanbanCanonCardResolverValidator = new KanbanCanonCardResolverValidator(kanbanCanonCardDao, kanbanCanonDao);
   const kanbanService = new KanbanService(kanbanDao);
@@ -157,6 +160,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanCanonCardService,
     kanbanCanonCardResolverValidator,
     kanbanService,
+    kanbanCanonResolverValidator,
     kanbanResolverValidator,
     kanbanCardService,
     kanbanCardResolverValidator,

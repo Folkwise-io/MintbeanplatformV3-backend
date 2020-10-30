@@ -9,7 +9,7 @@ import { EntityService } from "./EntityService";
 
 // Only allow ID lookup for now
 export interface KanbanCanonServiceGetOneArgs extends QueryKanbanCanonArgs {}
-// export interface KanbanCanonServiceAddOneInput extends CreateKanbanCanonInput {}
+export interface KanbanCanonServiceAddOneInput extends CreateKanbanCanonInput {}
 // export interface KanbanCanonServiceEditOneInput extends EditKanbanCanonInput {}
 
 export default class KanbanCanonService implements EntityService<KanbanCanon> {
@@ -22,9 +22,9 @@ export default class KanbanCanonService implements EntityService<KanbanCanon> {
     return this.kanbanCanonDao.getMany();
   }
 
-  //   async addOne(input: KanbanCanonServiceAddOneInput): Promise<KanbanCanon> {
-  //     return this.kanbanCanonDao.addOne(input);
-  //   }
+  async addOne(input: KanbanCanonServiceAddOneInput): Promise<KanbanCanon> {
+    return this.kanbanCanonDao.addOne(input);
+  }
 
   //   async editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon> {
   //     return this.kanbanCanonDao.editOne(id, input);

@@ -1,44 +1,47 @@
 import { ServerContext } from "../../buildServerContext";
 import { KanbanCanon, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanCanonService from "../../service/KanbanCanonService";
+import KanbanCanonResolverValidator from "../../validator/KanbanCanonResolverValidator";
 
-const kanbanCanonResolver = (kanbanCanonService: KanbanCanonService): Resolvers => {
+const kanbanCanonResolver = (
+  kanbanCanonResolverValidator: KanbanCanonResolverValidator,
+  kanbanCanonService: KanbanCanonService,
+): Resolvers => {
   return {
     Query: {
-      kanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
+      kanbanCanon: (_root, args, _context: ServerContext): Promise<KanbanCanon> => {
         // TODO: validate?
         return kanbanCanonService.getOne(args);
       },
-      kanbanCanons: (_root, args, context: ServerContext): Promise<KanbanCanon[]> => {
+      kanbanCanons: (_root, args, _context: ServerContext): Promise<KanbanCanon[]> => {
         return kanbanCanonService.getMany();
       },
     },
 
-    // Mutation: {
-    //   createMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-    //     if (!context.getIsAdmin()) {
-    //       throw new AuthenticationError("You are not authorized to create new meets!");
-    //     }
+    Mutation: {
+      createKanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
+        return kanbanCanonResolverValidator
+          .addOne(args.input, context)
+          .then((input) => kanbanCanonService.addOne(input));
+      },
 
-    //     return kanbanCanonResolverValidator.addOne(args, context).then((input) => meetService.addOne(input));
-    //   },
-    //   editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-    //     if (!context.getIsAdmin()) {
-    //       throw new AuthenticationError("You are not authorized to edit meets!");
-    //     }
+      // editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
+      //   if (!context.getIsAdmin()) {
+      //     throw new AuthenticationError("You are not authorized to edit meets!");
+      //   }
 
-    //     return kanbanCanonResolverValidator
-    //       .editOne(args, context)
-    //       .then(({ id, input }) => meetService.editOne(id, input));
-    //   },
-    //   deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
-    //     if (!context.getIsAdmin()) {
-    //       throw new AuthenticationError("You are not authorized to delete meets!");
-    //     }
+      //   return kanbanCanonResolverValidator
+      //     .editOne(args, context)
+      //     .then(({ id, input }) => meetService.editOne(id, input));
+      // },
+      // deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+      //   if (!context.getIsAdmin()) {
+      //     throw new AuthenticationError("You are not authorized to delete meets!");
+      //   }
 
-    //     return kanbanCanonResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
-    //   },
-    // },
+      //   return kanbanCanonResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
+      // },
+    },
 
     Meet: {
       kanbanCanon: (meet) => {
