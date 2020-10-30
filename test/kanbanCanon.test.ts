@@ -1,4 +1,3 @@
-import { Kanban, KanbanCanon } from "../src/types/gqlGeneratedTypes";
 import {
   CREATE_KANBAN_CANON_MUTATION,
   EDIT_KANBAN_CANON_INPUT,
