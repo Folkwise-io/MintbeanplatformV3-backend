@@ -33,6 +33,7 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
       return queryResult.rows;
     });
   }
+
   async addMany(kanbanCards: KanbanSessionCardRaw[]): Promise<void> {
     return this.knex<KanbanSessionCardRaw>("kanbanSessionCards").insert(kanbanCards);
   }

@@ -19,9 +19,7 @@ const kanbanCanonResolver = (
 
     Mutation: {
       createKanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
-        return kanbanCanonResolverValidator
-          .addOne(args.input, context)
-          .then((input) => kanbanCanonService.addOne(input));
+        return kanbanCanonResolverValidator.addOne(args, context).then(({ input }) => kanbanCanonService.addOne(input));
       },
       editKanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
         return kanbanCanonResolverValidator

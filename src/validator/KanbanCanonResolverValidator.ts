@@ -2,7 +2,11 @@ import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
 import { KanbanCanonServiceAddOneInput, KanbanCanonServiceEditOneInput } from "../service/KanbanCanonService";
-import { MutationDeleteKanbanCanonArgs, MutationEditKanbanCanonArgs } from "../types/gqlGeneratedTypes";
+import {
+  MutationCreateKanbanCanonArgs,
+  MutationDeleteKanbanCanonArgs,
+  MutationEditKanbanCanonArgs,
+} from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { validateAgainstSchema } from "../util/validateAgainstSchema";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
@@ -11,12 +15,15 @@ import { createKanbanCanonInputSchema, editKanbanCanonInputSchema } from "./yupS
 export default class KanbanCanonResolverValidator {
   constructor(private kanbanCanonDao: KanbanCanonDao) {}
 
-  async addOne(input: KanbanCanonServiceAddOneInput, context: ServerContext): Promise<KanbanCanonServiceAddOneInput> {
+  async addOne(
+    { input }: MutationCreateKanbanCanonArgs,
+    context: ServerContext,
+  ): Promise<MutationCreateKanbanCanonArgs> {
     if (!context.getIsAdmin()) {
       throw new AuthenticationError("You are not authorized to create new kanban canons!");
     }
     validateAgainstSchema<KanbanCanonServiceAddOneInput>(createKanbanCanonInputSchema, input);
-    return input;
+    return { input };
   }
 
   async deleteOne(

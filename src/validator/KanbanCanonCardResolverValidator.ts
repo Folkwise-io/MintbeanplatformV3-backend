@@ -1,17 +1,21 @@
+import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
 import { KanbanCanonCardServiceGetManyArgs, KanbanCanonCardServiceGetOneArgs } from "../service/KanbanCanonCardService";
-import { KanbanCanon, KanbanCanonCard } from "../types/gqlGeneratedTypes";
+import {
+  KanbanCanon,
+  KanbanCanonCard,
+  MutationCreateKanbanCanonCardArgs,
+  QueryKanbanCanonCardArgs,
+  QueryKanbanCanonCardsArgs,
+} from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 
 export default class KanbanCanonCardResolverValidator {
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao, private kanbanCanonDao: KanbanCanonDao) {}
 
-  async getOne(
-    { id }: KanbanCanonCardServiceGetOneArgs,
-    _context: ServerContext,
-  ): Promise<KanbanCanonCardServiceGetOneArgs> {
+  async getOne({ id }: QueryKanbanCanonCardArgs, _context: ServerContext): Promise<QueryKanbanCanonCardArgs> {
     await this.kanbanCanonCardDao
       .getOne({ id })
       .then((kanbanCanonCard) => ensureExists<KanbanCanonCard>("KanbanCanonCard")(kanbanCanonCard));
@@ -19,22 +23,24 @@ export default class KanbanCanonCardResolverValidator {
   }
 
   async getMany(
-    { kanbanCanonId }: KanbanCanonCardServiceGetManyArgs,
+    { kanbanCanonId }: QueryKanbanCanonCardsArgs,
     _context: ServerContext,
-  ): Promise<KanbanCanonCardServiceGetManyArgs> {
+  ): Promise<QueryKanbanCanonCardsArgs> {
     await this.kanbanCanonDao
       .getOne({ id: kanbanCanonId })
       .then((kanbanCanon) => ensureExists<KanbanCanon>("KanbanCanon")(kanbanCanon));
     return { kanbanCanonId };
   }
 
-  //   async addOne(
-  //     { input }: MutationCreateKanbanCanonCardArgs,
-  //     _context: ServerContext,
-  //   ): Promise<KanbanCanonCardServiceAddOneInput> {
-  //     //TODO: Validate createKanbanCanonCard args
-  //     return input;
-  //   }
+  async addOne(
+    { input }: MutationCreateKanbanCanonCardArgs,
+    context: ServerContext,
+  ): Promise<MutationCreateKanbanCanonCardArgs> {
+    if (!context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to create kanban canon cards!");
+    }
+    return { input };
+  }
 
   //   async editOne(
   //     { id, input }: MutationEditKanbanCanonCardArgs,

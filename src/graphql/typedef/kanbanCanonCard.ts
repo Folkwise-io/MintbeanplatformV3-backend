@@ -35,6 +35,26 @@ const kanbanCanonCard = gql`
     "Gets all the kanban cards for a given kanban"
     kanbanCanonCards(kanbanCanonId: UUID!): [KanbanCanonCard]
   }
+
+  input CreateKanbanCanonCardInput {
+    "A reference to the kanbanCanon this kanbanCanonCard belongs to"
+    kanbanCanonId: UUID!
+    title: String!
+    "(Optional) The column this card will initailly appear in. Defaults to TODO"
+    status: KanbanCanonCardStatusEnum
+
+    "A markdown body of the kanbanCanonCard content"
+    body: String!
+  }
+
+  extend type Mutation {
+    "Creates a new kanbanCanonCard (requires admin privileges)"
+    createKanbanCanonCard(input: CreateKanbanCanonCardInput!): KanbanCanonCard!
+    # "Edits a kanban card (requires admin privileges)"
+    # editKanbanCard(id: UUID!, input: EditKanbanCardInput!): KanbanCard!
+    # "Deletes a kanban card (requires admin privileges)"
+    # deleteKanbanCard(id: UUID!): Boolean!
+  }
 `;
 
 export default kanbanCanonCard;
@@ -42,17 +62,7 @@ export default kanbanCanonCard;
 // FOR LATER
 
 // "The input needed to create a new kanban card"
-//   input CreateKanbanCardInput {
-//     "A reference to the kanban this kanban card belongs to"
-//     kanbanId: UUID!
-//     title: String!
-//     "(Optional) The column this card will initailly appear in. Defaults to TODO"
-//     status: KanbanCanonCardStatusEnum
-//     # "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
-//     # index: Int
-//     "A markdown body of the kanban card content"
-//     body: String!
-//   }
+
 //   "Input that can be used to edit a kanban card - all fields are optional"
 //   input EditKanbanCardInput {
 //     "A reference to the kanban this kanban card belongs to"
@@ -64,12 +74,4 @@ export default kanbanCanonCard;
 //     # index: Int
 //     "A markdown body of the kanban card content"
 //     body: String
-//   }
-//   extend type Mutation {
-//     "Creates a new kanban card (requires admin privileges)"
-//     createKanbanCard(input: CreateKanbanCardInput!): KanbanCard!
-//     "Edits a kanban card (requires admin privileges)"
-//     editKanbanCard(id: UUID!, input: EditKanbanCardInput!): KanbanCard!
-//     "Deletes a kanban card (requires admin privileges)"
-//     deleteKanbanCard(id: UUID!): Boolean!
 //   }

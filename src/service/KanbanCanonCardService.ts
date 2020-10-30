@@ -1,10 +1,18 @@
 import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
-import { KanbanCanonCard, QueryKanbanCanonCardArgs, QueryKanbanCanonCardsArgs } from "../types/gqlGeneratedTypes";
+import {
+  CreateKanbanCanonCardInput,
+  KanbanCanonCard,
+  KanbanCanonCardStatusEnum,
+  QueryKanbanCanonCardArgs,
+  QueryKanbanCanonCardsArgs,
+} from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 export interface KanbanCanonCardServiceGetOneArgs extends QueryKanbanCanonCardArgs {}
 export interface KanbanCanonCardServiceGetManyArgs extends QueryKanbanCanonCardsArgs {}
-// export interface KanbanCanonCardServiceAddOneInput extends CreateKanbanCanonCardInput {}
+export interface KanbanCanonCardServiceAddOneInput extends CreateKanbanCanonCardInput {
+  status?: KanbanCanonCardStatusEnum | null;
+}
 // export interface KanbanCanonCardServiceEditOneInput extends EditKanbanCanonCardInput {}
 
 export default class KanbanCanonCardService implements EntityService<KanbanCanonCard> {
@@ -17,9 +25,9 @@ export default class KanbanCanonCardService implements EntityService<KanbanCanon
     return this.kanbanCanonCardDao.getMany(args);
   }
 
-  //   async addOne(input: KanbanCanonCardServiceAddOneInput): Promise<KanbanCanonCard> {
-  //     return this.kanbanCanonCardDao.addOne(input);
-  //   }
+  async addOne(input: KanbanCanonCardServiceAddOneInput): Promise<KanbanCanonCard> {
+    return this.kanbanCanonCardDao.addOne(input);
+  }
 
   //   async editOne(id: string, input: KanbanCanonCardServiceEditOneInput): Promise<KanbanCanonCard> {
   //     return this.kanbanCanonCardDao.editOne(id, input);
