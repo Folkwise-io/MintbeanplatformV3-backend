@@ -214,6 +214,8 @@ export type Mutation = {
   createKanbanCanonCard: KanbanCanonCard;
   /** Edits a kanban card (requires admin privileges) */
   editKanbanCanonCard: KanbanCanonCard;
+  /** Deletes a kanban card (requires admin privileges) */
+  deleteKanbanCanonCard: Scalars['Boolean'];
   /** Creates a new kanban view */
   createKanban: Kanban;
   deleteKanban: Scalars['Boolean'];
@@ -301,6 +303,11 @@ export type MutationCreateKanbanCanonCardArgs = {
 export type MutationEditKanbanCanonCardArgs = {
   id: Scalars['UUID'];
   input: EditKanbanCanonCardInput;
+};
+
+
+export type MutationDeleteKanbanCanonCardArgs = {
+  id: Scalars['UUID'];
 };
 
 
@@ -814,6 +821,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteKanbanCanon?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonArgs, 'id'>>;
   createKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonCardArgs, 'input'>>;
   editKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonCardArgs, 'id' | 'input'>>;
+  deleteKanbanCanonCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonCardArgs, 'id'>>;
   createKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationCreateKanbanArgs, 'input'>>;
   deleteKanban?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanArgs, 'id'>>;
 };

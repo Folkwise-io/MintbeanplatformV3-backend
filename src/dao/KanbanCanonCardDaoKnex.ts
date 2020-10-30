@@ -47,6 +47,13 @@ export default class KanbanCanonCardDaoKnex implements KanbanCanonCardDao {
     });
   }
 
+  async deleteOne(id: string): Promise<boolean> {
+    return handleDatabaseError(async () => {
+      await this.knex("kanbanCanonCards").where({ id }).update({ deleted: true });
+      return true;
+    });
+  }
+
   // Testing methods below, for TestManager to call
   async addMany(kanbanCanonCards: KanbanCanonCard[]): Promise<void> {
     return this.knex<KanbanCanonCard>("kanbanCanonCards").insert(kanbanCanonCards);

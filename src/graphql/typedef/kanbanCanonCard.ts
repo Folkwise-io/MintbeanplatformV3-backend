@@ -61,8 +61,8 @@ const kanbanCanonCard = gql`
     createKanbanCanonCard(input: CreateKanbanCanonCardInput!): KanbanCanonCard!
     "Edits a kanban card (requires admin privileges)"
     editKanbanCanonCard(id: UUID!, input: EditKanbanCanonCardInput!): KanbanCanonCard!
-    # "Deletes a kanban card (requires admin privileges)"
-    # deleteKanbanCard(id: UUID!): Boolean!
+    "Deletes a kanban card (requires admin privileges)"
+    deleteKanbanCanonCard(id: UUID!): Boolean!
   }
 `;
 

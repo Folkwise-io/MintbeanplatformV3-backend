@@ -33,12 +33,11 @@ const kanbanCanonCardResolver = (
           .editOne(args, context)
           .then(({ id, input }) => kanbanCanonCardService.editOne(id, input));
       },
-      // deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
-      //   if (!context.getIsAdmin()) {
-      //     throw new AuthenticationError("You are not authorized to delete meets!");
-      //   }
-      //   return kanbanCanonCardResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
-      // },
+      deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+        return kanbanCanonCardResolverValidator
+          .deleteOne(args, context)
+          .then(({ id }) => kanbanCanonCardService.deleteOne(id));
+      },
     },
 
     KanbanCanon: {

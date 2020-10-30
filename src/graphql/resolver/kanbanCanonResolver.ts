@@ -12,7 +12,7 @@ const kanbanCanonResolver = (
       kanbanCanon: (_root, args, _context: ServerContext): Promise<KanbanCanon> => {
         return kanbanCanonService.getOne(args);
       },
-      kanbanCanons: (_root, args, _context: ServerContext): Promise<KanbanCanon[]> => {
+      kanbanCanons: (_root, _args, _context: ServerContext): Promise<KanbanCanon[]> => {
         return kanbanCanonService.getMany();
       },
     },

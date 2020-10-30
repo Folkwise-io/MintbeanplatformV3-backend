@@ -17,7 +17,6 @@ export interface KanbanCanonCardServiceAddOneInput extends CreateKanbanCanonCard
 export interface KanbanCanonCardServiceEditOneInput extends EditKanbanCanonCardInput {
   status?: KanbanCanonCardStatusEnum | null;
 }
-// export interface KanbanCanonCardServiceEditOneInput extends EditKanbanCanonCardInput {}
 
 export default class KanbanCanonCardService implements EntityService<KanbanCanonCard> {
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao) {}
@@ -37,7 +36,7 @@ export default class KanbanCanonCardService implements EntityService<KanbanCanon
     return this.kanbanCanonCardDao.editOne(id, input);
   }
 
-  //   async deleteOne(id: string): Promise<boolean> {
-  //     return this.kanbanCanonCardDao.deleteOne(id);
-  //   }
+  async deleteOne(id: string): Promise<boolean> {
+    return this.kanbanCanonCardDao.deleteOne(id);
+  }
 }

@@ -7,6 +7,7 @@ import {
   KanbanCanon,
   KanbanCanonCard,
   MutationCreateKanbanCanonCardArgs,
+  MutationDeleteKanbanCanonCardArgs,
   MutationEditKanbanCanonCardArgs,
   QueryKanbanCanonCardArgs,
   QueryKanbanCanonCardsArgs,
@@ -63,11 +64,15 @@ export default class KanbanCanonCardResolverValidator {
     return { id, input };
   }
 
-  //   async deleteOne({ id }: MutationDeleteKanbanCanonCardArgs): Promise<string> {
-  //     // Check if meet id exists in db
-  //     return this.kanbanCanonCardDao
-  //       .getOne({ id })
-  //       .then((meet) => ensureExists<KanbanCanonCard>("KanbanCanonCard")(meet))
-  //       .then(({ id }) => id);
-  //   }
+  async deleteOne(
+    { id }: MutationDeleteKanbanCanonCardArgs,
+    context: ServerContext,
+  ): Promise<MutationDeleteKanbanCanonCardArgs> {
+    if (!context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to delete kanban canons!");
+    }
+    // Check if meet id exists in db
+    await this.kanbanCanonCardDao.getOne({ id }).then((meet) => ensureExists<KanbanCanonCard>("KanbanCanonCard")(meet));
+    return { id };
+  }
 }
