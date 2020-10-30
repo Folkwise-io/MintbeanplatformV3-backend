@@ -31,7 +31,7 @@ export default class KanbanCanonService implements EntityService<KanbanCanon> {
     return this.kanbanCanonDao.editOne(id, input);
   }
 
-  //   async deleteOne(id: string): Promise<boolean> {
-  //     return this.kanbanCanonDao.deleteOne(id);
-  //   }
+  async deleteOne(id: string): Promise<boolean> {
+    return this.kanbanCanonDao.deleteOne(id);
+  }
 }

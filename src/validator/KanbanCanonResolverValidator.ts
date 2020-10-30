@@ -2,7 +2,7 @@ import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
 import { KanbanCanonServiceAddOneInput, KanbanCanonServiceEditOneInput } from "../service/KanbanCanonService";
-import { MutationEditKanbanCanonArgs } from "../types/gqlGeneratedTypes";
+import { MutationDeleteKanbanCanonArgs, MutationEditKanbanCanonArgs } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { validateAgainstSchema } from "../util/validateAgainstSchema";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
@@ -17,6 +17,19 @@ export default class KanbanCanonResolverValidator {
     }
     validateAgainstSchema<KanbanCanonServiceAddOneInput>(createKanbanCanonInputSchema, input);
     return input;
+  }
+
+  async deleteOne(
+    { id }: MutationDeleteKanbanCanonArgs,
+    context: ServerContext,
+  ): Promise<MutationDeleteKanbanCanonArgs> {
+    if (!context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to delete kanban canons!");
+    }
+
+    await this.kanbanCanonDao.getOne({ id }).then((kanbanCanon) => ensureExists("Kanban Canon")(kanbanCanon));
+
+    return { id };
   }
 
   async editOne(

@@ -10,7 +10,6 @@ const kanbanCanonResolver = (
   return {
     Query: {
       kanbanCanon: (_root, args, _context: ServerContext): Promise<KanbanCanon> => {
-        // TODO: validate?
         return kanbanCanonService.getOne(args);
       },
       kanbanCanons: (_root, args, _context: ServerContext): Promise<KanbanCanon[]> => {
@@ -24,19 +23,14 @@ const kanbanCanonResolver = (
           .addOne(args.input, context)
           .then((input) => kanbanCanonService.addOne(input));
       },
-
       editKanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
         return kanbanCanonResolverValidator
           .editOne(args, context)
           .then(({ id, input }) => kanbanCanonService.editOne(id, input));
       },
-      // deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
-      //   if (!context.getIsAdmin()) {
-      //     throw new AuthenticationError("You are not authorized to delete meets!");
-      //   }
-
-      //   return kanbanCanonResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
-      // },
+      deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+        return kanbanCanonResolverValidator.deleteOne(args, context).then(({ id }) => kanbanCanonService.deleteOne(id));
+      },
     },
 
     Meet: {
