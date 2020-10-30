@@ -119,6 +119,10 @@ export default class TestManager {
     return this.params.persistenceContext.kanbanCanonDao.deleteAll();
   }
 
+  deleteAllKanbanCanonCards() {
+    return this.params.persistenceContext.kanbanCanonCardDao.deleteAll();
+  }
+
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
     return this.params.testClient
       .post("/graphql")

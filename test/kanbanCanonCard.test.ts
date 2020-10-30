@@ -3,8 +3,10 @@ import {
   GET_KANBAN_CANON_CARDS_QUERY,
   GET_KANBAN_CANON_CARD_QUERY,
   KANBAN_CANON_CARD_1,
-  KANBAN_CANON_CARD_1_INPUT,
+  CREATE_KANBAN_CANON_CARD_1_INPUT,
   KANBAN_CANON_CARD_2,
+  EDIT_KANBAN_CANON_CARD_MUTATION,
+  EDIT_KANBAN_CANON_CARD_INPUT,
 } from "./src/kanbanCanonCardConstants";
 import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
@@ -101,13 +103,12 @@ describe("Creating kanbanCanonCards", () => {
     await testManager
       .getGraphQLResponse({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: KANBAN_CANON_CARD_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
       .then(({ createKanbanCanonCard }) => {
-        console.log({ createKanbanCanonCard });
-        expect(createKanbanCanonCard).toMatchObject(KANBAN_CANON_CARD_1_INPUT);
+        expect(createKanbanCanonCard).toMatchObject(CREATE_KANBAN_CANON_CARD_1_INPUT);
       });
   });
 
@@ -115,7 +116,7 @@ describe("Creating kanbanCanonCards", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: KANBAN_CANON_CARD_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
         cookies: [],
       })
       .then((errorMessage) => {
@@ -127,7 +128,7 @@ describe("Creating kanbanCanonCards", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: { ...KANBAN_CANON_CARD_1_INPUT, body: undefined } },
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, body: undefined } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
@@ -139,11 +140,108 @@ describe("Creating kanbanCanonCards", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: { ...KANBAN_CANON_CARD_1_INPUT, title: 100 } },
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, title: 100 } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/title/i);
+      });
+  });
+});
+
+describe("Editing kanbanCanonCards", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllKanbanCanonCards();
+    await testManager.addKanbanCanonCards([KANBAN_CANON_CARD_1]);
+  });
+
+  it("edits a kanbanCanonCard successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: EDIT_KANBAN_CANON_CARD_INPUT },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ editKanbanCanonCard }) => {
+        expect(editKanbanCanonCard.title).not.toBe(KANBAN_CANON_CARD_1.title);
+        expect(editKanbanCanonCard.title).toBe(EDIT_KANBAN_CANON_CARD_INPUT.title);
+      });
+  });
+  it("updates the updatedAt timestamp after editing a kanbanCanonCard", async () => {
+    // Check that createdAt is initially equal to updatedAt
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
+      .then(({ kanbanCanonCard }) => expect(kanbanCanonCard.createdAt).toBe(kanbanCanonCard.updatedAt));
+
+    await testManager
+      .getGraphQLData({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: EDIT_KANBAN_CANON_CARD_INPUT },
+        cookies: adminCookies,
+      })
+      .then(({ editKanbanCanonCard }) => {
+        expect(editKanbanCanonCard.createdAt < editKanbanCanonCard.updatedAt).toBe(true);
+      });
+  });
+
+  it("returns an 'unauthorized' error message when editing a kanbanCanonCard without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: EDIT_KANBAN_CANON_CARD_INPUT },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_KANBAN_CANON_CARD_INPUT },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+
+  it("gives an error message when no edit fields are specified in the mutation", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: {} },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/field/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a non-existent field", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: { nonexistent: "hello" } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+
+  it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: { deleted: true } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/invalid/i);
       });
   });
 });

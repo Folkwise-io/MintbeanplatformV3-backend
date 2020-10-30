@@ -1,6 +1,7 @@
 import { gql } from "apollo-server-express";
 import {
   CreateKanbanCanonCardInput,
+  EditKanbanCanonCardInput,
   KanbanCanonCard,
   KanbanCanonCardStatusEnum,
 } from "../../src/types/gqlGeneratedTypes";
@@ -62,7 +63,7 @@ export const GET_KANBAN_CANON_CARDS_QUERY = gql`
   }
 `;
 
-export const KANBAN_CANON_CARD_1_INPUT: CreateKanbanCanonCardInput = {
+export const CREATE_KANBAN_CANON_CARD_1_INPUT: CreateKanbanCanonCardInput = {
   kanbanCanonId: KANBAN_CANON_1.id, // Animation Toys 1 Kanban
   title: "Kanban Card 1",
   body: "This is the **first** thing to do",
@@ -71,6 +72,24 @@ export const KANBAN_CANON_CARD_1_INPUT: CreateKanbanCanonCardInput = {
 export const CREATE_KANBAN_CANON_CARD_MUTATION = gql`
   mutation createKanbanCanonCard($input: CreateKanbanCanonCardInput!) {
     createKanbanCanonCard(input: $input) {
+      id
+      title
+      body
+      status
+      kanbanCanonId
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const EDIT_KANBAN_CANON_CARD_INPUT: EditKanbanCanonCardInput = {
+  title: "New title!",
+};
+
+export const EDIT_KANBAN_CANON_CARD_MUTATION = gql`
+  mutation editKanbanCanonCard($id: UUID!, $input: EditKanbanCanonCardInput!) {
+    editKanbanCanonCard(id: $id, input: $input) {
       id
       title
       body
