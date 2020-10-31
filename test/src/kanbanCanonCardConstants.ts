@@ -100,3 +100,9 @@ export const EDIT_KANBAN_CANON_CARD_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_KANBAN_CANON_CARD_MUTATION = gql`
+  mutation deleteKanbanCanonCard($id: UUID!) {
+    deleteKanbanCanonCard(id: $id)
+  }
+`;

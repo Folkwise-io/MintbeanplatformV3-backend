@@ -33,7 +33,7 @@ const kanbanCanonCardResolver = (
           .editOne(args, context)
           .then(({ id, input }) => kanbanCanonCardService.editOne(id, input));
       },
-      deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+      deleteKanbanCanonCard: (_root, args, context: ServerContext): Promise<boolean> => {
         return kanbanCanonCardResolverValidator
           .deleteOne(args, context)
           .then(({ id }) => kanbanCanonCardService.deleteOne(id));

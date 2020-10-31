@@ -7,6 +7,7 @@ import {
   KANBAN_CANON_CARD_2,
   EDIT_KANBAN_CANON_CARD_MUTATION,
   EDIT_KANBAN_CANON_CARD_INPUT,
+  DELETE_KANBAN_CANON_CARD_MUTATION,
 } from "./src/kanbanCanonCardConstants";
 import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
@@ -242,6 +243,57 @@ describe("Editing kanbanCanonCards", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/invalid/i);
+      });
+  });
+});
+
+describe("Deleting kanbanCanonCards", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllKanbanCanonCards();
+    await testManager.addKanbanCanonCards([KANBAN_CANON_CARD_1]);
+  });
+
+  it("deletes a meet successfully when admin is logged in", async () => {
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+      .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(1));
+
+    await testManager
+      .getGraphQLData({
+        query: DELETE_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id },
+        cookies: adminCookies,
+      })
+      .then(({ deleteKanbanCanonCard }) => {
+        expect(deleteKanbanCanonCard).toBe(true);
+      });
+
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+      .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(0));
+  });
+
+  it("returns an 'unauthorized' error message when deleting a kanbanCanonCard without admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the kanbanCanonCard does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
 });
