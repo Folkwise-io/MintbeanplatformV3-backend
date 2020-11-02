@@ -2,6 +2,8 @@ import { KanbanSessionRaw } from "../src/dao/KanbanDao";
 import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
 import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import {
+  CREATE_ISOLATED_KANBAN_INPUT,
+  CREATE_KANBAN_MUTATION,
   GET_KANBANS_QUERY,
   GET_KANBAN_QUERY,
   ISOLATED_KANBAN_RAW_1,
@@ -15,6 +17,7 @@ import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
+const SEEDED_KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2];
 let adminCookies: string[];
 let bobCookies: string[];
 
@@ -30,7 +33,7 @@ beforeEach(async () => {
   await testManager.deleteAllKanbanCanons(); // deletes cards by CASCADE
 
   await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_1 is the base for MEET_KANBAN_RAW_1 and 2
-  await testManager.addKanbanCanonCards([KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2]); // for KANBAN_CANON_1
+  await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1
   await testManager.addMeets([PAPERJS]); // for KANBAN_CANON_1
 });
 
@@ -254,6 +257,90 @@ describe("Querying kanbans", () => {
       .then(testManager.parseData)
       .then(({ kanbans }) => {
         expect(kanbans).toHaveLength(0);
+      });
+  });
+});
+
+describe("Creating kanbans", () => {
+  it("creates an isolated kanban successfully", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: CREATE_ISOLATED_KANBAN_INPUT },
+        cookies: bobCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createKanban }) => {
+        expect(createKanban).toMatchObject(CREATE_ISOLATED_KANBAN_INPUT);
+      });
+  });
+  it("creates a meet kanban successfully", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: { ...CREATE_ISOLATED_KANBAN_INPUT, meetId: PAPERJS.id } },
+        cookies: bobCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createKanban }) => {
+        expect(createKanban).toMatchObject(CREATE_ISOLATED_KANBAN_INPUT);
+      });
+  });
+  it("throws 'not authorized' user attempts to create kanban while not logged in", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: CREATE_ISOLATED_KANBAN_INPUT },
+        cookies: [],
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/log(ged)? in/i);
+      });
+  });
+  it("allows admin to create a kanban on behalf of another user", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: { ...CREATE_ISOLATED_KANBAN_INPUT, userId: BOB.id } },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createKanban }) => {
+        expect(createKanban).toMatchObject(CREATE_ISOLATED_KANBAN_INPUT);
+      });
+  });
+  it("throws 'not authorized' error if non-admin user attempts to create a kanban on behalf of another user", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: { ...CREATE_ISOLATED_KANBAN_INPUT, userId: DORTHY.id } },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(cannot | can't)] create kanban/i);
+      });
+  });
+  it("returns an appropriate error message when a required field is missing", async () => {
+    const partialInput = { kanbanCanonId: KANBAN_CANON_1.id };
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: partialInput },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/userId/i);
+      });
+  });
+  it("returns an appropriate error message when a field is in wrong type", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_MUTATION,
+        variables: { input: { ...CREATE_ISOLATED_KANBAN_INPUT, kanbanCanonId: 100 } },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/kanbanCanonId/i);
       });
   });
 });

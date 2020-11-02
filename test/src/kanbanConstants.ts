@@ -69,3 +69,28 @@ export const GET_KANBANS_QUERY = gql`
     }
   }
 `;
+
+export const CREATE_ISOLATED_KANBAN_INPUT = {
+  kanbanCanonId: KANBAN_CANON_1.id,
+  userId: BOB.id,
+};
+
+export const CREATE_KANBAN_MUTATION = gql`
+  mutation createKanban($input: CreateKanbanInput!) {
+    createKanban(input: $input) {
+      id
+      title
+      description
+      userId
+      meetId
+      kanbanCanonId
+      kanbanCards {
+        id
+        title
+        body
+        status
+        kanbanId
+      }
+    }
+  }
+`;

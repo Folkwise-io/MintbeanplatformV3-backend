@@ -58,19 +58,31 @@ export default class KanbanResolverValidator {
 
   async addOne({ input }: MutationCreateKanbanArgs, context: ServerContext): Promise<MutationCreateKanbanArgs> {
     const { kanbanCanonId, userId, meetId } = input;
-    if (!context.getUserId()) {
+
+    const requestingUserId = context.getUserId();
+    if (!requestingUserId) {
       throw new UserInputError("You must be logged in to create a kanban!");
     }
-    // ensure kanbanCanon  exists
+
+    // ensure requesting user is the input user if not admin
+    const isAdmin = context.getIsAdmin();
+    if (!isAdmin && requestingUserId !== userId) {
+      throw new UserInputError("You cannot create kanbans for users other than yourself!");
+    }
+
+    // ensure kanbanCanon exists
     await this.kanbanCanonDao
       .getOne({ id: kanbanCanonId })
       .then((kanbanCanon) => ensureExists<KanbanCanon>("Kanban Canon")(kanbanCanon));
-    // ensure user exists
+
+    // ensure input user exists
     await this.userDao.getOne({ id: userId }).then((user) => ensureExists<User>("User")(user));
+
     // ensure meet exists (if passed in input)
     if (meetId) {
       await this.meetDao.getOne({ id: meetId }).then((meet) => ensureExists<Meet>("Meet")(meet));
     }
+
     return { input };
   }
 
