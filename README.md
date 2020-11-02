@@ -100,6 +100,7 @@ Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` 
 | `psql`      | Enters the psql CLI in the docker container                                                        |
 | `tdd`       | Runs the tests in watch mode for a TDD workflow                                                    |
 | `test`      | Runs the tests once and generates a coverage report                                                |
+| `dump:prod` | Dumps production backups into `db/backups/*`                                                       |
 
 ### Knex CLI Reference
 
