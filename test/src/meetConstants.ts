@@ -31,7 +31,7 @@ export const ALGOLIA: Meet = {
   region: "America/Toronto",
 };
 
-export const GET_MEETS_BY_ID = gql`
+export const GET_MEET_QUERY = gql`
   query getMeetById($id: UUID!) {
     meet(id: $id) {
       id
@@ -51,6 +51,22 @@ export const GET_MEETS_BY_ID = gql`
         id
         title
         description
+      }
+      kanban {
+        userId
+        kanbanCanonId
+        createdAt
+        updatedAt
+        meetId
+        id
+        title
+        description
+        kanbanCards {
+          id
+          title
+          body
+          status
+        }
       }
     }
   }

@@ -16,34 +16,19 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
 
     Mutation: {
       createKanban: (_root, args, context: ServerContext): Promise<Kanban> => {
-        // add userId to args.input from context
-        // args.input.userId = context.getUserId();
         return kanbanResolverValidator.addOne(args, context).then(({ input }) => kanbanService.addOne(input));
       },
-      //   editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-      //     if (!context.getIsAdmin()) {
-      //       throw new AuthenticationError("You are not authorized to edit meets!");
-      //     }
 
-      //     return kanbanResolverValidator
-      //       .editOne(args, context)
-      //       .then(({ id, input }) => meetService.editOne(id, input));
-      //   },
-      //   deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
-      //     if (!context.getIsAdmin()) {
-      //       throw new AuthenticationError("You are not authorized to delete meets!");
-      //     }
-
-      //     return kanbanResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
-      //   },
+      deleteKanban: (_root, args, context: ServerContext): Promise<boolean> => {
+        return kanbanResolverValidator.deleteOne(args, context).then(({ id }) => kanbanService.deleteOne(id));
+      },
     },
 
     Meet: {
-      kanban: (meet, context, c) => {
-        // TODO: add user ID
-        console.log({ context });
-        console.log({ c });
-        return kanbanService.getOne({ meetId: meet.id, kanbanCanonId: meet.kanbanCanonId });
+      kanban: (meet, _args, context) => {
+        // retrieve kanban of requesting user
+        const requesterId = context.getUserId();
+        return kanbanService.getOne({ meetId: meet.id, kanbanCanonId: meet.kanbanCanonId, userId: requesterId });
       },
     },
   };

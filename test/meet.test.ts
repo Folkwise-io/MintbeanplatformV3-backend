@@ -7,7 +7,7 @@ import {
   EDIT_MEET,
   EDIT_MEET_INPUT,
   GET_ALL_MEETS,
-  GET_MEETS_BY_ID,
+  GET_MEET_QUERY,
   GET_REGISTERLINK_STATUS,
   NEW_MEET_INPUT,
   PAPERJS,
@@ -36,7 +36,7 @@ describe("Querying meets", () => {
       .addMeets([PAPERJS])
       .then(() =>
         testManager
-          .getGraphQLResponse({ query: GET_MEETS_BY_ID, variables: { id: PAPERJS.id } })
+          .getGraphQLResponse({ query: GET_MEET_QUERY, variables: { id: PAPERJS.id } })
           .then(testManager.parseData),
       )
       .then(({ meet }) => {
@@ -50,7 +50,7 @@ describe("Querying meets", () => {
       .addMeets([MEET_WITH_KANBAN_CANON])
       .then(() =>
         testManager
-          .getGraphQLResponse({ query: GET_MEETS_BY_ID, variables: { id: PAPERJS.id } })
+          .getGraphQLResponse({ query: GET_MEET_QUERY, variables: { id: PAPERJS.id } })
           .then(testManager.parseData),
       )
       .then(({ meet }) => {

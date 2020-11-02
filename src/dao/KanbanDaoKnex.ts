@@ -82,6 +82,13 @@ export default class KanbanDaoKnex implements KanbanDao {
     });
   }
 
+  async deleteOne(id: string): Promise<boolean> {
+    return handleDatabaseError(async () => {
+      await this.knex("kanbanSessions").where({ id }).update({ deleted: true });
+      return true;
+    });
+  }
+
   // Testing methods below, for TestManager to call
   async addMany(kanbans: KanbanSessionRaw[]): Promise<void> {
     return this.knex("kanbanSessions").insert(kanbans);

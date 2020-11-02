@@ -5,7 +5,13 @@ import KanbanDao from "../dao/KanbanDao";
 import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
 import { KanbanServiceGetManyArgs, KanbanServiceGetOneArgs } from "../service/KanbanService";
-import { Kanban, KanbanCanon, Meet, MutationCreateKanbanArgs } from "../types/gqlGeneratedTypes";
+import {
+  Kanban,
+  KanbanCanon,
+  Meet,
+  MutationCreateKanbanArgs,
+  MutationDeleteKanbanArgs,
+} from "../types/gqlGeneratedTypes";
 import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
 
@@ -59,14 +65,14 @@ export default class KanbanResolverValidator {
   async addOne({ input }: MutationCreateKanbanArgs, context: ServerContext): Promise<MutationCreateKanbanArgs> {
     const { kanbanCanonId, userId, meetId } = input;
 
-    const requestingUserId = context.getUserId();
-    if (!requestingUserId) {
+    const requesterId = context.getUserId();
+    if (!requesterId) {
       throw new UserInputError("You must be logged in to create a kanban!");
     }
 
     // ensure requesting user is the input user if not admin
     const isAdmin = context.getIsAdmin();
-    if (!isAdmin && requestingUserId !== userId) {
+    if (!isAdmin && requesterId !== userId) {
       throw new UserInputError("You cannot create kanbans for users other than yourself!");
     }
 
@@ -86,26 +92,15 @@ export default class KanbanResolverValidator {
     return { input };
   }
 
-  //   async editOne(
-  //     { id, input }: MutationEditKanbanArgs,
-  //     _context: ServerContext,
-  //   ): Promise<{ id: string; input: KanbanServiceEditOneInput }> {
-  //     // Check if meet id exists in db
-  //     await this.kanbanDao.getOne({ id }).then((meet) => ensureExists("Kanban")(meet));
-
-  //     // Handle when input has no fields to update (knex doesn't like this)
-  //     if (Object.keys(input).length === 0) {
-  //       throw new UserInputError("Must edit at least one field!");
-  //     }
-
-  //     return { id, input };
-  //   }
-
-  //   async deleteOne({ id }: MutationDeleteKanbanArgs): Promise<string> {
-  //     // Check if meet id exists in db
-  //     return this.kanbanDao
-  //       .getOne({ id })
-  //       .then((meet) => ensureExists<Kanban>("Kanban")(meet))
-  //       .then(({ id }) => id);
-  //   }
+  async deleteOne({ id }: MutationDeleteKanbanArgs, context: ServerContext): Promise<MutationDeleteKanbanArgs> {
+    // Check if kanban id exists in db
+    const existingKanban = await this.kanbanDao.getOne({ id }).then((kanban) => ensureExists<Kanban>("Kanban")(kanban));
+    // Make sure requester has permission to delete this kanban
+    const requesterId = context.getUserId();
+    const isAdmin = context.getIsAdmin();
+    if (!isAdmin && requesterId !== existingKanban.userId) {
+      throw new AuthenticationError("You cannot delete a kanban owned by another user!");
+    }
+    return { id };
+  }
 }

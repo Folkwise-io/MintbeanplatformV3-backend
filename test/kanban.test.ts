@@ -10,7 +10,7 @@ import {
   MEET_KANBAN_RAW_1,
   MEET_KANBAN_RAW_2,
 } from "./src/kanbanConstants";
-import { PAPERJS } from "./src/meetConstants";
+import { GET_MEET_QUERY, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB, DORTHY } from "./src/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
@@ -18,6 +18,7 @@ import { getAdminCookies, getBobCookies } from "./src/util";
 const testManager = TestManager.build();
 
 const SEEDED_KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2];
+const PAPERJS_WITH_KANBAN_CANON_1 = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1.id };
 let adminCookies: string[];
 let bobCookies: string[];
 
@@ -34,7 +35,7 @@ beforeEach(async () => {
 
   await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_1 is the base for MEET_KANBAN_RAW_1 and 2
   await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1
-  await testManager.addMeets([PAPERJS]); // for KANBAN_CANON_1
+  await testManager.addMeets([PAPERJS_WITH_KANBAN_CANON_1]);
 });
 
 afterAll(async () => {
@@ -45,6 +46,15 @@ afterAll(async () => {
 });
 
 describe("Querying kanbans", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllMeets();
+    await testManager.deleteAllKanbanCanons(); // deletes cards by CASCADE
+
+    await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_1 is the base for MEET_KANBAN_RAW_1 and 2
+    await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1
+    await testManager.addMeets([PAPERJS_WITH_KANBAN_CANON_1]);
+  });
+
   it("gets a kanban by id when logged in user matches kanban owner", async () => {
     await testManager
       .addKanbans([MEET_KANBAN_RAW_1])
@@ -101,6 +111,39 @@ describe("Querying kanbans", () => {
         expect(kanban).toMatchObject(MEET_KANBAN_RAW_1);
       });
   });
+  it("returns kanban on meet with kanbanCanonId of requesting user, if exists", async () => {
+    await testManager
+      .addKanbans([{ ...MEET_KANBAN_RAW_1, meetId: PAPERJS_WITH_KANBAN_CANON_1.id }])
+      .then(() =>
+        testManager
+          .getGraphQLResponse({
+            query: GET_MEET_QUERY,
+            variables: {
+              id: PAPERJS_WITH_KANBAN_CANON_1.id,
+            },
+            cookies: bobCookies,
+          })
+          .then(testManager.parseData),
+      )
+      .then(({ meet }) => {
+        expect(meet.kanban).toMatchObject(MEET_KANBAN_RAW_1);
+        expect(meet.kanban.userId).toMatch(BOB.id);
+      });
+  });
+  it("returns kanban: null on meet where requesting user does not have a kanban", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: GET_MEET_QUERY,
+        variables: {
+          id: PAPERJS_WITH_KANBAN_CANON_1.id,
+        },
+        cookies: bobCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ meet }) => {
+        expect(meet.kanban).toBe(null);
+      });
+  });
   it("throws a 'not authorized' error if currently logged in user tries to get a kanban they don't own by id", async () => {
     await testManager
       .addKanbans([{ ...MEET_KANBAN_RAW_1, userId: DORTHY.id }])
@@ -133,7 +176,7 @@ describe("Querying kanbans", () => {
   });
   it("throws an error if an admin attempts to retrieve a kanban without enough args", async () => {
     await testManager
-      .addKanbans([{ ...MEET_KANBAN_RAW_1 }])
+      .addKanbans([MEET_KANBAN_RAW_1])
       .then(() =>
         testManager.getErrorMessage({
           query: GET_KANBAN_QUERY,
