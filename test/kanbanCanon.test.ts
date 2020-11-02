@@ -238,7 +238,6 @@ describe("Editing kanbanCanons", () => {
 });
 
 describe("Deleting kanbanCanons", () => {
-  // Create a constant meet that will be edited and get its ID
   beforeEach(async () => {
     await testManager.addKanbanCanons([KANBAN_CANON_2]);
   });

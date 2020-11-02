@@ -4,6 +4,7 @@ import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
 import {
   CREATE_ISOLATED_KANBAN_INPUT,
   CREATE_KANBAN_MUTATION,
+  DELETE_KANBAN_MUTATION,
   GET_KANBANS_QUERY,
   GET_KANBAN_QUERY,
   ISOLATED_KANBAN_RAW_1,
@@ -46,15 +47,6 @@ afterAll(async () => {
 });
 
 describe("Querying kanbans", () => {
-  beforeEach(async () => {
-    await testManager.deleteAllMeets();
-    await testManager.deleteAllKanbanCanons(); // deletes cards by CASCADE
-
-    await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_1 is the base for MEET_KANBAN_RAW_1 and 2
-    await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1
-    await testManager.addMeets([PAPERJS_WITH_KANBAN_CANON_1]);
-  });
-
   it("gets a kanban by id when logged in user matches kanban owner", async () => {
     await testManager
       .addKanbans([MEET_KANBAN_RAW_1])
@@ -384,6 +376,68 @@ describe("Creating kanbans", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/kanbanCanonId/i);
+      });
+  });
+});
+
+describe("Deleting kanbans", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllKanbans();
+    await testManager.addKanbans([ISOLATED_KANBAN_RAW_1]);
+  });
+
+  it("deletes a kanban successfully when owner requests deletion", async () => {
+    await testManager
+      .getGraphQLData({ query: GET_KANBANS_QUERY, cookies: adminCookies })
+      .then(({ kanbans }) => expect(kanbans).toHaveLength(1));
+
+    await testManager
+      .getGraphQLData({
+        query: DELETE_KANBAN_MUTATION,
+        variables: { id: ISOLATED_KANBAN_RAW_1.id },
+        cookies: bobCookies,
+      })
+      .then(({ deleteKanban }) => {
+        expect(deleteKanban).toBe(true);
+      });
+
+    await testManager
+      .getGraphQLData({ query: GET_KANBANS_QUERY, cookies: adminCookies })
+      .then(({ kanbans }) => expect(kanbans).toHaveLength(0));
+  });
+  it("allows an admin to delete a kanban of another users", async () => {
+    await testManager
+      .getGraphQLData({
+        query: DELETE_KANBAN_MUTATION,
+        variables: { id: ISOLATED_KANBAN_RAW_1.id },
+        cookies: adminCookies,
+      })
+      .then(({ deleteKanban }) => {
+        expect(deleteKanban).toBe(true);
+      });
+  });
+  it("returns an 'unauthorized' error message when deleting a kanban owned by another user without admin cookies", async () => {
+    await testManager.addKanbans([MEET_KANBAN_RAW_2]); // owned by Dorthy
+    await testManager
+      .getErrorMessage({
+        query: DELETE_KANBAN_MUTATION,
+        variables: { id: MEET_KANBAN_RAW_2.id },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      });
+  });
+
+  it("gives an error message from validator when the id of the meet does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: DELETE_KANBAN_MUTATION,
+        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
       });
   });
 });

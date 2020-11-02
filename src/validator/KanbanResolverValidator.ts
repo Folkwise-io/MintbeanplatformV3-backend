@@ -46,6 +46,8 @@ export default class KanbanResolverValidator {
       .then((kanban) => (kanbanOwnerId = kanban.userId));
 
     // only admin can get kanbans of other users
+    console.log({ currUserId });
+    console.log({ kanbanOwnerId });
     if (currUserId !== kanbanOwnerId && !isAdmin)
       throw new AuthenticationError("You are not authorized to view other kanbans of other users!");
 

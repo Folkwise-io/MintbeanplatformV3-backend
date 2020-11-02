@@ -94,3 +94,9 @@ export const CREATE_KANBAN_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_KANBAN_MUTATION = gql`
+  mutation deleteKanban($id: UUID!) {
+    deleteKanban(id: $id)
+  }
+`;
