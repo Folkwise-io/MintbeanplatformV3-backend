@@ -86,21 +86,21 @@ Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` 
 
 ### NPM Scripts Reference
 
-| Script      | Description                                                                                        |
-| ----------- | -------------------------------------------------------------------------------------------------- |
-| `start`     | Starts the server with `ts-node`                                                                   |
-| `dev`       | Starts the server with `ts-node` & hot-reload                                                      |
-| `build`     | Builds `*.ts` in `./src` to `*.js` in `./build`                                                    |
-| `db:reset`  | Drops and recreates all databases, nuking all the tables                                           |
-| `gen-types` | See [above](#auto-generating-typescript-types)                                                     |
-| `knex`      | Runs knex cli tools for migration/seeds, using the default database specified in `.env`            |
-| `knex:test` | Runs knex cli tools for migration/seeds, using the test database (specified in `./test/.env.test`) |
-| `postgres`  | Starts the Postgres docker container                                                               |
-| `pristine`  | Runs `db:reset` then runs all the migrations and seeds on both the dev and test databases.         |
-| `psql`      | Enters the psql CLI in the docker container                                                        |
-| `tdd`       | Runs the tests in watch mode for a TDD workflow                                                    |
-| `test`      | Runs the tests once and generates a coverage report                                                |
-| `dump:prod` | Dumps production backups into `db/backups/*`                                                       |
+| Script      | Description                                                                                                                         |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `start`     | Starts the server with `ts-node`                                                                                                    |
+| `dev`       | Starts the server with `ts-node` & hot-reload                                                                                       |
+| `build`     | Builds `*.ts` in `./src` to `*.js` in `./build`                                                                                     |
+| `db:reset`  | Drops and recreates all databases, nuking all the tables                                                                            |
+| `gen-types` | See [above](#auto-generating-typescript-types)                                                                                      |
+| `knex`      | Runs knex cli tools for migration/seeds, using the default database specified in `.env`                                             |
+| `knex:test` | Runs knex cli tools for migration/seeds, using the test database (specified in `./test/.env.test`)                                  |
+| `postgres`  | Starts the Postgres docker container                                                                                                |
+| `pristine`  | Runs `db:reset` then runs all the migrations and seeds on both the dev and test databases.                                          |
+| `psql`      | Enters the psql CLI in the docker container                                                                                         |
+| `tdd`       | Runs the tests in watch mode for a TDD workflow                                                                                     |
+| `test`      | Runs the tests once and generates a coverage report                                                                                 |
+| `dump:prod` | Dumps production backups into `db/backups/*`. Note: You must be able to SSH to production with the command `ssh MintbeanProduction` |
 
 ### Knex CLI Reference
 
@@ -115,6 +115,21 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
 | `seed:make <name>`       | Makes an empty seed file in `./src/db/seed`                                                       |
 
 ---
+
+### Backups
+
+Backups can be run on a developer's local machine using `yarn dump:prod` from the root directory of this project.
+
+The developer must be able to run the command `ssh MintbeanProduction`, which means a valid SSH key must be registered against the production server AND the developer must register an SSH config in the `~/.ssh/config` file. For example:
+
+```
+# ~/.ssh/config
+
+Host MintbeanProduction
+    HostName 15.222.214.204
+    User ubuntu
+    IdentityFile ~/.ssh/MintbeanV2Prod
+```
 
 ## Api Reference
 
