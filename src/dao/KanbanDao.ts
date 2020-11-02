@@ -1,6 +1,6 @@
 // A "Kanban" is pieced together by kanbanCanon and kanbanSession data from the DB to build a personalized view of a kanban
 
-import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs } from "../service/KanbanService";
+import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
 import { Kanban } from "../types/gqlGeneratedTypes";
 
 // for adding many kanbans in test manager
@@ -16,7 +16,7 @@ export interface KanbanSessionRaw {
 export default interface KanbanDao {
   getOne(args: KanbanServiceGetOneArgs): Promise<Kanban>;
   getMany(args: KanbanServiceGetManyArgs): Promise<Kanban[]>;
-  //   addOne(args: KanbanServiceAddOneArgs): Promise<Kanban>;
+  addOne(args: KanbanServiceAddOneInput): Promise<Kanban>;
 
   // Testing methods for TestManager to call
   addMany(kanbans: KanbanSessionRaw[]): Promise<void>;

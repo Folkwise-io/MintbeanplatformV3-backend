@@ -1,12 +1,21 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
+import KanbanCanonDao from "../dao/KanbanCanonDao";
 import KanbanDao from "../dao/KanbanDao";
+import MeetDao from "../dao/MeetDao";
+import UserDao from "../dao/UserDao";
 import { KanbanServiceGetManyArgs, KanbanServiceGetOneArgs } from "../service/KanbanService";
-import { Kanban } from "../types/gqlGeneratedTypes";
+import { Kanban, KanbanCanon, Meet, MutationCreateKanbanArgs } from "../types/gqlGeneratedTypes";
+import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
 
 export default class KanbanResolverValidator {
-  constructor(private kanbanDao: KanbanDao) {}
+  constructor(
+    private kanbanDao: KanbanDao,
+    private kanbanCanonDao: KanbanCanonDao,
+    private userDao: UserDao,
+    private meetDao: MeetDao,
+  ) {}
 
   async getOne(args: KanbanServiceGetOneArgs, context: ServerContext): Promise<KanbanServiceGetOneArgs> {
     const isLoggedIn = !!context.getUserId();
@@ -47,13 +56,23 @@ export default class KanbanResolverValidator {
     return args;
   }
 
-  //   async addOne(
-  //     { input }: MutationCreateKanbanArgs,
-  //     _context: ServerContext,
-  //   ): Promise<KanbanServiceAddOneInput> {
-  //     //TODO: Validate createKanban args
-  //     return input;
-  //   }
+  async addOne({ input }: MutationCreateKanbanArgs, context: ServerContext): Promise<MutationCreateKanbanArgs> {
+    const { kanbanCanonId, userId, meetId } = input;
+    if (!context.getUserId()) {
+      throw new UserInputError("You must be logged in to create a kanban!");
+    }
+    // ensure kanbanCanon  exists
+    await this.kanbanCanonDao
+      .getOne({ id: kanbanCanonId })
+      .then((kanbanCanon) => ensureExists<KanbanCanon>("Kanban Canon")(kanbanCanon));
+    // ensure user exists
+    await this.userDao.getOne({ id: userId }).then((user) => ensureExists<User>("User")(user));
+    // ensure meet exists (if passed in input)
+    if (meetId) {
+      await this.meetDao.getOne({ id: meetId }).then((meet) => ensureExists<Meet>("Meet")(meet));
+    }
+    return { input };
+  }
 
   //   async editOne(
   //     { id, input }: MutationEditKanbanArgs,

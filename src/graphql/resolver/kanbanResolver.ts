@@ -14,31 +14,29 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
       },
     },
 
-    // Mutation: {
-    //   createMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-    //     if (!context.getIsAdmin()) {
-    //       throw new AuthenticationError("You are not authorized to create new meets!");
-    //     }
+    Mutation: {
+      createKanban: (_root, args, context: ServerContext): Promise<Kanban> => {
+        // add userId to args.input from context
+        // args.input.userId = context.getUserId();
+        return kanbanResolverValidator.addOne(args, context).then(({ input }) => kanbanService.addOne(input));
+      },
+      //   editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
+      //     if (!context.getIsAdmin()) {
+      //       throw new AuthenticationError("You are not authorized to edit meets!");
+      //     }
 
-    //     return kanbanResolverValidator.addOne(args, context).then((input) => meetService.addOne(input));
-    //   },
-    //   editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-    //     if (!context.getIsAdmin()) {
-    //       throw new AuthenticationError("You are not authorized to edit meets!");
-    //     }
+      //     return kanbanResolverValidator
+      //       .editOne(args, context)
+      //       .then(({ id, input }) => meetService.editOne(id, input));
+      //   },
+      //   deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
+      //     if (!context.getIsAdmin()) {
+      //       throw new AuthenticationError("You are not authorized to delete meets!");
+      //     }
 
-    //     return kanbanResolverValidator
-    //       .editOne(args, context)
-    //       .then(({ id, input }) => meetService.editOne(id, input));
-    //   },
-    //   deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
-    //     if (!context.getIsAdmin()) {
-    //       throw new AuthenticationError("You are not authorized to delete meets!");
-    //     }
-
-    //     return kanbanResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
-    //   },
-    // },
+      //     return kanbanResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
+      //   },
+    },
 
     Meet: {
       kanban: (meet, context, c) => {

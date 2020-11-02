@@ -2,7 +2,7 @@ import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanDao, { KanbanSessionRaw } from "./KanbanDao";
 import { Kanban } from "../types/gqlGeneratedTypes";
-import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs } from "../service/KanbanService";
+import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
 import { prefixKeys } from "../util/prefixKeys";
 
 // type KanbanQueryTypes = KanbanServiceGetOneArgs | KanbanServiceGetManyArgs;
@@ -73,21 +73,21 @@ export default class KanbanDaoKnex implements KanbanDao {
     });
   }
 
-  //   async addOne(args: KanbanServiceAddOneArgs): Promise<Kanban> {
-  //     return handleDatabaseError(async () => {
-  //       const insertedKanbans = (await this.knex<Kanban>("kanbans")
-  //         .insert(args)
-  //         .returning("*")) as Kanban[];
-  //       return insertedKanbans[0];
-  //     });
-  //   }
+  async addOne(args: KanbanServiceAddOneInput): Promise<Kanban> {
+    return handleDatabaseError(async () => {
+      const insertedKanbans = (await this.knex("kanbanSessions").insert(args).returning("*")) as KanbanSessionRaw[];
+      const newKanban = insertedKanbans[0];
+      // Re-fetch from db by id to get composed kanban
+      return await this.getOne({ id: newKanban.id }).then((kb) => kb);
+    });
+  }
 
   // Testing methods below, for TestManager to call
   async addMany(kanbans: KanbanSessionRaw[]): Promise<void> {
-    return this.knex<Kanban>("kanbanSessions").insert(kanbans);
+    return this.knex("kanbanSessions").insert(kanbans);
   }
 
   async deleteAll(): Promise<void> {
-    return this.knex<Kanban>("kanbanSessions").delete();
+    return this.knex("kanbanSessions").delete();
   }
 }

@@ -585,6 +585,7 @@ export type CreateKanbanInput = {
   kanbanCanonId: Scalars['UUID'];
   /** Id of the user that owns this kanban view */
   userId: Scalars['UUID'];
+  /** (Optional) Id of the meet this kanban belongs to */
   meetId?: Maybe<Scalars['UUID']>;
 };
 

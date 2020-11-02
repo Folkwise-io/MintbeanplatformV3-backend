@@ -36,6 +36,7 @@ const kanban = gql`
     kanbanCanonId: UUID!
     "Id of the user that owns this kanban view"
     userId: UUID!
+    "(Optional) Id of the meet this kanban belongs to"
     meetId: UUID
   }
 
