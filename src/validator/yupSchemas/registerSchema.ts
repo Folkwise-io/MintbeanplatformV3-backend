@@ -1,11 +1,6 @@
 import * as yup from "yup";
 
 const registerSchema = yup.object().shape({
-  username: yup
-    .string()
-    .min(2, "Username is too short!")
-    .max(32, "Username can be a maximum of 32 characters!")
-    .required("Username required!"),
   firstName: yup
     .string()
     .min(1, "First name is too short!")

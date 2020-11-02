@@ -7,11 +7,9 @@ import { getCurrentUnixTime } from "./src/util";
 import {
   AMY,
   AMY_CREDENTIALS,
-  BAD_USERNAME_QUERY,
-  BAD_UUID_QUERY,
   BOB,
   GET_ALL_USERS_QUERY,
-  GET_ONE_QUERY,
+  GET_USER_QUERY,
   LOGIN,
   LOGIN_MUTATION_WITH_TOKEN,
   LOGOUT,
@@ -19,7 +17,7 @@ import {
   NEW_USER_INPUT,
   REGISTER,
 } from "./src/userConstants";
-import { User } from "../src/types/gqlGeneratedTypes";
+import { User } from "../src/types/User";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();
@@ -29,18 +27,9 @@ beforeEach(async () => {
 });
 
 describe("GraphQL built-in validation", () => {
-  it("throws an error when you pass in a username that's not a string", async () => {
-    await testManager
-      .getGraphQLResponse({ query: BAD_USERNAME_QUERY })
-      .then(testManager.parseError)
-      .then((error) => {
-        expect(error.message).toContain("string");
-      });
-  });
-
   it("throws an error when you pass in an ID that is not a UUID", async () => {
     await testManager
-      .getGraphQLResponse({ query: BAD_UUID_QUERY })
+      .getGraphQLResponse({ query: GET_USER_QUERY, variables: { id: "abc" } })
       .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toContain("UUID");
@@ -52,28 +41,38 @@ describe("Querying users", () => {
   it("gets one user by ID", async () => {
     await testManager
       .addUsers([AMY, BOB])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ONE_QUERY }))
+      .then(() =>
+        testManager.getGraphQLResponse({
+          query: GET_USER_QUERY,
+          variables: { id: AMY.id },
+        }),
+      )
       .then(testManager.parseData)
       .then(({ user }) => {
         expect(AMY).toMatchObject(user);
       });
   });
 
-  it("gets all the users", async () => {
-    await testManager
-      .addUsers([AMY, BOB])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ALL_USERS_QUERY }))
-      .then(testManager.parseData)
-      .then(({ users }) => {
-        expect(users).toHaveLength(2);
-        expect([AMY, BOB]).toMatchObject(users);
-      });
-  });
+  // it("gets all the users", async () => {
+  //   await testManager
+  //     .addUsers([AMY, BOB])
+  //     .then(() => testManager.getGraphQLResponse({ query: GET_ALL_USERS_QUERY }))
+  //     .then(testManager.parseData)
+  //     .then(({ users }) => {
+  //       expect(users).toHaveLength(2);
+  //       expect([AMY, BOB]).toMatchObject(users);
+  //     });
+  // });
 
   it("gets no users when ID doesn't exist", async () => {
     await testManager
       .addUsers([])
-      .then(() => testManager.getGraphQLResponse({ query: GET_ONE_QUERY }))
+      .then(() =>
+        testManager.getGraphQLResponse({
+          query: GET_USER_QUERY,
+          variables: { id: AMY.id },
+        }),
+      )
       .then(testManager.parseDataAndErrors)
       .then(({ data, errors }) => {
         expect(data.user).toBeNull();
@@ -248,19 +247,12 @@ describe("User registration", () => {
       })
       .then(testManager.parseData)
       .then(({ login }) => {
-        expect(login.username).toBe(NEW_USER_INPUT.username);
+        expect(login.firstName).toBe(NEW_USER_INPUT.firstName);
       });
   });
 
   it("returns an appropriate error message when a user violates length constraints", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
-
-    await testManager
-      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, username: "a" } } })
-      .then(testManager.parseError)
-      .then((error) => {
-        expect(error.message).toMatch(/username/i);
-      });
 
     await testManager
       .getGraphQLResponse({
@@ -310,22 +302,11 @@ describe("User registration", () => {
       });
   });
 
-  it("returns an appropriate error message when a user registers with the same username", async () => {
-    await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
-
-    await testManager
-      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, email: "new@new.com" } } })
-      .then(testManager.parseError)
-      .then((error) => {
-        expect(error.message).toMatch(/username/i);
-      });
-  });
-
   it("returns an appropriate error message when a user registers with the same email", async () => {
     await testManager.getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } });
 
     await testManager
-      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT, username: "newuser" } } })
+      .getGraphQLResponse({ query: REGISTER, variables: { input: { ...NEW_USER_INPUT } } })
       .then(testManager.parseError)
       .then((error) => {
         expect(error.message).toMatch(/email/i);

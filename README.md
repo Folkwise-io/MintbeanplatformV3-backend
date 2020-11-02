@@ -36,10 +36,12 @@ _[Docker](https://docs.docker.com/get-docker/) must be installed and running for
 
 2. Run `cp .env.development .env` to use default development database variables during development.
 
-3. Run `yarn pristine`, which resets the database and runs the migrations and seeds.
+3. Run `yarn pristine`, which resets the database and runs the migrations and seeds. You will need to re-run this command when the database schema is changed.
    **Warning: all existing data in the database will be lost!**
 
-- Access the PostgreSQL CLI with `yarn psql`. All column names that are in camelCase need double quotation marks when used in raw SQL queries (i.e. `SELECT body, "userId" from posts;`).
+- You can access the PostgreSQL CLI with `yarn psql`. All column names that are in camelCase need double quotation marks when used in raw SQL queries (i.e. `SELECT body, "userId" from posts;`).
+
+- If you want to, you can run postgres on your host machine and point to the port (usually 5432) in `.env`. If you do so, **you must configure postgres to use the UTC timezone (by editing `.conf` and restarting the postgres process)!** The docker postgres and most servers use UTC by default so it's not a problem, but your local postgres may be configured in your local timezone. If your postgres is not set to UTC, you will get a nasty bug when editing/creating Meets!
 
 ### Development workflow
 
@@ -49,10 +51,10 @@ _[Docker](https://docs.docker.com/get-docker/) must be installed and running for
 
 #### Auto-generating TypeScript types
 
-Running `yarn gen-types` auto-generates a TypeScript definition file using `graphql-codegen`. The tool reads the schema file in `./src/graphql/schema.ts` and outputs TypeScript definitions in `./src/graphql/generated/tsTypes.d.ts`. You may then import types directly from that file, such as:
+Running `yarn gen-types` auto-generates a TypeScript definition file using `graphql-codegen`. The tool reads the schema file in `./src/graphql/schema.ts` and outputs TypeScript definitions in `./src/graphql/generated/tsTypes.ts`. You may then import types directly from that file, such as:
 
 ```ts
-import { User } from "./generated/tsTypes";
+ from "./generated/tsTypes";
 ```
 
 Resolvers are also automatically typed, i.e:
@@ -118,4 +120,11 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
 
 ## Api Reference
 
-TODO
+1. [Setting up the local database](#setting-up-the-local-database)
+2. Run `yarn start`.
+3. Navigate to `localhost:4000/graphql` on your browser to use the GraphQL playground (`NODE_ENV` must not be set to `production`).
+4. Click `DOCS` tab on the right side to explore the API reference.
+   ![](docs/graphql_playground.png)
+   <br>
+5. Click through the definitions to explore them in more detail:
+   ![](docs/graphql_playground_detailed.png)

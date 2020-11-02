@@ -1,10 +1,10 @@
 import { gql } from "apollo-server-express";
-import { User, UserRegistrationInput } from "../../src/types/gqlGeneratedTypes";
+import { UserRegistrationInput } from "../../src/types/gqlGeneratedTypes";
+import { User } from "../../src/types/User";
 
 // Will use generator factory / faker once more entities are added
 export const AMY: User = {
   id: "00000000-0000-0000-0000-000000000000",
-  username: "aadams",
   email: "a@a.com",
   passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
   firstName: "Amy",
@@ -21,7 +21,6 @@ export const AMY_CREDENTIALS = {
 
 export const BOB: User = {
   id: "00000000-0000-4000-a000-000000000000",
-  username: "bbarker",
   email: "b@b.com",
   passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
   firstName: "Bob",
@@ -36,27 +35,9 @@ export const BOB_CREDENTIALS = {
   password: "password",
 };
 
-export const BAD_USERNAME_QUERY = gql`
-  query badUserName {
-    user(username: 5) {
-      firstName
-      lastName
-    }
-  }
-`;
-
-export const BAD_UUID_QUERY = gql`
-  query badUserId {
-    user(id: "000000") {
-      firstName
-      lastName
-    }
-  }
-`;
-
-export const GET_ONE_QUERY = gql`
-  query getOneUser {
-    user(id: "00000000-0000-0000-0000-000000000000") {
+export const GET_USER_QUERY = gql`
+  query getOneUser($id: UUID!) {
+    user(id: $id) {
       firstName
       lastName
     }
@@ -75,8 +56,9 @@ export const GET_ALL_USERS_QUERY = gql`
 export const LOGIN = gql`
   mutation login($email: String!, $password: String!) {
     login(email: $email, password: $password) {
+      firstName
       id
-      username
+      email
     }
   }
 `;
@@ -93,7 +75,6 @@ export const ME_QUERY = gql`
   query me {
     me {
       id
-      username
     }
   }
 `;
@@ -105,7 +86,6 @@ export const LOGOUT = gql`
 `;
 
 export const NEW_USER_INPUT: UserRegistrationInput = {
-  username: "ddevito",
   email: "d@d.com",
   firstName: "Danny",
   lastName: "DeVito",
@@ -117,7 +97,6 @@ export const REGISTER = gql`
   mutation register($input: UserRegistrationInput!) {
     register(input: $input) {
       id
-      username
       firstName
       lastName
       isAdmin

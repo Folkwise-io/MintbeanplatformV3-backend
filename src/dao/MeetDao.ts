@@ -1,8 +1,8 @@
 import { Meet } from "../types/gqlGeneratedTypes";
-import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
+import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs, MeetServiceGetOneArgs } from "../service/MeetService";
 
 export default interface MeetDao {
-  getOne(args: UserServiceGetOneArgs): Promise<Meet>;
+  getOne(args: MeetServiceGetOneArgs): Promise<Meet>;
   getMany(args: MeetServiceGetManyArgs): Promise<Meet[]>;
   addOne(args: MeetServiceAddOneInput): Promise<Meet>;
   editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet>;

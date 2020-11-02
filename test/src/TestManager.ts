@@ -11,11 +11,13 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { MediaAsset, Meet, Project, User } from "../../src/types/gqlGeneratedTypes";
+import { MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
+import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
-import ProjectMediaAsset from "../../src/types/projectMediaAsset";
+import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
+import MeetRegistration from "../../src/types/MeetRegistration";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -74,6 +76,11 @@ export default class TestManager {
   addProjectMediaAssets(projectMediaAssets: ProjectMediaAsset[]): Promise<void> {
     return this.params.persistenceContext.projectMediaAssetDao.addMany(projectMediaAssets);
   }
+
+  addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void>{
+    return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
+  }
+
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }
@@ -88,6 +95,10 @@ export default class TestManager {
 
   deleteAllMediaAssets() {
     return this.params.persistenceContext.mediaAssetDao.deleteAll();
+  }
+
+  deleteAllMeetRegistrations(){
+    return this.params.persistenceContext.meetRegistrationDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {

@@ -1,4 +1,5 @@
-import { QueryUserArgs, User, MutationLoginArgs, MutationRegisterArgs } from "../types/gqlGeneratedTypes";
+import { QueryUserArgs, MutationLoginArgs, MutationRegisterArgs } from "../types/gqlGeneratedTypes";
+import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
 import { UserServiceAddOneArgs, UserServiceGetOneArgs, UserServiceLoginArgs } from "../service/UserService";
 import UserDao from "../dao/UserDao";
@@ -21,20 +22,15 @@ export default class UserResolverValidator {
     return this.userDao
       .getOne(args)
       .then((user) => ensureExists<User>("User")(user))
-      .then(({ id, username, email }) => ({ id, username, email }));
+      .then(({ id, email }) => ({ id, email }));
   }
 
   async addOne({ input }: MutationRegisterArgs): Promise<UserServiceAddOneArgs> {
-    const { username, firstName, lastName, email, password, passwordConfirmation } = input;
+    const { firstName, lastName, email, password } = input;
     try {
       registerSchema.validateSync(input);
     } catch (e) {
       throw new UserInputError(e.message);
-    }
-
-    const userWithSameUsername = await this.userDao.getOne({ username });
-    if (userWithSameUsername) {
-      throw new ApolloError("Username taken!");
     }
 
     const userWithSameEmail = await this.userDao.getOne({ email });
@@ -42,7 +38,7 @@ export default class UserResolverValidator {
       throw new ApolloError("Email taken!");
     }
 
-    return { username, firstName, lastName, email, password };
+    return { firstName, lastName, email, password };
   }
 
   async login({ email, password }: MutationLoginArgs, context: ServerContext): Promise<UserServiceLoginArgs> {

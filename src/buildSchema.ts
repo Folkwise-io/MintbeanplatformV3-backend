@@ -13,6 +13,9 @@ import project from "./graphql/typedef/project";
 import projectResolver from "./graphql/resolver/projectResolver";
 import mediaAsset from "./graphql/typedef/mediaAsset";
 import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
+import meetRegistration from "./graphql/typedef/meetRegistration";
+import email from "./graphql/typedef/email";
+import emailResolver from "./graphql/resolver/emailResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -25,14 +28,18 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     mediaAssetResolverValidator,
     mediaAssetService,
     projectMediaAssetService,
+    meetRegistrationService,
+    emailResolverValidator,
+    emailService
   } = resolverContext;
-  const typeDefs = [customScalars, user, post, meet, project, mediaAsset];
+  const typeDefs = [customScalars, user, post, meet, project, mediaAsset, meetRegistration, email];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService),
-    meetResolver(meetResolverValidator, meetService),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationService, userService, emailService),
     projectResolver(projectResolverValidator, projectService, mediaAssetService, projectMediaAssetService),
     mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
+    emailResolver(emailResolverValidator, emailService, meetService),
     postResolver,
   ];
 

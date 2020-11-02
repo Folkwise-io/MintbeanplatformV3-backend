@@ -5,7 +5,6 @@ import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
 import ProjectMediaAssetService, { ProjectMediaAssetServiceAddOneArgs } from "../../service/ProjectMediaAssetService";
-import ProjectMediaAsset from "../../types/projectMediaAsset";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
@@ -21,7 +20,13 @@ const projectResolver = (
       },
     },
 
-    User: {
+    PublicUser: {
+      projects: (user, context) => {
+        return projectService.getMany({ userId: user.id }, context);
+      },
+    },
+
+    PrivateUser: {
       projects: (user, context) => {
         return projectService.getMany({ userId: user.id }, context);
       },
