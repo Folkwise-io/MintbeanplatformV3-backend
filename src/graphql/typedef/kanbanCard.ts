@@ -24,10 +24,19 @@ const kanbanCard = gql`
   }
 
   extend type Query {
-    "Get a kanban card by ID"
-    kanbanCard(id: UUID!): KanbanCard
     "Gets all the kanban cards for a given kanban"
     kanbanCards(kanbanId: UUID!): [KanbanCard]
+  }
+
+  type UpdateKanbanCardInput {
+    kanbanCanonCardId: UUID!
+    kanbanId: UUID!
+    "The column this card belongs in: TODO, WIP or DONE"
+    status: KanbanCanonCardStatusEnum!
+  }
+  extend type Mutation {
+    "Updates a kanbanCard"
+    updateKanbanCard(input: UUID!): [KanbanCard]
   }
 `;
 

@@ -13,8 +13,8 @@ export interface KanbanSessionCardRaw {
 
 export default interface KanbanCardDao {
   getMany(args: KanbanCardServiceGetManyArgs): Promise<KanbanCard[]>;
-  // getOne(args: KanbanCardServiceGetOneArgs): Promise<KanbanCard>;
-  // addOne(args: KanbanCardServiceAddOneArgs): Promise<KanbanCard>;
+  updateOne(input: KanbanCardServiceUpdateOneInput): Promise<KanbanCard>;
+  // addOne(args: KanbanCardServiceAddOneInput): Promise<KanbanCard>;
   // Testing methods for TestManager to call
   addMany(kanbanCards: KanbanSessionCardRaw[]): Promise<void>;
   deleteAll(): Promise<void>;
