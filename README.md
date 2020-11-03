@@ -15,8 +15,9 @@
   - [NPM Scripts Reference](#npm-scripts-reference)
   - [Knex CLI Reference](#knex-cli-reference)
 - [Api Reference](#api-reference)
-
-<!-- /code_chunk_output -->
+- [Features](#features)
+  - [Kanban](#kanban)
+  <!-- /code_chunk_output -->
 
 ## Installation
 
@@ -128,3 +129,17 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
    <br>
 5. Click through the definitions to explore them in more detail:
    ![](docs/graphql_playground_detailed.png)
+
+## Features
+
+### Kanban
+
+The kanban is a workflow board with status columns and card items that can be moved between those columns. We currently have three available status columns: `TODO`, `WIP` and `DONE`.
+
+There are two important entities to be aware of: `KanbanCanon` and `Kanban`.
+
+**KanbanCanon** is the "master" kanban maintained by an admin, with a title, decscription and master `KanbanCanonCards`
+
+**Kanban** is the individualized view of a kanban for a given user. It contains `kanbanCards` that persist their position after the user has moved them. `kanbanCard`s are stiteched together from canoncial and session (individual) data in the db
+
+![image](https://user-images.githubusercontent.com/9841162/98052044-06e29f00-1dea-11eb-91a6-8c698debf421.png)
