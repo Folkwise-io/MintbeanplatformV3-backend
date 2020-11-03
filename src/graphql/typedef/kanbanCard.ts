@@ -3,7 +3,7 @@ import { gql } from "apollo-server-express";
 const kanbanCard = gql`
   "A kanban card on a kanban. Holds personalized positioning data."
   type KanbanCard {
-    "ID of the kanban card in UUID"
+    "Id of the kanban card in UUID. Matches the id of the kanban canon card this card is based off of"
     id: UUID!
     title: String!
     "A markdown body of the kanban card content"

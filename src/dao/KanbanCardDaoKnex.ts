@@ -2,7 +2,12 @@ import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCardDao, { KanbanSessionCardRaw } from "./KanbanCardDao";
 import { KanbanCanonCardStatusEnum, KanbanCard } from "../types/gqlGeneratedTypes";
-import { KanbanCardServiceGetManyArgs, KanbanCardServiceUpdateOneInput } from "../service/KanbanCardService";
+import {
+  KanbanCardServiceGetManyArgs,
+  KanbanCardServiceGetOneArgs,
+  KanbanCardServiceUpdateOneInput,
+} from "../service/KanbanCardService";
+import { KanbanCanonServiceGetOneArgs } from "../service/KanbanCanonService";
 
 const GET_MANY_QUERY = `
   SELECT 
@@ -25,11 +30,6 @@ const GET_MANY_QUERY = `
 
 const GET_ONE_QUERY = GET_MANY_QUERY + ` AND "kanbanCanonCards"."id" = :kanbanCanonCardId LIMIT 1`;
 
-interface KanbanCanonDaoGetOneArgs {
-  id: string;
-  kanbanId: string;
-}
-
 export default class KanbanCardDaoKnex implements KanbanCardDao {
   constructor(private knex: Knex) {}
 
@@ -42,7 +42,7 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
     });
   }
 
-  async _getOne(args: KanbanCanonDaoGetOneArgs): Promise<KanbanCard> {
+  async getOne(args: KanbanCardServiceGetOneArgs): Promise<KanbanCard> {
     return handleDatabaseError(async () => {
       const { kanbanId, id } = args;
       const queryResult = await this.knex.raw(GET_ONE_QUERY, {
@@ -51,15 +51,15 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
         deleted: false,
       });
 
+      console.log(queryResult.rows);
+
       return queryResult.rows;
     });
   }
 
-  async updateOne(input: KanbanCardServiceUpdateOneInput): Promise<KanbanCard> {
+  async upsertOne(input: KanbanCardServiceUpdateOneInput): Promise<void> {
     return handleDatabaseError(async () => {
       const { kanbanId, id, status } = input;
-      console.log({ status });
-      // Upsert kanban session card when update requested
       await this.knex.raw(
         `
         INSERT INTO "kanbanSessionCards" ("kanbanSessionId", "kanbanCanonCardId", "status")
@@ -68,8 +68,6 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
         SET "status" = :status`,
         { kanbanSessionId: kanbanId, kanbanCanonCardId: id, status },
       );
-      // refetch from db to get composed card
-      return this._getOne({ id, kanbanId }).then((kbc) => kbc);
     });
   }
 
