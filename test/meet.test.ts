@@ -43,7 +43,7 @@ describe("Querying meets", () => {
         expect(meet).toMatchObject(PAPERJS);
       });
   });
-  it("gets a meet by id with kanbanCanon if provided", async () => {
+  it.only("gets a meet by id with kanbanCanon if provided", async () => {
     const MEET_WITH_KANBAN_CANON = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1.id };
     await testManager.addKanbanCanons([KANBAN_CANON_1]);
     await testManager
@@ -59,7 +59,6 @@ describe("Querying meets", () => {
         expect(meet.kanbanCanon).not.toBe(null);
       });
   });
-
   it("gets all meets in order of descending startTime", async () => {
     await testManager
       .addMeets([PAPERJS, ALGOLIA])
@@ -70,7 +69,6 @@ describe("Querying meets", () => {
         expect(meet1.startTime > meet2.startTime).toBe(true);
       });
   });
-
   it("returns empty array if there are no meets", async () => {
     await testManager
       .addMeets([])
@@ -79,7 +77,6 @@ describe("Querying meets", () => {
         expect(meets).toHaveLength(0);
       });
   });
-
   it("does not retrieve deleted meets", async () => {
     await testManager
       .addMeets([PAPERJS, { ...ALGOLIA, deleted: true } as any])
@@ -109,7 +106,6 @@ describe("Creating meets", () => {
         expect(createMeet).toMatchObject(NEW_MEET_INPUT);
       });
   });
-
   it("returns an 'unauthorized' error message when creating a meet without admin cookies", async () => {
     await testManager
       .getErrorMessage({ query: CREATE_MEET, variables: { input: NEW_MEET_INPUT } })
@@ -117,7 +113,6 @@ describe("Creating meets", () => {
         expect(errorMessage).toMatch(/[(not |un)]authorized/i);
       });
   });
-
   it("returns an appropriate error message when a field is missing", async () => {
     await testManager
       .getErrorMessage({
@@ -129,7 +124,6 @@ describe("Creating meets", () => {
         expect(errorMessage).toMatch(/description/i);
       });
   });
-
   it("returns an appropriate error message when a field is in wrong type", async () => {
     await testManager
       .getErrorMessage({
@@ -179,7 +173,6 @@ describe("Editing meets", () => {
         expect(editMeet.registerLink).toBe(EDIT_MEET_INPUT.registerLink);
       });
   });
-
   it("updates the updatedAt timestamp after editing a meet", async () => {
     // Check that createdAt is initially equal to updatedAt
     await testManager
@@ -196,7 +189,6 @@ describe("Editing meets", () => {
         expect(editMeet.createdAt < editMeet.updatedAt).toBe(true);
       });
   });
-
   it("returns an 'unauthorized' error message when editing a meet without admin cookies", async () => {
     await testManager
       .getErrorMessage({
@@ -208,7 +200,6 @@ describe("Editing meets", () => {
         expect(errorMessage).toMatch(/[(not |un)authorized]/i);
       });
   });
-
   it("gives an error message from validator when the id of the meet does not exist", async () => {
     await testManager
       .getErrorMessage({
@@ -220,7 +211,6 @@ describe("Editing meets", () => {
         expect(errorMessage).toMatch(/not exist/i);
       });
   });
-
   it("gives an error message when no edit fields are specified in the mutation", async () => {
     await testManager
       .getErrorMessage({
@@ -232,7 +222,6 @@ describe("Editing meets", () => {
         expect(errorMessage).toMatch(/field/i);
       });
   });
-
   it("gives an error message when trying to edit a non-existent field", async () => {
     await testManager
       .getErrorMessage({
@@ -244,7 +233,6 @@ describe("Editing meets", () => {
         expect(errorMessage).toMatch(/invalid/i);
       });
   });
-
   it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
     await testManager
       .getErrorMessage({
@@ -295,7 +283,6 @@ describe("Deleting meets", () => {
 
     await testManager.getGraphQLData({ query: GET_ALL_MEETS }).then(({ meets }) => expect(meets).toHaveLength(0));
   });
-
   it("returns an 'unauthorized' error message when deleting a meet without admin cookies", async () => {
     await testManager
       .getErrorMessage({
@@ -320,7 +307,6 @@ describe("Deleting meets", () => {
       });
   });
 });
-
 describe("Getting the registerLink and registerLinkStatus", () => {
   it("returns register link of null and status of closed if meet has ended", async () => {
     const pastMeet: Meet = {
@@ -337,7 +323,6 @@ describe("Getting the registerLink and registerLinkStatus", () => {
         expect(meet.registerLinkStatus).toBe(RegisterLinkStatus.Closed);
       });
   });
-
   it("returns a good register link and status of waiting if meet has not started", async () => {
     const futureMeet: Meet = {
       ...ALGOLIA,
@@ -354,7 +339,6 @@ describe("Getting the registerLink and registerLinkStatus", () => {
         expect(meet.registerLinkStatus).toBe(RegisterLinkStatus.Waiting);
       });
   });
-
   it("returns a good register link and status of open if meet is in progress", async () => {
     const currentMeet: Meet = {
       ...ALGOLIA,

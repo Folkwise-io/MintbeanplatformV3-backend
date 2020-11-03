@@ -33,6 +33,8 @@ const kanbanCanonResolver = (
 
     Meet: {
       kanbanCanon: (meet) => {
+        // return null if no kanbanCanon associated with this meet
+        if (!meet.kanbanCanonId) return null;
         return kanbanCanonService.getOne({ id: meet.kanbanCanonId });
       },
     },

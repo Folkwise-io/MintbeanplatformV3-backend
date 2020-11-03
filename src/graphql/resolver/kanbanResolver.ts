@@ -26,6 +26,10 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
 
     Meet: {
       kanban: (meet, _args, context) => {
+        // Return null if this meet does not have a kanbanCanon
+        if (!meet.kanbanCanonId) return null;
+        // Return null if no logged in user maing request kanbanCanon
+        if (!context.getUserId()) return null;
         // retrieve kanban of requesting user
         const requesterId = context.getUserId();
         return kanbanService.getOne({ meetId: meet.id, kanbanCanonId: meet.kanbanCanonId, userId: requesterId });
