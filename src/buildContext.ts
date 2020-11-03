@@ -136,7 +136,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const kanbanService = new KanbanService(kanbanDao);
   const kanbanResolverValidator = new KanbanResolverValidator(kanbanDao, kanbanCanonDao, userDao, meetDao);
   const kanbanCardService = new KanbanCardService(kanbanCardDao);
-  const kanbanCardResolverValidator = new KanbanCardResolverValidator(kanbanCardDao, kanbanDao);
+  const kanbanCardResolverValidator = new KanbanCardResolverValidator(kanbanCardDao, kanbanDao, kanbanCanonCardDao);
 
   const { sendGridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();

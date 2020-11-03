@@ -1,4 +1,4 @@
-import { KanbanCardServiceGetManyArgs } from "../service/KanbanCardService";
+import { KanbanCardServiceGetManyArgs, KanbanCardServiceUpdateOneInput } from "../service/KanbanCardService";
 import { KanbanCard } from "../types/gqlGeneratedTypes";
 
 // for adding many kanbans in test manager
@@ -14,7 +14,6 @@ export interface KanbanSessionCardRaw {
 export default interface KanbanCardDao {
   getMany(args: KanbanCardServiceGetManyArgs): Promise<KanbanCard[]>;
   updateOne(input: KanbanCardServiceUpdateOneInput): Promise<KanbanCard>;
-  // addOne(args: KanbanCardServiceAddOneInput): Promise<KanbanCard>;
   // Testing methods for TestManager to call
   addMany(kanbanCards: KanbanSessionCardRaw[]): Promise<void>;
   deleteAll(): Promise<void>;

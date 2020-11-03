@@ -213,7 +213,7 @@ export type Mutation = {
   createKanban: Kanban;
   deleteKanban: Scalars['Boolean'];
   /** Updates a kanbanCard */
-  updateKanbanCard?: Maybe<Array<Maybe<KanbanCard>>>;
+  updateKanbanCard?: Maybe<KanbanCard>;
 };
 
 
@@ -317,7 +317,7 @@ export type MutationDeleteKanbanArgs = {
 
 
 export type MutationUpdateKanbanCardArgs = {
-  input: Scalars['UUID'];
+  input: UpdateKanbanCardInput;
 };
 
 export type Post = {
@@ -608,8 +608,8 @@ export type KanbanCard = {
 };
 
 export type UpdateKanbanCardInput = {
-  __typename?: 'UpdateKanbanCardInput';
-  kanbanCanonCardId: Scalars['UUID'];
+  /** Id of the kaban card (note: this id is identical to the id of it's base kanban canon card) */
+  id: Scalars['UUID'];
   kanbanId: Scalars['UUID'];
   /** The column this card belongs in: TODO, WIP or DONE */
   status: KanbanCanonCardStatusEnum;
@@ -723,7 +723,7 @@ export type ResolversTypes = {
   Kanban: ResolverTypeWrapper<Kanban>;
   CreateKanbanInput: CreateKanbanInput;
   KanbanCard: ResolverTypeWrapper<KanbanCard>;
-  UpdateKanbanCardInput: ResolverTypeWrapper<UpdateKanbanCardInput>;
+  UpdateKanbanCardInput: UpdateKanbanCardInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -834,7 +834,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteKanbanCanonCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonCardArgs, 'id'>>;
   createKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationCreateKanbanArgs, 'input'>>;
   deleteKanban?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanArgs, 'id'>>;
-  updateKanbanCard?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType, RequireFields<MutationUpdateKanbanCardArgs, 'input'>>;
+  updateKanbanCard?: Resolver<Maybe<ResolversTypes['KanbanCard']>, ParentType, ContextType, RequireFields<MutationUpdateKanbanCardArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -940,13 +940,6 @@ export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
-export type UpdateKanbanCardInputResolvers<ContextType = any, ParentType extends ResolversParentTypes['UpdateKanbanCardInput'] = ResolversParentTypes['UpdateKanbanCardInput']> = {
-  kanbanCanonCardId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['KanbanCanonCardStatusEnum'], ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
-};
-
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -962,7 +955,6 @@ export type Resolvers<ContextType = any> = {
   KanbanCanonCard?: KanbanCanonCardResolvers<ContextType>;
   Kanban?: KanbanResolvers<ContextType>;
   KanbanCard?: KanbanCardResolvers<ContextType>;
-  UpdateKanbanCardInput?: UpdateKanbanCardInputResolvers<ContextType>;
 };
 
 

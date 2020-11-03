@@ -28,15 +28,16 @@ const kanbanCard = gql`
     kanbanCards(kanbanId: UUID!): [KanbanCard]
   }
 
-  type UpdateKanbanCardInput {
-    kanbanCanonCardId: UUID!
+  input UpdateKanbanCardInput {
+    "Id of the kaban card (note: this id is identical to the id of it's base kanban canon card)"
+    id: UUID!
     kanbanId: UUID!
     "The column this card belongs in: TODO, WIP or DONE"
     status: KanbanCanonCardStatusEnum!
   }
   extend type Mutation {
     "Updates a kanbanCard"
-    updateKanbanCard(input: UUID!): [KanbanCard]
+    updateKanbanCard(input: UpdateKanbanCardInput!): KanbanCard
   }
 `;
 
