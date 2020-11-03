@@ -46,6 +46,11 @@ export const BOB_CREDENTIALS = {
   password: "password",
 };
 
+export const DORTHY_CREDENTIALS = {
+  email: "d@d.com",
+  password: "password",
+};
+
 export const GET_USER_QUERY = gql`
   query getOneUser($id: UUID!) {
     user(id: $id) {

@@ -1,13 +1,12 @@
 import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCardDao, { KanbanSessionCardRaw } from "./KanbanCardDao";
-import { KanbanCanonCardStatusEnum, KanbanCard } from "../types/gqlGeneratedTypes";
+import { KanbanCard } from "../types/gqlGeneratedTypes";
 import {
   KanbanCardServiceGetManyArgs,
   KanbanCardServiceGetOneArgs,
   KanbanCardServiceUpdateOneInput,
 } from "../service/KanbanCardService";
-import { KanbanCanonServiceGetOneArgs } from "../service/KanbanCanonService";
 
 const GET_MANY_QUERY = `
   SELECT 

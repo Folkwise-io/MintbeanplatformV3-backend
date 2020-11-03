@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
 import KanbanCardDao from "../dao/KanbanCardDao";
@@ -46,10 +46,17 @@ export default class KanbanCardResolverValidator {
       .getOne({ id: kanbanId })
       .then((kanban) => ensureExists<Kanban>("Kanban")(kanban));
 
+    // make sure requester is the kanban card owner
+    const requesterId = context.getUserId();
+    if (requesterId !== kanban.userId) {
+      throw new AuthenticationError("You are not authorized to update a kanban card owned by another user!");
+    }
+
     // make sure kanban and kanbanCanonCard are related via the same kanbanCanon
     if (kanbanCanonCard.kanbanCanonId !== kanban.kanbanCanonId) {
       throw new UserInputError("Kanban Canon Card and Kanban are not related");
     }
+
     return { input };
   }
 }
