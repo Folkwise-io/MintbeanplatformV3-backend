@@ -43,7 +43,7 @@ describe("Querying meets", () => {
         expect(meet).toMatchObject(PAPERJS);
       });
   });
-  it.only("gets a meet by id with kanbanCanon if provided", async () => {
+  it("gets a meet by id with kanbanCanon if provided", async () => {
     const MEET_WITH_KANBAN_CANON = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1.id };
     await testManager.addKanbanCanons([KANBAN_CANON_1]);
     await testManager

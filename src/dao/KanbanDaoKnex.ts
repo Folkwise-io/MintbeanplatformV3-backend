@@ -69,12 +69,10 @@ export default class KanbanDaoKnex implements KanbanDao {
     });
   }
 
-  async addOne(args: KanbanServiceAddOneInput): Promise<Kanban> {
+  async addOne(args: KanbanServiceAddOneInput): Promise<void> {
     return handleDatabaseError(async () => {
-      const insertedKanbans = (await this.knex("kanbanSessions").insert(args).returning("*")) as KanbanSessionRaw[];
-      const newKanban = insertedKanbans[0];
-      // Re-fetch from db by id to get composed kanban
-      return await this.getOne({ id: newKanban.id }).then((kb) => kb);
+      await this.knex("kanbanSessions").insert(args);
+      // Note: to get this newly created kanban, re-fetch using this.getOne() with the same args
     });
   }
 

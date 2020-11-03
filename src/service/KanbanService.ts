@@ -17,7 +17,8 @@ export default class KanbanService implements EntityService<Kanban> {
   }
 
   async addOne(input: KanbanServiceAddOneInput): Promise<Kanban> {
-    return this.kanbanDao.addOne(input);
+    await this.kanbanDao.addOne(input);
+    return this.kanbanDao.getOne({ ...input });
   }
 
   async deleteOne(id: string): Promise<boolean> {

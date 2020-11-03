@@ -51,9 +51,7 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
         deleted: false,
       });
 
-      console.log(queryResult.rows);
-
-      return queryResult.rows;
+      return queryResult.rows[0];
     });
   }
 

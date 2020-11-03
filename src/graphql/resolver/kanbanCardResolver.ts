@@ -16,9 +16,11 @@ const kanbanCardResolver = (
 
     Mutation: {
       updateKanbanCard: (_root, args, context: ServerContext): Promise<KanbanCard> => {
-        return kanbanCardResolverValidator
-          .updateOne(args, context)
-          .then(({ input }) => kanbanCardService.updateOne(input));
+        return kanbanCardResolverValidator.updateOne(args, context).then(async ({ input }) => {
+          const res = await kanbanCardService.updateOne(input);
+          console.log({ resolverres: res });
+          return res;
+        });
       },
     },
 
