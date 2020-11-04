@@ -18,6 +18,12 @@ const kanbanCanon = gql`
     kanbanCanon: KanbanCanon
     kanbanCanonId: UUID
   }
+
+  extend input EditMeetInput {
+    "The kanbanCanon associated with this meet (if provided)"
+    kanbanCanonId: UUID
+  }
+
   extend type Query {
     "Get a kanbanCanon by ID"
     kanbanCanon(id: UUID!): KanbanCanon

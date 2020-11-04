@@ -413,6 +413,8 @@ export type EditMeetInput = {
   endTime?: Maybe<Scalars['String']>;
   /** The IANA region used with wallclock time */
   region?: Maybe<Scalars['String']>;
+  /** The kanbanCanon associated with this meet (if provided) */
+  kanbanCanonId?: Maybe<Scalars['UUID']>;
 };
 
 export type Project = {
@@ -592,7 +594,7 @@ export type CreateKanbanInput = {
 /** A kanban card on a kanban. Holds personalized positioning data. */
 export type KanbanCard = {
   __typename?: 'KanbanCard';
-  /** ID of the kanban card in UUID */
+  /** Id of the kanban card in UUID. Matches the id of the kanban canon card this card is based off of */
   id: Scalars['UUID'];
   title: Scalars['String'];
   /** A markdown body of the kanban card content */
