@@ -148,6 +148,17 @@ describe("Creating kanbanCanonCards", () => {
         expect(errorMessage).toMatch(/title/i);
       });
   });
+  it("gives an error message from validator when an input is invalid", async () => {
+    await testManager
+      .getErrorMessage({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, title: "a" } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/short/i);
+      });
+  });
 });
 
 describe("Editing kanbanCanonCards", () => {
