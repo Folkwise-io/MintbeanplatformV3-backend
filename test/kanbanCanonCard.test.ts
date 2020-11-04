@@ -210,6 +210,18 @@ describe("Editing kanbanCanonCards", () => {
       });
   });
 
+  it("gives an error message from validator when an input is invalid", async () => {
+    await testManager
+      .getErrorMessage({
+        query: EDIT_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id, input: { body: "a" } },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/short/i);
+      });
+  });
+
   it("gives an error message when no edit fields are specified in the mutation", async () => {
     await testManager
       .getErrorMessage({

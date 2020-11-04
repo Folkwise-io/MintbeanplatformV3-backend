@@ -2,7 +2,7 @@ import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
-import { KanbanCanonCardServiceGetManyArgs, KanbanCanonCardServiceGetOneArgs } from "../service/KanbanCanonCardService";
+import { KanbanCanonServiceEditOneInput } from "../service/KanbanCanonService";
 import {
   KanbanCanon,
   KanbanCanonCard,
@@ -13,7 +13,9 @@ import {
   QueryKanbanCanonCardsArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
+import { validateAgainstSchema } from "../util/validateAgainstSchema";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
+import { editKanbanCanonCardInputSchema } from "./yupSchemas/kanbanCanonCard";
 
 export default class KanbanCanonCardResolverValidator {
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao, private kanbanCanonDao: KanbanCanonDao) {}
@@ -60,6 +62,8 @@ export default class KanbanCanonCardResolverValidator {
 
     // Handle when input has no fields to update (knex doesn't like this)
     validateAtLeastOneFieldPresent(input);
+
+    validateAgainstSchema<KanbanCanonServiceEditOneInput>(editKanbanCanonCardInputSchema, input);
 
     return { id, input };
   }
