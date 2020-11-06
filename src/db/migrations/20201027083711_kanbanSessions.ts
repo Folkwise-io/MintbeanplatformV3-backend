@@ -1,5 +1,10 @@
 import * as Knex from "knex";
 
+const defaultStatuses = {
+  todo: [],
+  wip: [],
+  done: [],
+};
 // Stores the associative data used to build kanban views
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("kanbanSessions", (table) => {
@@ -7,6 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("kanbanCanonId").notNullable();
     table.uuid("userId").notNullable();
     table.uuid("meetId");
+    table.jsonb("kanbanSessionCardStatuses").defaultTo(JSON.stringify(defaultStatuses));
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("deleted").notNullable().defaultTo(false);

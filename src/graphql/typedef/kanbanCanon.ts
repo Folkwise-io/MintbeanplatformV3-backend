@@ -1,6 +1,11 @@
 import { gql } from "apollo-server-express";
 
 const kanbanCanon = gql`
+  type KanbanCanonCardStatusesObject {
+    todo: [UUID]
+    wip: [UUID]
+    done: [UUID]
+  }
   "The master definition of a kanban that serves as a guide for projects."
   type KanbanCanon {
     "ID of the KanbanCanon in UUID"
@@ -9,6 +14,7 @@ const kanbanCanon = gql`
     "A short cannonical description about the kanban project"
     description: String!
     "DateTime that the kanbanCanon was created"
+    kanbanCanonCardStatuses: KanbanCanonCardStatusesObject!
     createdAt: DateTime!
     "DateTime that the kanbanCanon was modified"
     updatedAt: DateTime!

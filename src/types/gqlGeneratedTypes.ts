@@ -487,6 +487,13 @@ export type MeetReminderEmailInput = {
   body: Scalars['String'];
 };
 
+export type KanbanCanonCardStatusesObject = {
+  __typename?: 'KanbanCanonCardStatusesObject';
+  todo?: Maybe<Array<Maybe<Scalars['UUID']>>>;
+  wip?: Maybe<Array<Maybe<Scalars['UUID']>>>;
+  done?: Maybe<Array<Maybe<Scalars['UUID']>>>;
+};
+
 /** The master definition of a kanban that serves as a guide for projects. */
 export type KanbanCanon = {
   __typename?: 'KanbanCanon';
@@ -496,6 +503,7 @@ export type KanbanCanon = {
   /** A short cannonical description about the kanban project */
   description: Scalars['String'];
   /** DateTime that the kanbanCanon was created */
+  kanbanCanonCardStatuses: KanbanCanonCardStatusesObject;
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanbanCanon was modified */
   updatedAt: Scalars['DateTime'];
@@ -579,6 +587,7 @@ export type Kanban = {
   updatedAt: Scalars['DateTime'];
   /** The kanban cards that belong to a kanban */
   kanbanCards?: Maybe<Array<Maybe<KanbanCard>>>;
+  kanbanCardStatuses?: Maybe<KanbanCardStatuses>;
 };
 
 /** The input needed to create a new kanban */
@@ -589,6 +598,14 @@ export type CreateKanbanInput = {
   userId: Scalars['UUID'];
   /** (Optional) Id of the meet this kanban belongs to */
   meetId?: Maybe<Scalars['UUID']>;
+};
+
+/** An object mapping kanban cards to their columns and indexes */
+export type KanbanCardStatuses = {
+  __typename?: 'KanbanCardStatuses';
+  todo?: Maybe<Array<Maybe<KanbanCard>>>;
+  wip?: Maybe<Array<Maybe<KanbanCard>>>;
+  done?: Maybe<Array<Maybe<KanbanCard>>>;
 };
 
 /** A kanban card on a kanban. Holds personalized positioning data. */
@@ -715,6 +732,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  KanbanCanonCardStatusesObject: ResolverTypeWrapper<KanbanCanonCardStatusesObject>;
   KanbanCanon: ResolverTypeWrapper<KanbanCanon>;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
@@ -724,6 +742,7 @@ export type ResolversTypes = {
   EditKanbanCanonCardInput: EditKanbanCanonCardInput;
   Kanban: ResolverTypeWrapper<Kanban>;
   CreateKanbanInput: CreateKanbanInput;
+  KanbanCardStatuses: ResolverTypeWrapper<KanbanCardStatuses>;
   KanbanCard: ResolverTypeWrapper<KanbanCard>;
   UpdateKanbanCardInput: UpdateKanbanCardInput;
 };
@@ -749,6 +768,7 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  KanbanCanonCardStatusesObject: KanbanCanonCardStatusesObject;
   KanbanCanon: KanbanCanon;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
@@ -757,6 +777,7 @@ export type ResolversParentTypes = {
   EditKanbanCanonCardInput: EditKanbanCanonCardInput;
   Kanban: Kanban;
   CreateKanbanInput: CreateKanbanInput;
+  KanbanCardStatuses: KanbanCardStatuses;
   KanbanCard: KanbanCard;
   UpdateKanbanCardInput: UpdateKanbanCardInput;
 };
@@ -897,10 +918,18 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type KanbanCanonCardStatusesObjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCanonCardStatusesObject'] = ResolversParentTypes['KanbanCanonCardStatusesObject']> = {
+  todo?: Resolver<Maybe<Array<Maybe<ResolversTypes['UUID']>>>, ParentType, ContextType>;
+  wip?: Resolver<Maybe<Array<Maybe<ResolversTypes['UUID']>>>, ParentType, ContextType>;
+  done?: Resolver<Maybe<Array<Maybe<ResolversTypes['UUID']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type KanbanCanonResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCanon'] = ResolversParentTypes['KanbanCanon']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  kanbanCanonCardStatuses?: Resolver<ResolversTypes['KanbanCanonCardStatusesObject'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   kanbanCanonCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanonCard']>>>, ParentType, ContextType>;
@@ -928,6 +957,14 @@ export type KanbanResolvers<ContextType = any, ParentType extends ResolversParen
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType>;
+  kanbanCardStatuses?: Resolver<Maybe<ResolversTypes['KanbanCardStatuses']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type KanbanCardStatusesResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCardStatuses'] = ResolversParentTypes['KanbanCardStatuses']> = {
+  todo?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType>;
+  wip?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType>;
+  done?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -953,9 +990,11 @@ export type Resolvers<ContextType = any> = {
   Meet?: MeetResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
+  KanbanCanonCardStatusesObject?: KanbanCanonCardStatusesObjectResolvers<ContextType>;
   KanbanCanon?: KanbanCanonResolvers<ContextType>;
   KanbanCanonCard?: KanbanCanonCardResolvers<ContextType>;
   Kanban?: KanbanResolvers<ContextType>;
+  KanbanCardStatuses?: KanbanCardStatusesResolvers<ContextType>;
   KanbanCard?: KanbanCardResolvers<ContextType>;
 };
 

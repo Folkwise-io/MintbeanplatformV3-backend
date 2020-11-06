@@ -10,6 +10,10 @@ export async function seed(knex: Knex): Promise<void> {
       kanbanCanonId: "00000000-0000-0000-0000-000000000000", // Animation Toys 1 Kanban
       userId: "00000000-0000-4000-a000-000000000000", // Bob
       meetId: "00000000-0000-0000-0000-000000000000", //  Animation Toys 1
+      kanbanSessionCardStatuses: {
+        todo: ["00000000-0000-4000-a000-000000000000", "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0"],
+        wip: ["00000000-0000-0000-0000-000000000000"],
+      },
       createdAt: "2020-08-15T12:00:00.000Z",
       updatedAt: "2020-08-15T12:00:00.000Z",
     },
@@ -18,6 +22,9 @@ export async function seed(knex: Knex): Promise<void> {
       id: "00000000-0000-4000-a000-000000000000",
       kanbanCanonId: "00000000-0000-4000-a000-000000000000", // Algolia gives you super powers 1 Kanban
       userId: "00000000-0000-4000-a000-000000000000", // Bob
+      kanbanSessionCardStatuses: {
+        wip: ["f799815e-7273-4ade-bd3a-025f487dfc21"],
+      },
       createdAt: "2020-08-15T12:00:00.000Z",
       updatedAt: "2020-08-15T12:00:00.000Z",
     },

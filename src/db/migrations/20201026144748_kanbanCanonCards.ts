@@ -7,6 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("kanbanCanonId").notNullable();
     table.text("title").notNullable();
     table.text("body").notNullable();
+    // TODO: change name to initialStatus?
     table.text("status").notNullable().defaultTo(KanbanCanonCardStatusEnum.Todo);
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
