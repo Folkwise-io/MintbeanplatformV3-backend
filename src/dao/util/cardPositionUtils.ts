@@ -19,6 +19,7 @@ interface IdObject {
 }
 
 interface InterimPositionObject {
+  // Un-sorted status colulm arrays
   // {
   //   todo: [["b", 1], ["a", 0]],
   //   wip: [],
@@ -68,7 +69,7 @@ const basePositionObject: KanbanCardPositions = {
   done: [],
 };
 
-// Takes a canonical and session status object and resolves it to a status object that represents the card positions the end-user should see
+// Takes a canonical (c) and session (s) card position object and resolves it to a status object that represents the card positions the end-user should see
 const resolve = (c: KanbanCardPositions, s: KanbanCardPositions): KanbanCardPositions => {
   // convert to idObj
   const idObjC = toIdObj(c);
