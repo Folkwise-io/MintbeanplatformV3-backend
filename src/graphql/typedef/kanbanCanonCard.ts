@@ -1,5 +1,9 @@
 import { gql } from "apollo-server-express";
 
+// TODO: rmeove this if not needed
+// "The initial status column this kanbanCanonCard should appear in"
+// status: KanbanCanonCardStatusEnum!
+
 const kanbanCanonCard = gql`
   "Possible initial statuses of a kanban card. Defaults to TODO, unless specified otherwise"
   enum KanbanCanonCardStatusEnum {
@@ -14,8 +18,6 @@ const kanbanCanonCard = gql`
     title: String!
     "A markdown body of the kanban card content"
     body: String!
-    "The initial status column this kanbanCanonCard should appear in"
-    status: KanbanCanonCardStatusEnum!
     "A reference to the kanban this kanban card belongs to"
     kanbanCanonId: UUID!
     "DateTime that the kanban was created"

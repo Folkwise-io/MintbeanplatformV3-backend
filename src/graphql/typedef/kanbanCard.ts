@@ -1,13 +1,10 @@
 import { gql } from "apollo-server-express";
 
-const kanbanCard = gql`
-  "An object mapping kanban cards to their columns and indexes"
-  type KanbanCardStatuses {
-    todo: [KanbanCard]
-    wip: [KanbanCard]
-    done: [KanbanCard]
-  }
+// TODO: remove this if not needed
+// "The initial status column this kanbanCanonCard should appear in";
+// status: KanbanCanonCardStatusEnum!;
 
+const kanbanCard = gql`
   "A kanban card on a kanban. Holds personalized positioning data."
   type KanbanCard {
     "Id of the kanban card in UUID. Matches the id of the kanban canon card this card is based off of"
@@ -15,8 +12,6 @@ const kanbanCard = gql`
     title: String!
     "A markdown body of the kanban card content"
     body: String!
-    "The initial status column this kanbanCanonCard should appear in"
-    status: KanbanCanonCardStatusEnum!
     "A reference to the kanban this kanban card belongs to"
     kanbanId: UUID!
     "DateTime that the kanban card was created"
@@ -28,7 +23,6 @@ const kanbanCard = gql`
   extend type Kanban {
     "The kanban cards that belong to a kanban"
     kanbanCards: [KanbanCard]
-    kanbanCardStatuses: KanbanCardStatuses
   }
 
   extend type Query {

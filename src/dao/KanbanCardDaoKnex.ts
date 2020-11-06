@@ -8,12 +8,31 @@ import {
   KanbanCardServiceUpdateOneInput,
 } from "../service/KanbanCardService";
 
+// const GET_MANY_QUERY = `
+//   SELECT
+//     "kanbanCanonCards"."id" as "id",
+//     "kanbanCanonCards"."title" as "title",
+//     "kanbanCanonCards"."body" as "body",
+//     COALESCE("kanbanSessionCards"."status", "kanbanCanonCards"."status") as "status",
+//     "kanbanSessions"."id" as "kanbanId"
+//   FROM "kanbanCanonCards"
+//   JOIN "kanbanSessions" ON "kanbanCanonCards"."kanbanCanonId" = "kanbanSessions"."kanbanCanonId"
+//   LEFT JOIN (
+//       SELECT
+//           *
+//       FROM "kanbanSessionCards"
+//       WHERE "kanbanSessionCards"."deleted" = :deleted
+//       AND "kanbanSessionCards"."kanbanSessionId" = :kanbanSessionId
+//   ) AS "kanbanSessionCards"
+//     ON "kanbanSessionCards"."kanbanCanonCardId" = "kanbanCanonCards"."id"
+//   WHERE "kanbanSessions"."id" = :kanbanSessionId`;
+
+// removed status column:
 const GET_MANY_QUERY = `
   SELECT 
     "kanbanCanonCards"."id" as "id",
     "kanbanCanonCards"."title" as "title",
     "kanbanCanonCards"."body" as "body",
-    COALESCE("kanbanSessionCards"."status", "kanbanCanonCards"."status") as "status",
     "kanbanSessions"."id" as "kanbanId"
   FROM "kanbanCanonCards" 
   JOIN "kanbanSessions" ON "kanbanCanonCards"."kanbanCanonId" = "kanbanSessions"."kanbanCanonId"

@@ -1,11 +1,7 @@
 import { gql } from "apollo-server-express";
 
+// definition for KanbanCardStatusesObject is in typedef/kanban.ts
 const kanbanCanon = gql`
-  type KanbanCanonCardStatusesObject {
-    todo: [UUID]
-    wip: [UUID]
-    done: [UUID]
-  }
   "The master definition of a kanban that serves as a guide for projects."
   type KanbanCanon {
     "ID of the KanbanCanon in UUID"
@@ -13,8 +9,9 @@ const kanbanCanon = gql`
     title: String!
     "A short cannonical description about the kanban project"
     description: String!
+    "An object storing the status column and indexes of kanban canon cards"
+    kanbanCanonCardStatuses: KanbanCardStatusesObject!
     "DateTime that the kanbanCanon was created"
-    kanbanCanonCardStatuses: KanbanCanonCardStatusesObject!
     createdAt: DateTime!
     "DateTime that the kanbanCanon was modified"
     updatedAt: DateTime!
