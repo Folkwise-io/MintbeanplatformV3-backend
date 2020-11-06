@@ -1,6 +1,6 @@
 import * as Knex from "knex";
 
-const defaultStatuses = {
+const defaultPositions = {
   todo: [],
   wip: [],
   done: [],
@@ -12,7 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("kanbanCanonId").notNullable();
     table.uuid("userId").notNullable();
     table.uuid("meetId");
-    table.jsonb("kanbanSessionCardStatuses").defaultTo(JSON.stringify(defaultStatuses));
+    table.jsonb("cardPositions").defaultTo(JSON.stringify(defaultPositions));
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("deleted").notNullable().defaultTo(false);

@@ -1,7 +1,7 @@
 import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanDao, { KanbanSessionRaw } from "./KanbanDao";
-import { Kanban, KanbanCardStatusesObject } from "../types/gqlGeneratedTypes";
+import { Kanban, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
 import { prefixKeys } from "../util/prefixKeys";
 import { resolve } from "./util/cardStatusUtils";
@@ -27,11 +27,11 @@ import { resolve } from "./util/cardStatusUtils";
 // };
 
 interface KanbanRawData extends Kanban {
-  kanbanCanonCardStatuses: KanbanCardStatusesObject;
-  kanbanSessionCardStatuses: KanbanCardStatusesObject;
+  kanbanCanonCardPositions: KanbanCardPositions;
+  kanbanSessionCardPositions: KanbanCardPositions;
 }
 
-// omits kanbanCanonCardStatuses and kanbanSessionCardStatuses from KanbanRawData
+// omits kanbanCanonCardPositions and kanbanSessionCardPositions from KanbanRawData
 const kanbanDataFilter = ({ id, kanbanCanonId, userId, meetId, title, description, createdAt, updatedAt }: Kanban) => ({
   id,
   kanbanCanonId,
@@ -45,10 +45,10 @@ const kanbanDataFilter = ({ id, kanbanCanonId, userId, meetId, title, descriptio
 
 const rawToKanban = (raw: KanbanRawData): Kanban => {
   // take the raw canon and session card status and resolve to the statuses the end user should see
-  const { kanbanCanonCardStatuses, kanbanSessionCardStatuses } = raw;
-  const kanbanCardStatuses: KanbanCardStatusesObject = resolve(kanbanCanonCardStatuses, kanbanSessionCardStatuses);
-  // filter the raw kanban data and add the resolved kanbanCardStatuses
-  return { ...kanbanDataFilter(raw), kanbanCardStatuses } as Kanban;
+  const { kanbanCanonCardPositions, kanbanSessionCardPositions } = raw;
+  const cardPositions: KanbanCardPositions = resolve(kanbanCanonCardPositions, kanbanSessionCardPositions);
+  // filter the raw kanban data and add the resolved cardPositions
+  return { ...kanbanDataFilter(raw), cardPositions } as Kanban;
 };
 
 // TODO: Refactor repeated query
@@ -68,8 +68,8 @@ export default class KanbanDaoKnex implements KanbanDao {
           { description: "kanbanCanons.description" },
           { createdAt: "kanbanSessions.createdAt" },
           { updatedAt: "kanbanSessions.updatedAt" },
-          { kanbanSessionCardStatuses: "kanbanSessions.kanbanSessionCardStatuses" },
-          { kanbanCanonCardStatuses: "kanbanCanons.kanbanCanonCardStatuses" },
+          { kanbanSessionCardPositions: "kanbanSessions.cardPositions" },
+          { kanbanCanonCardPositions: "kanbanCanons.cardPositions" },
         )
         .where(prefixKeys("kanbanSessions", { ...args, deleted: false }))
         .first();
@@ -94,8 +94,8 @@ export default class KanbanDaoKnex implements KanbanDao {
           { description: "kanbanCanons.description" },
           { createdAt: "kanbanSessions.createdAt" },
           { updatedAt: "kanbanSessions.updatedAt" },
-          { kanbanSessionCardStatuses: "kanbanSessions.kanbanSessionCardStatuses" },
-          { kanbanCanonCardStatuses: "kanbanCanons.kanbanCanonCardStatuses" },
+          { kanbanSessionCardPositions: "kanbanSessions.cardPositions" },
+          { kanbanCanonCardPositions: "kanbanCanons.cardPositions" },
         )
         .where(prefixKeys("kanbanSessions", { ...args, deleted: false }))) as unknown) as KanbanRawData[];
 

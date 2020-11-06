@@ -496,7 +496,7 @@ export type KanbanCanon = {
   /** A short cannonical description about the kanban project */
   description: Scalars['String'];
   /** An object storing the status column and indexes of kanban canon cards */
-  kanbanCanonCardStatuses: KanbanCardStatusesObject;
+  cardPositions: KanbanCardPositions;
   /** DateTime that the kanbanCanon was created */
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanbanCanon was modified */
@@ -534,8 +534,6 @@ export type KanbanCanonCard = {
   title: Scalars['String'];
   /** A markdown body of the kanban card content */
   body: Scalars['String'];
-  /** The initial status column this kanbanCanonCard should appear in */
-  status: KanbanCanonCardStatusEnum;
   /** A reference to the kanban this kanban card belongs to */
   kanbanCanonId: Scalars['UUID'];
   /** DateTime that the kanban was created */
@@ -562,8 +560,8 @@ export type EditKanbanCanonCardInput = {
   body?: Maybe<Scalars['String']>;
 };
 
-export type KanbanCardStatusesObject = {
-  __typename?: 'KanbanCardStatusesObject';
+export type KanbanCardPositions = {
+  __typename?: 'KanbanCardPositions';
   todo: Array<Scalars['UUID']>;
   wip: Array<Scalars['UUID']>;
   done: Array<Scalars['UUID']>;
@@ -583,7 +581,7 @@ export type Kanban = {
   /** Id of meet this kanban is associated with. Possibly null */
   meetId?: Maybe<Scalars['UUID']>;
   /** An object storing the status column and indexes of kanban cards */
-  kanbanCardStatuses: KanbanCardStatusesObject;
+  cardPositions: KanbanCardPositions;
   /** DateTime that the kanban was created */
   createdAt: Scalars['DateTime'];
   /** DateTime that the kanban was modified */
@@ -610,8 +608,6 @@ export type KanbanCard = {
   title: Scalars['String'];
   /** A markdown body of the kanban card content */
   body: Scalars['String'];
-  /** The initial status column this kanbanCanonCard should appear in */
-  status: KanbanCanonCardStatusEnum;
   /** A reference to the kanban this kanban card belongs to */
   kanbanId: Scalars['UUID'];
   /** DateTime that the kanban card was created */
@@ -733,7 +729,7 @@ export type ResolversTypes = {
   KanbanCanonCard: ResolverTypeWrapper<KanbanCanonCard>;
   CreateKanbanCanonCardInput: CreateKanbanCanonCardInput;
   EditKanbanCanonCardInput: EditKanbanCanonCardInput;
-  KanbanCardStatusesObject: ResolverTypeWrapper<KanbanCardStatusesObject>;
+  KanbanCardPositions: ResolverTypeWrapper<KanbanCardPositions>;
   Kanban: ResolverTypeWrapper<Kanban>;
   CreateKanbanInput: CreateKanbanInput;
   KanbanCard: ResolverTypeWrapper<KanbanCard>;
@@ -767,7 +763,7 @@ export type ResolversParentTypes = {
   KanbanCanonCard: KanbanCanonCard;
   CreateKanbanCanonCardInput: CreateKanbanCanonCardInput;
   EditKanbanCanonCardInput: EditKanbanCanonCardInput;
-  KanbanCardStatusesObject: KanbanCardStatusesObject;
+  KanbanCardPositions: KanbanCardPositions;
   Kanban: Kanban;
   CreateKanbanInput: CreateKanbanInput;
   KanbanCard: KanbanCard;
@@ -914,7 +910,7 @@ export type KanbanCanonResolvers<ContextType = any, ParentType extends Resolvers
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  kanbanCanonCardStatuses?: Resolver<ResolversTypes['KanbanCardStatusesObject'], ParentType, ContextType>;
+  cardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   kanbanCanonCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanonCard']>>>, ParentType, ContextType>;
@@ -925,14 +921,13 @@ export type KanbanCanonCardResolvers<ContextType = any, ParentType extends Resol
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['KanbanCanonCardStatusEnum'], ParentType, ContextType>;
   kanbanCanonId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
-export type KanbanCardStatusesObjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCardStatusesObject'] = ResolversParentTypes['KanbanCardStatusesObject']> = {
+export type KanbanCardPositionsResolvers<ContextType = any, ParentType extends ResolversParentTypes['KanbanCardPositions'] = ResolversParentTypes['KanbanCardPositions']> = {
   todo?: Resolver<Array<ResolversTypes['UUID']>, ParentType, ContextType>;
   wip?: Resolver<Array<ResolversTypes['UUID']>, ParentType, ContextType>;
   done?: Resolver<Array<ResolversTypes['UUID']>, ParentType, ContextType>;
@@ -946,7 +941,7 @@ export type KanbanResolvers<ContextType = any, ParentType extends ResolversParen
   kanbanCanonId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   userId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
-  kanbanCardStatuses?: Resolver<ResolversTypes['KanbanCardStatusesObject'], ParentType, ContextType>;
+  cardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   kanbanCards?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCard']>>>, ParentType, ContextType>;
@@ -957,7 +952,6 @@ export type KanbanCardResolvers<ContextType = any, ParentType extends ResolversP
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   body?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['KanbanCanonCardStatusEnum'], ParentType, ContextType>;
   kanbanId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
@@ -977,7 +971,7 @@ export type Resolvers<ContextType = any> = {
   MediaAsset?: MediaAssetResolvers<ContextType>;
   KanbanCanon?: KanbanCanonResolvers<ContextType>;
   KanbanCanonCard?: KanbanCanonCardResolvers<ContextType>;
-  KanbanCardStatusesObject?: KanbanCardStatusesObjectResolvers<ContextType>;
+  KanbanCardPositions?: KanbanCardPositionsResolvers<ContextType>;
   Kanban?: KanbanResolvers<ContextType>;
   KanbanCard?: KanbanCardResolvers<ContextType>;
 };

@@ -1,7 +1,7 @@
 import { gql } from "apollo-server-express";
 
 const kanban = gql`
-  type KanbanCardStatusesObject {
+  type KanbanCardPositions {
     todo: [UUID!]!
     wip: [UUID!]!
     done: [UUID!]!
@@ -19,7 +19,7 @@ const kanban = gql`
     "Id of meet this kanban is associated with. Possibly null"
     meetId: UUID
     "An object storing the status column and indexes of kanban cards"
-    kanbanCardStatuses: KanbanCardStatusesObject!
+    cardPositions: KanbanCardPositions!
     "DateTime that the kanban was created"
     createdAt: DateTime!
     "DateTime that the kanban was modified"

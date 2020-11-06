@@ -8,7 +8,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: "00000000-0000-0000-0000-000000000000",
       title: "Animation Toys 1 Kanban",
       description: "Building impressive portfolio projects with PaperJS.",
-      kanbanCanonCardStatuses: {
+      cardPositions: {
         todo: [
           "00000000-0000-0000-0000-000000000000",
           "00000000-0000-4000-a000-000000000000",
@@ -23,7 +23,7 @@ export async function seed(knex: Knex): Promise<void> {
       id: "00000000-0000-4000-a000-000000000000",
       title: "Algolia gives you super powers 1 Kanban",
       description: "Building impressive portfolio projects with PaperJS.",
-      kanbanCanonCardStatuses: {
+      cardPositions: {
         todo: [
           "f799815e-7273-4ade-bd3a-025f487dfc21",
           "4fa8b553-d80d-4e6e-98f7-2179c1d956a5",
