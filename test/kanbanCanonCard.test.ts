@@ -9,7 +9,7 @@ import {
   EDIT_KANBAN_CANON_CARD_INPUT,
   DELETE_KANBAN_CANON_CARD_MUTATION,
 } from "./src/kanbanCanonCardConstants";
-import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
+import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 
@@ -24,7 +24,7 @@ beforeEach(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllKanbanCanons(); // Deletes kanbanCanonCards on CASCADE
 
-  await testManager.addKanbanCanons([KANBAN_CANON_1]);
+  await testManager.addKanbanCanons([KANBAN_CANON_1_RAW]);
 });
 
 afterAll(async () => {
@@ -51,7 +51,10 @@ describe("Querying kanbanCanonCards", () => {
       .addKanbanCanonCards([KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2])
       .then(() =>
         testManager
-          .getGraphQLResponse({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+          .getGraphQLResponse({
+            query: GET_KANBAN_CANON_CARDS_QUERY,
+            variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id },
+          })
           .then(testManager.parseData),
       )
       .then(({ kanbanCanonCards }) => {
@@ -60,7 +63,7 @@ describe("Querying kanbanCanonCards", () => {
   });
   it("returns an empty array if there are no kanbanCanonCards", async () => {
     await testManager
-      .getGraphQLResponse({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+      .getGraphQLResponse({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(testManager.parseData)
       .then(({ kanbanCanonCards }) => {
         expect(kanbanCanonCards).toHaveLength(0);
@@ -75,7 +78,7 @@ describe("Querying kanbanCanonCards", () => {
   });
   it("throws an error if requested kanban canon does not exist", async () => {
     await testManager
-      .getErrorMessage({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_2.id } })
+      .getErrorMessage({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_2_RAW.id } })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/not exist/i);
       });
@@ -91,7 +94,7 @@ describe("Querying kanbanCanonCards", () => {
   it("does not retrieve deleted kanbanCanonCards", async () => {
     await testManager.addKanbanCanonCards([{ ...KANBAN_CANON_CARD_1, deleted: true } as any]);
     await testManager
-      .getGraphQLResponse({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+      .getGraphQLResponse({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(testManager.parseData)
       .then(({ kanbanCanonCards }) => {
         expect(kanbanCanonCards).toHaveLength(0);
@@ -278,7 +281,7 @@ describe("Deleting kanbanCanonCards", () => {
 
   it("deletes a meet successfully when admin is logged in", async () => {
     await testManager
-      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(1));
 
     await testManager
@@ -292,7 +295,7 @@ describe("Deleting kanbanCanonCards", () => {
       });
 
     await testManager
-      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1.id } })
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(0));
   });
 

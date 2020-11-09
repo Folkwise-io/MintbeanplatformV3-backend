@@ -4,13 +4,11 @@ import {
   EDIT_KANBAN_CANON_MUTATION,
   GET_KANBAN_CANONS_QUERY,
   GET_KANBAN_CANON_QUERY,
-  KANBAN_CANON_1,
-  CREATE_KANBAN_CANON_1_INPUT,
-  KANBAN_CANON_2,
-  CREATE_KANBAN_CANON_2_INPUT,
+  KANBAN_CANON_1_RAW,
+  CREATE_KANBAN_CANON_1_RAW_INPUT,
+  KANBAN_CANON_2_RAW,
   DELETE_KANBAN_CANON_MUTATION,
 } from "./src/kanbanCanonConstants";
-import { GET_KANBANS_QUERY } from "./src/kanbanConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
@@ -45,19 +43,19 @@ afterAll(async () => {
 describe("Querying kanbanCanons", () => {
   it("gets a kanbanCanon by id", async () => {
     await testManager
-      .addKanbanCanons([KANBAN_CANON_1])
+      .addKanbanCanons([KANBAN_CANON_1_RAW])
       .then(() =>
         testManager
-          .getGraphQLResponse({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1.id } })
+          .getGraphQLResponse({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1_RAW.id } })
           .then(testManager.parseData),
       )
       .then(({ kanbanCanon }) => {
-        expect(kanbanCanon).toMatchObject(KANBAN_CANON_1);
+        expect(kanbanCanon).toMatchObject(KANBAN_CANON_1_RAW);
       });
   });
   it("gets all kanbanCanons", async () => {
     await testManager
-      .addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2])
+      .addKanbanCanons([KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW])
       .then(() => testManager.getGraphQLResponse({ query: GET_KANBAN_CANONS_QUERY }).then(testManager.parseData))
       .then(({ kanbanCanons }) => {
         expect(kanbanCanons).toHaveLength(2);
@@ -72,7 +70,7 @@ describe("Querying kanbanCanons", () => {
       });
   });
   it("does not retrieve deleted kanbanCanons", async () => {
-    await testManager.addKanbanCanons([{ ...KANBAN_CANON_2, deleted: true } as any]);
+    await testManager.addKanbanCanons([{ ...KANBAN_CANON_2_RAW, deleted: true } as any]);
     await testManager
       .getGraphQLResponse({ query: GET_KANBAN_CANONS_QUERY })
       .then(testManager.parseData)
@@ -87,19 +85,19 @@ describe("Creating kanbanCanons", () => {
     await testManager
       .getGraphQLResponse({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: CREATE_KANBAN_CANON_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_1_RAW_INPUT },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
       .then(({ createKanbanCanon }) => {
-        expect(createKanbanCanon).toMatchObject(CREATE_KANBAN_CANON_1_INPUT);
+        expect(createKanbanCanon).toMatchObject(CREATE_KANBAN_CANON_1_RAW_INPUT);
       });
   });
   it("throws 'not authorized' error if createKanbanSession is called while user not logged in", async () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: CREATE_KANBAN_CANON_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_1_RAW_INPUT },
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/[(not |un)]authorized/i);
@@ -109,7 +107,7 @@ describe("Creating kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: CREATE_KANBAN_CANON_1_INPUT },
+        variables: { input: CREATE_KANBAN_CANON_1_RAW_INPUT },
         cookies: bobCookies,
       })
       .then((errorMessage) => {
@@ -132,7 +130,7 @@ describe("Creating kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_MUTATION,
-        variables: { input: { ...CREATE_KANBAN_CANON_1_INPUT, title: 100 } },
+        variables: { input: { ...CREATE_KANBAN_CANON_1_RAW_INPUT, title: 100 } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
@@ -144,31 +142,31 @@ describe("Creating kanbanCanons", () => {
 describe("Editing kanbanCanons", () => {
   beforeEach(async () => {
     await testManager.deleteAllKanbanCanons();
-    await testManager.addKanbanCanons([KANBAN_CANON_1]);
+    await testManager.addKanbanCanons([KANBAN_CANON_1_RAW]);
   });
   it("updates a kanbanCanon with valid input when admin is logged in", async () => {
     await testManager
       .getGraphQLResponse({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1.id, input: EDIT_KANBAN_CANON_INPUT },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: EDIT_KANBAN_CANON_INPUT },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
       .then(({ editKanbanCanon }) => {
-        expect(editKanbanCanon.title).not.toBe(KANBAN_CANON_1.title);
+        expect(editKanbanCanon.title).not.toBe(KANBAN_CANON_1_RAW.title);
         expect(editKanbanCanon.title).toBe(EDIT_KANBAN_CANON_INPUT.title);
       });
   });
   it("updates the updatedAt timestamp after editing a kanban canon", async () => {
     // Check that createdAt is initially equal to updatedAt
     await testManager
-      .getGraphQLData({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1.id } })
+      .getGraphQLData({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanon }) => expect(kanbanCanon.createdAt).toBe(kanbanCanon.updatedAt));
 
     await testManager
       .getGraphQLData({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1.id, input: EDIT_KANBAN_CANON_INPUT },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: EDIT_KANBAN_CANON_INPUT },
         cookies: adminCookies,
       })
       .then(({ editKanbanCanon }) => {
@@ -180,7 +178,7 @@ describe("Editing kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1.id, input: EDIT_KANBAN_CANON_INPUT },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: EDIT_KANBAN_CANON_INPUT },
         cookies: [],
       })
       .then((errorMessage) => {
@@ -204,7 +202,7 @@ describe("Editing kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1.id, input: {} },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: {} },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
@@ -216,7 +214,7 @@ describe("Editing kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1.id, input: { nonexistent: "hello" } },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: { nonexistent: "hello" } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
@@ -228,7 +226,7 @@ describe("Editing kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1.id, input: { deleted: true } },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: { deleted: true } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
@@ -239,7 +237,7 @@ describe("Editing kanbanCanons", () => {
 
 describe("Deleting kanbanCanons", () => {
   beforeEach(async () => {
-    await testManager.addKanbanCanons([KANBAN_CANON_2]);
+    await testManager.addKanbanCanons([KANBAN_CANON_2_RAW]);
   });
 
   it("deletes a kanbanCanon successfully when admin is logged in", async () => {
@@ -250,7 +248,7 @@ describe("Deleting kanbanCanons", () => {
     await testManager
       .getGraphQLData({
         query: DELETE_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_2.id },
+        variables: { id: KANBAN_CANON_2_RAW.id },
         cookies: adminCookies,
       })
       .then(({ deleteKanbanCanon }) => {
@@ -266,7 +264,7 @@ describe("Deleting kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: DELETE_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_2.id },
+        variables: { id: KANBAN_CANON_2_RAW.id },
         cookies: [],
       })
       .then((errorMessage) => {

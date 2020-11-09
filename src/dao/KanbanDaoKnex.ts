@@ -4,7 +4,7 @@ import KanbanDao, { KanbanSessionRaw } from "./KanbanDao";
 import { Kanban, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
 import { prefixKeys } from "../util/prefixKeys";
-import { resolve } from "./util/cardStatusUtils";
+import { resolve } from "./util/cardPositionUtils";
 
 // type KanbanQueryTypes = KanbanServiceGetOneArgs | KanbanServiceGetManyArgs;
 // const queryKanban = async (knex: Knex, args: KanbanQueryTypes) => {

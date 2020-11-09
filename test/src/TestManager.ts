@@ -20,6 +20,7 @@ import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
 import { KanbanSessionRaw } from "../../src/dao/KanbanDao";
 import { KanbanSessionCardRaw } from "../../src/dao/KanbanCardDao";
+import { KanbanCanonRaw } from "../../src/dao/KanbanCanonDao";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -82,7 +83,7 @@ export default class TestManager {
   addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void> {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
   }
-  addKanbanCanons(kanbanCanons: KanbanCanon[]): Promise<void> {
+  addKanbanCanons(kanbanCanons: KanbanCanonRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanCanonDao.addMany(kanbanCanons);
   }
   addKanbanCanonCards(kanbanCanonCards: KanbanCanonCard[]): Promise<void> {

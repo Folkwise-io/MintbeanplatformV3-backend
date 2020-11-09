@@ -1,19 +1,29 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
+import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
-import { KanbanCanonServiceAddOneInput, KanbanCanonServiceEditOneInput } from "../service/KanbanCanonService";
+import {
+  KanbanCanonServiceAddOneInput,
+  KanbanCanonServiceEditOneInput,
+  KanbanCanonServiceUpdateCardPositionsInput,
+} from "../service/KanbanCanonService";
 import {
   MutationCreateKanbanCanonArgs,
   MutationDeleteKanbanCanonArgs,
   MutationEditKanbanCanonArgs,
+  MutationUpdateKanbanCanonCardPositionsArgs,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { validateAgainstSchema } from "../util/validateAgainstSchema";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
-import { createKanbanCanonInputSchema, editKanbanCanonInputSchema } from "./yupSchemas/kanbanCanon";
+import {
+  createKanbanCanonInputSchema,
+  editKanbanCanonInputSchema,
+  updateKanbanCardPositionsInputSchema,
+} from "./yupSchemas/kanbanCanon";
 
 export default class KanbanCanonResolverValidator {
-  constructor(private kanbanCanonDao: KanbanCanonDao) {}
+  constructor(private kanbanCanonDao: KanbanCanonDao, private kanbanCanonCardDao: KanbanCanonCardDao) {}
 
   async addOne(
     { input }: MutationCreateKanbanCanonArgs,
@@ -53,6 +63,26 @@ export default class KanbanCanonResolverValidator {
     await this.kanbanCanonDao.getOne({ id }).then((kanbanCanon) => ensureExists("Kanban Canon")(kanbanCanon));
 
     validateAgainstSchema<KanbanCanonServiceEditOneInput>(editKanbanCanonInputSchema, input);
+    return { id, input };
+  }
+
+  async updateCardPositions(
+    { id, input }: MutationUpdateKanbanCanonCardPositionsArgs,
+    context: ServerContext,
+  ): Promise<MutationUpdateKanbanCanonCardPositionsArgs> {
+    if (!context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to edit kanban canons!");
+    }
+
+    validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
+
+    // Check if kanban canon id exists in db
+    await this.kanbanCanonDao.getOne({ id }).then((kanbanCanon) => ensureExists("Kanban Canon")(kanbanCanon));
+    await this.kanbanCanonCardDao
+      .getOne({ id: input.cardId })
+      .then((kanbanCanonCard) => ensureExists("Kanban Canon Card")(kanbanCanonCard));
+
+    validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(editKanbanCanonInputSchema, input);
     return { id, input };
   }
 }

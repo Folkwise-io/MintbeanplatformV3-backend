@@ -3,6 +3,8 @@ import {
   CreateKanbanCanonInput,
   EditKanbanCanonInput,
   KanbanCanon,
+  KanbanCanonCardStatusEnum,
+  KanbanCardPositions,
   QueryKanbanCanonArgs,
 } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
@@ -11,7 +13,11 @@ import { EntityService } from "./EntityService";
 export interface KanbanCanonServiceGetOneArgs extends QueryKanbanCanonArgs {}
 export interface KanbanCanonServiceAddOneInput extends CreateKanbanCanonInput {}
 export interface KanbanCanonServiceEditOneInput extends EditKanbanCanonInput {}
-// export interface KanbanCanonServiceEditOneInput extends EditKanbanCanonInput {}
+export interface KanbanCanonServiceUpdateCardPositionsInput {
+  cardId: string;
+  status: KanbanCanonCardStatusEnum;
+  index: number;
+}
 
 export default class KanbanCanonService implements EntityService<KanbanCanon> {
   constructor(private kanbanCanonDao: KanbanCanonDao) {}
@@ -24,11 +30,19 @@ export default class KanbanCanonService implements EntityService<KanbanCanon> {
   }
 
   async addOne(input: KanbanCanonServiceAddOneInput): Promise<KanbanCanon> {
-    return this.kanbanCanonDao.addOne(input);
+    const newKanbanCanon = await this.kanbanCanonDao.addOne(input);
+    return this.kanbanCanonDao.getOne({ id: newKanbanCanon.id });
   }
 
   async editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon> {
     return this.kanbanCanonDao.editOne(id, input);
+  }
+
+  async updateCardPositions(
+    id: string,
+    input: KanbanCanonServiceUpdateCardPositionsInput,
+  ): Promise<KanbanCardPositions> {
+    return this.kanbanCanonDao.updateCardPositions(id, input);
   }
 
   async deleteOne(id: string): Promise<boolean> {

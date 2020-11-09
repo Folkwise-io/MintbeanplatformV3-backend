@@ -65,7 +65,6 @@ export const GET_MEET_QUERY = gql`
           id
           title
           body
-          status
         }
       }
     }

@@ -201,6 +201,8 @@ export type Mutation = {
   createKanbanCanon: KanbanCanon;
   /** Edits an existing kanbanCanon (requires admin privileges) */
   editKanbanCanon: KanbanCanon;
+  /** Update the position of a card on a kanbanCanon, and get updated card positions object */
+  updateKanbanCanonCardPositions: KanbanCardPositions;
   /** Deletes a kanbanCanon (requires admin privileges) */
   deleteKanbanCanon: Scalars['Boolean'];
   /** Creates a new kanbanCanonCard (requires admin privileges) */
@@ -282,6 +284,12 @@ export type MutationCreateKanbanCanonArgs = {
 export type MutationEditKanbanCanonArgs = {
   id: Scalars['UUID'];
   input: EditKanbanCanonInput;
+};
+
+
+export type MutationUpdateKanbanCanonCardPositionsArgs = {
+  id: Scalars['UUID'];
+  input: UpdateCardPositionInput;
 };
 
 
@@ -519,6 +527,12 @@ export type EditKanbanCanonInput = {
   description?: Maybe<Scalars['String']>;
 };
 
+export type UpdateCardPositionInput = {
+  cardId: Scalars['UUID'];
+  status: KanbanCanonCardStatusEnum;
+  index: Scalars['Int'];
+};
+
 /** Possible initial statuses of a kanban card. Defaults to TODO, unless specified otherwise */
 export enum KanbanCanonCardStatusEnum {
   Todo = 'TODO',
@@ -725,6 +739,7 @@ export type ResolversTypes = {
   KanbanCanon: ResolverTypeWrapper<KanbanCanon>;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
+  UpdateCardPositionInput: UpdateCardPositionInput;
   KanbanCanonCardStatusEnum: KanbanCanonCardStatusEnum;
   KanbanCanonCard: ResolverTypeWrapper<KanbanCanonCard>;
   CreateKanbanCanonCardInput: CreateKanbanCanonCardInput;
@@ -760,6 +775,7 @@ export type ResolversParentTypes = {
   KanbanCanon: KanbanCanon;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
+  UpdateCardPositionInput: UpdateCardPositionInput;
   KanbanCanonCard: KanbanCanonCard;
   CreateKanbanCanonCardInput: CreateKanbanCanonCardInput;
   EditKanbanCanonCardInput: EditKanbanCanonCardInput;
@@ -839,6 +855,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
   createKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonArgs, 'input'>>;
   editKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonArgs, 'id' | 'input'>>;
+  updateKanbanCanonCardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType, RequireFields<MutationUpdateKanbanCanonCardPositionsArgs, 'id' | 'input'>>;
   deleteKanbanCanon?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonArgs, 'id'>>;
   createKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonCardArgs, 'input'>>;
   editKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonCardArgs, 'id' | 'input'>>;

@@ -30,11 +30,7 @@ export default class KanbanCardResolverValidator {
     { input }: MutationUpdateKanbanCardArgs,
     context: ServerContext,
   ): Promise<MutationUpdateKanbanCardArgs> {
-    const { id, kanbanId, status } = input;
-
-    if (!Object.values(KanbanCanonCardStatusEnum).includes(status)) {
-      throw new UserInputError(`Invalid status provided: "${status}"`);
-    }
+    const { id, kanbanId } = input;
 
     // make sure kanbanCanonCard exists (note: kanban card and kanbanCanonCard share the same id)
     const kanbanCanonCard = await this.kanbanCanonCardDao

@@ -1,5 +1,5 @@
 import { ServerContext } from "../../buildServerContext";
-import { KanbanCanon, Resolvers } from "../../types/gqlGeneratedTypes";
+import { KanbanCanon, KanbanCardPositions, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanCanonService from "../../service/KanbanCanonService";
 import KanbanCanonResolverValidator from "../../validator/KanbanCanonResolverValidator";
 
@@ -25,6 +25,11 @@ const kanbanCanonResolver = (
         return kanbanCanonResolverValidator
           .editOne(args, context)
           .then(({ id, input }) => kanbanCanonService.editOne(id, input));
+      },
+      updateKanbanCanonCardPositions: (_root, args, context: ServerContext): Promise<KanbanCardPositions> => {
+        return kanbanCanonResolverValidator
+          .updateCardPositions(args, context)
+          .then(({ id, input }) => kanbanCanonService.updateCardPositions(id, input));
       },
       deleteKanbanCanon: (_root, args, context: ServerContext): Promise<boolean> => {
         return kanbanCanonResolverValidator.deleteOne(args, context).then(({ id }) => kanbanCanonService.deleteOne(id));

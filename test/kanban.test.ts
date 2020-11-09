@@ -1,6 +1,6 @@
 import { KanbanSessionRaw } from "../src/dao/KanbanDao";
 import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
-import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
+import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
 import {
   CREATE_ISOLATED_KANBAN_INPUT,
   CREATE_KANBAN_MUTATION,
@@ -19,7 +19,7 @@ import { getAdminCookies, getBobCookies } from "./src/util";
 const testManager = TestManager.build();
 
 const SEEDED_KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2];
-const PAPERJS_WITH_KANBAN_CANON_1 = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1.id };
+const PAPERJS_WITH_KANBAN_CANON_1_RAW = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1_RAW.id };
 let adminCookies: string[];
 let bobCookies: string[];
 
@@ -34,9 +34,9 @@ beforeEach(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllKanbanCanons(); // deletes cards by CASCADE
 
-  await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_1 is the base for MEET_KANBAN_RAW_1 and 2
-  await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1
-  await testManager.addMeets([PAPERJS_WITH_KANBAN_CANON_1]);
+  await testManager.addKanbanCanons([KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW]); // KANBAN_CANON_1_RAW is the base for MEET_KANBAN_RAW_1 and 2
+  await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1_RAW
+  await testManager.addMeets([PAPERJS_WITH_KANBAN_CANON_1_RAW]);
 });
 
 afterAll(async () => {
@@ -105,13 +105,13 @@ describe("Querying kanbans", () => {
   });
   it("returns kanban on meet with kanbanCanonId of requesting user, if exists", async () => {
     await testManager
-      .addKanbans([{ ...MEET_KANBAN_RAW_1, meetId: PAPERJS_WITH_KANBAN_CANON_1.id }])
+      .addKanbans([{ ...MEET_KANBAN_RAW_1, meetId: PAPERJS_WITH_KANBAN_CANON_1_RAW.id }])
       .then(() =>
         testManager
           .getGraphQLResponse({
             query: GET_MEET_QUERY,
             variables: {
-              id: PAPERJS_WITH_KANBAN_CANON_1.id,
+              id: PAPERJS_WITH_KANBAN_CANON_1_RAW.id,
             },
             cookies: bobCookies,
           })
@@ -127,7 +127,7 @@ describe("Querying kanbans", () => {
       .getGraphQLResponse({
         query: GET_MEET_QUERY,
         variables: {
-          id: PAPERJS_WITH_KANBAN_CANON_1.id,
+          id: PAPERJS_WITH_KANBAN_CANON_1_RAW.id,
         },
         cookies: bobCookies,
       })
@@ -356,7 +356,7 @@ describe("Creating kanbans", () => {
       });
   });
   it("returns an appropriate error message when a required field is missing", async () => {
-    const partialInput = { kanbanCanonId: KANBAN_CANON_1.id };
+    const partialInput = { kanbanCanonId: KANBAN_CANON_1_RAW.id };
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_MUTATION,

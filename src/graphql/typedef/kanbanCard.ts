@@ -1,9 +1,5 @@
 import { gql } from "apollo-server-express";
 
-// TODO: remove this if not needed
-// "The initial status column this kanbanCanonCard should appear in";
-// status: KanbanCanonCardStatusEnum!;
-
 const kanbanCard = gql`
   "A kanban card on a kanban. Holds personalized positioning data."
   type KanbanCard {

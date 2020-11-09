@@ -1,6 +1,6 @@
 import { KanbanCanonCardStatusEnum } from "../src/types/gqlGeneratedTypes";
 import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3 } from "./src/kanbanCanonCardConstants";
-import { KANBAN_CANON_1, KANBAN_CANON_2 } from "./src/kanbanCanonConstants";
+import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
 import {
   GET_KANBAN_CARDS_QUERY,
   KANBAN_SESSION_CARD_RAW_1,
@@ -28,7 +28,7 @@ beforeEach(async () => {
   await testManager.deleteAllMeets();
 
   await testManager.addMeets([PAPERJS]);
-  await testManager.addKanbanCanons([KANBAN_CANON_1, KANBAN_CANON_2]); // KANBAN_CANON_2 has no kanbanCanonCards
+  await testManager.addKanbanCanons([KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW]); // KANBAN_CANON_2_RAW has no kanbanCanonCards
   await testManager.addKanbanCanonCards([KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3]);
   await testManager.addKanbans([MEET_KANBAN_RAW_1]);
 });

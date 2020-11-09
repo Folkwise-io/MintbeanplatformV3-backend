@@ -48,11 +48,19 @@ const kanbanCanon = gql`
     description: String
   }
 
+  input UpdateCardPositionInput {
+    cardId: UUID!
+    status: KanbanCanonCardStatusEnum!
+    index: Int!
+  }
+
   extend type Mutation {
     "Creates a new kanbanCanon (requires admin privileges)"
     createKanbanCanon(input: CreateKanbanCanonInput!): KanbanCanon!
     "Edits an existing kanbanCanon (requires admin privileges)"
     editKanbanCanon(id: UUID!, input: EditKanbanCanonInput!): KanbanCanon!
+    "Update the position of a card on a kanbanCanon, and get updated card positions object"
+    updateKanbanCanonCardPositions(id: UUID!, input: UpdateCardPositionInput!): KanbanCardPositions!
     "Deletes a kanbanCanon (requires admin privileges)"
     deleteKanbanCanon(id: UUID!): Boolean!
   }

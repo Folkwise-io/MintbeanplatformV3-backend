@@ -14,7 +14,7 @@ import {
 } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
-import { KANBAN_CANON_1 } from "./src/kanbanCanonConstants";
+import { KANBAN_CANON_1_RAW } from "./src/kanbanCanonConstants";
 
 const testManager = TestManager.build();
 
@@ -44,8 +44,8 @@ describe("Querying meets", () => {
       });
   });
   it("gets a meet by id with kanbanCanon if provided", async () => {
-    const MEET_WITH_KANBAN_CANON = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1.id };
-    await testManager.addKanbanCanons([KANBAN_CANON_1]);
+    const MEET_WITH_KANBAN_CANON = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1_RAW.id };
+    await testManager.addKanbanCanons([KANBAN_CANON_1_RAW]);
     await testManager
       .addMeets([MEET_WITH_KANBAN_CANON])
       .then(() =>

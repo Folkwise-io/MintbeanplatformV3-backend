@@ -1,5 +1,11 @@
 import KanbanDao from "../dao/KanbanDao";
-import { CreateKanbanInput, Kanban, QueryKanbanArgs, QueryKanbansArgs } from "../types/gqlGeneratedTypes";
+import {
+  CreateKanbanInput,
+  Kanban,
+  KanbanCardPositions,
+  QueryKanbanArgs,
+  QueryKanbansArgs,
+} from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 export interface KanbanServiceGetOneArgs extends QueryKanbanArgs {}
