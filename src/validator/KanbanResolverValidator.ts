@@ -1,9 +1,11 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
+import KanbanCardDao from "../dao/KanbanCardDao";
 import KanbanDao from "../dao/KanbanDao";
 import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
+import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
 import { KanbanServiceGetManyArgs, KanbanServiceGetOneArgs } from "../service/KanbanService";
 import {
   Kanban,
@@ -11,13 +13,17 @@ import {
   Meet,
   MutationCreateKanbanArgs,
   MutationDeleteKanbanArgs,
+  MutationUpdateKanbanCanonCardPositionsArgs,
 } from "../types/gqlGeneratedTypes";
 import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
+import { validateAgainstSchema } from "../util/validateAgainstSchema";
+import { updateKanbanCardPositionsInputSchema } from "./yupSchemas/kanbanCanon";
 
 export default class KanbanResolverValidator {
   constructor(
     private kanbanDao: KanbanDao,
+    private kanbanCardDao: KanbanCardDao,
     private kanbanCanonDao: KanbanCanonDao,
     private userDao: UserDao,
     private meetDao: MeetDao,
@@ -90,6 +96,35 @@ export default class KanbanResolverValidator {
     }
 
     return { input };
+  }
+
+  async updateKanbanCardPositions(
+    { id, input }: MutationUpdateKanbanCanonCardPositionsArgs,
+    context: ServerContext,
+  ): Promise<MutationUpdateKanbanCanonCardPositionsArgs> {
+    // TODO: check that requester is kanban owner
+
+    // if (!context.getIsAdmin()) {
+    //   throw new AuthenticationError("You are not authorized to edit kanban canons!");
+    // }
+
+    validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
+
+    // Check if kanban canon id exists in db
+    const kanban = (await this.kanbanDao.getOne({ id }).then((kanban) => ensureExists("Kanban")(kanban))) as Kanban;
+
+    // ensure that the requester is the kanban owner
+    const kanbanOwnerId = kanban.userId;
+    const currUserId = context.getUserId();
+
+    if (currUserId !== kanbanOwnerId)
+      throw new AuthenticationError("You are not authorized to update a kanban of another user!");
+
+    await this.kanbanCardDao
+      .getOne({ id: input.cardId, kanbanId: id })
+      .then((kanbanCard) => ensureExists("Kanban Card")(kanbanCard));
+
+    return { id, input };
   }
 
   async deleteOne({ id }: MutationDeleteKanbanArgs, context: ServerContext): Promise<MutationDeleteKanbanArgs> {

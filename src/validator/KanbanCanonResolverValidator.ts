@@ -82,7 +82,6 @@ export default class KanbanCanonResolverValidator {
       .getOne({ id: input.cardId })
       .then((kanbanCanonCard) => ensureExists("Kanban Canon Card")(kanbanCanonCard));
 
-    validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(editKanbanCanonInputSchema, input);
     return { id, input };
   }
 }

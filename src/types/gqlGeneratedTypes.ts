@@ -213,6 +213,8 @@ export type Mutation = {
   deleteKanbanCanonCard: Scalars['Boolean'];
   /** Creates a new kanban view */
   createKanban: Kanban;
+  /** Update the position of a card on a kanban, and get updated card positions object */
+  updateKanbanCardPositions: KanbanCardPositions;
   deleteKanban: Scalars['Boolean'];
   /** Updates a kanbanCard */
   updateKanbanCard?: Maybe<KanbanCard>;
@@ -316,6 +318,12 @@ export type MutationDeleteKanbanCanonCardArgs = {
 
 export type MutationCreateKanbanArgs = {
   input: CreateKanbanInput;
+};
+
+
+export type MutationUpdateKanbanCardPositionsArgs = {
+  id: Scalars['UUID'];
+  input: UpdateCardPositionInput;
 };
 
 
@@ -861,6 +869,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   editKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonCardArgs, 'id' | 'input'>>;
   deleteKanbanCanonCard?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonCardArgs, 'id'>>;
   createKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationCreateKanbanArgs, 'input'>>;
+  updateKanbanCardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType, RequireFields<MutationUpdateKanbanCardPositionsArgs, 'id' | 'input'>>;
   deleteKanban?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanArgs, 'id'>>;
   updateKanbanCard?: Resolver<Maybe<ResolversTypes['KanbanCard']>, ParentType, ContextType, RequireFields<MutationUpdateKanbanCardArgs, 'input'>>;
 };

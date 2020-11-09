@@ -4,7 +4,8 @@ import KanbanDao, { KanbanSessionRaw } from "./KanbanDao";
 import { Kanban, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
 import { prefixKeys } from "../util/prefixKeys";
-import { resolve } from "./util/cardPositionUtils";
+import { resolve, updateCardPositions } from "./util/cardPositionUtils";
+import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
 
 // type KanbanQueryTypes = KanbanServiceGetOneArgs | KanbanServiceGetManyArgs;
 // const queryKanban = async (knex: Knex, args: KanbanQueryTypes) => {
@@ -110,6 +111,30 @@ export default class KanbanDaoKnex implements KanbanDao {
     return handleDatabaseError(async () => {
       await this.knex("kanbanSessions").insert(args);
       // Note: to get this newly created kanban, re-fetch using this.getOne() with the same args
+    });
+  }
+
+  async updateCardPositions(
+    id: string,
+    input: KanbanCanonServiceUpdateCardPositionsInput,
+  ): Promise<KanbanCardPositions> {
+    return handleDatabaseError(async () => {
+      // get old positions
+      const { cardPositions: oldPositions } = await this.knex
+        .select("cardPositions")
+        .from("kanbanSessions")
+        .where({ id })
+        .first();
+
+      // calculate new positions
+      const newPositions = updateCardPositions({ oldPositions, ...input });
+
+      // update cardPositions in db
+      await this.knex("kanbanSessions")
+        .where({ id })
+        .update({ cardPositions: newPositions, updatedAt: this.knex.fn.now() });
+
+      return newPositions;
     });
   }
 

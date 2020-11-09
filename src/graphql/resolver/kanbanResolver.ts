@@ -1,5 +1,5 @@
 import { ServerContext } from "../../buildServerContext";
-import { Kanban, Resolvers } from "../../types/gqlGeneratedTypes";
+import { Kanban, KanbanCardPositions, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanService from "../../service/KanbanService";
 import KanbanResolverValidator from "../../validator/KanbanResolverValidator";
 
@@ -17,6 +17,12 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
     Mutation: {
       createKanban: (_root, args, context: ServerContext): Promise<Kanban> => {
         return kanbanResolverValidator.addOne(args, context).then(({ input }) => kanbanService.addOne(input));
+      },
+
+      updateKanbanCardPositions: (_root, args, context: ServerContext): Promise<KanbanCardPositions> => {
+        return kanbanResolverValidator
+          .updateKanbanCardPositions(args, context)
+          .then(({ id, input }) => kanbanService.updateCardPositions(id, input));
       },
 
       deleteKanban: (_root, args, context: ServerContext): Promise<boolean> => {

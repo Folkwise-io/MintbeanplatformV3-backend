@@ -50,6 +50,8 @@ const kanban = gql`
   extend type Mutation {
     "Creates a new kanban view"
     createKanban(input: CreateKanbanInput!): Kanban!
+    "Update the position of a card on a kanban, and get updated card positions object"
+    updateKanbanCardPositions(id: UUID!, input: UpdateCardPositionInput!): KanbanCardPositions!
     deleteKanban(id: UUID!): Boolean!
   }
 `;
