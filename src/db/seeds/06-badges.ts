@@ -7,25 +7,28 @@ export async function seed(knex: Knex): Promise<void> {
   // Inserts seed entries
   await knex("badges").insert([
     {
-      id: "00000000-0000-0000-0000-000000000000",
+      badgeId: "00000000-0000-0000-0000-000000000000",
       alias: ":winner-first:",
       badgeShape: "star",
+      faIcon: "trophy",
       title: "Winner - 1st place",
       description: "",
       weight: 1000,
     },
     {
-      id: "00000000-0000-4000-a000-000000000000",
+      badgeId: "00000000-0000-4000-a000-000000000000",
       alias: ":winner-second:",
       badgeShape: "square",
+      faIcon: "medal",
       title: "2nd place",
       description: "",
       weight: 750,
     },
     {
-      id: "00000000-0000-4000-a000-000000000001",
+      badgeId: "00000000-0000-4000-a000-000000000001",
       alias: ":winner-third:",
       badgeShape: "circle",
+      faIcon: "award",
       title: "3rd place",
       description: "",
       weight: 500,

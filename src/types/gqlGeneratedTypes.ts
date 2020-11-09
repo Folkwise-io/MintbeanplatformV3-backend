@@ -81,7 +81,7 @@ export type Query = {
   project?: Maybe<Project>;
   /** Gets all the badges */
   badges?: Maybe<Array<Maybe<Badge>>>;
-  /** gets one badge by id */
+  /** gets one badge by id or alias */
   badge?: Maybe<Badge>;
 };
 
@@ -118,7 +118,7 @@ export type QueryProjectArgs = {
 
 
 export type QueryBadgeArgs = {
-  id: Scalars['UUID'];
+  badgeId: Scalars['UUID'];
 };
 
 /** The fields needed for a new user to register */
@@ -159,6 +159,10 @@ export type Mutation = {
   sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
   /** Creates a new badge (requires admin privileges */
   createBadge: Badge;
+  /** Edits a badge (requires admin privileges) */
+  editBadge: Badge;
+  /** Deletes a badge (requires admin privileges) */
+  deleteBadge: Scalars['Boolean'];
 };
 
 
@@ -221,6 +225,17 @@ export type MutationSendSampleRegistrationEmailForMeetArgs = {
 
 export type MutationCreateBadgeArgs = {
   input: CreateBadgeInput;
+};
+
+
+export type MutationEditBadgeArgs = {
+  badgeId: Scalars['UUID'];
+  input: EditBadgeInput;
+};
+
+
+export type MutationDeleteBadgeArgs = {
+  badgeId: Scalars['UUID'];
 };
 
 export type Post = {
@@ -393,10 +408,13 @@ export enum BadgeShapes {
 export type Badge = {
   __typename?: 'Badge';
   /** ID of the badge in UUID */
-  id: Scalars['UUID'];
+  badgeId: Scalars['UUID'];
   /** A user friendly :colon-surrounded: badge alias. */
   alias: Scalars['String'];
+  /** The shape of the enclosing badge */
   badgeShape: BadgeShapes;
+  /** The Font Awesome icon that will be the graphic of the badge (required) */
+  faIcon: Scalars['String'];
   /** The hex code for the background color (all 6 digits, no # before code) */
   backgroundHex?: Maybe<Scalars['String']>;
   /** The hex code for the icon color (all 6 digits, no # before code) */
@@ -409,22 +427,46 @@ export type Badge = {
   weight?: Maybe<Scalars['Int']>;
   /** when this badge was first created */
   createdAt: Scalars['DateTime'];
+  /** when this badge was last updated */
+  updatedAt: Scalars['DateTime'];
 };
 
 /** the input needed to create a new badge */
 export type CreateBadgeInput = {
   /** the id of the badge */
-  id: Scalars['String'];
+  badgeId: Scalars['String'];
   /** the alias of the badge */
   alias: Scalars['String'];
   /** the shape of the badge */
   badgeShape: BadgeShapes;
+  /** The Font Awesome icon that will be the graphic of the badge (required) */
+  faIcon: Scalars['String'];
   /** the background color of the badge(optional) */
   backgroundHex?: Maybe<Scalars['String']>;
   /** the color of the icon(optional) */
   iconHex?: Maybe<Scalars['String']>;
   /** the title of the badge */
   title: Scalars['String'];
+  /** a description of the badge (optional) */
+  description?: Maybe<Scalars['String']>;
+  /** how heavily this badge should be weighted(optional) */
+  weight?: Maybe<Scalars['Int']>;
+};
+
+/** Input that can be used to edit a badge - all fields are optional */
+export type EditBadgeInput = {
+  /** the alias of the badge */
+  alias?: Maybe<Scalars['String']>;
+  /** the shape of the badge */
+  badgeShape?: Maybe<BadgeShapes>;
+  /** The Font Awesome icon that will be the graphic of the badge (required) */
+  faIcon?: Maybe<Scalars['String']>;
+  /** the background color of the badge(optional) */
+  backgroundHex?: Maybe<Scalars['String']>;
+  /** the color of the icon(optional) */
+  iconHex?: Maybe<Scalars['String']>;
+  /** the title of the badge */
+  title?: Maybe<Scalars['String']>;
   /** a description of the badge (optional) */
   description?: Maybe<Scalars['String']>;
   /** how heavily this badge should be weighted(optional) */
@@ -532,6 +574,7 @@ export type ResolversTypes = {
   BadgeShapes: BadgeShapes;
   Badge: ResolverTypeWrapper<Badge>;
   CreateBadgeInput: CreateBadgeInput;
+  EditBadgeInput: EditBadgeInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -557,6 +600,7 @@ export type ResolversParentTypes = {
   MeetReminderEmailInput: MeetReminderEmailInput;
   Badge: Badge;
   CreateBadgeInput: CreateBadgeInput;
+  EditBadgeInput: EditBadgeInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -605,7 +649,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
   badges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Badge']>>>, ParentType, ContextType>;
-  badge?: Resolver<Maybe<ResolversTypes['Badge']>, ParentType, ContextType, RequireFields<QueryBadgeArgs, 'id'>>;
+  badge?: Resolver<Maybe<ResolversTypes['Badge']>, ParentType, ContextType, RequireFields<QueryBadgeArgs, 'badgeId'>>;
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
@@ -622,6 +666,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
   sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
   createBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationCreateBadgeArgs, 'input'>>;
+  editBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationEditBadgeArgs, 'badgeId' | 'input'>>;
+  deleteBadge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteBadgeArgs, 'badgeId'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -679,15 +725,17 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
 };
 
 export type BadgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']> = {
-  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  badgeId?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   alias?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   badgeShape?: Resolver<ResolversTypes['BadgeShapes'], ParentType, ContextType>;
+  faIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   backgroundHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   iconHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   weight?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

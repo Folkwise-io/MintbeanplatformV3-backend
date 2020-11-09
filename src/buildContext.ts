@@ -103,7 +103,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailResolverValidator = new EmailResolverValidator();
   const emailDao = new EmailDao(sendGridKey);
   const emailService = new EmailService(emailDao);
-  const badgeResolverValidator = new BadgeResolverValidator();
+  const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
 
   return {
