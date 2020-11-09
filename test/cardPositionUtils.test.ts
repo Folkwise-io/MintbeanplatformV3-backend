@@ -252,7 +252,7 @@ describe("updateCardPositions()", () => {
       };
       expect(actual).toMatchObject(expected);
     });
-    it("updates index of a card", () => {
+    it("gracefully fails by returning original positions if invalid cardId passed", () => {
       const actual = updateCardPositions({
         oldPositions: OLD_POSITIONS,
         cardId: "d",
