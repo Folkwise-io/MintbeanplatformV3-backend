@@ -433,8 +433,6 @@ export type Badge = {
 
 /** the input needed to create a new badge */
 export type CreateBadgeInput = {
-  /** the id of the badge */
-  badgeId: Scalars['String'];
   /** the alias of the badge */
   alias: Scalars['String'];
   /** the shape of the badge */

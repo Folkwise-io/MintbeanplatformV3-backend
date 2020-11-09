@@ -42,8 +42,6 @@ const badge = gql`
 
   "the input needed to create a new badge"
   input CreateBadgeInput {
-    "the id of the badge"
-    badgeId: String!
     "the alias of the badge"
     alias: String!
     "the shape of the badge"

@@ -11,7 +11,6 @@ export interface BadgeServiceGetOneArgs {
 }
 
 export interface BadgeServiceAddOneInput {
-  badgeId: string;
   alias: string;
   badgeShape: BadgeShapes;
   faIcon: string;
