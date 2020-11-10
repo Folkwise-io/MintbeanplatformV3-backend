@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import ProjectDao from "../dao/ProjectDao";
 import { ProjectServiceAddOneInput, ProjectServiceGetOneArgs } from "../service/ProjectService";
@@ -33,11 +33,16 @@ export default class ProjectResolverValidator {
     return inputWithoutMediaAssets;
   }
 
-  async deleteOne({ id }: MutationDeleteProjectArgs): Promise<string> {
+  async deleteOne({ id }: MutationDeleteProjectArgs, context: ServerContext): Promise<MutationDeleteProjectArgs> {
     // Check if project id exists in db
-    return this.projectDao
-      .getOne({ id })
-      .then((project) => ensureExists<Project>("Project")(project))
-      .then(({ id }) => id);
+    const project = await this.projectDao.getOne({ id }).then((project) => ensureExists<Project>("Project")(project));
+
+    const { userId: projectOwnerId } = project;
+    const currentUserId = context.getUserId();
+
+    if (!context.getIsAdmin() && currentUserId !== projectOwnerId) {
+      throw new AuthenticationError("You are not authorized to delete the project!");
+    }
+    return { id };
   }
 }

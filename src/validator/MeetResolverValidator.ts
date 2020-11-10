@@ -1,5 +1,7 @@
+import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
+import UserDao from "../dao/UserDao";
 import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
 import {
   Meet,
@@ -8,6 +10,7 @@ import {
   MutationEditMeetArgs,
   MutationRegisterForMeetArgs,
 } from "../types/gqlGeneratedTypes";
+import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
 
@@ -45,11 +48,17 @@ export default class MeetResolverValidator {
       .then(({ id }) => id);
   }
 
-  async registerForMeet({ meetId }: MutationRegisterForMeetArgs): Promise<string> {
+  async registerForMeet(
+    { meetId }: MutationRegisterForMeetArgs,
+    context: ServerContext,
+  ): Promise<MutationRegisterForMeetArgs> {
+    const currentUserId = context.getUserId();
+
+    if (!currentUserId) {
+      throw new AuthenticationError("You are not authorized to register for a meet! Please log in first.");
+    }
     // Check if meet id exists in db
-    return this.meetDao
-      .getOne({ id: meetId })
-      .then((meet) => ensureExists<Meet>("Meet")(meet))
-      .then(({ id }) => id);
+    await this.meetDao.getOne({ id: meetId }).then((meet) => ensureExists<Meet>("Meet")(meet));
+    return { meetId };
   }
 }

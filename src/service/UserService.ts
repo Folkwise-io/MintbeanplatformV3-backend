@@ -1,5 +1,4 @@
 import { User } from "../types/User";
-import { EntityService } from "./EntityService";
 import bcrypt from "bcryptjs";
 import UserDao from "../dao/UserDao";
 
@@ -26,10 +25,10 @@ export interface UserServiceAddOneArgs {
   password: string;
 }
 
-export default class UserService implements EntityService<User> {
+export default class UserService {
   constructor(private userDao: UserDao) {}
 
-  async getOne(args: UserServiceGetOneArgs): Promise<User> {
+  async getOne(args: UserServiceGetOneArgs): Promise<User | undefined> {
     return this.userDao.getOne(args);
   }
 
@@ -38,7 +37,7 @@ export default class UserService implements EntityService<User> {
   }
 
   async checkPassword(args: UserServiceLoginArgs): Promise<boolean> {
-    const user: User = await this.userDao.getOne({ email: args.email });
+    const user = await this.userDao.getOne({ email: args.email });
     if (!user) {
       return false;
     }

@@ -7,6 +7,8 @@ import UserService from "../../service/UserService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 import config from "../../util/config";
+import { User } from "../../types/User";
+import { ensureExists } from "../../util/ensureExists";
 const { disableRegistrationEmail } = config;
 
 const meetResolver = (
@@ -53,22 +55,21 @@ const meetResolver = (
 
         return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
       },
-      registerForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
-        const currentUserId = context.getUserId();
 
-        if (!currentUserId) {
-          throw new AuthenticationError("You are not authorized to register for a meet! Please log in first.");
-        }
+      // TODO: antipattern here. Force args interface to require explicit userId
+      registerForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
+        // TODO: get userId from args, add valid user check in meetResolverValidator once above antipattern addressed
+        const userId = context.getUserId();
 
         return meetResolverValidator
-          .registerForMeet(args)
-          .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
+          .registerForMeet(args, context)
+          .then(({ meetId }) => meetRegistrationService.addOne({ userId, meetId }))
           .then(async ({ userId, meetId, id }) => {
             if (disableRegistrationEmail) {
               return true;
             }
 
-            const user = await userService.getOne({ id: userId });
+            const user = ((await userService.getOne({ id: userId })) as unknown) as User; // temporary casting as we know user exists bc logged in user exists.
             const meet = await meetService.getOne({ id: meetId });
             const email = emailService.generateMeetRegistrationEmail(user, meet as Meet, id);
 

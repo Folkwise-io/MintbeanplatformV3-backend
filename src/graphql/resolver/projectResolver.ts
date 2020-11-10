@@ -15,30 +15,34 @@ const projectResolver = (
   return {
     Query: {
       // TODO: Show "deleted=true" projects for admin? Currently this query does not get Projects with "deleted=true"
-      project: (_root, args, context: ServerContext): Promise<Project> => {
-        return projectResolverValidator.getOne(args, context).then((args) => projectService.getOne(args, context));
+      project: (_root, args, context: ServerContext): Promise<Project | null> => {
+        return projectResolverValidator
+          .getOne(args, context)
+          .then((args) => projectService.getOne(args))
+          .then((result) => (result ? result : null));
       },
     },
 
     PublicUser: {
       projects: (user, context) => {
-        return projectService.getMany({ userId: user.id }, context);
+        return projectService.getMany({ userId: user.id });
       },
     },
 
     PrivateUser: {
       projects: (user, context) => {
-        return projectService.getMany({ userId: user.id }, context);
+        return projectService.getMany({ userId: user.id });
       },
     },
 
     Meet: {
       projects: (meet, context) => {
-        return projectService.getMany({ meetId: meet.id }, context);
+        return projectService.getMany({ meetId: meet.id });
       },
     },
 
     Mutation: {
+      // TODO: why's there so much logic here??? Move to validator/services
       createProject: async (_root, args, context: ServerContext): Promise<Project> => {
         const inputUserId = args.input.userId;
         const currentUserId = context.getUserId();
@@ -86,20 +90,11 @@ const projectResolver = (
         await projectMediaAssetService.addMany(projectMediaAssets);
 
         // Query the project again to retrieve its associated media assets
-        return projectService.getOne({ id: projectId }, context);
+        return (projectService.getOne({ id: projectId }) as unknown) as Project;
       },
 
       deleteProject: (_root, args, context: ServerContext): Promise<boolean> => {
-        return projectResolverValidator.deleteOne(args).then(async (projectId) => {
-          const { userId: projectOwnerId } = await projectService.getOne({ id: projectId }, context);
-          const currentUserId = context.getUserId();
-
-          if (!context.getIsAdmin() && currentUserId !== projectOwnerId) {
-            throw new AuthenticationError("You are not authorized to delete the project!");
-          }
-
-          return projectService.deleteOne(projectId);
-        });
+        return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectService.deleteOne(id));
       },
     },
   };

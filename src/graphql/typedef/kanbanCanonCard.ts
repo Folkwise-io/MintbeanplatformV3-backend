@@ -23,8 +23,12 @@ const kanbanCanonCard = gql`
   }
 
   extend type KanbanCanon {
-    "The kanban cards that belong to a kanban"
+    "The kanban cards that belong to a kanban canon"
     kanbanCanonCards: [KanbanCanonCard]
+  }
+  extend type Kanban {
+    "The kanban cards that belong to a kanban"
+    kanbanCards: [KanbanCanonCard]
   }
 
   extend type Query {

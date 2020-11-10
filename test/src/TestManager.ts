@@ -19,7 +19,6 @@ import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
 import { KanbanSessionRaw } from "../../src/dao/KanbanDao";
-import { KanbanSessionCardRaw } from "../../src/dao/KanbanCardDao";
 import { KanbanCanonRaw } from "../../src/dao/KanbanCanonDao";
 
 interface TestManagerParams {
@@ -92,10 +91,6 @@ export default class TestManager {
   addKanbans(kanbans: KanbanSessionRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanDao.addMany(kanbans);
   }
-  addKanbanSessionCards(kanbanCards: KanbanSessionCardRaw[]): Promise<void> {
-    return this.params.persistenceContext.kanbanCardDao.addMany(kanbanCards);
-  }
-
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }

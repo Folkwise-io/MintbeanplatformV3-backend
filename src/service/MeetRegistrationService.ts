@@ -18,8 +18,8 @@ export default class MeetRegistrationService implements EntityService<MeetRegist
     throw new Error("not emplemented");
   }
 
-  async addOne(args: MeetRegistrationServiceAddOneArgs, context: any): Promise<MeetRegistration> {
-    return this.meetRegistrationDao.addOne(args)
+  async addOne(args: MeetRegistrationServiceAddOneArgs): Promise<MeetRegistration> {
+    return this.meetRegistrationDao.addOne(args);
   }
 
   async addMany(args: MeetRegistrationServiceAddOneArgs[]): Promise<void> {

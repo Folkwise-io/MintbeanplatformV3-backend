@@ -42,7 +42,7 @@ export const GET_KANBAN_QUERY = gql`
         id
         title
         body
-        kanbanId
+        kanbanCanonId
       }
       cardPositions {
         todo
@@ -67,7 +67,7 @@ export const GET_KANBANS_QUERY = gql`
         id
         title
         body
-        kanbanId
+        kanbanCanonId
       }
       cardPositions {
         todo
@@ -96,7 +96,7 @@ export const CREATE_KANBAN_MUTATION = gql`
         id
         title
         body
-        kanbanId
+        kanbanCanonId
       }
       cardPositions {
         todo

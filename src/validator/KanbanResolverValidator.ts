@@ -1,7 +1,7 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
+import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
-import KanbanCardDao from "../dao/KanbanCardDao";
 import KanbanDao from "../dao/KanbanDao";
 import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
@@ -23,8 +23,8 @@ import { updateKanbanCardPositionsInputSchema } from "./yupSchemas/kanbanCanon";
 export default class KanbanResolverValidator {
   constructor(
     private kanbanDao: KanbanDao,
-    private kanbanCardDao: KanbanCardDao,
     private kanbanCanonDao: KanbanCanonDao,
+    private kanbanCanonCardDao: KanbanCanonCardDao,
     private userDao: UserDao,
     private meetDao: MeetDao,
   ) {}
@@ -120,9 +120,9 @@ export default class KanbanResolverValidator {
     if (currUserId !== kanbanOwnerId)
       throw new AuthenticationError("You are not authorized to update a kanban of another user!");
 
-    await this.kanbanCardDao
-      .getOne({ id: input.cardId, kanbanId: id })
-      .then((kanbanCard) => ensureExists("Kanban Card")(kanbanCard));
+    await this.kanbanCanonCardDao
+      .getOne({ id: input.cardId })
+      .then((kanbanCanonCard) => ensureExists("Kanban CanonCard")(kanbanCanonCard));
 
     return { id, input };
   }

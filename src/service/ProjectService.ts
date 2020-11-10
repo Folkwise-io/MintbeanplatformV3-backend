@@ -19,14 +19,14 @@ export interface ProjectServiceAddOneInput {
   liveUrl: string;
 }
 
-export default class ProjectService implements EntityService<Project> {
+export default class ProjectService {
   constructor(private projectDao: ProjectDao) {}
 
-  getOne(args: ProjectServiceGetOneArgs, context: any): Promise<Project> {
+  getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined> {
     return this.projectDao.getOne(args);
   }
 
-  getMany(args: ProjectServiceGetManyArgs, context: any): Promise<Project[]> {
+  getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
     return this.projectDao.getMany(args);
   }
 

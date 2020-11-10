@@ -37,10 +37,6 @@ import KanbanDao from "./dao/KanbanDao";
 import KanbanDaoKnex from "./dao/KanbanDaoKnex";
 import KanbanService from "./service/KanbanService";
 import KanbanResolverValidator from "./validator/KanbanResolverValidator";
-import KanbanCardDao from "./dao/KanbanCardDao";
-import KanbanCardDaoKnex from "./dao/KanbanCardDaoKnex";
-import KanbanCardResolverValidator from "./validator/KanbanCardResolverValidator";
-import KanbanCardService from "./service/KanbanCardService";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
 
 export interface PersistenceContext {
@@ -53,7 +49,6 @@ export interface PersistenceContext {
   kanbanCanonDao: KanbanCanonDao;
   kanbanCanonCardDao: KanbanCanonCardDao;
   kanbanDao: KanbanDao;
-  kanbanCardDao: KanbanCardDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -67,7 +62,6 @@ export function buildPersistenceContext(): PersistenceContext {
   const kanbanCanonDao = new KanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new KanbanCanonCardDaoKnex(knex);
   const kanbanDao = new KanbanDaoKnex(knex);
-  const kanbanCardDao = new KanbanCardDaoKnex(knex);
 
   return {
     userDao,
@@ -79,7 +73,6 @@ export function buildPersistenceContext(): PersistenceContext {
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
-    kanbanCardDao,
   };
 }
 
@@ -102,8 +95,6 @@ export interface ResolverContext {
   kanbanCanonCardResolverValidator: KanbanCanonCardResolverValidator;
   kanbanService: KanbanService;
   kanbanResolverValidator: KanbanResolverValidator;
-  kanbanCardService: KanbanCardService;
-  kanbanCardResolverValidator: KanbanCardResolverValidator;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -117,7 +108,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
-    kanbanCardDao,
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
@@ -136,13 +126,11 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const kanbanService = new KanbanService(kanbanDao);
   const kanbanResolverValidator = new KanbanResolverValidator(
     kanbanDao,
-    kanbanCardDao,
     kanbanCanonDao,
+    kanbanCanonCardDao,
     userDao,
     meetDao,
   );
-  const kanbanCardService = new KanbanCardService(kanbanCardDao);
-  const kanbanCardResolverValidator = new KanbanCardResolverValidator(kanbanCardDao, kanbanDao, kanbanCanonCardDao);
 
   const { sendGridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
@@ -168,7 +156,5 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanService,
     kanbanCanonResolverValidator,
     kanbanResolverValidator,
-    kanbanCardService,
-    kanbanCardResolverValidator,
   };
 }
