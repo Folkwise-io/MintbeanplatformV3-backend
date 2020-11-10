@@ -134,7 +134,7 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
 
 ### Kanban
 
-The kanban is a workflow board with status columns and card items that can be moved between those columns. We currently have three available status columns: `TODO`, `WIP` and `DONE`.
+The kanban is a workflow board with status columns and card items that can be moved between those columns (x dimension) and change order within a column (y dimension). We currently have three available status columns: `TODO`, `WIP` and `DONE`.
 
 There are two important entities to be aware of: `KanbanCanon` and `Kanban`.
 
@@ -142,4 +142,4 @@ There are two important entities to be aware of: `KanbanCanon` and `Kanban`.
 
 **Kanban** is the individualized view of a kanban for a given user. It contains `kanbanCards` that persist their position after the user has moved them. `kanbanCard`s are stiteched together from canoncial and session (individual) data in the db
 
-![image](https://user-images.githubusercontent.com/9841162/98052044-06e29f00-1dea-11eb-91a6-8c698debf421.png)
+![image](https://user-images.githubusercontent.com/9841162/98745006-8e3e8e00-2367-11eb-941c-48be8252bc3e.png)
