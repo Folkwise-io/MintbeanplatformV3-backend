@@ -6,8 +6,11 @@ import KanbanResolverValidator from "../../validator/KanbanResolverValidator";
 const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanbanService: KanbanService): Resolvers => {
   return {
     Query: {
-      kanban: (_root, args, context: ServerContext): Promise<Kanban> => {
-        return kanbanResolverValidator.getOne(args, context).then((args) => kanbanService.getOne(args));
+      kanban: (_root, args, context: ServerContext): Promise<Kanban | null> => {
+        return kanbanResolverValidator
+          .getOne(args, context)
+          .then((args) => kanbanService.getOne(args))
+          .then((result) => (result ? result : null));
       },
       kanbans: (_root, args, context: ServerContext): Promise<Kanban[]> => {
         return kanbanResolverValidator.getMany(args, context).then((args) => kanbanService.getMany(args));
@@ -38,7 +41,9 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
         if (!context.getUserId()) return null;
         // retrieve kanban of requesting user
         const requesterId = context.getUserId();
-        return kanbanService.getOne({ meetId: meet.id, kanbanCanonId: meet.kanbanCanonId, userId: requesterId });
+        return kanbanService
+          .getOne({ meetId: meet.id, kanbanCanonId: meet.kanbanCanonId, userId: requesterId })
+          .then((result) => (result ? result : null));
       },
     },
   };

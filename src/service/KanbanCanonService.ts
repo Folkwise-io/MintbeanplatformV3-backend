@@ -30,14 +30,15 @@ export default class KanbanCanonService implements EntityService<KanbanCanon> {
   }
 
   async addOne(input: KanbanCanonServiceAddOneInput): Promise<KanbanCanon> {
-    const newKanbanCanon = await this.kanbanCanonDao.addOne(input);
-    return this.kanbanCanonDao.getOne({ id: newKanbanCanon.id });
+    const newKanbanCanonId = await this.kanbanCanonDao.addOne(input);
+    return this.kanbanCanonDao.getOne({ id: newKanbanCanonId });
   }
 
   async editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon> {
     return this.kanbanCanonDao.editOne(id, input);
   }
 
+  // for existing cards
   async updateCardPositions(
     id: string,
     input: KanbanCanonServiceUpdateCardPositionsInput,

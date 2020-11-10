@@ -26,13 +26,3 @@ export const GET_KANBAN_CARDS_QUERY = gql`
     }
   }
 `;
-
-export const UPDATE_KANBAN_CARD_MUTATION = gql`
-  mutation updateKanbanCard($input: UpdateKanbanCardInput!) {
-    updateKanbanCard(input: $input) {
-      id
-      title
-      body
-    }
-  }
-`;

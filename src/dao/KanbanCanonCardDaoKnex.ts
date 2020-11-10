@@ -8,14 +8,17 @@ import {
   KanbanCanonCardServiceAddOneInput,
   KanbanCanonCardServiceEditOneInput,
 } from "../service/KanbanCanonCardService";
+import { ensureExists } from "../util/ensureExists";
 
 export default class KanbanCanonCardDaoKnex implements KanbanCanonCardDao {
   constructor(private knex: Knex) {}
   async getOne(args: KanbanCanonCardServiceGetOneArgs): Promise<KanbanCanonCard> {
-    return handleDatabaseError(() => {
-      return this.knex("kanbanCanonCards")
+    return handleDatabaseError(async () => {
+      const kanbanCanonCard = await this.knex("kanbanCanonCards")
         .where({ ...args, deleted: false })
         .first();
+      ensureExists<KanbanCanonCard>("Kanban Canon Card")(kanbanCanonCard);
+      return kanbanCanonCard;
     });
   }
 

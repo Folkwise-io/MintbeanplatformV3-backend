@@ -1,19 +1,13 @@
 import { gql } from "apollo-server-express";
 import { KanbanCanonRaw } from "../../src/dao/KanbanCanonDao";
 import { CreateKanbanCanonInput, EditKanbanCanonInput } from "../../src/types/gqlGeneratedTypes";
-import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3 } from "./kanbanCanonCardConstants";
 
 export const KANBAN_CANON_1_RAW: KanbanCanonRaw = {
-  id: "00000000-0000-0000-0000-000000000000",
+  id: "b36d2ecd-ac89-406c-816f-6b067e036cff",
   title: "Test Kanban 1",
   description: "Lorem ipsum whatever",
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
-  cardPositions: {
-    todo: [KANBAN_CANON_CARD_2.id, KANBAN_CANON_CARD_3.id],
-    wip: [KANBAN_CANON_CARD_1.id],
-    done: [],
-  },
 };
 
 export const KANBAN_CANON_2_RAW: KanbanCanonRaw = {
@@ -22,11 +16,6 @@ export const KANBAN_CANON_2_RAW: KanbanCanonRaw = {
   description: "Lorem ipsum whatever",
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
-  cardPositions: {
-    todo: [],
-    wip: [],
-    done: [],
-  },
 };
 
 export const GET_KANBAN_CANON_QUERY = gql`

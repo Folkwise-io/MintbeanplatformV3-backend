@@ -13,7 +13,7 @@ export interface KanbanCanonRaw {
   description: string;
   createdAt?: string;
   updatedAt?: string;
-  cardPositions: KanbanCardPositions;
+  cardPositions?: KanbanCardPositions;
 }
 
 export default interface KanbanCanonDao {
@@ -22,6 +22,7 @@ export default interface KanbanCanonDao {
   addOne(input: KanbanCanonServiceAddOneInput): Promise<{ id: string }>;
   editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon>;
   updateCardPositions(id: string, input: KanbanCanonServiceUpdateCardPositionsInput): Promise<KanbanCardPositions>;
+  insertNewCardPosition(id: string, input: KanbanCanonServiceUpdateCardPositionsInput): Promise<KanbanCardPositions>;
   deleteOne(id: string): Promise<boolean>;
   // Testing methods for TestManager to call
   addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void>;

@@ -4,26 +4,27 @@ import {
   EditKanbanCanonCardInput,
   KanbanCanonCard,
 } from "../../src/types/gqlGeneratedTypes";
+import { KANBAN_CANON_1_RAW } from "./kanbanCanonConstants";
 
 export const KANBAN_CANON_CARD_1: KanbanCanonCard = {
-  id: "00000000-0000-0000-0000-000000000000",
-  kanbanCanonId: "00000000-0000-0000-0000-000000000000", // Animation Toys 1 Kanban
+  id: "89a87a56-b08c-4140-9a7b-9c18e667641d",
+  kanbanCanonId: KANBAN_CANON_1_RAW.id, // Animation Toys 1 Kanban
   title: "Kanban Card 1",
   body: "This is the **first** thing to do",
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
 };
 export const KANBAN_CANON_CARD_2: KanbanCanonCard = {
-  id: "00000000-0000-4000-a000-000000000000",
-  kanbanCanonId: "00000000-0000-0000-0000-000000000000", // Animation Toys 1 Kanban
+  id: "86675f88-e570-4243-bd64-8ad322a0475e",
+  kanbanCanonId: KANBAN_CANON_1_RAW.id, // Animation Toys 1 Kanban
   title: "Kanban Card 2",
   body: "This is the **second** thing to do",
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
 };
 export const KANBAN_CANON_CARD_3: KanbanCanonCard = {
-  id: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
-  kanbanCanonId: "00000000-0000-0000-0000-000000000000", // Animation Toys 1 Kanban
+  id: "1eeaf35c-7217-4ddd-9b4e-f3bb3dcedb40",
+  kanbanCanonId: KANBAN_CANON_1_RAW.id, // Animation Toys 1 Kanban
   title: "Kanban Card 3",
   body: "This is the **third** thing to do",
   createdAt: "2020-08-15T12:00:00.000Z",
@@ -57,7 +58,7 @@ export const GET_KANBAN_CANON_CARDS_QUERY = gql`
 `;
 
 export const CREATE_KANBAN_CANON_CARD_1_INPUT: CreateKanbanCanonCardInput = {
-  kanbanCanonId: "00000000-0000-0000-0000-000000000000", // Animation Toys 1 Kanban
+  kanbanCanonId: KANBAN_CANON_1_RAW.id, // Animation Toys 1 Kanban
   title: "Kanban Card 1",
   body: "This is the **first** thing to do",
 };

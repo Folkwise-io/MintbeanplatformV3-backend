@@ -6,7 +6,7 @@ import {
 import { Project } from "../types/gqlGeneratedTypes";
 
 export default interface ProjectDao {
-  getOne(args: ProjectServiceGetOneArgs): Promise<Project>;
+  getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined>;
   getMany(args: ProjectServiceGetManyArgs): Promise<Project[]>;
   addOne(args: ProjectServiceAddOneInput): Promise<Project>;
   deleteOne(id: string): Promise<boolean>;

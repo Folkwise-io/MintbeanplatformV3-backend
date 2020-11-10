@@ -18,7 +18,11 @@ import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
-const SEEDED_KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2];
+const SEEDED_KANBAN_CANON_CARDS = [
+  { ...KANBAN_CANON_CARD_1, kanbanCanonId: KANBAN_CANON_1_RAW.id },
+  { ...KANBAN_CANON_CARD_2, kanbanCanonId: KANBAN_CANON_1_RAW.id },
+];
+
 const PAPERJS_WITH_KANBAN_CANON_1_RAW = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1_RAW.id };
 let adminCookies: string[];
 let bobCookies: string[];
@@ -34,7 +38,7 @@ beforeEach(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllKanbanCanons(); // deletes cards by CASCADE
 
-  await testManager.addKanbanCanons([KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW]); // KANBAN_CANON_1_RAW is the base for MEET_KANBAN_RAW_1 and 2
+  await testManager.addKanbanCanons([KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW]); // KANBAN_CANON_1_RAW is the base for MEET_KANBAN_RAW_1 and 2, KANBAN_CANON_2_RAW is base for isolated kanban
   await testManager.addKanbanCanonCards(SEEDED_KANBAN_CANON_CARDS); // for KANBAN_CANON_1_RAW
   await testManager.addMeets([PAPERJS_WITH_KANBAN_CANON_1_RAW]);
 });

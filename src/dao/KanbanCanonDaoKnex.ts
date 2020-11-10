@@ -8,22 +8,25 @@ import {
   KanbanCanonServiceGetOneArgs,
   KanbanCanonServiceUpdateCardPositionsInput,
 } from "../service/KanbanCanonService";
-import { updateCardPositions } from "./util/cardPositionUtils";
+import { insertNewCardPosition, updateCardPositions } from "./util/cardPositionUtils";
 
 interface KanbanCanonDbFormat {
   id?: string;
   title: string;
   description: string;
-  cardPositions: string;
+  cardPositions?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
 const toDbFormat = <T extends KanbanCanonRaw>(kanbanCanonInput: T): KanbanCanonDbFormat => {
-  return {
-    ...kanbanCanonInput,
-    cardPositions: JSON.stringify(kanbanCanonInput.cardPositions),
-  };
+  if (kanbanCanonInput.cardPositions) {
+    return {
+      ...kanbanCanonInput,
+      cardPositions: JSON.stringify(kanbanCanonInput.cardPositions),
+    };
+  }
+  return kanbanCanonInput as KanbanCanonDbFormat;
 };
 
 export default class KanbanCanonDaoKnex implements KanbanCanonDao {
@@ -54,8 +57,8 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
 
   async addOne(args: KanbanCanonServiceAddOneInput): Promise<{ id: string }> {
     return handleDatabaseError(async () => {
-      const newKanbanCanons = await this.knex<KanbanCanon>("kanbanCanons").insert(args).returning("id");
-      return newKanbanCanons[0].id;
+      const newKanbanCanonIds = await this.knex<KanbanCanon>("kanbanCanons").insert(args).returning("id");
+      return newKanbanCanonIds[0];
     });
   }
 
@@ -80,11 +83,33 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
         .from("kanbanCanons")
         .where({ id })
         .first();
-      console.log({ oldPositions: oldPositions.todo });
 
       // calculate new positions
       const newPositions = updateCardPositions({ oldPositions, ...input });
-      console.log({ newPositions });
+
+      // update cardPositions in db
+      await this.knex("kanbanCanons")
+        .where({ id })
+        .update({ cardPositions: newPositions, updatedAt: this.knex.fn.now() });
+
+      return newPositions;
+    });
+  }
+
+  async insertNewCardPosition(
+    id: string,
+    input: KanbanCanonServiceUpdateCardPositionsInput,
+  ): Promise<KanbanCardPositions> {
+    return handleDatabaseError(async () => {
+      // get old positions
+      const { cardPositions: oldPositions } = await this.knex
+        .select("cardPositions")
+        .from("kanbanCanons")
+        .where({ id })
+        .first();
+
+      // calculate new positions
+      const newPositions = insertNewCardPosition({ oldPositions, ...input });
 
       // update cardPositions in db
       await this.knex("kanbanCanons")
@@ -105,7 +130,7 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
   // Testing methods below, for TestManager to call
   async addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void> {
     const kcWithStringifiedCardPositions = kanbanCanons.map((kc) => toDbFormat(kc));
-    this.knex<KanbanCanonDbFormat[]>("kanbanCanons").insert(kcWithStringifiedCardPositions);
+    return this.knex<KanbanCanonDbFormat[]>("kanbanCanons").insert(kcWithStringifiedCardPositions);
   }
 
   async deleteAll(): Promise<void> {

@@ -131,7 +131,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
   const kanbanCanonService = new KanbanCanonService(kanbanCanonDao);
   const kanbanCanonResolverValidator = new KanbanCanonResolverValidator(kanbanCanonDao, kanbanCanonCardDao);
-  const kanbanCanonCardService = new KanbanCanonCardService(kanbanCanonCardDao);
+  const kanbanCanonCardService = new KanbanCanonCardService(kanbanCanonCardDao, kanbanCanonDao);
   const kanbanCanonCardResolverValidator = new KanbanCanonCardResolverValidator(kanbanCanonCardDao, kanbanCanonDao);
   const kanbanService = new KanbanService(kanbanDao);
   const kanbanResolverValidator = new KanbanResolverValidator(

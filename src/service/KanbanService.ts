@@ -6,16 +6,15 @@ import {
   QueryKanbanArgs,
   QueryKanbansArgs,
 } from "../types/gqlGeneratedTypes";
-import { EntityService } from "./EntityService";
 import { KanbanCanonServiceUpdateCardPositionsInput } from "./KanbanCanonService";
 
 export interface KanbanServiceGetOneArgs extends QueryKanbanArgs {}
 export interface KanbanServiceGetManyArgs extends QueryKanbansArgs {}
 export interface KanbanServiceAddOneInput extends CreateKanbanInput {}
 
-export default class KanbanService implements EntityService<Kanban> {
+export default class KanbanService {
   constructor(private kanbanDao: KanbanDao) {}
-  async getOne(args: KanbanServiceGetOneArgs): Promise<Kanban> {
+  async getOne(args: KanbanServiceGetOneArgs): Promise<Kanban | undefined> {
     return this.kanbanDao.getOne(args);
   }
 
@@ -25,7 +24,7 @@ export default class KanbanService implements EntityService<Kanban> {
 
   async addOne(input: KanbanServiceAddOneInput): Promise<Kanban> {
     await this.kanbanDao.addOne(input);
-    return this.kanbanDao.getOne({ ...input });
+    return (this.kanbanDao.getOne({ ...input }) as unknown) as Kanban;
   }
 
   async updateCardPositions(

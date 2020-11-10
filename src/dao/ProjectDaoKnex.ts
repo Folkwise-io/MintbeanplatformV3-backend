@@ -5,18 +5,18 @@ import {
   ProjectServiceGetOneArgs,
 } from "../service/ProjectService";
 import { Project } from "../types/gqlGeneratedTypes";
+import { ensureExists } from "../util/ensureExists";
 import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectDao from "./ProjectDao";
 
 export default class ProjectDaoKnex implements ProjectDao {
   constructor(private knex: Knex) {}
 
-  async getOne(args: ProjectServiceGetOneArgs): Promise<Project> {
+  async getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined> {
     return handleDatabaseError(async () => {
       const project: Project = await this.knex("projects")
         .where({ ...args, deleted: false })
         .first();
-
       return project;
     });
   }

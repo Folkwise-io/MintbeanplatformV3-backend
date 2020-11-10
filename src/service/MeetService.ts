@@ -1,7 +1,5 @@
-import { ServerContext } from "../buildServerContext";
 import MeetDao from "../dao/MeetDao";
 import { Meet } from "../types/gqlGeneratedTypes";
-import { Args, EntityService } from "./EntityService";
 
 // Only allow ID lookup for now
 export interface MeetServiceGetOneArgs {
@@ -37,9 +35,9 @@ export interface MeetServiceEditOneInput {
   region?: string | null;
 }
 
-export default class MeetService implements EntityService<Meet> {
+export default class MeetService {
   constructor(private meetDao: MeetDao) {}
-  async getOne(args: MeetServiceGetOneArgs): Promise<Meet> {
+  async getOne(args: MeetServiceGetOneArgs): Promise<Meet | undefined> {
     return this.meetDao.getOne(args);
   }
 

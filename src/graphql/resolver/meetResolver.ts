@@ -1,4 +1,4 @@
-import { AuthenticationError } from "apollo-server-express";
+import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import { EmailService } from "../../service/EmailService";
 import MeetRegistrationService from "../../service/MeetRegistrationService";
@@ -24,7 +24,10 @@ const meetResolver = (
       },
 
       meet: (_root, args, context: ServerContext): Promise<Meet> => {
-        return meetService.getOne(args);
+        return meetService.getOne(args).then((result) => {
+          if (!result) throw new ApolloError("Meet not found");
+          return result;
+        });
       },
     },
 
@@ -67,7 +70,7 @@ const meetResolver = (
 
             const user = await userService.getOne({ id: userId });
             const meet = await meetService.getOne({ id: meetId });
-            const email = emailService.generateMeetRegistrationEmail(user, meet, id);
+            const email = emailService.generateMeetRegistrationEmail(user, meet as Meet, id);
 
             return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
           })
@@ -77,7 +80,7 @@ const meetResolver = (
 
     Project: {
       meet: (project) => {
-        return meetService.getOne({ id: project.meetId });
+        return meetService.getOne({ id: project.meetId }).then((result) => (result ? result : null));
       },
     },
 

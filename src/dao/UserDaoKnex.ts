@@ -3,15 +3,16 @@ import Knex from "knex";
 import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 import UserDao, { UserDaoAddOneArgs } from "./UserDao";
 import handleDatabaseError from "../util/handleDatabaseError";
+import { ensureExists } from "../util/ensureExists";
 
 export default class UserDaoKnex implements UserDao {
   constructor(private knex: Knex) {}
-  async getOne(args: UserServiceGetOneArgs): Promise<User> {
-    return handleDatabaseError(() => {
-      const user = this.knex("users")
+  async getOne(args: UserServiceGetOneArgs): Promise<User | undefined> {
+    return handleDatabaseError(async () => {
+      const user = await this.knex("users")
         .where({ ...args, deleted: false })
         .first();
-      return user as Promise<User>;
+      return user;
     });
   }
 

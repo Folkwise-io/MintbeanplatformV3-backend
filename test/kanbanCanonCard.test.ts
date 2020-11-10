@@ -107,7 +107,7 @@ describe("Creating kanbanCanonCards", () => {
     await testManager
       .getGraphQLResponse({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT } },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
@@ -120,7 +120,7 @@ describe("Creating kanbanCanonCards", () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT } },
         cookies: [],
       })
       .then((errorMessage) => {

@@ -19,17 +19,11 @@ export default class MeetRegistrationDaoKnex implements MeetRegistrationDao {
     });
   }
 
-  addOne(args: MeetRegistrationServiceAddOneArgs): Promise<MeetRegistration> {
+  async addOne(args: MeetRegistrationServiceAddOneArgs): Promise<MeetRegistration> {
     return handleDatabaseError(async () => {
       const meetRegistrations = await this.knex<MeetRegistration>("meetRegistrations").insert(args).returning("*");
       return meetRegistrations[0]; // Cannot chain .first() on insert statements
     });
-  }
-
-  addMany(meetRegistrations: MeetRegistration[]): Promise<void> {
-    return handleDatabaseError(() =>
-      this.knex<MeetRegistration>("meetRegistrations").insert(meetRegistrations).returning("*"),
-    );
   }
 
   editOne(id: string, input: any): Promise<MeetRegistration> {
@@ -38,6 +32,11 @@ export default class MeetRegistrationDaoKnex implements MeetRegistrationDao {
 
   deleteOne(id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
+  }
+
+  // Test manager functions
+  async addMany(meetRegistrations: MeetRegistration[]): Promise<void> {
+    return this.knex<MeetRegistration>("meetRegistrations").insert(meetRegistrations);
   }
 
   deleteAll(): Promise<void> {

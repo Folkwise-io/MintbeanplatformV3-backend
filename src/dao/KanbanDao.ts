@@ -15,7 +15,7 @@ export interface KanbanSessionRaw {
 }
 
 export default interface KanbanDao {
-  getOne(args: KanbanServiceGetOneArgs): Promise<Kanban>;
+  getOne(args: KanbanServiceGetOneArgs): Promise<Kanban | undefined>;
   getMany(args: KanbanServiceGetManyArgs): Promise<Kanban[]>;
   addOne(args: KanbanServiceAddOneInput): Promise<void>;
   // shares arg and output types with kanbanCanonService same operation

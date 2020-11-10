@@ -9,7 +9,7 @@ export interface UserDaoAddOneArgs {
 }
 
 export default interface UserDao {
-  getOne(args: UserServiceGetOneArgs): Promise<User>;
+  getOne(args: UserServiceGetOneArgs): Promise<User | undefined>;
   getMany(args: UserServiceGetManyArgs): Promise<User[]>;
   addOne(args: UserDaoAddOneArgs): Promise<User>;
   // Testing methods for TestManager to call

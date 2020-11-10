@@ -35,17 +35,16 @@ function formatMeets(meets: any[]): Meet[] {
 export default class MeetDaoKnex implements MeetDao {
   constructor(private knex: Knex) {}
 
-  async getOne(args: MeetServiceGetOneArgs): Promise<Meet> {
+  async getOne(args: MeetServiceGetOneArgs): Promise<Meet | undefined> {
     return handleDatabaseError(async () => {
       const meet = await this.knex("meets")
         .where({ ...args, deleted: false })
         .first();
 
-      // TODO: clean this typescript-constrained mess
       if (meet) {
         return formatMeets([meet])[0];
       }
-      return meet as any;
+      return meet;
     });
   }
 

@@ -15,6 +15,7 @@ export async function up(knex: Knex): Promise<void> {
 
     // Constraints and indices
     table.primary(["id"]);
+    table.unique(["kanbanCanonId", "id"]); // kanban canon cards must be unique on kanban canon
     table.foreign("kanbanCanonId").references("kanbanCanons.id").onDelete("CASCADE");
   });
 }

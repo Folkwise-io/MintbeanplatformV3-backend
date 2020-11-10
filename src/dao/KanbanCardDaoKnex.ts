@@ -7,6 +7,7 @@ import {
   KanbanCardServiceGetOneArgs,
   KanbanCardServiceUpdateOneInput,
 } from "../service/KanbanCardService";
+import kanbanCard from "../graphql/typedef/kanbanCard";
 
 // const GET_MANY_QUERY = `
 //   SELECT
@@ -68,7 +69,6 @@ export default class KanbanCardDaoKnex implements KanbanCardDao {
         kanbanCanonCardId: id,
         deleted: false,
       });
-
       return queryResult.rows[0];
     });
   }
