@@ -1,4 +1,7 @@
-import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
+import KanbanCanonCardDao, {
+  KanbanCanonCardDaoAddOneInput,
+  KanbanCanonCardDaoEditOneInput,
+} from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
 import {
   CreateKanbanCanonCardInput,
@@ -15,6 +18,16 @@ export interface KanbanCanonCardServiceGetManyArgs extends QueryKanbanCanonCards
 export interface KanbanCanonCardServiceAddOneInput extends CreateKanbanCanonCardInput {}
 export interface KanbanCanonCardServiceEditOneInput extends EditKanbanCanonCardInput {}
 
+const mapServiceAddOneInputToDaoAddOneInput = ({
+  title,
+  body,
+  kanbanCanonId,
+}: KanbanCanonCardServiceAddOneInput): KanbanCanonCardDaoAddOneInput => ({ title, body, kanbanCanonId });
+const mapServiceEditOneInputToDaoEditOneInput = ({
+  title,
+  body,
+}: KanbanCanonCardServiceEditOneInput): KanbanCanonCardDaoEditOneInput => ({ title, body });
+
 export default class KanbanCanonCardService implements EntityService<KanbanCanonCard> {
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao, private kanbanCanonDao: KanbanCanonDao) {}
   async getOne(args: KanbanCanonCardServiceGetOneArgs): Promise<KanbanCanonCard> {
@@ -27,7 +40,8 @@ export default class KanbanCanonCardService implements EntityService<KanbanCanon
 
   async addOne(input: KanbanCanonCardServiceAddOneInput): Promise<KanbanCanonCard> {
     // create card
-    const newKanbanCanonCard = await this.kanbanCanonCardDao.addOne(input);
+    const mappedInput = mapServiceAddOneInputToDaoAddOneInput(input);
+    const newKanbanCanonCard = await this.kanbanCanonCardDao.addOne(mappedInput);
     // update card positions object on kanbanCanon
     const { status, index } = input;
     const { kanbanCanonId } = input;
@@ -41,7 +55,8 @@ export default class KanbanCanonCardService implements EntityService<KanbanCanon
 
   async editOne(id: string, input: KanbanCanonCardServiceEditOneInput): Promise<KanbanCanonCard> {
     // edit card
-    const updatedKanbanCanonCard = await this.kanbanCanonCardDao.editOne(id, input);
+    const mappedInput = mapServiceEditOneInputToDaoEditOneInput(input);
+    const updatedKanbanCanonCard = await this.kanbanCanonCardDao.editOne(id, mappedInput);
     // update position if necessary
     const { index, status } = input;
     const indexIsUndefined = typeof index === "undefined";
@@ -56,6 +71,9 @@ export default class KanbanCanonCardService implements EntityService<KanbanCanon
   }
 
   async deleteOne(id: string): Promise<boolean> {
+    const kanbanCanonCard = await this.kanbanCanonCardDao.getOne({ id });
+    // must sync kanbanCanon.cardPositions array to reflect deletion
+    await this.kanbanCanonDao.deleteCardFromPosition(kanbanCanonCard.kanbanCanonId, { kanbanCanonCardId: id });
     return this.kanbanCanonCardDao.deleteOne(id);
   }
 }

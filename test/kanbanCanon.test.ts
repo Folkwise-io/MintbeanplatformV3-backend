@@ -284,3 +284,17 @@ describe("Deleting kanbanCanons", () => {
       });
   });
 });
+
+// describe("Updating card positions", () => {
+//   it("gives an error message from validator when the id of the meet does not exist", async () => {
+//     await testManager
+//       .getErrorMessage({
+//         query: DELETE_KANBAN_CANON_MUTATION,
+//         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
+//         cookies: adminCookies,
+//       })
+//       .then((errorMessage) => {
+//         expect(errorMessage).toMatch(/not exist/i);
+//       });
+//   });
+// });

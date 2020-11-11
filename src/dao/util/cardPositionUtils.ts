@@ -19,7 +19,7 @@ interface IdObject {
 }
 
 interface InterimPositionObject {
-  // Un-sorted status colulm arrays
+  // Un-sorted status column arrays
   // {
   //   todo: [["b", 1], ["a", 0]],
   //   wip: [],
@@ -63,7 +63,7 @@ export const toStatusObj = (idObj: IdObject): KanbanCardPositions => {
 };
 
 // Provides empty array placeholders
-const basePositionObject: KanbanCardPositions = {
+const basePositions: KanbanCardPositions = {
   todo: [],
   wip: [],
   done: [],
@@ -80,7 +80,7 @@ const resolve = (c: KanbanCardPositions, s: KanbanCardPositions): KanbanCardPosi
 
   // convert back to position obj
   const positionObj = toStatusObj(idObjR);
-  return { ...basePositionObject, ...positionObj }; // spread over basePositionObject to pick up default empty status columns
+  return { ...basePositions, ...positionObj }; // spread over basePositions to pick up default empty status columns
 };
 
 interface UpdateCardPositionArgs {
@@ -126,16 +126,16 @@ const updateCardPositions = ({
   // update card index to new index
   newPositions[newStatus] = moveIndex([...newPositions[newStatus]], cardId, index);
 
-  // any missing statuses should be populated with empty array
-  const newPositionsKeys: string[] = Object.keys(newPositions).map((s) => s.toLowerCase());
-  const possibleStatuses: string[] = Object.values(KanbanCanonCardStatusEnum).map((s) => s.toLowerCase());
-  possibleStatuses.forEach((s) => {
-    if (!newPositionsKeys.includes(s)) {
-      newPositions[s] = [];
-    }
-  });
+  // const newPositionsKeys: string[] = Object.keys(newPositions).map((s) => s.toLowerCase());
+  // const possibleStatuses: string[] = Object.values(KanbanCanonCardStatusEnum).map((s) => s.toLowerCase());
+  // possibleStatuses.forEach((s) => {
+  //   if (!newPositionsKeys.includes(s)) {
+  //     newPositions[s] = [];
+  //   }
+  // });
 
-  return (newPositions as unknown) as KanbanCardPositions; // cast back
+  //  fall back to empty array for unpopulated statuses
+  return ({ ...basePositions, ...newPositions } as unknown) as KanbanCardPositions; // cast back
 };
 
 const insertNewCardPosition = ({
@@ -154,4 +154,24 @@ const insertNewCardPosition = ({
   return (newPositions as unknown) as KanbanCardPositions; // cast back
 };
 
-export { resolve, updateCardPositions, insertNewCardPosition };
+interface DeleteCardFromPositionArgs {
+  oldPositions: KanbanCardPositions;
+  cardId: string;
+}
+const deleteCardFromPosition = ({ oldPositions, cardId }: DeleteCardFromPositionArgs): KanbanCardPositions => {
+  // find status and idArr to be altered if cardId present
+  // eslint-disable-next-line
+  const found: any = Object.entries(oldPositions).find(([_status, idArr]: any) => idArr.includes(cardId));
+  // if id not found, gracefully return old object
+  if (!found) return oldPositions;
+  // if present, remove cardId from found idArr
+  const updatedIdArr = [...found[1]].filter((id) => id !== cardId);
+  // eslint-disable-next-line
+  const newPositions = ({ ...oldPositions } as unknown) as { [key: string]: string[] }; // must cast for indexable keys
+  // update positions
+  newPositions[found[0]] = updatedIdArr;
+  // fall back to empty arrays in case a column becomes empty during this operation
+  return ({ ...basePositions, ...newPositions } as unknown) as KanbanCardPositions; // cast back
+};
+
+export { resolve, updateCardPositions, insertNewCardPosition, deleteCardFromPosition };

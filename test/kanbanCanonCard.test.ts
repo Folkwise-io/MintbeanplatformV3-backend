@@ -8,8 +8,9 @@ import {
   EDIT_KANBAN_CANON_CARD_MUTATION,
   EDIT_KANBAN_CANON_CARD_INPUT,
   DELETE_KANBAN_CANON_CARD_MUTATION,
+  KANBAN_CANON_CARD_3,
 } from "./src/kanbanCanonCardConstants";
-import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
+import { GET_KANBAN_CANON_QUERY, KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 
@@ -103,24 +104,110 @@ describe("Querying kanbanCanonCards", () => {
 });
 
 describe("Creating kanbanCanonCards", () => {
-  it("creates a kanbanCanonCard successfully when admin is logged in", async () => {
+  it("creates a kanbanCanonCard successfully and updates kanbanCanon's cardPositions array when admin is logged in", async () => {
+    // adds card to db
+    let newKanbanCanonCardId: string;
     await testManager
       .getGraphQLResponse({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT } },
+        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
       .then(({ createKanbanCanonCard }) => {
+        newKanbanCanonCardId = createKanbanCanonCard.id;
         expect(createKanbanCanonCard).toMatchObject(CREATE_KANBAN_CANON_CARD_1_INPUT);
+      });
+    // updates kanbanCanon's id array
+    await testManager
+      .getGraphQLResponse({
+        query: GET_KANBAN_CANON_QUERY,
+        variables: { id: CREATE_KANBAN_CANON_CARD_1_INPUT.kanbanCanonId },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ kanbanCanon }) => {
+        expect(kanbanCanon.cardPositions.todo.length).toBe(1);
+        expect(kanbanCanon.cardPositions.todo[0]).toBe(newKanbanCanonCardId);
       });
   });
 
+  it("creates a kanbanCanonCard successfully at desired index and updates kanbanCanon's cardPositions array when admin is logged in", async () => {
+    // adds card to db, sneakily set the cardPositions by re-adding kanbanCanon ;)
+    await testManager.deleteAllKanbanCanons();
+    const KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3];
+    const todoIdArr = KANBAN_CANON_CARDS.map((kcc) => kcc.id);
+    await testManager.addKanbanCanons([
+      { ...KANBAN_CANON_1_RAW, cardPositions: { todo: todoIdArr, wip: [], done: [] } },
+    ]);
+    await testManager.addKanbanCanonCards(KANBAN_CANON_CARDS);
+
+    let newKanbanCanonCardId: string;
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, index: 1 } },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createKanbanCanonCard }) => {
+        newKanbanCanonCardId = createKanbanCanonCard.id;
+        expect(createKanbanCanonCard).toMatchObject(CREATE_KANBAN_CANON_CARD_1_INPUT);
+      });
+    // updates kanbanCanon's id array
+    await testManager
+      .getGraphQLResponse({
+        query: GET_KANBAN_CANON_QUERY,
+        variables: { id: CREATE_KANBAN_CANON_CARD_1_INPUT.kanbanCanonId },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ kanbanCanon }) => {
+        expect(kanbanCanon.cardPositions.todo.length).toBe(3);
+        expect(kanbanCanon.cardPositions.todo[1]).toBe(newKanbanCanonCardId);
+      });
+  });
+  it("creates a kanbanCanonCard successfully and updates kanbanCanon's cardPositions array at default position when no position data provided, when admin is logged in", async () => {
+    // adds card to db, sneakily set the cardPositions by re-adding kanbanCanon ;)
+    await testManager.deleteAllKanbanCanons();
+    const KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3];
+    const todoIdArr = KANBAN_CANON_CARDS.map((kcc) => kcc.id);
+    await testManager.addKanbanCanons([
+      { ...KANBAN_CANON_1_RAW, cardPositions: { todo: todoIdArr, wip: [], done: [] } },
+    ]);
+    await testManager.addKanbanCanonCards(KANBAN_CANON_CARDS);
+
+    let newKanbanCanonCardId: string;
+    await testManager
+      .getGraphQLResponse({
+        query: CREATE_KANBAN_CANON_CARD_MUTATION,
+        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT }, // provide no index or status input
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ createKanbanCanonCard }) => {
+        newKanbanCanonCardId = createKanbanCanonCard.id;
+        expect(createKanbanCanonCard).toMatchObject(CREATE_KANBAN_CANON_CARD_1_INPUT);
+      });
+    // updates kanbanCanon's id array
+    await testManager
+      .getGraphQLResponse({
+        query: GET_KANBAN_CANON_QUERY,
+        variables: { id: CREATE_KANBAN_CANON_CARD_1_INPUT.kanbanCanonId },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ kanbanCanon }) => {
+        expect(kanbanCanon.cardPositions.todo.length).toBe(3);
+        expect(kanbanCanon.cardPositions.todo[0]).toBe(newKanbanCanonCardId);
+      });
+  });
+  // it defaults to TODO and index 0 if no status/index provided
   it("returns an 'unauthorized' error message when creating a kanbanCanonCard without admin cookies", async () => {
     await testManager
       .getErrorMessage({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT } },
+        variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
         cookies: [],
       })
       .then((errorMessage) => {
@@ -279,7 +366,7 @@ describe("Deleting kanbanCanonCards", () => {
     await testManager.addKanbanCanonCards([KANBAN_CANON_CARD_1]);
   });
 
-  it("deletes a meet successfully when admin is logged in", async () => {
+  it("deletes a kanbanCanonCard successfully when admin is logged in", async () => {
     await testManager
       .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(1));
@@ -297,6 +384,47 @@ describe("Deleting kanbanCanonCards", () => {
     await testManager
       .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(0));
+  });
+
+  it("deletes a kanbanCanonCard's id from kanbanCanon.cardPositions array when card deleted", async () => {
+    await testManager.deleteAllKanbanCanons();
+    const KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3];
+    const todoIdArr = KANBAN_CANON_CARDS.map((kcc) => kcc.id);
+    await testManager.addKanbanCanons([
+      { ...KANBAN_CANON_1_RAW, cardPositions: { todo: todoIdArr, wip: [], done: [] } },
+    ]);
+    await testManager.addKanbanCanonCards(KANBAN_CANON_CARDS);
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
+      .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(3));
+
+    // kanbanCanon.cardPositions.todo includes card that will be deleted soon
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1_RAW.id } })
+      .then(({ kanbanCanon }) => {
+        expect(kanbanCanon.cardPositions.todo).toHaveLength(3);
+        expect(kanbanCanon.cardPositions.todo.includes(KANBAN_CANON_CARD_1.id)).toBe(true);
+      });
+
+    await testManager
+      .getGraphQLData({
+        query: DELETE_KANBAN_CANON_CARD_MUTATION,
+        variables: { id: KANBAN_CANON_CARD_1.id },
+        cookies: adminCookies,
+      })
+      .then(({ deleteKanbanCanonCard }) => {
+        expect(deleteKanbanCanonCard).toBe(true);
+      });
+
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
+      .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(2));
+    await testManager
+      .getGraphQLData({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1_RAW.id } })
+      .then(({ kanbanCanon }) => {
+        expect(kanbanCanon.cardPositions.todo).toHaveLength(2);
+        expect(kanbanCanon.cardPositions.todo.includes(KANBAN_CANON_CARD_1.id)).toBe(false);
+      });
   });
 
   it("returns an 'unauthorized' error message when deleting a kanbanCanonCard without admin cookies", async () => {

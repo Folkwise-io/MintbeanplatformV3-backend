@@ -1,6 +1,6 @@
 import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
-import KanbanCanonDao, { KanbanCanonRaw } from "./KanbanCanonDao";
+import KanbanCanonDao, { KanbanCanonCardDaoDeleteCardFromPositionInput, KanbanCanonRaw } from "./KanbanCanonDao";
 import { KanbanCanon, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import {
   KanbanCanonServiceAddOneInput,
@@ -8,7 +8,7 @@ import {
   KanbanCanonServiceGetOneArgs,
   KanbanCanonServiceUpdateCardPositionsInput,
 } from "../service/KanbanCanonService";
-import { insertNewCardPosition, updateCardPositions } from "./util/cardPositionUtils";
+import { deleteCardFromPosition, insertNewCardPosition, updateCardPositions } from "./util/cardPositionUtils";
 
 interface KanbanCanonDbFormat {
   id?: string;
@@ -110,6 +110,30 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
 
       // calculate new positions
       const newPositions = insertNewCardPosition({ oldPositions, ...input });
+
+      // update cardPositions in db
+      await this.knex("kanbanCanons")
+        .where({ id })
+        .update({ cardPositions: newPositions, updatedAt: this.knex.fn.now() });
+
+      return newPositions;
+    });
+  }
+
+  async deleteCardFromPosition(
+    id: string,
+    input: KanbanCanonCardDaoDeleteCardFromPositionInput,
+  ): Promise<KanbanCardPositions> {
+    return handleDatabaseError(async () => {
+      // get old positions
+      const { cardPositions: oldPositions } = await this.knex
+        .select("cardPositions")
+        .from("kanbanCanons")
+        .where({ id })
+        .first();
+
+      // calculate new positions
+      const newPositions = deleteCardFromPosition({ oldPositions, cardId: input.kanbanCanonCardId });
 
       // update cardPositions in db
       await this.knex("kanbanCanons")
