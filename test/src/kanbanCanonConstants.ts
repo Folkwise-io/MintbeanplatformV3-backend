@@ -100,6 +100,16 @@ export const EDIT_KANBAN_CANON_MUTATION = gql`
   }
 `;
 
+export const UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION = gql`
+  mutation updateKanbanCanonCardPositions($id: UUID!, $input: UpdateCardPositionInput!) {
+    updateKanbanCanonCardPositions(id: $id, input: $input) {
+      todo
+      wip
+      done
+    }
+  }
+`;
+
 export const DELETE_KANBAN_CANON_MUTATION = gql`
   mutation deleteKanbanCanon($id: UUID!) {
     deleteKanbanCanon(id: $id)

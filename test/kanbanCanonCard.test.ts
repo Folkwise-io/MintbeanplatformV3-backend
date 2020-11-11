@@ -387,6 +387,7 @@ describe("Deleting kanbanCanonCards", () => {
   });
 
   it("deletes a kanbanCanonCard's id from kanbanCanon.cardPositions array when card deleted", async () => {
+    // set up
     await testManager.deleteAllKanbanCanons();
     const KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2, KANBAN_CANON_CARD_3];
     const todoIdArr = KANBAN_CANON_CARDS.map((kcc) => kcc.id);
@@ -398,7 +399,7 @@ describe("Deleting kanbanCanonCards", () => {
       .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(3));
 
-    // kanbanCanon.cardPositions.todo includes card that will be deleted soon
+    // kanbanCanon.cardPositions.todo should include card that will be deleted soon
     await testManager
       .getGraphQLData({ query: GET_KANBAN_CANON_QUERY, variables: { id: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanon }) => {
@@ -406,6 +407,7 @@ describe("Deleting kanbanCanonCards", () => {
         expect(kanbanCanon.cardPositions.todo.includes(KANBAN_CANON_CARD_1.id)).toBe(true);
       });
 
+    // delete the card and confirm it was removed from db
     await testManager
       .getGraphQLData({
         query: DELETE_KANBAN_CANON_CARD_MUTATION,
@@ -416,6 +418,7 @@ describe("Deleting kanbanCanonCards", () => {
         expect(deleteKanbanCanonCard).toBe(true);
       });
 
+    // affirm that the kanbanCanon.cardPositions array was updated
     await testManager
       .getGraphQLData({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_1_RAW.id } })
       .then(({ kanbanCanonCards }) => expect(kanbanCanonCards).toHaveLength(2));

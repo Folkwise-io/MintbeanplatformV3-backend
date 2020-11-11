@@ -7,6 +7,7 @@ import { prefixKeys } from "../util/prefixKeys";
 import { resolve, updateCardPositions } from "./util/cardPositionUtils";
 import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
 import { ApolloError, UserInputError } from "apollo-server-express";
+import { ensureExists } from "../util/ensureExists";
 
 interface KanbanRawData extends Kanban {
   kanbanCanonCardPositions: KanbanCardPositions;
@@ -112,11 +113,7 @@ export default class KanbanDaoKnex implements KanbanDao {
   ): Promise<KanbanCardPositions> {
     return handleDatabaseError(async () => {
       // get old positions
-      const { cardPositions: oldPositions } = await this.knex
-        .select("cardPositions")
-        .from("kanbanSessions")
-        .where({ id })
-        .first();
+      const { cardPositions: oldPositions } = ensureExists<Kanban>("Kanban")(await this.getOne({ id }));
 
       // calculate new positions
       const newPositions = updateCardPositions({ oldPositions, ...input });

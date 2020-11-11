@@ -1,3 +1,5 @@
+import { KanbanCanonCardStatusEnum, UpdateCardPositionInput } from "../src/types/gqlGeneratedTypes";
+import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
 import {
   CREATE_KANBAN_CANON_MUTATION,
   EDIT_KANBAN_CANON_INPUT,
@@ -8,6 +10,7 @@ import {
   CREATE_KANBAN_CANON_1_RAW_INPUT,
   KANBAN_CANON_2_RAW,
   DELETE_KANBAN_CANON_MUTATION,
+  UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
 } from "./src/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/userConstants";
@@ -25,10 +28,6 @@ beforeAll(async () => {
   await testManager.addUsers([AMY, BOB]);
 });
 
-beforeEach(async () => {
-  await testManager.deleteAllMeets();
-  await testManager.deleteAllKanbanCanons();
-});
 beforeEach(async () => {
   await testManager.deleteAllMeets();
   await testManager.deleteAllKanbanCanons();
@@ -285,16 +284,96 @@ describe("Deleting kanbanCanons", () => {
   });
 });
 
-// describe("Updating card positions", () => {
-//   it("gives an error message from validator when the id of the meet does not exist", async () => {
-//     await testManager
-//       .getErrorMessage({
-//         query: DELETE_KANBAN_CANON_MUTATION,
-//         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
-//         cookies: adminCookies,
-//       })
-//       .then((errorMessage) => {
-//         expect(errorMessage).toMatch(/not exist/i);
-//       });
-//   });
-// });
+describe("Updating card positions", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllKanbanCanons();
+    const KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2];
+    const INITIAL_CARD_POSITIONS = {
+      todo: KANBAN_CANON_CARDS.map((kcc) => kcc.id),
+      wip: [],
+      done: [],
+    };
+    await testManager.addKanbanCanons([{ ...KANBAN_CANON_1_RAW, cardPositions: INITIAL_CARD_POSITIONS }]);
+    await testManager.addKanbanCanonCards(KANBAN_CANON_CARDS);
+  });
+  it("successfully updates card positions when new status and index provided for a card", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Wip,
+      index: 0,
+    };
+    const expected = {
+      todo: [KANBAN_CANON_CARD_2.id],
+      wip: [KANBAN_CANON_CARD_1.id],
+      done: [],
+    };
+    await testManager
+      .getGraphQLData({
+        query: UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
+        variables: { id: KANBAN_CANON_1_RAW.id, input },
+        cookies: adminCookies,
+      })
+      .then(({ updateKanbanCanonCardPositions }) => {
+        expect(updateKanbanCanonCardPositions).toMatchObject(expected);
+      });
+  });
+  it("successfully updates card positions when same status yet new index provided for a card", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Todo,
+      index: 1,
+    };
+    const expected = {
+      todo: [KANBAN_CANON_CARD_2.id, KANBAN_CANON_CARD_1.id],
+      wip: [],
+      done: [],
+    };
+    await testManager
+      .getGraphQLData({
+        query: UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
+        variables: { id: KANBAN_CANON_1_RAW.id, input },
+        cookies: adminCookies,
+      })
+      .then(({ updateKanbanCanonCardPositions }) => {
+        expect(updateKanbanCanonCardPositions).toMatchObject(expected);
+      });
+  });
+  it("gracefully handles a bogus new index", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Todo,
+      index: 100,
+    };
+    const expected = {
+      todo: [KANBAN_CANON_CARD_2.id, KANBAN_CANON_CARD_1.id],
+      wip: [],
+      done: [],
+    };
+    await testManager
+      .getGraphQLData({
+        query: UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
+        variables: { id: KANBAN_CANON_1_RAW.id, input },
+        cookies: adminCookies,
+      })
+      .then(({ updateKanbanCanonCardPositions }) => {
+        expect(updateKanbanCanonCardPositions).toMatchObject(expected);
+      });
+  });
+  it("throws an authentication error if non-admin attempts to update card positions", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Wip,
+      index: 0,
+    };
+
+    await testManager
+      .getErrorMessage({
+        query: UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
+        variables: { id: KANBAN_CANON_1_RAW.id, input },
+        cookies: bobCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)]authorized/);
+      });
+  });
+});

@@ -107,6 +107,16 @@ export const CREATE_KANBAN_MUTATION = gql`
   }
 `;
 
+export const UPDATE_KANBAN_CARD_POSITIONS_MUTATION = gql`
+  mutation updateKanbanCardPositions($id: UUID!, $input: UpdateCardPositionInput!) {
+    updateKanbanCardPositions(id: $id, input: $input) {
+      todo
+      wip
+      done
+    }
+  }
+`;
+
 export const DELETE_KANBAN_MUTATION = gql`
   mutation deleteKanban($id: UUID!) {
     deleteKanban(id: $id)

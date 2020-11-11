@@ -1,4 +1,4 @@
-import { resolve, updateCardPositions } from "../src/dao/util/cardPositionUtils";
+import { deleteCardFromPosition, resolve, updateCardPositions } from "../src/dao/util/cardPositionUtils";
 import { KanbanCanonCardStatusEnum } from "../src/types/gqlGeneratedTypes";
 // C - canon
 // S = session
@@ -252,19 +252,57 @@ describe("updateCardPositions()", () => {
       };
       expect(actual).toMatchObject(expected);
     });
-    it("gracefully fails by returning original positions if invalid cardId passed", () => {
-      const actual = updateCardPositions({
-        oldPositions: OLD_POSITIONS,
-        cardId: "d",
-        status: KanbanCanonCardStatusEnum.Todo,
-        index: 1,
-      });
-      const expected = {
+  });
+});
+describe("deleteCardFromPosition", () => {
+  describe("Sunny scenarios", () => {
+    it("deletes a cardId if present", () => {
+      const OLD_POSITIONS = {
         todo: ["a", "b", "c"],
         wip: [],
         done: [],
       };
+      const actual = deleteCardFromPosition({
+        oldPositions: OLD_POSITIONS,
+        cardId: "b",
+      });
+      const expected = {
+        todo: ["a", "c"],
+        wip: [],
+        done: [],
+      };
       expect(actual).toMatchObject(expected);
+    });
+    it("deletes a cardId if present, making a status an empty array if it was the last card left", () => {
+      const OLD_POSITIONS = {
+        todo: ["c"],
+        wip: ["a", "b"],
+        done: [],
+      };
+      const actual = deleteCardFromPosition({
+        oldPositions: OLD_POSITIONS,
+        cardId: "c",
+      });
+      const expected = {
+        todo: [],
+        wip: ["a", "b"],
+        done: [],
+      };
+      expect(actual).toMatchObject(expected);
+    });
+  });
+  describe("Bad data scenarios", () => {
+    it("gracefully fails by returning original positions if invalid cardId passed", () => {
+      const OLD_POSITIONS = {
+        todo: ["a", "b", "c"],
+        wip: [],
+        done: [],
+      };
+      const actual = deleteCardFromPosition({
+        oldPositions: OLD_POSITIONS,
+        cardId: "d",
+      });
+      expect(actual).toMatchObject(OLD_POSITIONS);
     });
   });
 });

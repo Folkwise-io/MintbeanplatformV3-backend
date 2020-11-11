@@ -1,4 +1,5 @@
 import { KanbanSessionRaw } from "../src/dao/KanbanDao";
+import { KanbanCanonCardStatusEnum, UpdateCardPositionInput } from "../src/types/gqlGeneratedTypes";
 import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
 import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
 import {
@@ -10,11 +11,12 @@ import {
   ISOLATED_KANBAN_RAW_1,
   MEET_KANBAN_RAW_1,
   MEET_KANBAN_RAW_2,
+  UPDATE_KANBAN_CARD_POSITIONS_MUTATION,
 } from "./src/kanbanConstants";
 import { GET_MEET_QUERY, PAPERJS } from "./src/meetConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB, DORTHY } from "./src/userConstants";
-import { getAdminCookies, getBobCookies } from "./src/util";
+import { getAdminCookies, getBobCookies, getDorthyCookies } from "./src/util";
 
 const testManager = TestManager.build();
 
@@ -26,11 +28,13 @@ const SEEDED_KANBAN_CANON_CARDS = [
 const PAPERJS_WITH_KANBAN_CANON_1_RAW = { ...PAPERJS, kanbanCanonId: KANBAN_CANON_1_RAW.id };
 let adminCookies: string[];
 let bobCookies: string[];
+let dorthyCookies: string[];
 
 beforeAll(async () => {
   await testManager.deleteAllUsers();
   adminCookies = await getAdminCookies();
   bobCookies = await getBobCookies();
+  dorthyCookies = await getDorthyCookies();
   await testManager.addUsers([AMY, BOB, DORTHY]);
 });
 
@@ -442,6 +446,102 @@ describe("Deleting kanbans", () => {
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+});
+
+describe("Updating card positions", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllKanbanCanons();
+    const KANBAN_CANON_CARDS = [KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2];
+    const INITIAL_CARD_POSITIONS = {
+      todo: KANBAN_CANON_CARDS.map((kcc) => kcc.id),
+      wip: [],
+      done: [],
+    };
+    await testManager.addKanbanCanons([{ ...KANBAN_CANON_1_RAW, cardPositions: INITIAL_CARD_POSITIONS }]);
+    await testManager.addKanbanCanonCards(KANBAN_CANON_CARDS);
+    await testManager.addKanbans([{ ...ISOLATED_KANBAN_RAW_1, kanbanCanonId: KANBAN_CANON_1_RAW.id }]);
+  });
+  it("successfully updates card positions when new status and index provided for a card", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Wip,
+      index: 0,
+    };
+    const expected = {
+      todo: [KANBAN_CANON_CARD_2.id],
+      wip: [KANBAN_CANON_CARD_1.id],
+      done: [],
+    };
+    await testManager
+      .getGraphQLData({
+        query: UPDATE_KANBAN_CARD_POSITIONS_MUTATION,
+        variables: { id: ISOLATED_KANBAN_RAW_1.id, input },
+        cookies: bobCookies,
+      })
+      .then(({ updateKanbanCardPositions }) => {
+        console.log({ updateKanbanCardPositions });
+        expect(updateKanbanCardPositions).toMatchObject(expected);
+      });
+  });
+  it("successfully updates card positions when same status yet new index provided for a card", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Todo,
+      index: 1,
+    };
+    const expected = {
+      todo: [KANBAN_CANON_CARD_2.id, KANBAN_CANON_CARD_1.id],
+      wip: [],
+      done: [],
+    };
+    await testManager
+      .getGraphQLData({
+        query: UPDATE_KANBAN_CARD_POSITIONS_MUTATION,
+        variables: { id: ISOLATED_KANBAN_RAW_1.id, input },
+        cookies: bobCookies,
+      })
+      .then(({ updateKanbanCardPositions }) => {
+        expect(updateKanbanCardPositions).toMatchObject(expected);
+      });
+  });
+  it("gracefully handles a bogus new index", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Todo,
+      index: 100,
+    };
+    const expected = {
+      todo: [KANBAN_CANON_CARD_2.id, KANBAN_CANON_CARD_1.id],
+      wip: [],
+      done: [],
+    };
+    await testManager
+      .getGraphQLData({
+        query: UPDATE_KANBAN_CARD_POSITIONS_MUTATION,
+        variables: { id: ISOLATED_KANBAN_RAW_1.id, input },
+        cookies: bobCookies,
+      })
+      .then(({ updateKanbanCardPositions }) => {
+        expect(updateKanbanCardPositions).toMatchObject(expected);
+      });
+  });
+  it("throws an authentication error if non-owner attempts to update card positions", async () => {
+    const input: UpdateCardPositionInput = {
+      cardId: KANBAN_CANON_CARD_1.id,
+      status: KanbanCanonCardStatusEnum.Wip,
+      index: 0,
+    };
+
+    await testManager
+      .getErrorMessage({
+        query: UPDATE_KANBAN_CARD_POSITIONS_MUTATION,
+        variables: { id: ISOLATED_KANBAN_RAW_1.id, input },
+        cookies: dorthyCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/[(not |un)]authorized/);
       });
   });
 });
