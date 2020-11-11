@@ -481,7 +481,6 @@ describe("Updating card positions", () => {
         cookies: bobCookies,
       })
       .then(({ updateKanbanCardPositions }) => {
-        console.log({ updateKanbanCardPositions });
         expect(updateKanbanCardPositions).toMatchObject(expected);
       });
   });
