@@ -196,8 +196,6 @@ export type Mutation = {
   editKanbanCanon: KanbanCanon;
   /** Update the position of an existing kanbanCanonCard on a kanbanCanon. Returns updated card positions object. */
   updateKanbanCanonCardPositions: KanbanCardPositions;
-  /** Insert a new kanban canon card at desired status and index. Returns updated card positions object. */
-  insertNewKanbanCanonCardPosition: KanbanCardPositions;
   /** Deletes a kanbanCanon (requires admin privileges) */
   deleteKanbanCanon: Scalars['Boolean'];
   /** Creates a new kanbanCanonCard (requires admin privileges) */
@@ -283,12 +281,6 @@ export type MutationEditKanbanCanonArgs = {
 
 
 export type MutationUpdateKanbanCanonCardPositionsArgs = {
-  id: Scalars['UUID'];
-  input: UpdateCardPositionInput;
-};
-
-
-export type MutationInsertNewKanbanCanonCardPositionArgs = {
   id: Scalars['UUID'];
   input: UpdateCardPositionInput;
 };
@@ -833,7 +825,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonArgs, 'input'>>;
   editKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonArgs, 'id' | 'input'>>;
   updateKanbanCanonCardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType, RequireFields<MutationUpdateKanbanCanonCardPositionsArgs, 'id' | 'input'>>;
-  insertNewKanbanCanonCardPosition?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType, RequireFields<MutationInsertNewKanbanCanonCardPositionArgs, 'id' | 'input'>>;
   deleteKanbanCanon?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanCanonArgs, 'id'>>;
   createKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonCardArgs, 'input'>>;
   editKanbanCanonCard?: Resolver<ResolversTypes['KanbanCanonCard'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonCardArgs, 'id' | 'input'>>;

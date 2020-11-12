@@ -61,8 +61,6 @@ const kanbanCanon = gql`
     editKanbanCanon(id: UUID!, input: EditKanbanCanonInput!): KanbanCanon!
     "Update the position of an existing kanbanCanonCard on a kanbanCanon. Returns updated card positions object."
     updateKanbanCanonCardPositions(id: UUID!, input: UpdateCardPositionInput!): KanbanCardPositions!
-    "Insert a new kanban canon card at desired status and index. Returns updated card positions object."
-    insertNewKanbanCanonCardPosition(id: UUID!, input: UpdateCardPositionInput!): KanbanCardPositions!
     "Deletes a kanbanCanon (requires admin privileges)"
     deleteKanbanCanon(id: UUID!): Boolean!
   }
