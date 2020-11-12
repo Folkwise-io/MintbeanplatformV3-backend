@@ -1,4 +1,9 @@
-import { deleteCardFromPosition, resolve, updateCardPositions } from "../src/dao/util/cardPositionUtils";
+import {
+  deleteCardFromPosition,
+  insertNewCardPosition,
+  resolve,
+  updateCardPositions,
+} from "../src/dao/util/cardPositionUtils";
 import { KanbanCanonCardStatusEnum } from "../src/types/gqlGeneratedTypes";
 // C - canon
 // S = session
@@ -254,6 +259,88 @@ describe("updateCardPositions()", () => {
     });
   });
 });
+
+describe("insertNewCardPosition", () => {
+  describe("Sunny scenarios", () => {
+    it("appends a card to end of status id array by default if no index provided as arg", () => {
+      const OLD_POSITIONS = {
+        todo: ["a", "b"],
+        wip: [],
+        done: [],
+      };
+      const actual = insertNewCardPosition({
+        oldPositions: OLD_POSITIONS,
+        cardId: "c",
+        status: KanbanCanonCardStatusEnum.Todo,
+      });
+      const expected = {
+        todo: ["a", "b", "c"],
+        wip: [],
+        done: [],
+      };
+      expect(actual).toMatchObject(expected);
+    });
+    it("adds a card id at the appropriate index when provided as an arg", () => {
+      const OLD_POSITIONS = {
+        todo: ["a", "b", "c"],
+        wip: [],
+        done: [],
+      };
+      const actual = insertNewCardPosition({
+        oldPositions: OLD_POSITIONS,
+        cardId: "d",
+        status: KanbanCanonCardStatusEnum.Todo,
+        index: 2,
+      });
+      const expected = {
+        todo: ["a", "b", "d", "c"],
+        wip: [],
+        done: [],
+      };
+      expect(actual).toMatchObject(expected);
+    });
+    it("adds a card id to a previously empty array", () => {
+      const OLD_POSITIONS = {
+        todo: [],
+        wip: [],
+        done: [],
+      };
+      const actual = insertNewCardPosition({
+        oldPositions: OLD_POSITIONS,
+        cardId: "a",
+        status: KanbanCanonCardStatusEnum.Todo,
+      });
+      const expected = {
+        todo: ["a"],
+        wip: [],
+        done: [],
+      };
+      expect(actual).toMatchObject(expected);
+    });
+    describe("Bad data scenarios", () => {
+      it("gracefully adds id to end of array if bogus index passed", () => {
+        const OLD_POSITIONS = {
+          todo: ["a", "b", "c"],
+          wip: [],
+          done: [],
+        };
+        const actual = insertNewCardPosition({
+          oldPositions: OLD_POSITIONS,
+          cardId: "d",
+          status: KanbanCanonCardStatusEnum.Todo,
+          index: 100,
+        });
+        const expected = {
+          todo: ["a", "b", "c", "d"],
+          wip: [],
+          done: [],
+        };
+        expect(actual).toMatchObject(expected);
+      });
+    });
+  });
+});
+
 describe("deleteCardFromPosition", () => {
   describe("Sunny scenarios", () => {
     it("deletes a cardId if present", () => {

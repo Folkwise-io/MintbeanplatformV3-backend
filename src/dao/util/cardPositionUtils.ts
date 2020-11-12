@@ -142,14 +142,18 @@ const insertNewCardPosition = ({
   oldPositions,
   cardId,
   status,
-  index = 0,
+  index,
 }: UpdateCardPositionArgs): KanbanCardPositions => {
   const lowercaseStatus = status.toLowerCase();
   // copy to cast object to string-indexable
   const newPositions = ({ ...oldPositions } as unknown) as { [key: string]: string[] };
 
-  // add new cardId at index
-  newPositions[lowercaseStatus].splice(index, 0, cardId);
+  // add new cardId at index. default to end of array if no index specified
+  if (index) {
+    newPositions[lowercaseStatus].splice(index, 0, cardId);
+  } else {
+    newPositions[lowercaseStatus].push(cardId);
+  }
 
   return (newPositions as unknown) as KanbanCardPositions; // cast back
 };

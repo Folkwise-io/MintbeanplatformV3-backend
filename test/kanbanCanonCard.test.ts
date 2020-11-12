@@ -127,8 +127,9 @@ describe("Creating kanbanCanonCards", () => {
       })
       .then(testManager.parseData)
       .then(({ kanbanCanon }) => {
-        expect(kanbanCanon.cardPositions.todo.length).toBe(1);
-        expect(kanbanCanon.cardPositions.todo[0]).toBe(newKanbanCanonCardId);
+        const todos = kanbanCanon.cardPositions.todo;
+        expect(todos.length).toBe(1);
+        expect(todos[todos.length - 1]).toBe(newKanbanCanonCardId);
       });
   });
 
@@ -143,10 +144,11 @@ describe("Creating kanbanCanonCards", () => {
     await testManager.addKanbanCanonCards(KANBAN_CANON_CARDS);
 
     let newKanbanCanonCardId: string;
+    const INDEX = 1;
     await testManager
       .getGraphQLResponse({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
-        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, index: 1 } },
+        variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, index: INDEX } },
         cookies: adminCookies,
       })
       .then(testManager.parseData)
@@ -163,8 +165,9 @@ describe("Creating kanbanCanonCards", () => {
       })
       .then(testManager.parseData)
       .then(({ kanbanCanon }) => {
-        expect(kanbanCanon.cardPositions.todo.length).toBe(3);
-        expect(kanbanCanon.cardPositions.todo[1]).toBe(newKanbanCanonCardId);
+        const todos = kanbanCanon.cardPositions.todo;
+        expect(todos.length).toBe(3);
+        expect(todos[INDEX]).toBe(newKanbanCanonCardId);
       });
   });
   it("creates a kanbanCanonCard successfully and updates kanbanCanon's cardPositions array at default position when no position data provided, when admin is logged in", async () => {
@@ -198,8 +201,9 @@ describe("Creating kanbanCanonCards", () => {
       })
       .then(testManager.parseData)
       .then(({ kanbanCanon }) => {
-        expect(kanbanCanon.cardPositions.todo.length).toBe(3);
-        expect(kanbanCanon.cardPositions.todo[0]).toBe(newKanbanCanonCardId);
+        const todos = kanbanCanon.cardPositions.todo;
+        expect(todos.length).toBe(3);
+        expect(todos[todos.length - 1]).toBe(newKanbanCanonCardId);
       });
   });
   // it defaults to TODO and index 0 if no status/index provided
