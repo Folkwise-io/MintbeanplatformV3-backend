@@ -44,7 +44,7 @@ const kanbanCanonCard = gql`
     title: String!
     "(Optional) The column this card will initailly appear in. Defaults to TODO"
     status: KanbanCanonCardStatusEnum
-    "(Optional) The index this card will initially appear at. Defaults to 0"
+    "(Optional) The index this card will initially appear at. Defaults to end of status array"
     index: Int
     "A markdown body of the kanbanCanonCard content"
     body: String!
@@ -54,7 +54,7 @@ const kanbanCanonCard = gql`
     title: String
     "(Optional) The column this card will initailly appear at. Defaults to TODO"
     status: KanbanCanonCardStatusEnum
-    "(Optional) The index this card will initially appear at. Defaults to 0"
+    "(Optional) The index this card will initially appear at. Defaults to end of status array"
     index: Int
     "A markdown body of the kanbanCanonCard content"
     body: String

@@ -556,7 +556,7 @@ export type CreateKanbanCanonCardInput = {
   title: Scalars['String'];
   /** (Optional) The column this card will initailly appear in. Defaults to TODO */
   status?: Maybe<KanbanCanonCardStatusEnum>;
-  /** (Optional) The index this card will initially appear at. Defaults to 0 */
+  /** (Optional) The index this card will initially appear at. Defaults to end of status array */
   index?: Maybe<Scalars['Int']>;
   /** A markdown body of the kanbanCanonCard content */
   body: Scalars['String'];
