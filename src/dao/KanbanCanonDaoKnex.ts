@@ -42,7 +42,7 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
           { updatedAt: "updatedAt" },
           { cardPositions: "cardPositions" },
         )
-        .where({ ...args, deleted: false })
+        .where(args)
         .first();
 
       return kanbanCanon;
@@ -51,7 +51,7 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
 
   async getMany(): Promise<KanbanCanon[]> {
     return handleDatabaseError(() => {
-      return this.knex.select("*").from("kanbanCanons").where({ deleted: false });
+      return this.knex.select("*").from("kanbanCanons");
     });
   }
 
