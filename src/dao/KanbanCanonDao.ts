@@ -31,7 +31,7 @@ export default interface KanbanCanonDao {
     id: string,
     input: KanbanCanonCardDaoDeleteCardFromPositionInput,
   ): Promise<KanbanCardPositions>;
-  deleteOne(id: string): Promise<boolean>;
+
   // Testing methods for TestManager to call
   addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void>;
   deleteAll(): Promise<void>;

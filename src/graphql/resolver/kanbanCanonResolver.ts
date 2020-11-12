@@ -31,9 +31,6 @@ const kanbanCanonResolver = (
           .updateCardPositions(args, context)
           .then(({ id, input }) => kanbanCanonService.updateCardPositions(id, input));
       },
-      deleteKanbanCanon: (_root, args, context: ServerContext): Promise<boolean> => {
-        return kanbanCanonResolverValidator.deleteOne(args, context).then(({ id }) => kanbanCanonService.deleteOne(id));
-      },
     },
 
     Meet: {

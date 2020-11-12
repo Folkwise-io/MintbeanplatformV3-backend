@@ -68,15 +68,6 @@ describe("Querying kanbanCanons", () => {
         expect(kanbanCanons).toHaveLength(0);
       });
   });
-  it("does not retrieve deleted kanbanCanons", async () => {
-    await testManager.addKanbanCanons([{ ...KANBAN_CANON_2_RAW, deleted: true } as any]);
-    await testManager
-      .getGraphQLResponse({ query: GET_KANBAN_CANONS_QUERY })
-      .then(testManager.parseData)
-      .then(({ kanbanCanons }) => {
-        expect(kanbanCanons).toHaveLength(0);
-      });
-  });
 });
 
 describe("Creating kanbanCanons", () => {
@@ -225,61 +216,11 @@ describe("Editing kanbanCanons", () => {
     await testManager
       .getErrorMessage({
         query: EDIT_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_1_RAW.id, input: { deleted: true } },
+        variables: { id: KANBAN_CANON_1_RAW.id, input: { createdAt: "2020-11-12T23:43:08.348Z" } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
         expect(errorMessage).toMatch(/invalid/i);
-      });
-  });
-});
-
-describe("Deleting kanbanCanons", () => {
-  beforeEach(async () => {
-    await testManager.addKanbanCanons([KANBAN_CANON_2_RAW]);
-  });
-
-  it("deletes a kanbanCanon successfully when admin is logged in", async () => {
-    await testManager
-      .getGraphQLData({ query: GET_KANBAN_CANONS_QUERY })
-      .then(({ kanbanCanons }) => expect(kanbanCanons).toHaveLength(1));
-
-    await testManager
-      .getGraphQLData({
-        query: DELETE_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_2_RAW.id },
-        cookies: adminCookies,
-      })
-      .then(({ deleteKanbanCanon }) => {
-        expect(deleteKanbanCanon).toBe(true);
-      });
-
-    await testManager
-      .getGraphQLData({ query: GET_KANBAN_CANONS_QUERY })
-      .then(({ kanbanCanons }) => expect(kanbanCanons).toHaveLength(0));
-  });
-
-  it("returns an 'unauthorized' error message when deleting a kanbanCanon without admin cookies", async () => {
-    await testManager
-      .getErrorMessage({
-        query: DELETE_KANBAN_CANON_MUTATION,
-        variables: { id: KANBAN_CANON_2_RAW.id },
-        cookies: [],
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
-      });
-  });
-
-  it("gives an error message from validator when the id of the meet does not exist", async () => {
-    await testManager
-      .getErrorMessage({
-        query: DELETE_KANBAN_CANON_MUTATION,
-        variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
-        cookies: adminCookies,
-      })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
       });
   });
 });

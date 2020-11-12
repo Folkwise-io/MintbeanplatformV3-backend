@@ -45,8 +45,4 @@ export default class KanbanCanonService implements EntityService<KanbanCanon> {
   ): Promise<KanbanCardPositions> {
     return this.kanbanCanonDao.updateCardPositions(id, input);
   }
-
-  async deleteOne(id: string): Promise<boolean> {
-    return this.kanbanCanonDao.deleteOne(id);
-  }
 }
