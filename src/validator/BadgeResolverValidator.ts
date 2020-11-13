@@ -26,7 +26,6 @@ export default class BadgeResolverValidator {
     return args;
   }
   async addOne({ input }: MutationCreateBadgeArgs, _context: ServerContext): Promise<BadgeServiceAddOneInput> {
-    // await this.badgeDao.getOne({ alias: input.alias }).then((badge) => !ensureExists("Badge")(badge));
     try {
       createBadgeInputSchema.validateSync(input);
     } catch (e) {
@@ -45,7 +44,6 @@ export default class BadgeResolverValidator {
     return { badgeId, input };
   }
   async deleteOne({ badgeId }: MutationDeleteBadgeArgs): Promise<string> {
-    //check to see if badgeid exists in db
     return this.badgeDao
       .getOne({ badgeId })
       .then((badge) => ensureExists<Badge>("Badge")(badge))

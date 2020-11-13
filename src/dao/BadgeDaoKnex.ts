@@ -14,7 +14,7 @@ export default class BadgeDaoKnex implements BadgeDao {
   async getMany(args: BadgeServiceGetManyArgs): Promise<Badge[]> {
     return handleDatabaseError(async () => {
       const badges: Badge[] = await this.knex("badges")
-        .where({ ...args, deleted: false })
+        .where({ ...args })
         .orderBy("createdAt", "desc");
       return badges;
     });
@@ -22,7 +22,7 @@ export default class BadgeDaoKnex implements BadgeDao {
   async getOne(args: BadgeServiceGetOneArgs): Promise<Badge> {
     return handleDatabaseError(async () => {
       const badge: Badge = await this.knex("badges")
-        .where({ ...args, deleted: false })
+        .where({ ...args })
         .first();
       return badge;
     });
@@ -44,7 +44,7 @@ export default class BadgeDaoKnex implements BadgeDao {
   }
   async deleteOne(badgeId: string): Promise<boolean> {
     return handleDatabaseError(async () => {
-      await this.knex("badges").where({ badgeId }).update({ deleted: true });
+      await this.knex<Badge>("badges").where({ badgeId }).delete();
       return true;
     });
   }

@@ -16,10 +16,9 @@ const badgeResolver = (badgeResolverValidator: BadgeResolverValidator, badgeServ
     },
     Mutation: {
       createBadge: (_root, args, context: ServerContext): Promise<Badge> => {
-        // if (!context.getIsAdmin()) {
-        //   throw new AuthenticationError("You are not authorized to create a badge!");
-        // }
-        // handle error for if badge's alias already exists
+        if (!context.getIsAdmin()) {
+          throw new AuthenticationError("You are not authorized to create a badge!");
+        }
         return badgeResolverValidator.addOne(args, context).then((input) => badgeService.addOne(input));
       },
       editBadge: (_root, args, context: ServerContext): Promise<Badge> => {
