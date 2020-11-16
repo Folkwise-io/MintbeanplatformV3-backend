@@ -126,14 +126,6 @@ const updateCardPositions = ({
   // update card index to new index
   newPositions[newStatus] = moveIndex([...newPositions[newStatus]], cardId, index);
 
-  // const newPositionsKeys: string[] = Object.keys(newPositions).map((s) => s.toLowerCase());
-  // const possibleStatuses: string[] = Object.values(KanbanCanonCardStatusEnum).map((s) => s.toLowerCase());
-  // possibleStatuses.forEach((s) => {
-  //   if (!newPositionsKeys.includes(s)) {
-  //     newPositions[s] = [];
-  //   }
-  // });
-
   //  fall back to empty array for unpopulated statuses
   return ({ ...basePositions, ...newPositions } as unknown) as KanbanCardPositions; // cast back
 };
