@@ -1,6 +1,6 @@
 # Technical debt log
 
-This is a log of technical address that needs to be addressed.
+This is a log of technical debt that needs to be addressed.
 
 Update anytime you find something smelly in the code that can't be addressed in your current working branch. Label each issue with it's time-complexity in "T-shirt size": [S] (< 1hr), [M] (1-3 hrs), [L] (3+ hrs)
 
