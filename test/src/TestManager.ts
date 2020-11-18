@@ -1,9 +1,4 @@
-import {
-  buildResolverContext,
-  ResolverContext,
-  PersistenceContext,
-  buildPersistenceContext,
-} from "../../src/buildContext";
+import { buildResolverContext, ResolverContext } from "../../src/buildContext";
 import buildSchema from "../../src/buildSchema";
 import { buildExpressServerContext } from "../../src/buildServerContext";
 import buildApolloServer from "../../src/buildApolloServer";
@@ -19,10 +14,11 @@ import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
 import { KanbanSessionRaw } from "../../src/dao/KanbanDao";
-import { KanbanCanonRaw } from "../../src/dao/KanbanCanonDao";
+import { KanbanCanonRaw } from "./daos/TestKanbanCanonDao";
+import { buildTestPersistenceContext, TestPersistenceContext } from "./daos/util/buildTestPersistenceContext";
 
 interface TestManagerParams {
-  persistenceContext: PersistenceContext;
+  persistenceContext: TestPersistenceContext;
   resolverContext: ResolverContext;
   schema: GraphQLSchema;
   testServer: ApolloServer;
@@ -42,7 +38,7 @@ export default class TestManager {
   private constructor(private params: TestManagerParams) {}
 
   static build() {
-    const persistenceContext = buildPersistenceContext();
+    const persistenceContext = buildTestPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
     const schema = buildSchema(resolverContext);
     const testServer = buildApolloServer(schema, buildExpressServerContext);

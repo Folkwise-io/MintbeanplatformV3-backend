@@ -7,14 +7,14 @@ import {
 import { KanbanCanon, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 
 // for test manager add many
-export interface KanbanCanonRaw {
-  id: string;
-  title: string;
-  description: string;
-  createdAt?: string;
-  updatedAt?: string;
-  cardPositions?: KanbanCardPositions;
-}
+// export interface KanbanCanonRaw {
+//   id: string;
+//   title: string;
+//   description: string;
+//   createdAt?: string;
+//   updatedAt?: string;
+//   cardPositions?: KanbanCardPositions;
+// }
 
 export interface KanbanCanonCardDaoDeleteCardFromPositionInput {
   kanbanCanonCardId: string;
@@ -33,6 +33,6 @@ export default interface KanbanCanonDao {
   ): Promise<KanbanCardPositions>;
 
   // Testing methods for TestManager to call
-  addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void>;
-  deleteAll(): Promise<void>;
+  // addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void>;
+  // deleteAll(): Promise<void>;
 }

@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { CreateMeetInput, EditMeetInput, Meet } from "../../src/types/gqlGeneratedTypes";
+import { CreateMeetInput, EditMeetInput, Meet } from "../../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",

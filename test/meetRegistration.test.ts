@@ -1,4 +1,4 @@
-import { ALGOLIA } from "./src/meetConstants";
+import { ALGOLIA } from "./src/constants/meetConstants";
 import {
   ALGOLIA_3,
   AMY_ANIMATION_TOYS_2_REGISTRATION,
@@ -7,9 +7,9 @@ import {
   GET_REGISTRANTS_FOR_MEET_QUERY,
   GET_USER_REGISTERED_MEETS_QUERY,
   REGISTER_FOR_MEET_QUERY,
-} from "./src/meetRegistrationConstants";
+} from "./src/constants/meetRegistrationConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getBobCookies, getAdminCookies } from "./src/util";
 
 const testManager = TestManager.build();

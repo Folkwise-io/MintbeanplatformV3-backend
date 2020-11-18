@@ -1,6 +1,6 @@
 import { MediaAsset, Meet, Project } from "../src/types/gqlGeneratedTypes";
-import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/mediaAssetConstants";
-import { ALGOLIA, PAPERJS } from "./src/meetConstants";
+import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/constants/mediaAssetConstants";
+import { ALGOLIA, PAPERJS } from "./src/constants/meetConstants";
 import {
   AMY_ALGOLIA_PROJECT,
   AMY_PAPERJS_PROJECT,
@@ -14,9 +14,9 @@ import {
   GET_USER_WITH_NESTED_PROJECTS,
   NEW_PROJECT,
   NEW_PROJECT_WITH_MEDIA_ASSETS,
-} from "./src/projectConstants";
+} from "./src/constants/projectConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();

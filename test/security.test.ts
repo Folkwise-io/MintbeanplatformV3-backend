@@ -5,7 +5,7 @@ import {
   PROJECT_NESTED_PASSWORDHASH_QUERY,
   USER_EMAIL_QUERY,
   USER_PASSWORDHASH_QUERY,
-} from "./src/securityConstants";
+} from "./src/constants/securityConstants";
 import TestManager from "./src/TestManager";
 
 const testManager = TestManager.build();

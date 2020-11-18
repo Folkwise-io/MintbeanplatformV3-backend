@@ -3,7 +3,7 @@ import {
   CreateKanbanCanonCardInput,
   EditKanbanCanonCardInput,
   KanbanCanonCard,
-} from "../../src/types/gqlGeneratedTypes";
+} from "../../../src/types/gqlGeneratedTypes";
 import { KANBAN_CANON_1_RAW } from "./kanbanCanonConstants";
 
 export const KANBAN_CANON_CARD_1: KanbanCanonCard = {

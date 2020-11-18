@@ -11,10 +11,10 @@ import {
   GET_REGISTERLINK_STATUS,
   NEW_MEET_INPUT,
   PAPERJS,
-} from "./src/meetConstants";
+} from "./src/constants/meetConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
-import { KANBAN_CANON_1_RAW } from "./src/kanbanCanonConstants";
+import { KANBAN_CANON_1_RAW } from "./src/constants/kanbanCanonConstants";
 
 const testManager = TestManager.build();
 

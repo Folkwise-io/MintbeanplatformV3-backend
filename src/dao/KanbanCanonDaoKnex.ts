@@ -1,6 +1,6 @@
 import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
-import KanbanCanonDao, { KanbanCanonCardDaoDeleteCardFromPositionInput, KanbanCanonRaw } from "./KanbanCanonDao";
+import KanbanCanonDao, { KanbanCanonCardDaoDeleteCardFromPositionInput } from "./KanbanCanonDao";
 import { KanbanCanon, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import {
   KanbanCanonServiceAddOneInput,
@@ -10,27 +10,30 @@ import {
 } from "../service/KanbanCanonService";
 import { deleteCardFromPosition, insertNewCardPosition, updateCardPositions } from "./util/cardPositionUtils";
 
-interface KanbanCanonDbFormat {
-  id?: string;
-  title: string;
-  description: string;
-  cardPositions?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// interface KanbanCanonDbFormat {
+//   id?: string;
+//   title: string;
+//   description: string;
+//   cardPositions?: string;
+//   createdAt?: string;
+//   updatedAt?: string;
+// }
 
-const toDbFormat = <T extends KanbanCanonRaw>(kanbanCanonInput: T): KanbanCanonDbFormat => {
-  if (kanbanCanonInput.cardPositions) {
-    return {
-      ...kanbanCanonInput,
-      cardPositions: JSON.stringify(kanbanCanonInput.cardPositions),
-    };
-  }
-  return kanbanCanonInput as KanbanCanonDbFormat;
-};
+// const toDbFormat = <T extends KanbanCanonRaw>(kanbanCanonInput: T): KanbanCanonDbFormat => {
+//   if (kanbanCanonInput.cardPositions) {
+//     return {
+//       ...kanbanCanonInput,
+//       cardPositions: JSON.stringify(kanbanCanonInput.cardPositions),
+//     };
+//   }
+//   return kanbanCanonInput as KanbanCanonDbFormat;
+// };
 
 export default class KanbanCanonDaoKnex implements KanbanCanonDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
   async getOne(args: KanbanCanonServiceGetOneArgs): Promise<KanbanCanon> {
     return handleDatabaseError(async () => {
       const kanbanCanon = await this.knex("kanbanCanons")
@@ -144,13 +147,13 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
     });
   }
 
-  // Testing methods below, for TestManager to call
-  async addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void> {
-    const kcWithStringifiedCardPositions = kanbanCanons.map((kc) => toDbFormat(kc));
-    return this.knex<KanbanCanonDbFormat[]>("kanbanCanons").insert(kcWithStringifiedCardPositions);
-  }
+  // // Testing methods below, for TestManager to call
+  // async addMany(kanbanCanons: KanbanCanonRaw[]): Promise<void> {
+  //   const kcWithStringifiedCardPositions = kanbanCanons.map((kc) => toDbFormat(kc));
+  //   return this.knex<KanbanCanonDbFormat[]>("kanbanCanons").insert(kcWithStringifiedCardPositions);
+  // }
 
-  async deleteAll(): Promise<void> {
-    return this.knex("kanbanCanons").delete();
-  }
+  // async deleteAll(): Promise<void> {
+  //   return this.knex("kanbanCanons").delete();
+  // }
 }

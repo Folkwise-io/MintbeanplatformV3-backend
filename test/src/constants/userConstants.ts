@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
-import { UserRegistrationInput } from "../../src/types/gqlGeneratedTypes";
-import { User } from "../../src/types/User";
+import { UserRegistrationInput } from "../../../src/types/gqlGeneratedTypes";
+import { User } from "../../../src/types/User";
 
 // Will use generator factory / faker once more entities are added
 export const AMY: User = {

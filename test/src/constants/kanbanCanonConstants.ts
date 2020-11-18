@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
-import { KanbanCanonRaw } from "../../src/dao/KanbanCanonDao";
-import { CreateKanbanCanonInput, EditKanbanCanonInput } from "../../src/types/gqlGeneratedTypes";
+import { CreateKanbanCanonInput, EditKanbanCanonInput } from "../../../src/types/gqlGeneratedTypes";
+import { KanbanCanonRaw } from "../daos/TestKanbanCanonDao";
 
 export const KANBAN_CANON_1_RAW: KanbanCanonRaw = {
   id: "b36d2ecd-ac89-406c-816f-6b067e036cff",

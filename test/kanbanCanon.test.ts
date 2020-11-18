@@ -1,5 +1,5 @@
 import { KanbanCanonCardStatusEnum, UpdateCardPositionInput } from "../src/types/gqlGeneratedTypes";
-import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/kanbanCanonCardConstants";
+import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/constants/kanbanCanonCardConstants";
 import {
   CREATE_KANBAN_CANON_MUTATION,
   EDIT_KANBAN_CANON_INPUT,
@@ -11,9 +11,9 @@ import {
   KANBAN_CANON_2_RAW,
   DELETE_KANBAN_CANON_MUTATION,
   UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
-} from "./src/kanbanCanonConstants";
+} from "./src/constants/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
 
 const testManager = TestManager.build();

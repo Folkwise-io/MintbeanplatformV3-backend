@@ -9,8 +9,8 @@ import {
   EDIT_KANBAN_CANON_CARD_INPUT,
   DELETE_KANBAN_CANON_CARD_MUTATION,
   KANBAN_CANON_CARD_3,
-} from "./src/kanbanCanonCardConstants";
-import { GET_KANBAN_CANON_QUERY, KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/kanbanCanonConstants";
+} from "./src/constants/kanbanCanonCardConstants";
+import { GET_KANBAN_CANON_QUERY, KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/constants/kanbanCanonConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 
