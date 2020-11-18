@@ -11,7 +11,10 @@ import {
 import { ensureExists } from "../util/ensureExists";
 
 export default class KanbanCanonCardDaoKnex implements KanbanCanonCardDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
   async getOne(args: KanbanCanonCardServiceGetOneArgs): Promise<KanbanCanonCard> {
     return handleDatabaseError(async () => {
       const kanbanCanonCard = await this.knex("kanbanCanonCards")
@@ -55,14 +58,5 @@ export default class KanbanCanonCardDaoKnex implements KanbanCanonCardDao {
       await this.knex("kanbanCanonCards").where({ id }).update({ deleted: true });
       return true;
     });
-  }
-
-  // Testing methods below, for TestManager to call
-  async addMany(kanbanCanonCards: KanbanCanonCard[]): Promise<void> {
-    return this.knex<KanbanCanonCard>("kanbanCanonCards").insert(kanbanCanonCards);
-  }
-
-  async deleteAll(): Promise<void> {
-    return this.knex<KanbanCanonCard>("kanbanCanonCards").delete();
   }
 }

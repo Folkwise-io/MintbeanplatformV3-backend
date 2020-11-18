@@ -14,7 +14,7 @@ import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
 import { KanbanSessionRaw } from "../../src/dao/KanbanDao";
-import { KanbanCanonRaw } from "./daos/TestKanbanCanonDao";
+import { KanbanCanonRaw } from "./daos/TestKanbanCanonDaoKnex";
 import { buildTestPersistenceContext, TestPersistenceContext } from "./daos/util/buildTestPersistenceContext";
 
 interface TestManagerParams {
@@ -35,8 +35,6 @@ interface PostParams {
 }
 
 export default class TestManager {
-  private constructor(private params: TestManagerParams) {}
-
   static build() {
     const persistenceContext = buildTestPersistenceContext();
     const resolverContext = buildResolverContext(persistenceContext);
@@ -54,7 +52,7 @@ export default class TestManager {
       testClient,
     });
   }
-
+  private constructor(private params: TestManagerParams) {}
   addUsers(users: User[]): Promise<TestManager> {
     return this.params.persistenceContext.userDao.addMany(users).then(() => this);
   }

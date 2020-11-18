@@ -1,15 +1,23 @@
 import Knex from "knex";
 import KanbanCanonDaoKnex from "../../../src/dao/KanbanCanonDaoKnex";
-import TestKanbanCanonDao, { KanbanCanonRaw } from "./TestKanbanCanonDao";
-// Testing methods below, for TestManager to call
+import { KanbanCardPositions } from "../../../src/types/gqlGeneratedTypes";
+
+export interface KanbanCanonRaw {
+  id: string;
+  title: string;
+  description: string;
+  createdAt?: string;
+  updatedAt?: string;
+  cardPositions?: KanbanCardPositions;
+}
 
 interface KanbanCanonDbFormat {
   id?: string;
   title: string;
   description: string;
-  cardPositions?: string;
   createdAt?: string;
   updatedAt?: string;
+  cardPositions?: string; // stringified cardPositions for db
 }
 
 const toDbFormat = <T extends KanbanCanonRaw>(kanbanCanonInput: T): KanbanCanonDbFormat => {
@@ -22,7 +30,7 @@ const toDbFormat = <T extends KanbanCanonRaw>(kanbanCanonInput: T): KanbanCanonD
   return kanbanCanonInput as KanbanCanonDbFormat;
 };
 
-export default class TestKanbanCanonDaoKnex extends KanbanCanonDaoKnex implements TestKanbanCanonDao {
+export default class TestKanbanCanonDaoKnex extends KanbanCanonDaoKnex {
   constructor(knex: Knex) {
     super(knex);
   }
