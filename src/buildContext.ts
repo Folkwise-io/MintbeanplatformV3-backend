@@ -30,6 +30,9 @@ import BadgeResolverValidator from "./validator/BadgeResolverValidator";
 import BadgeService from "./service/BadgeService";
 import BadgeDao from "./dao/BadgeDao";
 import BadgeDaoKnex from "./dao/BadgeDaoKnex";
+import BadgeProjectDao from "./dao/BadgeProjectDao";
+import BadgeProjectDaoKnex from "./dao/BadgeProjectDaoKnex";
+import BadgeProjectService from "./service/BadgeProjectService";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -39,6 +42,7 @@ export interface PersistenceContext {
   projectMediaAssetDao: ProjectMediaAssetDao;
   meetRegistrationDao: MeetRegistrationDao;
   badgeDao: BadgeDao;
+  badgeProjectDao: BadgeProjectDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -50,6 +54,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
   const badgeDao = new BadgeDaoKnex(knex);
+  const badgeProjectDao = new BadgeProjectDaoKnex(knex);
 
   return {
     userDao,
@@ -59,6 +64,7 @@ export function buildPersistenceContext(): PersistenceContext {
     projectMediaAssetDao,
     meetRegistrationDao,
     badgeDao,
+    badgeProjectDao,
   };
 }
 
@@ -77,6 +83,7 @@ export interface ResolverContext {
   emailService: EmailService;
   badgeResolverValidator: BadgeResolverValidator;
   badgeService: BadgeService;
+  badgeProjectService: BadgeProjectService;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -88,6 +95,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     projectMediaAssetDao,
     meetRegistrationDao,
     badgeDao,
+    badgeProjectDao,
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
@@ -105,6 +113,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailService = new EmailService(emailDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
+  const badgeProjectService = new BadgeProjectService(badgeProjectDao);
 
   return {
     userResolverValidator,
@@ -121,5 +130,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     emailService,
     badgeResolverValidator,
     badgeService,
+    badgeProjectService,
   };
 }

@@ -43,7 +43,7 @@ export default class MeetResolverValidator {
     // Check if meet id exists in db
     return this.meetDao
       .getOne({ id })
-      .then((meet) => ensureExists<Meet>("Meet")(meet))
+      .then((meet) => ensureExists("Meet")(meet))
       .then(({ id }) => id);
   }
 
@@ -51,7 +51,7 @@ export default class MeetResolverValidator {
     // Check if meet id exists in db
     return this.meetDao
       .getOne({ id: meetId })
-      .then((meet) => ensureExists<Meet>("Meet")(meet))
+      .then((meet) => ensureExists("Meet")(meet))
       .then(({ id }) => id);
   }
 }

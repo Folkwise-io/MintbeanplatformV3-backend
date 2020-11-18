@@ -1,11 +1,6 @@
 import Knex from "knex";
-import {
-  BadgeServiceAddOneInput,
-  BadgeServiceEditOneInput,
-  BadgeServiceGetManyArgs,
-  BadgeServiceGetOneArgs,
-} from "../service/BadgeService";
-import { Badge } from "../types/gqlGeneratedTypes";
+import { BadgeServiceAddOneInput, BadgeServiceEditOneInput, BadgeServiceGetManyArgs } from "../service/BadgeService";
+import { Badge, QueryBadgeArgs } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import BadgeDao from "./BadgeDao";
 
@@ -13,17 +8,26 @@ export default class BadgeDaoKnex implements BadgeDao {
   constructor(private knex: Knex) {}
   async getMany(args: BadgeServiceGetManyArgs): Promise<Badge[]> {
     return handleDatabaseError(async () => {
-      const badges: Badge[] = await this.knex("badges")
+      const badges: Badge[] = await this.knex("badges as b")
+        .select(["b.*"])
+        .leftJoin("badgesProjects as bp", "b.id", "=", "bp.badgeId")
         .where({ ...args })
-        .orderBy("createdAt", "desc");
+        .distinct()
+        .orderBy("b.createdAt", "desc")
+        .options({ nestTables: true });
       return badges;
     });
   }
-  async getOne(args: BadgeServiceGetOneArgs): Promise<Badge> {
+  async getOne(args: QueryBadgeArgs): Promise<Badge> {
+    const { id } = args;
     return handleDatabaseError(async () => {
-      const badge: Badge = await this.knex("badges")
-        .where({ ...args })
-        .first();
+      const badge: Badge = await this.knex("badges as b")
+        .select(["b.*"])
+        .leftJoin("badgesProjects as bp", "b.id", "=", "bp.badgeId")
+        .where({ "b.id": id })
+        .distinct()
+        .first()
+        .options({ nestTables: true });
       return badge;
     });
   }
@@ -33,18 +37,18 @@ export default class BadgeDaoKnex implements BadgeDao {
       return newBadge[0];
     });
   }
-  async editOne(badgeId: string, input: BadgeServiceEditOneInput): Promise<Badge> {
+  async editOne(id: string, input: BadgeServiceEditOneInput): Promise<Badge> {
     return handleDatabaseError(async () => {
       const editedBadge = (await this.knex("badges")
-        .where({ badgeId })
+        .where({ id })
         .update({ ...input, updatedAt: this.knex.fn.now() })
         .returning("*")) as Badge[];
       return editedBadge[0];
     });
   }
-  async deleteOne(badgeId: string): Promise<boolean> {
+  async deleteOne(id: string): Promise<boolean> {
     return handleDatabaseError(async () => {
-      await this.knex<Badge>("badges").where({ badgeId }).delete();
+      await this.knex<Badge>("badges").where({ id }).delete();
       return true;
     });
   }

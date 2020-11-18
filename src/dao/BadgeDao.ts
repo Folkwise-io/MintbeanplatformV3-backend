@@ -1,15 +1,10 @@
-import {
-  BadgeServiceAddOneInput,
-  BadgeServiceEditOneInput,
-  BadgeServiceGetManyArgs,
-  BadgeServiceGetOneArgs,
-} from "../service/BadgeService";
-import { Badge } from "../types/gqlGeneratedTypes";
+import { BadgeServiceAddOneInput, BadgeServiceEditOneInput, BadgeServiceGetManyArgs } from "../service/BadgeService";
+import { Badge, QueryBadgeArgs } from "../types/gqlGeneratedTypes";
 
 export default interface BadgeDao {
   getMany(args: BadgeServiceGetManyArgs): Promise<Badge[]>;
-  getOne(args: BadgeServiceGetOneArgs): Promise<Badge>;
+  getOne(args: QueryBadgeArgs): Promise<Badge>;
   addOne(input: BadgeServiceAddOneInput): Promise<Badge>;
-  editOne(badgeId: string, input: BadgeServiceEditOneInput): Promise<Badge>;
-  deleteOne(badgeId: string): Promise<boolean>;
+  editOne(id: string, input: BadgeServiceEditOneInput): Promise<Badge>;
+  deleteOne(id: string): Promise<boolean>;
 }

@@ -1,12 +1,7 @@
 import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import BadgeDao from "../dao/BadgeDao";
-import {
-  BadgeServiceAddOneInput,
-  BadgeServiceEditOneInput,
-  BadgeServiceGetManyArgs,
-  BadgeServiceGetOneArgs,
-} from "../service/BadgeService";
+import { BadgeServiceAddOneInput, BadgeServiceEditOneInput, BadgeServiceGetManyArgs } from "../service/BadgeService";
 import {
   QueryBadgeArgs,
   MutationCreateBadgeArgs,
@@ -22,7 +17,7 @@ export default class BadgeResolverValidator {
   async getMany(args: {}, _context: ServerContext): Promise<BadgeServiceGetManyArgs> {
     return args;
   }
-  async getOne(args: QueryBadgeArgs, _context: ServerContext): Promise<BadgeServiceGetOneArgs> {
+  async getOne(args: QueryBadgeArgs, _context: ServerContext): Promise<QueryBadgeArgs> {
     return args;
   }
   async addOne({ input }: MutationCreateBadgeArgs, _context: ServerContext): Promise<BadgeServiceAddOneInput> {
@@ -34,19 +29,19 @@ export default class BadgeResolverValidator {
     return input;
   }
   async editOne(
-    { badgeId, input }: MutationEditBadgeArgs,
+    { id, input }: MutationEditBadgeArgs,
     _context: ServerContext,
-  ): Promise<{ badgeId: string; input: BadgeServiceEditOneInput }> {
-    await this.badgeDao.getOne({ badgeId }).then((badge) => ensureExists("Badge")(badge));
+  ): Promise<{ id: string; input: BadgeServiceEditOneInput }> {
+    await this.badgeDao.getOne({ id }).then((badge) => ensureExists("Badge")(badge));
     if (Object.keys(input).length === 0) {
       throw new UserInputError("Must edit at least one field!");
     }
-    return { badgeId, input };
+    return { id, input };
   }
-  async deleteOne({ badgeId }: MutationDeleteBadgeArgs): Promise<string> {
+  async deleteOne({ id }: MutationDeleteBadgeArgs): Promise<string> {
     return this.badgeDao
-      .getOne({ badgeId })
-      .then((badge) => ensureExists<Badge>("Badge")(badge))
-      .then(({ badgeId }) => badgeId);
+      .getOne({ id })
+      .then((badge) => ensureExists("Badge")(badge))
+      .then(({ id }) => id);
   }
 }

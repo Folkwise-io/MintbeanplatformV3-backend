@@ -31,7 +31,7 @@ const emailResolver = (
       sendReminderEmailForMeet: async (_root, { input }, context: ServerContext) => {
         ensureAdmin(context);
         const { meetId, subject, body } = input;
-        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: meetId }));
+        const meet = ensureExists("Meet")(await meetService.getOne({ id: meetId }));
         // TODO: get users and map over their emails and send them all
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
         return emailService.sendEmail(email);
@@ -50,7 +50,7 @@ const emailResolver = (
           updatedAt: "2019-10-15",
           isAdmin: false,
         };
-        const meet = ensureExists<Meet>("Meet")(await meetService.getOne({ id: args.meetId }));
+        const meet = ensureExists("Meet")(await meetService.getOne({ id: args.meetId }));
         const email = emailService.generateMeetRegistrationEmail(user, meet, "REGISTRATION_UUID_WILL_GO_HERE");
         return emailService.sendEmail(email);
       },

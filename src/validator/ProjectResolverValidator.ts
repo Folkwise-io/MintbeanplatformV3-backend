@@ -2,7 +2,12 @@ import { UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import ProjectDao from "../dao/ProjectDao";
 import { ProjectServiceAddOneInput, ProjectServiceGetOneArgs } from "../service/ProjectService";
-import { MutationCreateProjectArgs, MutationDeleteProjectArgs, Project, QueryProjectArgs } from "../types/gqlGeneratedTypes";
+import {
+  MutationAwardBadgesArgs,
+  MutationCreateProjectArgs,
+  MutationDeleteProjectArgs,
+  QueryProjectArgs,
+} from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import createProjectInputSchema from "./yupSchemas/createProjectInputSchema";
 
@@ -37,7 +42,12 @@ export default class ProjectResolverValidator {
     // Check if project id exists in db
     return this.projectDao
       .getOne({ id })
-      .then((project) => ensureExists<Project>("Project")(project))
+      .then((project) => ensureExists("Project")(project))
       .then(({ id }) => id);
+  }
+
+  async awardBadges({ projectId, badgeIds }: MutationAwardBadgesArgs): Promise<MutationAwardBadgesArgs> {
+    this.projectDao.getOne({ id: projectId }).then((project) => ensureExists("Project")(project));
+    return { projectId, badgeIds };
   }
 }

@@ -2,7 +2,7 @@ import * as Knex from "knex";
 
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("badges", (table) => {
-    table.uuid("badgeId").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
+    table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
     table.text("alias").notNullable().unique();
     table.enu("badgeShape", ["circle", "square", "star"]).notNullable();
     table.string("faIcon").notNullable();
@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("deleted").notNullable().defaultTo(false);
 
-    table.primary(["badgeId"]);
+    table.primary(["id"]);
   });
 }
 

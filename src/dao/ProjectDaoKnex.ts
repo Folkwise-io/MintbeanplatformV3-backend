@@ -4,7 +4,7 @@ import {
   ProjectServiceGetManyArgs,
   ProjectServiceGetOneArgs,
 } from "../service/ProjectService";
-import { Project } from "../types/gqlGeneratedTypes";
+import { MutationAwardBadgesArgs, Project } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectDao from "./ProjectDao";
 
@@ -12,21 +12,28 @@ export default class ProjectDaoKnex implements ProjectDao {
   constructor(private knex: Knex) {}
 
   async getOne(args: ProjectServiceGetOneArgs): Promise<Project> {
+    const { id } = args;
     return handleDatabaseError(async () => {
-      const project: Project = await this.knex("projects")
-        .where({ ...args, deleted: false })
-        .first();
-
+      const project: Project = await this.knex("projects as p")
+        .select("p.*")
+        .leftJoin("badgesProjects as bp", "p.id", "=", "bp.projectId")
+        .where({ "p.id": id, deleted: false })
+        .distinct()
+        .first()
+        .options({ nestTables: true });
       return project;
     });
   }
 
   async getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
     return handleDatabaseError(async () => {
-      const projects: Project[] = await this.knex("projects")
+      const projects: Project[] = await this.knex("projects as p")
+        .select("p.*")
+        .leftJoin("badgesProjects as bp", "p.id", "=", "bp.projectId")
         .where({ ...args, deleted: false })
-        .orderBy("createdAt", "desc");
-
+        .distinct()
+        .orderBy("p.createdAt", "desc")
+        .options({ nestTables: true });
       return projects;
     });
   }

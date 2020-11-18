@@ -31,6 +31,9 @@ const project = gql`
 
     "The meet associated with the project"
     meet: Meet
+
+    "the badges associated with the project"
+    badges: [Badge]
   }
 
   extend type PublicUser {
@@ -80,6 +83,9 @@ const project = gql`
 
     "Deletes a project by ID (user must be logged in and own the project)"
     deleteProject(id: UUID!): Boolean!
+
+    "adds badges to a project by id (admin only)"
+    awardBadges(projectId: UUID!, badgeIds: [UUID]!): Project!
   }
 `;
 

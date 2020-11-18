@@ -5,12 +5,14 @@ import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
 import ProjectMediaAssetService, { ProjectMediaAssetServiceAddOneArgs } from "../../service/ProjectMediaAssetService";
+import BadgeProjectService from "../../service/BadgeProjectService";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
   projectService: ProjectService,
   mediaAssetService: MediaAssetService,
   projectMediaAssetService: ProjectMediaAssetService,
+  badgeProjectService: BadgeProjectService,
 ): Resolvers => {
   return {
     Query: {
@@ -35,6 +37,12 @@ const projectResolver = (
     Meet: {
       projects: (meet, context) => {
         return projectService.getMany({ meetId: meet.id }, context);
+      },
+    },
+
+    Badge: {
+      projects: (badge, context) => {
+        return projectService.getMany({ badgeId: badge.id }, context);
       },
     },
 
@@ -99,6 +107,16 @@ const projectResolver = (
           }
 
           return projectService.deleteOne(projectId);
+        });
+      },
+
+      awardBadges: (_root, args, context: ServerContext): Promise<Project> => {
+        return projectResolverValidator.awardBadges(args).then(async ({ projectId, badgeIds }) => {
+          // if (!context.getIsAdmin()) {
+          //   throw new AuthenticationError("You are not authorized to award badges!");
+          // }
+          await badgeProjectService.addMany({ projectId, badgeIds });
+          return projectService.getOne({ id: projectId }, context);
         });
       },
     },

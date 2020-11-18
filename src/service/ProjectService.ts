@@ -9,6 +9,7 @@ export interface ProjectServiceGetOneArgs {
 export interface ProjectServiceGetManyArgs {
   userId?: string;
   meetId?: string;
+  badgeId?: string;
 }
 
 export interface ProjectServiceAddOneInput {

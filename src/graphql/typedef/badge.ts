@@ -1,21 +1,14 @@
 import { gql } from "apollo-server-express";
 
 const badge = gql`
-  "A list of the different border shapes a badge can have"
-  enum BadgeShapes {
-    star
-    circle
-    square
-  }
-
   "A badge awarded by Mintbean for excellence within the Mintbean community!"
   type Badge {
     "ID of the badge in UUID"
-    badgeId: UUID!
+    id: UUID!
     "A user friendly :colon-surrounded: badge alias."
     alias: String!
-    "The shape of the enclosing badge"
-    badgeShape: BadgeShapes!
+    "The shape of the enclosing badge from an enumerable list"
+    badgeShape: String!
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String!
     "The hex code for the background color (all 6 digits, no # before code)"
@@ -32,20 +25,22 @@ const badge = gql`
     createdAt: DateTime!
     "when this badge was last updated"
     updatedAt: DateTime!
+    "a list of projects awarded this badge"
+    projects: [Project]
   }
   extend type Query {
     "Gets all the badges"
     badges: [Badge]
     "gets one badge by id or alias"
-    badge(badgeId: UUID!): Badge
+    badge(id: UUID!): Badge
   }
 
   "the input needed to create a new badge"
   input CreateBadgeInput {
     "the alias of the badge"
     alias: String!
-    "the shape of the badge"
-    badgeShape: BadgeShapes!
+    "the shape of the badge from an enumerable list"
+    badgeShape: String!
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String!
     "the background color of the badge(optional)"
@@ -64,8 +59,8 @@ const badge = gql`
   input EditBadgeInput {
     "the alias of the badge"
     alias: String
-    "the shape of the badge"
-    badgeShape: BadgeShapes
+    "the shape of the badge from an enumerable list"
+    badgeShape: String
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String
     "the background color of the badge(optional)"
@@ -84,9 +79,9 @@ const badge = gql`
     "Creates a new badge (requires admin privileges"
     createBadge(input: CreateBadgeInput!): Badge!
     "Edits a badge (requires admin privileges)"
-    editBadge(badgeId: UUID!, input: EditBadgeInput!): Badge!
+    editBadge(id: UUID!, input: EditBadgeInput!): Badge!
     "Deletes a badge (requires admin privileges)"
-    deleteBadge(badgeId: UUID!): Boolean!
+    deleteBadge(id: UUID!): Boolean!
   }
 `;
 
