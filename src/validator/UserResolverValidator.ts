@@ -12,13 +12,6 @@ import { UserServiceAddOneArgs } from "../service/UserService";
 export default class UserResolverValidator {
   constructor(private userDao: UserDao) {}
 
-  /**
-   * This is only an example validator that checks if the user exists and throws an error if the user does not.
-   * This "validation" is unnecessary because without it, graphQL would just return null which is probably better.
-   * @param args The args passed in from the resolver
-   * @param context The context passed in from the resolver (useful for authorization checks in other validators)
-   * @returns The cleaned args as defined in UserService
-   */
   getOne(args: QueryUserArgs, context: ServerContext): Promise<UserDaoGetOneArgs> {
     return this.userDao
       .getOne(args)

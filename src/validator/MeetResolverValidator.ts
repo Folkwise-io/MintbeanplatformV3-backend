@@ -8,7 +8,6 @@ import {
   MutationEditMeetArgs,
   MutationRegisterForMeetArgs,
 } from "../types/gqlGeneratedTypes";
-import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
 

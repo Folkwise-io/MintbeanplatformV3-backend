@@ -1,4 +1,4 @@
-import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import ProjectDao, { ProjectDaoAddOneInput, ProjectDaoGetOneArgs } from "../dao/ProjectDao";
 import {
@@ -18,7 +18,7 @@ export default class ProjectResolverValidator {
   }
 
   async addOne({ input }: MutationCreateProjectArgs): Promise<ProjectDaoAddOneInput> {
-    //TODO: Validate createProject input: check if userId exists in db? (only needed if admin requests)
+    // TODO: Validate createProject input: check if userId exists in db? (only needed if admin requests)
     validateAgainstSchema<ProjectDaoAddOneInput>(createProjectInputSchema, input);
 
     // Remove mediaAssets field as it is not part of projects table
