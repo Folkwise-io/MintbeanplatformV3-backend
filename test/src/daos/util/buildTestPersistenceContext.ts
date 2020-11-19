@@ -1,11 +1,8 @@
 import Knex from "knex";
-import KanbanDao from "../../../../src/dao/KanbanDao";
 import MediaAssetDao from "../../../../src/dao/MediaAssetDao";
 import MediaAssetDaoKnex from "../../../../src/dao/MediaAssetDaoKnex";
 import MeetDao from "../../../../src/dao/MeetDao";
 import MeetDaoKnex from "../../../../src/dao/MeetDaoKnex";
-import MeetRegistrationDao from "../../../../src/dao/MeetRegistrationDao";
-import MeetRegistrationDaoKnex from "../../../../src/dao/MeetRegistrationDaoKnex";
 import ProjectDao from "../../../../src/dao/ProjectDao";
 import ProjectDaoKnex from "../../../../src/dao/ProjectDaoKnex";
 import ProjectMediaAssetDao from "../../../../src/dao/ProjectMediaAssetDao";
@@ -17,6 +14,7 @@ import knexConfig from "../../../../src/db/knexfile";
 import { PersistenceContext } from "../../../../src/buildContext";
 import TestKanbanCanonCardDaoKnex from "../TestKanbanCanonCardDaoKnex";
 import TestKanbanDaoKnex from "../TestKanbanDaoKnex";
+import TestMeetRegistrationDaoKnex from "../TestMeetRegistrationDaoKnex";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
@@ -25,7 +23,7 @@ export interface TestPersistenceContext extends PersistenceContext {
   projectDao: ProjectDao;
   mediaAssetDao: MediaAssetDao;
   projectMediaAssetDao: ProjectMediaAssetDao;
-  meetRegistrationDao: MeetRegistrationDao;
+  meetRegistrationDao: TestMeetRegistrationDaoKnex;
   kanbanCanonDao: TestKanbanCanonDaoKnex;
   kanbanCanonCardDao: TestKanbanCanonCardDaoKnex;
   kanbanDao: TestKanbanDaoKnex;
@@ -40,7 +38,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const projectDao = new ProjectDaoKnex(knex);
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
-  const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
+  const meetRegistrationDao = new TestMeetRegistrationDaoKnex(knex);
   const kanbanCanonDao = new TestKanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new TestKanbanCanonCardDaoKnex(knex);
   const kanbanDao = new TestKanbanDaoKnex(knex);

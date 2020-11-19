@@ -5,7 +5,10 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import MeetRegistrationDao from "./MeetRegistrationDao";
 
 export default class MeetRegistrationDaoKnex implements MeetRegistrationDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
 
   getOne(args: any): Promise<MeetRegistration> {
     throw new Error("Method not implemented.");
@@ -32,14 +35,5 @@ export default class MeetRegistrationDaoKnex implements MeetRegistrationDao {
 
   deleteOne(id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
-  }
-
-  // Test manager functions
-  async addMany(meetRegistrations: MeetRegistration[]): Promise<void> {
-    return this.knex<MeetRegistration>("meetRegistrations").insert(meetRegistrations);
-  }
-
-  deleteAll(): Promise<void> {
-    return this.knex<MeetRegistration>("meetRegistrations").delete();
   }
 }

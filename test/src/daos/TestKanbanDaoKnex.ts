@@ -1,6 +1,5 @@
 import Knex from "knex";
 import KanbanDaoKnex from "../../../src/dao/KanbanDaoKnex";
-import { KanbanCanonCard } from "../../../src/types/gqlGeneratedTypes";
 
 export interface KanbanSessionRaw {
   id: string;
