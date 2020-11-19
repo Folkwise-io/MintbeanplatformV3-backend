@@ -71,20 +71,3 @@ const kanbanCanonCard = gql`
 `;
 
 export default kanbanCanonCard;
-
-// FOR LATER
-
-// "The input needed to create a new kanban card"
-
-//   "Input that can be used to edit a kanban card - all fields are optional"
-//   input EditKanbanCardInput {
-//     "A reference to the kanban this kanban card belongs to"
-//     kanbanId: UUID
-//     title: String
-//     "The column this card will initailly appear in. Defaults to TODO"
-//     status: KanbanCanonCardStatusEnum
-//     # "The master index of this card in the kanban. Determines the order cards are presented to user on initial use"
-//     # index: Int
-//     "A markdown body of the kanban card content"
-//     body: String
-//   }

@@ -37,3 +37,7 @@ if (!context.getIsAdmin()) {
   throw new AuthenticationError("You are not authorized to delete kanban canons!");
 }
 ```
+
+### [M] Remove all unnecessary services and call directly from the Dao
+
+Remove services that are not performing any logic and callt eh dao directly instead

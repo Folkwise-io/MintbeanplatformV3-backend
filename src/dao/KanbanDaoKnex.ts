@@ -14,25 +14,15 @@ interface KanbanRawData extends Kanban {
 }
 
 // omits kanbanCanonCardPositions and kanbanSessionCardPositions from KanbanRawData
-const mapDraftKanbanToKanban = ({
-  id,
-  kanbanCanonId,
-  userId,
-  meetId,
-  title,
-  description,
-  createdAt,
-  updatedAt,
-}: Kanban) => ({
-  id,
-  kanbanCanonId,
-  userId,
-  meetId,
-  title,
-  description,
-  createdAt,
-  updatedAt,
-});
+const mapDraftKanbanToKanban = (draftKanban: KanbanRawData): Kanban => {
+  const kanban: Kanban & {
+    kanbanCanonCardPositions?: KanbanCardPositions;
+    kanbanSessionCardPositions?: KanbanCardPositions;
+  } = { ...draftKanban };
+  delete kanban.kanbanCanonCardPositions;
+  delete kanban.kanbanSessionCardPositions;
+  return kanban as Kanban;
+};
 
 // take the draftKanban canon and session card status and resolve to the statuses the end user should see
 const rawToKanban = (draftKanban: KanbanRawData): Kanban => {
@@ -48,25 +38,30 @@ export default class KanbanDaoKnex implements KanbanDao {
   constructor(knex: Knex) {
     this.knex = knex;
   }
+
+  // Reusable kanban query for getOne/getMany methods
+  _getManyQuery(whereArgs: KanbanServiceGetOneArgs | KanbanServiceGetManyArgs) {
+    return this.knex
+      .from("kanbanSessions")
+      .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
+      .select(
+        { id: "kanbanSessions.id" },
+        { kanbanCanonId: "kanbanSessions.kanbanCanonId" },
+        { userId: "kanbanSessions.userId" },
+        { meetId: "kanbanSessions.meetId" },
+        { title: "kanbanCanons.title" },
+        { description: "kanbanCanons.description" },
+        { createdAt: "kanbanSessions.createdAt" },
+        { updatedAt: "kanbanSessions.updatedAt" },
+        { kanbanSessionCardPositions: "kanbanSessions.cardPositions" },
+        { kanbanCanonCardPositions: "kanbanCanons.cardPositions" },
+      )
+      .where(prefixKeys("kanbanSessions", { ...whereArgs, deleted: false }));
+  }
+
   async getOne(args: KanbanServiceGetOneArgs): Promise<Kanban | undefined> {
     return handleDatabaseError(async () => {
-      const kanbanRawData: KanbanRawData = await this.knex
-        .from("kanbanSessions")
-        .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
-        .select(
-          { id: "kanbanSessions.id" },
-          { kanbanCanonId: "kanbanSessions.kanbanCanonId" },
-          { userId: "kanbanSessions.userId" },
-          { meetId: "kanbanSessions.meetId" },
-          { title: "kanbanCanons.title" },
-          { description: "kanbanCanons.description" },
-          { createdAt: "kanbanSessions.createdAt" },
-          { updatedAt: "kanbanSessions.updatedAt" },
-          { kanbanSessionCardPositions: "kanbanSessions.cardPositions" },
-          { kanbanCanonCardPositions: "kanbanCanons.cardPositions" },
-        )
-        .where(prefixKeys("kanbanSessions", { ...args, deleted: false }))
-        .first();
+      const kanbanRawData: KanbanRawData = await this._getManyQuery(args).first();
 
       // resolve kanban card status positions the end user should see
       if (!kanbanRawData) return undefined; // undefined is valid return type in some cases. ex: user queries a meet with kanbanCanon and they don't have a kanban on it yet
@@ -78,22 +73,7 @@ export default class KanbanDaoKnex implements KanbanDao {
 
   async getMany(args: KanbanServiceGetManyArgs): Promise<Kanban[]> {
     return handleDatabaseError(async () => {
-      const kanbanRawData: KanbanRawData[] = ((await this.knex
-        .from("kanbanSessions")
-        .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
-        .select(
-          { id: "kanbanSessions.id" },
-          { kanbanCanonId: "kanbanSessions.kanbanCanonId" },
-          { userId: "kanbanSessions.userId" },
-          { meetId: "kanbanSessions.meetId" },
-          { title: "kanbanCanons.title" },
-          { description: "kanbanCanons.description" },
-          { createdAt: "kanbanSessions.createdAt" },
-          { updatedAt: "kanbanSessions.updatedAt" },
-          { kanbanSessionCardPositions: "kanbanSessions.cardPositions" },
-          { kanbanCanonCardPositions: "kanbanCanons.cardPositions" },
-        )
-        .where(prefixKeys("kanbanSessions", { ...args, deleted: false }))) as unknown) as KanbanRawData[];
+      const kanbanRawData = ((await this._getManyQuery(args)) as unknown) as KanbanRawData[];
 
       // resolve kanban card status positions the end user should see
       const kanbans = kanbanRawData.map((raw) => rawToKanban(raw));
