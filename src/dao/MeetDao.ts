@@ -12,8 +12,4 @@ export default interface MeetDao {
   addOne(args: MeetServiceAddOneInput): Promise<Meet>;
   editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet>;
   deleteOne(id: string): Promise<boolean>;
-
-  // Below are TestManager methods
-  deleteAll(): Promise<void>;
-  addMany(meets: Meet[]): Promise<void>;
 }

@@ -33,7 +33,10 @@ function formatMeets(meets: any[]): Meet[] {
 }
 
 export default class MeetDaoKnex implements MeetDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
 
   async getOne(args: MeetServiceGetOneArgs): Promise<Meet | undefined> {
     return handleDatabaseError(async () => {
@@ -97,14 +100,5 @@ export default class MeetDaoKnex implements MeetDao {
       await this.knex("meets").where({ id }).update({ deleted: true });
       return true;
     });
-  }
-
-  // Testing methods below, for TestManager to call
-  async addMany(meets: Meet[]): Promise<void> {
-    return this.knex<Meet>("meets").insert(meets);
-  }
-
-  deleteAll(): Promise<void> {
-    return this.knex<Meet>("meets").delete();
   }
 }

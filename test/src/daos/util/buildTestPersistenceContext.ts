@@ -13,11 +13,12 @@ import TestMeetRegistrationDaoKnex from "../TestMeetRegistrationDaoKnex";
 import ProjectMediaAssetDaoKnex from "../../../../src/dao/ProjectMediaAssetKnex";
 import TestMediaAssetDaoKnex from "../TestMediaAssetDaoKnex";
 import TestProjectDaoKnex from "../TestProjectDaoKnex";
+import TestMeetDaoKnex from "../TestMeetDaoKnex";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
   userDao: UserDao;
-  meetDao: MeetDao;
+  meetDao: TestMeetDaoKnex;
   projectDao: TestProjectDaoKnex;
   mediaAssetDao: TestMediaAssetDaoKnex;
   projectMediaAssetDao: ProjectMediaAssetDaoKnex; // Uses actual dao since no extension necessary at this time
@@ -32,7 +33,7 @@ export interface TestPersistenceContext extends PersistenceContext {
 export function buildTestPersistenceContext(): TestPersistenceContext {
   const knex = Knex(knexConfig);
   const userDao = new UserDaoKnex(knex);
-  const meetDao = new MeetDaoKnex(knex);
+  const meetDao = new TestMeetDaoKnex(knex);
   const projectDao = new TestProjectDaoKnex(knex);
   const mediaAssetDao = new TestMediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);

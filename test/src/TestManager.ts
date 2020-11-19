@@ -6,7 +6,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { KanbanCanon, KanbanCanonCard, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
+import { KanbanCanonCard, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";

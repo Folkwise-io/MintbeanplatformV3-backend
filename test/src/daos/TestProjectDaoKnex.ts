@@ -7,7 +7,6 @@ export default class TestProjectDaoKnex extends ProjectDaoKnex {
     super(knex);
   }
 
-  // Testing methods below, for TestManager to call
   async addMany(projects: Project[]): Promise<void> {
     return this.knex<Project>("projects").insert(projects);
   }
