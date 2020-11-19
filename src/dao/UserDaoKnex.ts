@@ -1,7 +1,6 @@
 import { User } from "../types/User";
 import Knex from "knex";
-import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
-import UserDao, { UserDaoAddOneArgs } from "./UserDao";
+import UserDao, { UserDaoAddOneArgs, UserDaoGetManyArgs, UserDaoGetOneArgs } from "./UserDao";
 import handleDatabaseError from "../util/handleDatabaseError";
 import { ensureExists } from "../util/ensureExists";
 
@@ -11,7 +10,7 @@ export default class UserDaoKnex implements UserDao {
     this.knex = knex;
   }
 
-  async getOne(args: UserServiceGetOneArgs): Promise<User | undefined> {
+  async getOne(args: UserDaoGetOneArgs): Promise<User | undefined> {
     return handleDatabaseError(async () => {
       const user = await this.knex("users")
         .where({ ...args, deleted: false })
@@ -20,7 +19,7 @@ export default class UserDaoKnex implements UserDao {
     });
   }
 
-  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
+  async getMany(args: UserDaoGetManyArgs): Promise<User[]> {
     return handleDatabaseError(() => {
       const { meetId } = args;
       // Use meetRegistrations join table to get registrants

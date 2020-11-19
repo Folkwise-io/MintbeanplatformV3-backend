@@ -1,27 +1,15 @@
-import KanbanCanonDao from "../dao/KanbanCanonDao";
-import {
-  CreateKanbanCanonInput,
-  EditKanbanCanonInput,
-  KanbanCanon,
-  KanbanCanonCardStatusEnum,
-  KanbanCardPositions,
-  QueryKanbanCanonArgs,
-} from "../types/gqlGeneratedTypes";
+import KanbanCanonDao, {
+  KanbanCanonDaoAddOneInput,
+  KanbanCanonDaoEditOneInput,
+  KanbanCanonDaoGetOneArgs,
+  KanbanCanonDaoUpdateCardPositionsInput,
+} from "../dao/KanbanCanonDao";
+import { KanbanCanon, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
-
-// Only allow ID lookup for now
-export interface KanbanCanonServiceGetOneArgs extends QueryKanbanCanonArgs {}
-export interface KanbanCanonServiceAddOneInput extends CreateKanbanCanonInput {}
-export interface KanbanCanonServiceEditOneInput extends EditKanbanCanonInput {}
-export interface KanbanCanonServiceUpdateCardPositionsInput {
-  cardId: string;
-  status: KanbanCanonCardStatusEnum;
-  index: number;
-}
 
 export default class KanbanCanonService implements EntityService<KanbanCanon> {
   constructor(private kanbanCanonDao: KanbanCanonDao) {}
-  async getOne(args: KanbanCanonServiceGetOneArgs): Promise<KanbanCanon> {
+  async getOne(args: KanbanCanonDaoGetOneArgs): Promise<KanbanCanon> {
     return this.kanbanCanonDao.getOne(args);
   }
 
@@ -29,20 +17,17 @@ export default class KanbanCanonService implements EntityService<KanbanCanon> {
     return this.kanbanCanonDao.getMany();
   }
 
-  async addOne(input: KanbanCanonServiceAddOneInput): Promise<KanbanCanon> {
+  async addOne(input: KanbanCanonDaoAddOneInput): Promise<KanbanCanon> {
     const newKanbanCanonId = await this.kanbanCanonDao.addOne(input);
     return this.kanbanCanonDao.getOne({ id: newKanbanCanonId });
   }
 
-  async editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon> {
+  async editOne(id: string, input: KanbanCanonDaoEditOneInput): Promise<KanbanCanon> {
     return this.kanbanCanonDao.editOne(id, input);
   }
 
   // for existing cards
-  async updateCardPositions(
-    id: string,
-    input: KanbanCanonServiceUpdateCardPositionsInput,
-  ): Promise<KanbanCardPositions> {
+  async updateCardPositions(id: string, input: KanbanCanonDaoUpdateCardPositionsInput): Promise<KanbanCardPositions> {
     return this.kanbanCanonDao.updateCardPositions(id, input);
   }
 }

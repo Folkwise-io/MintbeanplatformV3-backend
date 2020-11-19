@@ -1,13 +1,8 @@
 import Knex from "knex";
-import {
-  MeetServiceAddOneInput,
-  MeetServiceEditOneInput,
-  MeetServiceGetManyArgs,
-  MeetServiceGetOneArgs,
-} from "../service/MeetService";
+
 import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
-import MeetDao from "./MeetDao";
+import MeetDao, { MeetDaoAddOneInput, MeetDaoEditOneInput, MeetDaoGetManyArgs, MeetDaoGetOneArgs } from "./MeetDao";
 import { calculateMeetRegisterLinkStatus } from "../util/timeUtils";
 
 // "Fresh out of the DB oven" meet type. Not extending the Meet type because Meet type includes composed properties that don't exist in DB
@@ -59,7 +54,7 @@ export default class MeetDaoKnex implements MeetDao {
     this.knex = knex;
   }
 
-  async getOne(args: MeetServiceGetOneArgs): Promise<Meet | undefined> {
+  async getOne(args: MeetDaoGetOneArgs): Promise<Meet | undefined> {
     return handleDatabaseError(async () => {
       const meet = (await this.knex("meets")
         .where({ ...args, deleted: false })
@@ -72,7 +67,7 @@ export default class MeetDaoKnex implements MeetDao {
   }
 
   // Gets the meets that a user has registered for
-  async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {
+  async getMany(args: MeetDaoGetManyArgs): Promise<Meet[]> {
     return handleDatabaseError(async () => {
       // Run a join query if registrantId is supplied
       if (args.registrantId) {
@@ -96,7 +91,7 @@ export default class MeetDaoKnex implements MeetDao {
     });
   }
 
-  async addOne(args: MeetServiceAddOneInput): Promise<Meet> {
+  async addOne(args: MeetDaoAddOneInput): Promise<Meet> {
     return handleDatabaseError(async () => {
       const newMeets = (await this.knex("meets").insert(args).returning("*")) as MeetRaw[];
       const formattedMeet = formatMeet(newMeets[0]);
@@ -104,7 +99,7 @@ export default class MeetDaoKnex implements MeetDao {
     });
   }
 
-  async editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet> {
+  async editOne(id: string, input: MeetDaoEditOneInput): Promise<Meet> {
     return handleDatabaseError(async () => {
       const updatedMeets = (await this.knex("meets")
         .where({ id })

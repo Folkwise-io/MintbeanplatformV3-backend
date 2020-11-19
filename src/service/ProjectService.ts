@@ -1,36 +1,19 @@
-import ProjectDao from "../dao/ProjectDao";
+import ProjectDao, { ProjectDaoAddOneInput, ProjectDaoGetManyArgs, ProjectDaoGetOneArgs } from "../dao/ProjectDao";
 import { Project } from "../types/gqlGeneratedTypes";
-import { Args, EntityService } from "./EntityService";
+import { EntityService } from "./EntityService";
 
-export interface ProjectServiceGetOneArgs {
-  id: string;
-}
-
-export interface ProjectServiceGetManyArgs {
-  userId?: string;
-  meetId?: string;
-}
-
-export interface ProjectServiceAddOneInput {
-  userId?: string;
-  meetId?: string;
-  title: string;
-  sourceCodeUrl: string;
-  liveUrl: string;
-}
-
-export default class ProjectService {
+export default class ProjectService implements EntityService<Project | undefined> {
   constructor(private projectDao: ProjectDao) {}
 
-  getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined> {
+  getOne(args: ProjectDaoGetOneArgs): Promise<Project | undefined> {
     return this.projectDao.getOne(args);
   }
 
-  getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
+  getMany(args: ProjectDaoGetManyArgs): Promise<Project[]> {
     return this.projectDao.getMany(args);
   }
 
-  addOne(input: ProjectServiceAddOneInput): Promise<Project> {
+  addOne(input: ProjectDaoAddOneInput): Promise<Project> {
     return this.projectDao.addOne(input);
   }
 

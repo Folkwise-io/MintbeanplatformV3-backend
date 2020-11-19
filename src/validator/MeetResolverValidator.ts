@@ -1,8 +1,6 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
-import MeetDao from "../dao/MeetDao";
-import UserDao from "../dao/UserDao";
-import { MeetServiceAddOneInput, MeetServiceEditOneInput, MeetServiceGetManyArgs } from "../service/MeetService";
+import MeetDao, { MeetDaoAddOneInput, MeetDaoEditOneInput, MeetDaoGetManyArgs } from "../dao/MeetDao";
 import {
   Meet,
   MutationCreateMeetArgs,
@@ -17,12 +15,12 @@ import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldP
 export default class MeetResolverValidator {
   constructor(private meetDao: MeetDao) {}
 
-  async getMany(args: {}, _context: ServerContext): Promise<MeetServiceGetManyArgs> {
+  async getMany(args: {}, _context: ServerContext): Promise<MeetDaoGetManyArgs> {
     // TODO: Validate the search query arguments later
     return args;
   }
 
-  async addOne({ input }: MutationCreateMeetArgs, _context: ServerContext): Promise<MeetServiceAddOneInput> {
+  async addOne({ input }: MutationCreateMeetArgs, _context: ServerContext): Promise<MeetDaoAddOneInput> {
     //TODO: Validate createMeet args
     return input;
   }
@@ -30,7 +28,7 @@ export default class MeetResolverValidator {
   async editOne(
     { id, input }: MutationEditMeetArgs,
     _context: ServerContext,
-  ): Promise<{ id: string; input: MeetServiceEditOneInput }> {
+  ): Promise<{ id: string; input: MeetDaoEditOneInput }> {
     // Check if meet id exists in db
     await this.meetDao.getOne({ id }).then((meet) => ensureExists("Meet")(meet));
 

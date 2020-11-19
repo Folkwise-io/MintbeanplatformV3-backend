@@ -1,7 +1,6 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
-import ProjectDao from "../dao/ProjectDao";
-import { ProjectServiceAddOneInput, ProjectServiceGetOneArgs } from "../service/ProjectService";
+import ProjectDao, { ProjectDaoAddOneInput, ProjectDaoGetOneArgs } from "../dao/ProjectDao";
 import {
   MutationCreateProjectArgs,
   MutationDeleteProjectArgs,
@@ -14,22 +13,22 @@ import createProjectInputSchema from "./yupSchemas/createProjectInputSchema";
 
 export default class ProjectResolverValidator {
   constructor(private projectDao: ProjectDao) {}
-  async getOne(args: QueryProjectArgs, context: ServerContext): Promise<ProjectServiceGetOneArgs> {
+  async getOne(args: QueryProjectArgs, context: ServerContext): Promise<ProjectDaoGetOneArgs> {
     return args;
   }
 
-  async addOne({ input }: MutationCreateProjectArgs): Promise<ProjectServiceAddOneInput> {
+  async addOne({ input }: MutationCreateProjectArgs): Promise<ProjectDaoAddOneInput> {
     //TODO: Validate createProject input: check if userId exists in db? (only needed if admin requests)
-    validateAgainstSchema<ProjectServiceAddOneInput>(createProjectInputSchema, input);
+    validateAgainstSchema<ProjectDaoAddOneInput>(createProjectInputSchema, input);
 
     // Remove mediaAssets field as it is not part of projects table
-    const inputWithoutMediaAssets: ProjectServiceAddOneInput = (({
+    const inputWithoutMediaAssets: ProjectDaoAddOneInput = (({ userId, meetId, title, sourceCodeUrl, liveUrl }) => ({
       userId,
       meetId,
       title,
       sourceCodeUrl,
       liveUrl,
-    }) => ({ userId, meetId, title, sourceCodeUrl, liveUrl }))(input);
+    }))(input);
     return inputWithoutMediaAssets;
   }
 

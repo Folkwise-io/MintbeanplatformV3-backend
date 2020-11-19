@@ -1,12 +1,10 @@
 import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
-import KanbanCanonDao from "../dao/KanbanCanonDao";
-import KanbanDao from "../dao/KanbanDao";
+import KanbanCanonDao, { KanbanCanonDaoUpdateCardPositionsInput } from "../dao/KanbanCanonDao";
+import KanbanDao, { KanbanDaoGetManyArgs, KanbanDaoGetOneArgs } from "../dao/KanbanDao";
 import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
-import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
-import { KanbanServiceGetManyArgs, KanbanServiceGetOneArgs } from "../service/KanbanService";
 import {
   Kanban,
   KanbanCanon,
@@ -29,7 +27,7 @@ export default class KanbanResolverValidator {
     private meetDao: MeetDao,
   ) {}
 
-  async getOne(args: KanbanServiceGetOneArgs, context: ServerContext): Promise<KanbanServiceGetOneArgs> {
+  async getOne(args: KanbanDaoGetOneArgs, context: ServerContext): Promise<KanbanDaoGetOneArgs> {
     const isLoggedIn = !!context.getUserId();
     if (!isLoggedIn) throw new AuthenticationError("You must be logged in to see kanbans!");
 
@@ -54,7 +52,7 @@ export default class KanbanResolverValidator {
     return args;
   }
 
-  async getMany(args: KanbanServiceGetManyArgs, context: ServerContext): Promise<KanbanServiceGetManyArgs> {
+  async getMany(args: KanbanDaoGetManyArgs, context: ServerContext): Promise<KanbanDaoGetManyArgs> {
     // only admin can get kanbans of other users
     const isKanbanOwner = args.userId === context.getUserId();
     const isAdmin = context.getIsAdmin();
@@ -98,7 +96,7 @@ export default class KanbanResolverValidator {
     { id, input }: MutationUpdateKanbanCanonCardPositionsArgs,
     context: ServerContext,
   ): Promise<MutationUpdateKanbanCanonCardPositionsArgs> {
-    validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
+    validateAgainstSchema<KanbanCanonDaoUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
 
     // Check if kanban canon id exists in db
     const kanban = await this.kanbanDao.getOne({ id });

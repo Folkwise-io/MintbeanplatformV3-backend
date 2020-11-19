@@ -1,7 +1,10 @@
-import { MeetRegistrationServiceAddOneArgs } from "../service/MeetRegistrationService";
 import MeetRegistration from "../types/MeetRegistration";
 
+export interface MeetRegistrationDaoAddOneArgs {
+  userId: string;
+  meetId: string;
+}
+
 export default interface MeetRegistrationDao {
-  addOne(args: MeetRegistrationServiceAddOneArgs): Promise<MeetRegistration>;
-  deleteOne(id: string): Promise<boolean>;
+  addOne(args: MeetRegistrationDaoAddOneArgs): Promise<MeetRegistration>;
 }

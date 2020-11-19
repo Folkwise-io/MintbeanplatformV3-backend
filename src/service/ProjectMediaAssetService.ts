@@ -1,11 +1,6 @@
-import ProjectMediaAssetDao from "../dao/ProjectMediaAssetDao";
+import ProjectMediaAssetDao, { ProjectMediaAssetDaoAddOneArgs } from "../dao/ProjectMediaAssetDao";
 import ProjectMediaAsset from "../types/ProjectMediaAsset";
 import { EntityService } from "./EntityService";
-
-export interface ProjectMediaAssetServiceAddOneArgs {
-  mediaAssetId: string;
-  projectId: string;
-}
 
 export default class ProjectMediaAssetService implements EntityService<ProjectMediaAsset> {
   constructor(private projectMediaAssetDao: ProjectMediaAssetDao) {}
@@ -22,7 +17,7 @@ export default class ProjectMediaAssetService implements EntityService<ProjectMe
     throw new Error("not emplemented");
   }
 
-  async addMany(args: ProjectMediaAssetServiceAddOneArgs[]): Promise<void> {
+  async addMany(args: ProjectMediaAssetDaoAddOneArgs[]): Promise<void> {
     return this.projectMediaAssetDao.addMany(args);
   }
 }

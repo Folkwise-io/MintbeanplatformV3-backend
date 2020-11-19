@@ -1,12 +1,12 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
-import KanbanCanonDao from "../dao/KanbanCanonDao";
-import {
-  KanbanCanonServiceAddOneInput,
-  KanbanCanonServiceEditOneInput,
-  KanbanCanonServiceUpdateCardPositionsInput,
-} from "../service/KanbanCanonService";
+import KanbanCanonDao, {
+  KanbanCanonDaoAddOneInput,
+  KanbanCanonDaoEditOneInput,
+  KanbanCanonDaoUpdateCardPositionsInput,
+} from "../dao/KanbanCanonDao";
+
 import {
   MutationCreateKanbanCanonArgs,
   MutationDeleteKanbanCanonArgs,
@@ -32,7 +32,7 @@ export default class KanbanCanonResolverValidator {
     if (!context.getIsAdmin()) {
       throw new AuthenticationError("You are not authorized to create new kanban canons!");
     }
-    validateAgainstSchema<KanbanCanonServiceAddOneInput>(createKanbanCanonInputSchema, input);
+    validateAgainstSchema<KanbanCanonDaoAddOneInput>(createKanbanCanonInputSchema, input);
     return { input };
   }
 
@@ -62,7 +62,7 @@ export default class KanbanCanonResolverValidator {
     // Check if kanban canon id exists in db
     await this.kanbanCanonDao.getOne({ id }).then((kanbanCanon) => ensureExists("Kanban Canon")(kanbanCanon));
 
-    validateAgainstSchema<KanbanCanonServiceEditOneInput>(editKanbanCanonInputSchema, input);
+    validateAgainstSchema<KanbanCanonDaoEditOneInput>(editKanbanCanonInputSchema, input);
     return { id, input };
   }
 
@@ -74,7 +74,7 @@ export default class KanbanCanonResolverValidator {
       throw new AuthenticationError("You are not authorized to edit kanban canons!");
     }
 
-    validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
+    validateAgainstSchema<KanbanCanonDaoUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
 
     // Check if kanban canon id exists in db
     await this.kanbanCanonDao.getOne({ id }).then((kanbanCanon) => ensureExists("Kanban Canon")(kanbanCanon));

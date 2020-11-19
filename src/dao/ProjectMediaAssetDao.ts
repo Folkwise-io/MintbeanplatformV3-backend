@@ -1,5 +1,8 @@
-import { ProjectMediaAssetServiceAddOneArgs } from "../service/ProjectMediaAssetService";
+export interface ProjectMediaAssetDaoAddOneArgs {
+  mediaAssetId: string;
+  projectId: string;
+}
 
 export default interface ProjectMediaAssetDao {
-  addMany(projectMediaAssets: ProjectMediaAssetServiceAddOneArgs[]): Promise<void>;
+  addMany(projectMediaAssets: ProjectMediaAssetDaoAddOneArgs[]): Promise<void>;
 }

@@ -1,14 +1,23 @@
 // A "Kanban" is pieced together by kanbanCanon and kanbanSession data from the DB to build a personalized view of a kanban
 
-import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
-import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
-import { Kanban, KanbanCardPositions } from "../types/gqlGeneratedTypes";
+import {
+  CreateKanbanInput,
+  Kanban,
+  KanbanCardPositions,
+  QueryKanbanArgs,
+  QueryKanbansArgs,
+} from "../types/gqlGeneratedTypes";
+import { KanbanCanonDaoUpdateCardPositionsInput } from "./KanbanCanonDao";
+
+export interface KanbanDaoGetOneArgs extends QueryKanbanArgs {}
+export interface KanbanDaoGetManyArgs extends QueryKanbansArgs {}
+export interface KanbanDaoAddOneInput extends CreateKanbanInput {}
 
 export default interface KanbanDao {
-  getOne(args: KanbanServiceGetOneArgs): Promise<Kanban | undefined>;
-  getMany(args: KanbanServiceGetManyArgs): Promise<Kanban[]>;
-  addOne(args: KanbanServiceAddOneInput): Promise<void>;
-  // shares arg and output types with kanbanCanonService same operation
-  updateCardPositions(id: string, input: KanbanCanonServiceUpdateCardPositionsInput): Promise<KanbanCardPositions>;
+  getOne(args: KanbanDaoGetOneArgs): Promise<Kanban | undefined>;
+  getMany(args: KanbanDaoGetManyArgs): Promise<Kanban[]>;
+  addOne(args: KanbanDaoAddOneInput): Promise<void>;
+  // shares arg and output types with kanbanCanonDao same operation
+  updateCardPositions(id: string, input: KanbanCanonDaoUpdateCardPositionsInput): Promise<KanbanCardPositions>;
   deleteOne(id: string): Promise<boolean>;
 }

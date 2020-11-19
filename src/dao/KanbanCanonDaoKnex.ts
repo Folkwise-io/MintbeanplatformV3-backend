@@ -3,11 +3,11 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanCanonDao, { KanbanCanonCardDaoDeleteCardFromPositionInput } from "./KanbanCanonDao";
 import { KanbanCanon, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import {
-  KanbanCanonServiceAddOneInput,
-  KanbanCanonServiceEditOneInput,
-  KanbanCanonServiceGetOneArgs,
-  KanbanCanonServiceUpdateCardPositionsInput,
-} from "../service/KanbanCanonService";
+  KanbanCanonDaoAddOneInput,
+  KanbanCanonDaoEditOneInput,
+  KanbanCanonDaoGetOneArgs,
+  KanbanCanonDaoUpdateCardPositionsInput,
+} from "./KanbanCanonDao";
 import { deleteCardFromPosition, insertNewCardPosition, updateCardPositions } from "./util/cardPositionUtils";
 
 export default class KanbanCanonDaoKnex implements KanbanCanonDao {
@@ -15,7 +15,7 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
   constructor(knex: Knex) {
     this.knex = knex;
   }
-  async getOne(args: KanbanCanonServiceGetOneArgs): Promise<KanbanCanon> {
+  async getOne(args: KanbanCanonDaoGetOneArgs): Promise<KanbanCanon> {
     return handleDatabaseError(async () => {
       const kanbanCanon = await this.knex("kanbanCanons")
         .select(
@@ -39,14 +39,14 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
     });
   }
 
-  async addOne(args: KanbanCanonServiceAddOneInput): Promise<{ id: string }> {
+  async addOne(args: KanbanCanonDaoAddOneInput): Promise<{ id: string }> {
     return handleDatabaseError(async () => {
       const newKanbanCanonIds = await this.knex<KanbanCanon>("kanbanCanons").insert(args).returning("id");
       return newKanbanCanonIds[0];
     });
   }
 
-  async editOne(id: string, input: KanbanCanonServiceEditOneInput): Promise<KanbanCanon> {
+  async editOne(id: string, input: KanbanCanonDaoEditOneInput): Promise<KanbanCanon> {
     return handleDatabaseError(async () => {
       const updatedKanbanCanons = (await this.knex("kanbanCanons")
         .where({ id })
@@ -56,10 +56,7 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
     });
   }
 
-  async updateCardPositions(
-    id: string,
-    input: KanbanCanonServiceUpdateCardPositionsInput,
-  ): Promise<KanbanCardPositions> {
+  async updateCardPositions(id: string, input: KanbanCanonDaoUpdateCardPositionsInput): Promise<KanbanCardPositions> {
     return handleDatabaseError(async () => {
       // get old positions
       const { cardPositions: oldPositions } = await this.knex
@@ -80,10 +77,7 @@ export default class KanbanCanonDaoKnex implements KanbanCanonDao {
     });
   }
 
-  async insertNewCardPosition(
-    id: string,
-    input: KanbanCanonServiceUpdateCardPositionsInput,
-  ): Promise<KanbanCardPositions> {
+  async insertNewCardPosition(id: string, input: KanbanCanonDaoUpdateCardPositionsInput): Promise<KanbanCardPositions> {
     return handleDatabaseError(async () => {
       // get old positions
       const { cardPositions: oldPositions } = await this.knex

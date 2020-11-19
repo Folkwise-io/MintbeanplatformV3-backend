@@ -1,5 +1,4 @@
 import { User } from "../types/User";
-import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
 
 export interface UserDaoAddOneArgs {
   email: string;
@@ -8,8 +7,24 @@ export interface UserDaoAddOneArgs {
   passwordHash: string;
 }
 
+export interface UserDaoGetOneArgs {
+  id?: string | null;
+  email?: string | null;
+}
+
+export interface UserDaoGetManyArgs {
+  firstName?: string | null;
+  lastName?: string | null;
+  meetId?: string;
+}
+
+export interface UserDaoLoginArgs {
+  email: string;
+  password: string;
+}
+
 export default interface UserDao {
-  getOne(args: UserServiceGetOneArgs): Promise<User | undefined>;
-  getMany(args: UserServiceGetManyArgs): Promise<User[]>;
+  getOne(args: UserDaoGetOneArgs): Promise<User | undefined>;
+  getMany(args: UserDaoGetManyArgs): Promise<User[]>;
   addOne(args: UserDaoAddOneArgs): Promise<User>;
 }

@@ -1,13 +1,25 @@
-import {
-  ProjectServiceAddOneInput,
-  ProjectServiceGetManyArgs,
-  ProjectServiceGetOneArgs,
-} from "../service/ProjectService";
 import { Project } from "../types/gqlGeneratedTypes";
 
+export interface ProjectDaoGetOneArgs {
+  id: string;
+}
+
+export interface ProjectDaoGetManyArgs {
+  userId?: string;
+  meetId?: string;
+}
+
+export interface ProjectDaoAddOneInput {
+  userId?: string;
+  meetId?: string;
+  title: string;
+  sourceCodeUrl: string;
+  liveUrl: string;
+}
+
 export default interface ProjectDao {
-  getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined>;
-  getMany(args: ProjectServiceGetManyArgs): Promise<Project[]>;
-  addOne(args: ProjectServiceAddOneInput): Promise<Project>;
+  getOne(args: ProjectDaoGetOneArgs): Promise<Project | undefined>;
+  getMany(args: ProjectDaoGetManyArgs): Promise<Project[]>;
+  addOne(args: ProjectDaoAddOneInput): Promise<Project>;
   deleteOne(id: string): Promise<boolean>;
 }

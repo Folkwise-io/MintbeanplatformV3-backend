@@ -1,13 +1,22 @@
 import { MediaAsset } from "../types/gqlGeneratedTypes";
-import {
-  MediaAssetServiceAddOneArgs,
-  MediaAssetServiceGetManyArgs,
-  MediaAssetServiceAddManyArgs,
-} from "../service/MediaAssetService";
+
+export interface MediaAssetDaoAddOneArgs {
+  userId: string;
+  meetId?: string | null;
+  cloudinaryPublicId: string;
+  index?: number;
+}
+
+export type MediaAssetDaoAddManyArgs = Array<MediaAssetDaoAddOneArgs>;
+
+export interface MediaAssetDaoGetManyArgs {
+  // userId?: string | null;
+  projectId?: string | null;
+}
 
 export default interface MediaAssetDao {
-  getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]>;
-  addOne(args: MediaAssetServiceAddOneArgs): Promise<MediaAsset>;
-  addMany(mediaAssets: MediaAssetServiceAddManyArgs): Promise<MediaAsset[]>;
+  getMany(args: MediaAssetDaoGetManyArgs): Promise<MediaAsset[]>;
+  addOne(args: MediaAssetDaoAddOneArgs): Promise<MediaAsset>;
+  addMany(mediaAssets: MediaAssetDaoAddManyArgs): Promise<MediaAsset[]>;
   deleteOne(id: string): Promise<boolean>;
 }

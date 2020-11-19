@@ -2,11 +2,11 @@ import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
 import KanbanDao from "./KanbanDao";
 import { Kanban, KanbanCardPositions } from "../types/gqlGeneratedTypes";
-import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
+import { KanbanDaoGetOneArgs, KanbanDaoGetManyArgs, KanbanDaoAddOneInput } from "./KanbanDao";
 import { prefixKeys } from "../util/prefixKeys";
 import { resolve, updateCardPositions } from "./util/cardPositionUtils";
-import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
 import { ensureExists } from "../util/ensureExists";
+import { KanbanCanonDaoUpdateCardPositionsInput } from "./KanbanCanonDao";
 
 interface KanbanRawData extends Kanban {
   kanbanCanonCardPositions: KanbanCardPositions;
@@ -40,7 +40,7 @@ export default class KanbanDaoKnex implements KanbanDao {
   }
 
   // Reusable kanban query for getOne/getMany methods
-  _getManyQuery(whereArgs: KanbanServiceGetOneArgs | KanbanServiceGetManyArgs) {
+  _getManyQuery(whereArgs: KanbanDaoGetOneArgs | KanbanDaoGetManyArgs) {
     return this.knex
       .from("kanbanSessions")
       .innerJoin("kanbanCanons", "kanbanSessions.kanbanCanonId", "kanbanCanons.id")
@@ -59,7 +59,7 @@ export default class KanbanDaoKnex implements KanbanDao {
       .where(prefixKeys("kanbanSessions", { ...whereArgs, deleted: false }));
   }
 
-  async getOne(args: KanbanServiceGetOneArgs): Promise<Kanban | undefined> {
+  async getOne(args: KanbanDaoGetOneArgs): Promise<Kanban | undefined> {
     return handleDatabaseError(async () => {
       const kanbanRawData: KanbanRawData = await this._getManyQuery(args).first();
 
@@ -71,7 +71,7 @@ export default class KanbanDaoKnex implements KanbanDao {
     });
   }
 
-  async getMany(args: KanbanServiceGetManyArgs): Promise<Kanban[]> {
+  async getMany(args: KanbanDaoGetManyArgs): Promise<Kanban[]> {
     return handleDatabaseError(async () => {
       const kanbanRawData = ((await this._getManyQuery(args)) as unknown) as KanbanRawData[];
 
@@ -82,17 +82,14 @@ export default class KanbanDaoKnex implements KanbanDao {
     });
   }
 
-  async addOne(args: KanbanServiceAddOneInput): Promise<void> {
+  async addOne(args: KanbanDaoAddOneInput): Promise<void> {
     return handleDatabaseError(async () => {
       await this.knex("kanbanSessions").insert(args);
       // Note: to get this newly created kanban, re-fetch using this.getOne() with the same args
     });
   }
 
-  async updateCardPositions(
-    id: string,
-    input: KanbanCanonServiceUpdateCardPositionsInput,
-  ): Promise<KanbanCardPositions> {
+  async updateCardPositions(id: string, input: KanbanCanonDaoUpdateCardPositionsInput): Promise<KanbanCardPositions> {
     return handleDatabaseError(async () => {
       // get old positions
       const { cardPositions: oldPositions } = ensureExists<Kanban>("Kanban")(await this.getOne({ id }));

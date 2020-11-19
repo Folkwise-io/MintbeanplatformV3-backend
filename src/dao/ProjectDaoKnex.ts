@@ -1,13 +1,8 @@
 import Knex from "knex";
-import {
-  ProjectServiceAddOneInput,
-  ProjectServiceGetManyArgs,
-  ProjectServiceGetOneArgs,
-} from "../service/ProjectService";
+
 import { Project } from "../types/gqlGeneratedTypes";
-import { ensureExists } from "../util/ensureExists";
 import handleDatabaseError from "../util/handleDatabaseError";
-import ProjectDao from "./ProjectDao";
+import ProjectDao, { ProjectDaoAddOneInput, ProjectDaoGetManyArgs, ProjectDaoGetOneArgs } from "./ProjectDao";
 
 export default class ProjectDaoKnex implements ProjectDao {
   knex: Knex;
@@ -15,7 +10,7 @@ export default class ProjectDaoKnex implements ProjectDao {
     this.knex = knex;
   }
 
-  async getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined> {
+  async getOne(args: ProjectDaoGetOneArgs): Promise<Project | undefined> {
     return handleDatabaseError(async () => {
       const project: Project = await this.knex("projects")
         .where({ ...args, deleted: false })
@@ -24,7 +19,7 @@ export default class ProjectDaoKnex implements ProjectDao {
     });
   }
 
-  async getMany(args: ProjectServiceGetManyArgs): Promise<Project[]> {
+  async getMany(args: ProjectDaoGetManyArgs): Promise<Project[]> {
     return handleDatabaseError(async () => {
       const projects: Project[] = await this.knex("projects")
         .where({ ...args, deleted: false })
@@ -34,7 +29,7 @@ export default class ProjectDaoKnex implements ProjectDao {
     });
   }
 
-  async addOne(input: ProjectServiceAddOneInput): Promise<Project> {
+  async addOne(input: ProjectDaoAddOneInput): Promise<Project> {
     return handleDatabaseError(async () => {
       const newProjects = (await this.knex("projects").insert(input).returning("*")) as Project[];
       return newProjects[0];

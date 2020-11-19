@@ -1,55 +1,27 @@
-import MeetDao from "../dao/MeetDao";
+import MeetDao, {
+  MeetDaoAddOneInput,
+  MeetDaoEditOneInput,
+  MeetDaoGetManyArgs,
+  MeetDaoGetOneArgs,
+} from "../dao/MeetDao";
 import { Meet } from "../types/gqlGeneratedTypes";
+import { EntityService } from "./EntityService";
 
-// Only allow ID lookup for now
-export interface MeetServiceGetOneArgs {
-  id: string;
-}
-
-export interface MeetServiceGetManyArgs {
-  // TODO: Add search query args to Meets here
-  registrantId?: string;
-}
-
-export interface MeetServiceAddOneInput {
-  meetType: string;
-  title: string;
-  description: string;
-  instructions: string;
-  registerLink?: string | null;
-  coverImageUrl: string;
-  startTime: string;
-  endTime: string;
-  region: string;
-}
-
-export interface MeetServiceEditOneInput {
-  meetType?: string | null;
-  title?: string | null;
-  description?: string | null;
-  instructions?: string | null;
-  registerLink?: string | null;
-  coverImageUrl?: string | null;
-  startTime?: string | null;
-  endTime?: string | null;
-  region?: string | null;
-}
-
-export default class MeetService {
+export default class MeetService implements EntityService<Meet | undefined> {
   constructor(private meetDao: MeetDao) {}
-  async getOne(args: MeetServiceGetOneArgs): Promise<Meet | undefined> {
+  async getOne(args: MeetDaoGetOneArgs): Promise<Meet | undefined> {
     return this.meetDao.getOne(args);
   }
 
-  async getMany(args: MeetServiceGetManyArgs): Promise<Meet[]> {
+  async getMany(args: MeetDaoGetManyArgs): Promise<Meet[]> {
     return this.meetDao.getMany(args);
   }
 
-  async addOne(input: MeetServiceAddOneInput): Promise<Meet> {
+  async addOne(input: MeetDaoAddOneInput): Promise<Meet> {
     return this.meetDao.addOne(input);
   }
 
-  async editOne(id: string, input: MeetServiceEditOneInput): Promise<Meet> {
+  async editOne(id: string, input: MeetDaoEditOneInput): Promise<Meet> {
     return this.meetDao.editOne(id, input);
   }
 

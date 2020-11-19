@@ -1,11 +1,10 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
-import KanbanCanonCardDao from "../dao/KanbanCanonCardDao";
+import KanbanCanonCardDao, {
+  KanbanCanonCardDaoAddOneInput,
+  KanbanCanonCardDaoEditOneInput,
+} from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
-import {
-  KanbanCanonCardServiceAddOneInput,
-  KanbanCanonCardServiceEditOneInput,
-} from "../service/KanbanCanonCardService";
 import {
   KanbanCanon,
   KanbanCanonCard,
@@ -47,7 +46,7 @@ export default class KanbanCanonCardResolverValidator {
     if (!context.getIsAdmin()) {
       throw new AuthenticationError("You are not authorized to create kanban canon cards!");
     }
-    validateAgainstSchema<KanbanCanonCardServiceAddOneInput>(createKanbanCanonCardInputSchema, input);
+    validateAgainstSchema<KanbanCanonCardDaoAddOneInput>(createKanbanCanonCardInputSchema, input);
 
     return { input };
   }
@@ -68,7 +67,7 @@ export default class KanbanCanonCardResolverValidator {
     // Handle when input has no fields to update (knex doesn't like this)
     validateAtLeastOneFieldPresent(input);
 
-    validateAgainstSchema<KanbanCanonCardServiceEditOneInput>(editKanbanCanonCardInputSchema, input);
+    validateAgainstSchema<KanbanCanonCardDaoEditOneInput>(editKanbanCanonCardInputSchema, input);
 
     return { id, input };
   }
