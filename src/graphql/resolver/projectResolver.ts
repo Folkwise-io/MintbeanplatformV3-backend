@@ -112,9 +112,9 @@ const projectResolver = (
 
       awardBadges: (_root, args, context: ServerContext): Promise<Project> => {
         return projectResolverValidator.awardBadges(args).then(async ({ projectId, badgeIds }) => {
-          // if (!context.getIsAdmin()) {
-          //   throw new AuthenticationError("You are not authorized to award badges!");
-          // }
+          if (!context.getIsAdmin()) {
+            throw new AuthenticationError("You are not authorized to award badges!");
+          }
           await badgeProjectService.addMany({ projectId, badgeIds });
           return projectService.getOne({ id: projectId }, context);
         });

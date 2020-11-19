@@ -13,6 +13,9 @@ export default class BadgeProjectDaoKnex implements BadgeProjectDao {
   async addMany(badgesProject: MutationAwardBadgesArgs): Promise<void> {
     const { projectId, badgeIds } = badgesProject;
     const bpToInsert = badgeIds.map((badgeId) => ({ projectId, badgeId }));
-    return handleDatabaseError(() => this.knex("badgesProjects").insert(bpToInsert));
+    return handleDatabaseError(async () => {
+      await this.knex("badgesProjects").where({ projectId }).del();
+      await this.knex("badgesProjects").insert(bpToInsert);
+    });
   }
 }
