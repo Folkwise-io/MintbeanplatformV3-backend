@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { KanbanSessionRaw } from "../../../src/dao/KanbanDao";
+import { KanbanSessionRaw } from "../daos/TestKanbanDaoKnex";
 import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./kanbanCanonConstants";
 import { PAPERJS } from "./meetConstants";
 import { BOB, DORTHY } from "./userConstants";
