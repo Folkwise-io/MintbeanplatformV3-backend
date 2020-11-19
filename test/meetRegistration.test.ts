@@ -97,12 +97,12 @@ describe("Registering for a meet", () => {
 
   it("returns an error message if trying to register without being logged in", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: REGISTER_FOR_MEET_QUERY,
         variables: { meetId: ANIMATION_TOYS_2.id },
         cookies: undefined,
       })
-      .then((errorMsg) => expect(errorMsg).toMatch(/not authorized/i));
+      .then((errorCode) => expect(errorCode).toBe("UNAUTHENTICATED"));
   });
 
   it("returns an error message if trying to register for non-existent meet", async () => {
