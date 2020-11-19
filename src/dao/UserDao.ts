@@ -12,8 +12,4 @@ export default interface UserDao {
   getOne(args: UserServiceGetOneArgs): Promise<User | undefined>;
   getMany(args: UserServiceGetManyArgs): Promise<User[]>;
   addOne(args: UserDaoAddOneArgs): Promise<User>;
-  // Testing methods for TestManager to call
-  addMany(users: User[]): Promise<void>;
-  deleteAll(): Promise<void>;
-  destroy(): Promise<void>; // Needed to terminate knex so tests don't hang
 }

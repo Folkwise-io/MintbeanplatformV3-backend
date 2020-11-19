@@ -6,7 +6,11 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import { ensureExists } from "../util/ensureExists";
 
 export default class UserDaoKnex implements UserDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
+
   async getOne(args: UserServiceGetOneArgs): Promise<User | undefined> {
     return handleDatabaseError(async () => {
       const user = await this.knex("users")
@@ -40,18 +44,5 @@ export default class UserDaoKnex implements UserDao {
       const insertedUsers = (await this.knex<User>("users").insert(args).returning("*")) as User[];
       return insertedUsers[0];
     });
-  }
-
-  // Testing methods below, for TestManager to call
-  async addMany(users: User[]): Promise<void> {
-    return this.knex<User>("users").insert(users);
-  }
-
-  async deleteAll(): Promise<void> {
-    return this.knex<User>("users").delete();
-  }
-
-  async destroy(): Promise<void> {
-    return this.knex.destroy();
   }
 }
