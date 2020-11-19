@@ -140,6 +140,14 @@ There are two important entities to be aware of: `KanbanCanon` and `Kanban`.
 
 **KanbanCanon** is the "master" kanban maintained by an admin, with a title, decscription and master `KanbanCanonCards`
 
-**Kanban** is the individualized view of a kanban for a given user. It contains `kanbanCards` that persist their position after the user has moved them. `kanbanCard`s are stiteched together from canoncial and session (individual) data in the db
+**Kanban** is the individualized view of a kanban for a given user. It contains `kanbanCards` that persist their position after the user has moved them.
+
+`kanbanCards` on a user `kanban` are really just `kanbanCanonCards` resolved under a different name.
+
+The positional data for kanbanCanonCards and kanbanCards are stored as a serialized JSON object in a column called `cardPositions` on the `kanbanCanonCards` and `kanbanSessionCards` tables in the database.
+
+Some utilities in `cardPostionUtils.ts` help to resolve and update `cardPositions` when moving, adding and deleting kanban cards.
+
+In this manner, no positional data is sent on the kanbanCanonCards or kanbanCards themselves, rather as a `cardPositions` object on `kanbanCanon` and `kanban` that reference kanbanCanonCard Ids. The client (ex: frontend) can then map the cards to the positoins in `cardPositions`.
 
 ![image](https://user-images.githubusercontent.com/9841162/98745006-8e3e8e00-2367-11eb-941c-48be8252bc3e.png)
