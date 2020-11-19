@@ -2,11 +2,13 @@ import { gql } from "apollo-server-express";
 import { UserRegistrationInput } from "../../../src/types/gqlGeneratedTypes";
 import { User } from "../../../src/types/User";
 
+const PASSWORD_HASH = "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u."; // literally a hash of password
+
 // Will use generator factory / faker once more entities are added
 export const AMY: User = {
   id: "00000000-0000-0000-0000-000000000000",
   email: "a@a.com",
-  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
+  passwordHash: PASSWORD_HASH,
   firstName: "Amy",
   lastName: "Adams",
   createdAt: "2019-10-15",
@@ -22,7 +24,7 @@ export const AMY_CREDENTIALS = {
 export const BOB: User = {
   id: "00000000-0000-4000-a000-000000000000",
   email: "b@b.com",
-  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
+  passwordHash: PASSWORD_HASH,
   firstName: "Bob",
   lastName: "Barker",
   createdAt: "2020-04-15",
@@ -33,7 +35,7 @@ export const BOB: User = {
 export const DORTHY: User = {
   id: "93808c2d-0297-45ec-84b5-a19ce790830a",
   email: "d@d.com",
-  passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
+  passwordHash: PASSWORD_HASH,
   firstName: "Dorthy",
   lastName: "Danes",
   createdAt: "2020-04-15",
