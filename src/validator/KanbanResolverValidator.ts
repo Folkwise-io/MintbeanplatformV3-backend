@@ -42,18 +42,14 @@ export default class KanbanResolverValidator {
         "In order to get a kanban, you must provide either 1) a specific kanban's id, or 2) a userId and kanbanCanonId.",
       );
 
-    let kanbanOwnerId: string | undefined = undefined;
-    const isAdmin = context.getIsAdmin();
-    const currUserId = context.getUserId();
-
-    await this.kanbanDao
-      .getOne(args)
-      .then((kanban) => ensureExists<Kanban>("Kanban")(kanban))
-      .then((kanban) => (kanbanOwnerId = kanban.userId));
-
+    const kanban = await this.kanbanDao.getOne(args);
+    ensureExists<Kanban>("Kanban")(kanban);
     // only admin can get kanbans of other users
-    if (currUserId !== kanbanOwnerId && !isAdmin)
+    const isAdmin = context.getIsAdmin();
+    const isOwner = context.getUserId() === kanban?.userId;
+    if (!isOwner && !isAdmin) {
       throw new AuthenticationError("You are not authorized to view other kanbans of other users!");
+    }
 
     return args;
   }
@@ -102,39 +98,33 @@ export default class KanbanResolverValidator {
     { id, input }: MutationUpdateKanbanCanonCardPositionsArgs,
     context: ServerContext,
   ): Promise<MutationUpdateKanbanCanonCardPositionsArgs> {
-    // TODO: check that requester is kanban owner
-
-    // if (!context.getIsAdmin()) {
-    //   throw new AuthenticationError("You are not authorized to edit kanban canons!");
-    // }
-
     validateAgainstSchema<KanbanCanonServiceUpdateCardPositionsInput>(updateKanbanCardPositionsInputSchema, input);
 
     // Check if kanban canon id exists in db
-    const kanban = (await this.kanbanDao.getOne({ id }).then((kanban) => ensureExists("Kanban")(kanban))) as Kanban;
+    const kanban = await this.kanbanDao.getOne({ id });
+    ensureExists("Kanban")(kanban);
 
     // ensure that the requester is the kanban owner
-    const kanbanOwnerId = kanban.userId;
+    const kanbanOwnerId = kanban?.userId;
     const currUserId = context.getUserId();
 
-    if (currUserId !== kanbanOwnerId)
-      throw new AuthenticationError("You are not authorized to update a kanban of another user!");
+    if (currUserId !== kanbanOwnerId) throw new AuthenticationError("You are not authorized to edit this kanban!");
 
-    await this.kanbanCanonCardDao
-      .getOne({ id: input.cardId })
-      .then((kanbanCanonCard) => ensureExists("Kanban CanonCard")(kanbanCanonCard));
+    const kanbanCanonCard = await this.kanbanCanonCardDao.getOne({ id: input.cardId });
+    ensureExists("Kanban CanonCard")(kanbanCanonCard);
 
     return { id, input };
   }
 
   async deleteOne({ id }: MutationDeleteKanbanArgs, context: ServerContext): Promise<MutationDeleteKanbanArgs> {
     // Check if kanban id exists in db
-    const existingKanban = await this.kanbanDao.getOne({ id }).then((kanban) => ensureExists<Kanban>("Kanban")(kanban));
+    const existingKanban = await this.kanbanDao.getOne({ id });
+    ensureExists<Kanban>("Kanban")(existingKanban);
     // Make sure requester has permission to delete this kanban
     const requesterId = context.getUserId();
     const isAdmin = context.getIsAdmin();
-    if (!isAdmin && requesterId !== existingKanban.userId) {
-      throw new AuthenticationError("You cannot delete a kanban owned by another user!");
+    if (!isAdmin && requesterId !== existingKanban?.userId) {
+      throw new AuthenticationError("You are not authorized to delete this kanban!");
     }
     return { id };
   }

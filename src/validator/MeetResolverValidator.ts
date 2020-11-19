@@ -55,7 +55,7 @@ export default class MeetResolverValidator {
     const currentUserId = context.getUserId();
 
     if (!currentUserId) {
-      throw new AuthenticationError("You are not authorized to register for a meet! Please log in first.");
+      throw new AuthenticationError("You must be logged in to register for a meet!");
     }
     // Check if meet id exists in db
     await this.meetDao.getOne({ id: meetId }).then((meet) => ensureExists<Meet>("Meet")(meet));

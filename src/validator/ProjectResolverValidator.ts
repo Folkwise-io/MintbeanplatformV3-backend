@@ -41,7 +41,7 @@ export default class ProjectResolverValidator {
     const currentUserId = context.getUserId();
 
     if (!context.getIsAdmin() && currentUserId !== projectOwnerId) {
-      throw new AuthenticationError("You are not authorized to delete the project!");
+      throw new AuthenticationError("You are not authorized to delete this project!");
     }
     return { id };
   }

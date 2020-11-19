@@ -28,9 +28,20 @@ interface InterimPositionObject {
   [key: string]: [Scalars["UUID"], number][];
 }
 
+interface UpdateCardPositionArgs {
+  oldPositions: KanbanCardPositions;
+  cardId: string;
+  status: KanbanCanonCardStatusEnum;
+  index?: number;
+}
+
+interface DeleteCardFromPositionArgs {
+  oldPositions: KanbanCardPositions;
+  cardId: string;
+}
+
 export const toIdObj = (positionObj: KanbanCardPositions): IdObject => {
   const idObj: IdObject = {};
-  // TODO: better typing
   // eslint-disable-next-line
   Object.entries(positionObj).forEach(([status, idArr]: any) => {
     idArr.forEach((id: string, index: number) => {
@@ -49,7 +60,11 @@ export const toStatusObj = (idObj: IdObject): KanbanCardPositions => {
   Object.entries(idObj).forEach(([id, pos]) => {
     const { status, index } = pos;
     const target = positionObj[status];
-    positionObj[pos.status] = target ? [...target, [id, index]] : [[id, index]];
+    if (target) {
+      positionObj[pos.status] = [...target, [id, index]];
+    } else {
+      positionObj[pos.status] = [[id, index]];
+    }
   });
 
   // 2. sort interim position object ids in each array by index, flatten array while removing index.
@@ -82,13 +97,6 @@ const resolve = (c: KanbanCardPositions, s: KanbanCardPositions): KanbanCardPosi
   const positionObj = toStatusObj(idObjR);
   return { ...basePositions, ...positionObj }; // spread over basePositions to pick up default empty status columns
 };
-
-interface UpdateCardPositionArgs {
-  oldPositions: KanbanCardPositions;
-  cardId: string;
-  status: KanbanCanonCardStatusEnum;
-  index?: number;
-}
 
 const moveIndex = (arr: string[], cardId: string, newIndex: number): string[] => {
   let updatedArr = [...arr];
@@ -150,10 +158,6 @@ const insertNewCardPosition = ({
   return (newPositions as unknown) as KanbanCardPositions; // cast back
 };
 
-interface DeleteCardFromPositionArgs {
-  oldPositions: KanbanCardPositions;
-  cardId: string;
-}
 const deleteCardFromPosition = ({ oldPositions, cardId }: DeleteCardFromPositionArgs): KanbanCardPositions => {
   // find status and idArr to be altered if cardId present
   // eslint-disable-next-line
