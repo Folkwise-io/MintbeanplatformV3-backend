@@ -2,18 +2,20 @@ import { ServerContext } from "../../buildServerContext";
 import { KanbanCanon, KanbanCardPositions, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanCanonService from "../../service/KanbanCanonService";
 import KanbanCanonResolverValidator from "../../validator/KanbanCanonResolverValidator";
+import KanbanCanonDao from "../../dao/KanbanCanonDao";
 
 const kanbanCanonResolver = (
   kanbanCanonResolverValidator: KanbanCanonResolverValidator,
   kanbanCanonService: KanbanCanonService,
+  kanbanCanonDao: KanbanCanonDao,
 ): Resolvers => {
   return {
     Query: {
       kanbanCanon: (_root, args, _context: ServerContext): Promise<KanbanCanon> => {
-        return kanbanCanonService.getOne(args);
+        return kanbanCanonDao.getOne(args);
       },
       kanbanCanons: (_root, _args, _context: ServerContext): Promise<KanbanCanon[]> => {
-        return kanbanCanonService.getMany();
+        return kanbanCanonDao.getMany();
       },
     },
 
@@ -24,12 +26,12 @@ const kanbanCanonResolver = (
       editKanbanCanon: (_root, args, context: ServerContext): Promise<KanbanCanon> => {
         return kanbanCanonResolverValidator
           .editOne(args, context)
-          .then(({ id, input }) => kanbanCanonService.editOne(id, input));
+          .then(({ id, input }) => kanbanCanonDao.editOne(id, input));
       },
       updateKanbanCanonCardPositions: (_root, args, context: ServerContext): Promise<KanbanCardPositions> => {
         return kanbanCanonResolverValidator
           .updateCardPositions(args, context)
-          .then(({ id, input }) => kanbanCanonService.updateCardPositions(id, input));
+          .then(({ id, input }) => kanbanCanonDao.updateCardPositions(id, input));
       },
     },
 
@@ -37,7 +39,7 @@ const kanbanCanonResolver = (
       kanbanCanon: (meet) => {
         // return null if no kanbanCanon associated with this meet
         if (!meet.kanbanCanonId) return null;
-        return kanbanCanonService.getOne({ id: meet.kanbanCanonId });
+        return kanbanCanonDao.getOne({ id: meet.kanbanCanonId });
       },
     },
   };

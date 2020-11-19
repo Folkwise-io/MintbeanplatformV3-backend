@@ -1,18 +1,16 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import MediaAssetService from "../../service/MediaAssetService";
-import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
-import ProjectMediaAssetService from "../../service/ProjectMediaAssetService";
-import { MediaAssetDaoAddManyArgs } from "../../dao/MediaAssetDao";
-import { ProjectMediaAssetDaoAddOneArgs } from "../../dao/ProjectMediaAssetDao";
+import MediaAssetDao, { MediaAssetDaoAddManyArgs } from "../../dao/MediaAssetDao";
+import ProjectMediaAssetDao, { ProjectMediaAssetDaoAddOneArgs } from "../../dao/ProjectMediaAssetDao";
+import ProjectDao from "../../dao/ProjectDao";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
-  projectService: ProjectService,
-  mediaAssetService: MediaAssetService,
-  projectMediaAssetService: ProjectMediaAssetService,
+  projectDao: ProjectDao,
+  mediaAssetDao: MediaAssetDao,
+  projectMediaAssetDao: ProjectMediaAssetDao,
 ): Resolvers => {
   return {
     Query: {
@@ -20,26 +18,26 @@ const projectResolver = (
       project: (_root, args, context: ServerContext): Promise<Project | null> => {
         return projectResolverValidator
           .getOne(args, context)
-          .then((args) => projectService.getOne(args))
+          .then((args) => projectDao.getOne(args))
           .then((result) => (result ? result : null));
       },
     },
 
     PublicUser: {
       projects: (user, context) => {
-        return projectService.getMany({ userId: user.id });
+        return projectDao.getMany({ userId: user.id });
       },
     },
 
     PrivateUser: {
       projects: (user, context) => {
-        return projectService.getMany({ userId: user.id });
+        return projectDao.getMany({ userId: user.id });
       },
     },
 
     Meet: {
       projects: (meet, context) => {
-        return projectService.getMany({ meetId: meet.id });
+        return projectDao.getMany({ meetId: meet.id });
       },
     },
 
@@ -60,7 +58,7 @@ const projectResolver = (
         // Add the new project to db first
         const newProject = await projectResolverValidator
           .addOne(argsWithResolvedUserId)
-          .then((input) => projectService.addOne(input));
+          .then((input) => projectDao.addOne(input));
 
         // If no media assets were received, simply return the project as is
         const { cloudinaryPublicIds, userId } = argsWithResolvedUserId.input;
@@ -84,19 +82,19 @@ const projectResolver = (
         const { id: projectId } = newProject;
 
         // Add join table info to link newly created media asset to project
-        const createdMediaAssets = await mediaAssetService.addMany(mediaAssets);
+        const createdMediaAssets = await mediaAssetDao.addMany(mediaAssets);
         const projectMediaAssets: ProjectMediaAssetDaoAddOneArgs[] = createdMediaAssets.map((mediaAsset) => ({
           projectId,
           mediaAssetId: mediaAsset.id,
         }));
-        await projectMediaAssetService.addMany(projectMediaAssets);
+        await projectMediaAssetDao.addMany(projectMediaAssets);
 
         // Query the project again to retrieve its associated media assets
-        return (projectService.getOne({ id: projectId }) as unknown) as Project;
+        return (projectDao.getOne({ id: projectId }) as unknown) as Project;
       },
 
       deleteProject: (_root, args, context: ServerContext): Promise<boolean> => {
-        return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectService.deleteOne(id));
+        return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectDao.deleteOne(id));
       },
     },
   };

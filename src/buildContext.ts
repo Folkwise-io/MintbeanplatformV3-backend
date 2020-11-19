@@ -10,18 +10,13 @@ import MeetService from "./service/MeetService";
 import MeetResolverValidator from "./validator/MeetResolverValidator";
 import ProjectDao from "./dao/ProjectDao";
 import ProjectDaoKnex from "./dao/ProjectDaoKnex";
-import ProjectService from "./service/ProjectService";
 import ProjectResolverValidator from "./validator/ProjectResolverValidator";
 import MediaAssetDao from "./dao/MediaAssetDao";
 import MediaAssetDaoKnex from "./dao/MediaAssetDaoKnex";
-import MediaAssetService from "./service/MediaAssetService";
-import MediaAssetResolverValidator from "./validator/MediaAssetResolverValidator";
 import ProjectMediaAssetDaoKnex from "./dao/ProjectMediaAssetKnex";
 import ProjectMediaAssetDao from "./dao/ProjectMediaAssetDao";
-import ProjectMediaAssetService from "./service/ProjectMediaAssetService";
 import MeetRegistrationDaoKnex from "./dao/MeetRegistrationDaoKnex";
 import MeetRegistrationDao from "./dao/MeetRegistrationDao";
-import MeetRegistrationService from "./service/MeetRegistrationService";
 import { EmailService } from "./service/EmailService";
 import { EmailDao } from "./dao/EmailDao";
 import config from "./util/config";
@@ -82,11 +77,6 @@ export interface ResolverContext {
   meetResolverValidator: MeetResolverValidator;
   meetService: MeetService;
   projectResolverValidator: ProjectResolverValidator;
-  projectService: ProjectService;
-  mediaAssetResolverValidator: MediaAssetResolverValidator;
-  mediaAssetService: MediaAssetService;
-  projectMediaAssetService: ProjectMediaAssetService;
-  meetRegistrationService: MeetRegistrationService;
   emailResolverValidator: EmailResolverValidator;
   emailService: EmailService;
   kanbanCanonService: KanbanCanonService;
@@ -95,6 +85,15 @@ export interface ResolverContext {
   kanbanCanonCardResolverValidator: KanbanCanonCardResolverValidator;
   kanbanService: KanbanService;
   kanbanResolverValidator: KanbanResolverValidator;
+  kanbanCanonCardDao: KanbanCanonCardDao;
+  kanbanCanonDao: KanbanCanonDao;
+  kanbanDao: KanbanDao;
+  mediaAssetDao: MediaAssetDao;
+  meetRegistrationDao: MeetRegistrationDao;
+  meetDao: MeetDao;
+  projectMediaAssetDao: ProjectMediaAssetDao;
+  projectDao: ProjectDao;
+  userDao: UserDao;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -114,11 +113,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const meetResolverValidator = new MeetResolverValidator(meetDao);
   const meetService = new MeetService(meetDao);
   const projectResolverValidator = new ProjectResolverValidator(projectDao);
-  const projectService = new ProjectService(projectDao);
-  const mediaAssetResolverValidator = new MediaAssetResolverValidator(mediaAssetDao);
-  const mediaAssetService = new MediaAssetService(mediaAssetDao);
-  const projectMediaAssetService = new ProjectMediaAssetService(projectMediaAssetDao);
-  const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao);
   const kanbanCanonService = new KanbanCanonService(kanbanCanonDao);
   const kanbanCanonResolverValidator = new KanbanCanonResolverValidator(kanbanCanonDao, kanbanCanonCardDao);
   const kanbanCanonCardService = new KanbanCanonCardService(kanbanCanonCardDao, kanbanCanonDao);
@@ -143,11 +137,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetResolverValidator,
     meetService,
     projectResolverValidator,
-    projectService,
-    mediaAssetResolverValidator,
-    mediaAssetService,
-    projectMediaAssetService,
-    meetRegistrationService,
     emailResolverValidator,
     emailService,
     kanbanCanonService,
@@ -156,5 +145,14 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanService,
     kanbanCanonResolverValidator,
     kanbanResolverValidator,
+    kanbanCanonCardDao,
+    kanbanCanonDao,
+    kanbanDao,
+    mediaAssetDao,
+    meetRegistrationDao,
+    meetDao,
+    projectMediaAssetDao,
+    projectDao,
+    userDao,
   };
 }

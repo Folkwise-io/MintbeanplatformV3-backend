@@ -1,7 +1,6 @@
 import KanbanCanonCardDao, {
   KanbanCanonCardDaoAddOneInput,
   KanbanCanonCardDaoEditOneInput,
-  KanbanCanonCardDaoGetManyArgs,
   KanbanCanonCardDaoGetOneArgs,
 } from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
@@ -31,10 +30,6 @@ export default class KanbanCanonCardService implements EntityService<KanbanCanon
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao, private kanbanCanonDao: KanbanCanonDao) {}
   async getOne(args: KanbanCanonCardDaoGetOneArgs): Promise<KanbanCanonCard> {
     return this.kanbanCanonCardDao.getOne(args);
-  }
-
-  async getMany(args: KanbanCanonCardDaoGetManyArgs): Promise<KanbanCanonCard[]> {
-    return this.kanbanCanonCardDao.getMany(args);
   }
 
   async addOne(input: KanbanCanonCardServiceAddOneInput): Promise<KanbanCanonCard> {

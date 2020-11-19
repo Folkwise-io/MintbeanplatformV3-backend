@@ -3,9 +3,10 @@ import { User, PublicUserDto, PrivateUserDto } from "../../types/User";
 import UserService from "../../service/UserService";
 import UserResolverValidator from "../../validator/UserResolverValidator";
 import { ServerContext } from "../../buildServerContext";
-import { ApolloError, AuthenticationError, UserInputError } from "apollo-server-express";
+import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { generateJwt } from "../../util/jwtUtils";
 import { ensureExists } from "../../util/ensureExists";
+import UserDao from "../../dao/UserDao";
 
 const mapUserToPublicUser = ({ id, firstName, lastName, isAdmin, createdAt, updatedAt }: User): PublicUserDto => ({
   id,
@@ -34,13 +35,17 @@ const mapUserToPrivateUser = ({
   email,
 });
 // TODO: move excessive logic to validator and service layer?
-const userResolver = (userResolverValidator: UserResolverValidator, userService: UserService): Resolvers => {
+const userResolver = (
+  userResolverValidator: UserResolverValidator,
+  userService: UserService,
+  userDao: UserDao,
+): Resolvers => {
   return {
     Query: {
       user: (_root, args, context: ServerContext): Promise<PublicUserDto> => {
         return userResolverValidator
           .getOne(args, context)
-          .then((args) => userService.getOne(args))
+          .then((args) => userDao.getOne(args))
           .then((result) => {
             if (!result) throw new ApolloError("User not found");
             return mapUserToPublicUser(result);
@@ -53,7 +58,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
         if (!userId) {
           throw new AuthenticationError("You are not logged in!");
         }
-        const user = ensureExists<User>("User")(await userService.getOne({ id: userId }));
+        const user = ensureExists<User>("User")(await userDao.getOne({ id: userId }));
 
         if (!user) {
           throw new AuthenticationError("Authentication failed!"); // use purposfully ambiguous wording
@@ -72,7 +77,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
           }
           // TODO: Move below into jwt auth service
           // Make a JWT and return it in the body as well as the cookie
-          const rawUser = ensureExists<User>("User")(await userService.getOne({ email: args.email }));
+          const rawUser = ensureExists<User>("User")(await userDao.getOne({ email: args.email }));
           const privateUser = mapUserToPrivateUser(rawUser);
 
           const token = generateJwt(privateUser);
@@ -111,7 +116,7 @@ const userResolver = (userResolverValidator: UserResolverValidator, userService:
     },
     Project: {
       user: async (project): Promise<PublicUserDto> => {
-        const rawUser = ensureExists<User>("User")(await userService.getOne({ id: project.userId }));
+        const rawUser = ensureExists<User>("User")(await userDao.getOne({ id: project.userId }));
         const publicUser = mapUserToPublicUser(rawUser);
         return publicUser;
       },

@@ -1,11 +1,11 @@
 import { Resolvers } from "../../types/gqlGeneratedTypes";
-import KanbanCanonCardService from "../../service/KanbanCanonCardService";
+import KanbanCanonCardDao from "../../dao/KanbanCanonCardDao";
 
-const kanbanCardResolver = (kanbanCanonCardService: KanbanCanonCardService): Resolvers => {
+const kanbanCardResolver = (kanbanCanonCardDao: KanbanCanonCardDao): Resolvers => {
   return {
     Kanban: {
       kanbanCards: (kanban) => {
-        return kanbanCanonCardService.getMany({ kanbanCanonId: kanban.kanbanCanonId });
+        return kanbanCanonCardDao.getMany({ kanbanCanonId: kanban.kanbanCanonId });
       },
     },
   };

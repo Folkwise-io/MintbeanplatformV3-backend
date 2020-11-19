@@ -2,7 +2,6 @@ import { makeExecutableSchema } from "apollo-server-express";
 import { GraphQLSchema } from "graphql";
 import customScalarsResolver from "./graphql/resolver/customScalarsResolver";
 import userResolver from "./graphql/resolver/userResolver";
-import postResolver from "./graphql/resolver/postResolver";
 import user from "./graphql/typedef/user";
 import post from "./graphql/typedef/post";
 import customScalars from "./graphql/typedef/customScalars";
@@ -31,11 +30,6 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     meetResolverValidator,
     meetService,
     projectResolverValidator,
-    projectService,
-    mediaAssetResolverValidator,
-    mediaAssetService,
-    projectMediaAssetService,
-    meetRegistrationService,
     emailResolverValidator,
     emailService,
     kanbanCanonService,
@@ -44,6 +38,15 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCanonCardResolverValidator,
     kanbanService,
     kanbanResolverValidator,
+    kanbanCanonCardDao,
+    kanbanCanonDao,
+    kanbanDao,
+    mediaAssetDao,
+    meetRegistrationDao,
+    meetDao,
+    projectMediaAssetDao,
+    projectDao,
+    userDao,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -60,16 +63,15 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
   ];
   const resolvers = [
     customScalarsResolver,
-    userResolver(userResolverValidator, userService),
-    meetResolver(meetResolverValidator, meetService, meetRegistrationService, userService, emailService),
-    projectResolver(projectResolverValidator, projectService, mediaAssetService, projectMediaAssetService),
-    mediaAssetResolver(mediaAssetResolverValidator, mediaAssetService),
+    userResolver(userResolverValidator, userService, userDao),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, userDao, emailService, meetDao),
+    projectResolver(projectResolverValidator, projectDao, mediaAssetDao, projectMediaAssetDao),
+    mediaAssetResolver(mediaAssetDao),
     emailResolver(emailResolverValidator, emailService, meetService),
-    kanbanCanonResolver(kanbanCanonResolverValidator, kanbanCanonService),
-    kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService),
-    kanbanResolver(kanbanResolverValidator, kanbanService),
-    kanbanCardResolver(kanbanCanonCardService),
-    postResolver,
+    kanbanCanonResolver(kanbanCanonResolverValidator, kanbanCanonService, kanbanCanonDao),
+    kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService, kanbanCanonCardDao),
+    kanbanResolver(kanbanResolverValidator, kanbanService, kanbanDao),
+    kanbanCardResolver(kanbanCanonCardDao),
   ];
 
   return makeExecutableSchema({

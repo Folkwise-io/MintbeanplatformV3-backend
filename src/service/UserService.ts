@@ -1,6 +1,6 @@
 import { User } from "../types/User";
 import bcrypt from "bcryptjs";
-import UserDao, { UserDaoGetManyArgs, UserDaoGetOneArgs, UserDaoLoginArgs } from "../dao/UserDao";
+import UserDao, { UserDaoLoginArgs } from "../dao/UserDao";
 
 export interface UserServiceAddOneArgs {
   email: string;
@@ -11,14 +11,6 @@ export interface UserServiceAddOneArgs {
 
 export default class UserService {
   constructor(private userDao: UserDao) {}
-
-  async getOne(args: UserDaoGetOneArgs): Promise<User | undefined> {
-    return this.userDao.getOne(args);
-  }
-
-  async getMany(args: UserDaoGetManyArgs): Promise<User[]> {
-    return this.userDao.getMany(args);
-  }
 
   async checkPassword(args: UserDaoLoginArgs): Promise<boolean> {
     const user = await this.userDao.getOne({ email: args.email });

@@ -2,18 +2,23 @@ import { ServerContext } from "../../buildServerContext";
 import { Kanban, KanbanCardPositions, Resolvers } from "../../types/gqlGeneratedTypes";
 import KanbanService from "../../service/KanbanService";
 import KanbanResolverValidator from "../../validator/KanbanResolverValidator";
+import KanbanDao from "../../dao/KanbanDao";
 
-const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanbanService: KanbanService): Resolvers => {
+const kanbanResolver = (
+  kanbanResolverValidator: KanbanResolverValidator,
+  kanbanService: KanbanService,
+  kanbanDao: KanbanDao,
+): Resolvers => {
   return {
     Query: {
       kanban: (_root, args, context: ServerContext): Promise<Kanban | null> => {
         return kanbanResolverValidator
           .getOne(args, context)
-          .then((args) => kanbanService.getOne(args))
+          .then((args) => kanbanDao.getOne(args))
           .then((result) => (result ? result : null));
       },
       kanbans: (_root, args, context: ServerContext): Promise<Kanban[]> => {
-        return kanbanResolverValidator.getMany(args, context).then((args) => kanbanService.getMany(args));
+        return kanbanResolverValidator.getMany(args, context).then((args) => kanbanDao.getMany(args));
       },
     },
 
@@ -25,11 +30,11 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
       updateKanbanCardPositions: (_root, args, context: ServerContext): Promise<KanbanCardPositions> => {
         return kanbanResolverValidator
           .updateKanbanCardPositions(args, context)
-          .then(({ id, input }) => kanbanService.updateCardPositions(id, input));
+          .then(({ id, input }) => kanbanDao.updateCardPositions(id, input));
       },
 
       deleteKanban: (_root, args, context: ServerContext): Promise<boolean> => {
-        return kanbanResolverValidator.deleteOne(args, context).then(({ id }) => kanbanService.deleteOne(id));
+        return kanbanResolverValidator.deleteOne(args, context).then(({ id }) => kanbanDao.deleteOne(id));
       },
     },
 
@@ -41,7 +46,7 @@ const kanbanResolver = (kanbanResolverValidator: KanbanResolverValidator, kanban
         if (!context.getUserId()) return null;
         // retrieve kanban of requesting user
         const requesterId = context.getUserId();
-        return kanbanService
+        return kanbanDao
           .getOne({ meetId: meet.id, kanbanCanonId: meet.kanbanCanonId, userId: requesterId })
           .then((result) => (result ? result : null));
       },

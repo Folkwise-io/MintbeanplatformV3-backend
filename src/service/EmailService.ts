@@ -10,7 +10,7 @@ export class EmailService {
   constructor(private emailDao: EmailDao) {}
 
   generateMeetReminderEmail(recipientEmailAddress: string, meet: Meet): Email {
-    const { title, description } = meet;
+    const { title, _description } = meet;
     const email: Email = {
       to: recipientEmailAddress,
       from: senderEmail,
