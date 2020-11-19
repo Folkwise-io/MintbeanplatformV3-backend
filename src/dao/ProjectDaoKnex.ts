@@ -10,7 +10,10 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectDao from "./ProjectDao";
 
 export default class ProjectDaoKnex implements ProjectDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
 
   async getOne(args: ProjectServiceGetOneArgs): Promise<Project | undefined> {
     return handleDatabaseError(async () => {
@@ -47,14 +50,5 @@ export default class ProjectDaoKnex implements ProjectDao {
       await this.knex("projects").where({ id }).update({ deleted: true });
       return true;
     });
-  }
-
-  // Testing methods below, for TestManager to call
-  async addMany(projects: Project[]): Promise<void> {
-    return this.knex<Project>("projects").insert(projects);
-  }
-
-  deleteAll(): Promise<void> {
-    return this.knex<Project>("projects").delete();
   }
 }

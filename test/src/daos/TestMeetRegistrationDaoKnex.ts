@@ -11,7 +11,7 @@ export default class TestMeetRegistrationDaoKnex extends MeetRegistrationDaoKnex
     return this.knex<MeetRegistration>("meetRegistrations").insert(meetRegistrations);
   }
 
-  deleteAll(): Promise<void> {
+  async deleteAll(): Promise<void> {
     return this.knex<MeetRegistration>("meetRegistrations").delete();
   }
 }

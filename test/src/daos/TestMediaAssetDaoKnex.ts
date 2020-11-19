@@ -7,7 +7,7 @@ export default class TestMediaAssetDaoKnex extends MediaAssetDaoKnex {
     super(knex);
   }
 
-  deleteAll(): Promise<void> {
+  async deleteAll(): Promise<void> {
     return this.knex<MediaAsset>("mediaAssets").delete();
   }
 }

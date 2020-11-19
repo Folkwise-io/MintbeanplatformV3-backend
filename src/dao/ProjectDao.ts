@@ -10,8 +10,4 @@ export default interface ProjectDao {
   getMany(args: ProjectServiceGetManyArgs): Promise<Project[]>;
   addOne(args: ProjectServiceAddOneInput): Promise<Project>;
   deleteOne(id: string): Promise<boolean>;
-
-  // Below are TestManager methods
-  deleteAll(): Promise<void>;
-  addMany(projects: Project[]): Promise<void>;
 }
