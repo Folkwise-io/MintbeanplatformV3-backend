@@ -13,9 +13,9 @@ import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
-import { KanbanSessionRaw } from "../../src/dao/KanbanDao";
 import { KanbanCanonRaw } from "./daos/TestKanbanCanonDaoKnex";
 import { buildTestPersistenceContext, TestPersistenceContext } from "./daos/util/buildTestPersistenceContext";
+import { KanbanSessionRaw } from "./daos/TestKanbanDaoKnex";
 
 interface TestManagerParams {
   persistenceContext: TestPersistenceContext;

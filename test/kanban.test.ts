@@ -1,4 +1,3 @@
-import { KanbanSessionRaw } from "../src/dao/KanbanDao";
 import { KanbanCanonCardStatusEnum, UpdateCardPositionInput } from "../src/types/gqlGeneratedTypes";
 import { KANBAN_CANON_CARD_1, KANBAN_CANON_CARD_2 } from "./src/constants/kanbanCanonCardConstants";
 import { KANBAN_CANON_1_RAW, KANBAN_CANON_2_RAW } from "./src/constants/kanbanCanonConstants";
@@ -17,6 +16,7 @@ import { GET_MEET_QUERY, PAPERJS } from "./src/constants/meetConstants";
 import TestManager from "./src/TestManager";
 import { AMY, BOB, DORTHY } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies, getDorthyCookies } from "./src/util";
+import { KanbanSessionRaw } from "./src/daos/TestKanbanDaoKnex";
 
 const testManager = TestManager.build();
 

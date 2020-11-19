@@ -1,12 +1,11 @@
 import Knex from "knex";
 import handleDatabaseError from "../util/handleDatabaseError";
-import KanbanDao, { KanbanSessionRaw } from "./KanbanDao";
+import KanbanDao from "./KanbanDao";
 import { Kanban, KanbanCardPositions } from "../types/gqlGeneratedTypes";
 import { KanbanServiceGetOneArgs, KanbanServiceGetManyArgs, KanbanServiceAddOneInput } from "../service/KanbanService";
 import { prefixKeys } from "../util/prefixKeys";
 import { resolve, updateCardPositions } from "./util/cardPositionUtils";
 import { KanbanCanonServiceUpdateCardPositionsInput } from "../service/KanbanCanonService";
-import { ApolloError, UserInputError } from "apollo-server-express";
 import { ensureExists } from "../util/ensureExists";
 
 interface KanbanRawData extends Kanban {
@@ -45,7 +44,10 @@ const rawToKanban = (draftKanban: KanbanRawData): Kanban => {
 
 // TODO: Refactor repeated query
 export default class KanbanDaoKnex implements KanbanDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
   async getOne(args: KanbanServiceGetOneArgs): Promise<Kanban | undefined> {
     return handleDatabaseError(async () => {
       const kanbanRawData: KanbanRawData = await this.knex
@@ -132,14 +134,5 @@ export default class KanbanDaoKnex implements KanbanDao {
       await this.knex("kanbanSessions").where({ id }).update({ deleted: true });
       return true;
     });
-  }
-
-  // Testing methods below, for TestManager to call
-  async addMany(kanbans: KanbanSessionRaw[]): Promise<void> {
-    return this.knex("kanbanSessions").insert(kanbans);
-  }
-
-  async deleteAll(): Promise<void> {
-    return this.knex("kanbanSessions").delete();
   }
 }

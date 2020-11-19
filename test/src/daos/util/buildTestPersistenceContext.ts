@@ -1,6 +1,5 @@
 import Knex from "knex";
 import KanbanDao from "../../../../src/dao/KanbanDao";
-import KanbanDaoKnex from "../../../../src/dao/KanbanDaoKnex";
 import MediaAssetDao from "../../../../src/dao/MediaAssetDao";
 import MediaAssetDaoKnex from "../../../../src/dao/MediaAssetDaoKnex";
 import MeetDao from "../../../../src/dao/MeetDao";
@@ -17,6 +16,7 @@ import TestKanbanCanonDaoKnex from "../TestKanbanCanonDaoKnex";
 import knexConfig from "../../../../src/db/knexfile";
 import { PersistenceContext } from "../../../../src/buildContext";
 import TestKanbanCanonCardDaoKnex from "../TestKanbanCanonCardDaoKnex";
+import TestKanbanDaoKnex from "../TestKanbanDaoKnex";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
@@ -28,7 +28,7 @@ export interface TestPersistenceContext extends PersistenceContext {
   meetRegistrationDao: MeetRegistrationDao;
   kanbanCanonDao: TestKanbanCanonDaoKnex;
   kanbanCanonCardDao: TestKanbanCanonCardDaoKnex;
-  kanbanDao: KanbanDao;
+  kanbanDao: TestKanbanDaoKnex;
 }
 
 // TODO: Help Monarch! The polymophism thing didn't work (setting return type to PersistenceContext caused errors in TestManager)
@@ -43,7 +43,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
   const kanbanCanonDao = new TestKanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new TestKanbanCanonCardDaoKnex(knex);
-  const kanbanDao = new KanbanDaoKnex(knex);
+  const kanbanDao = new TestKanbanDaoKnex(knex);
 
   return {
     userDao,
