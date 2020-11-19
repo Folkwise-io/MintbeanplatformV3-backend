@@ -73,13 +73,13 @@ export default class KanbanResolverValidator {
 
     const requesterId = context.getUserId();
     if (!requesterId) {
-      throw new UserInputError("You must be logged in to create a kanban!");
+      throw new AuthenticationError("You must be logged in to create a kanban!");
     }
 
     // ensure requesting user is the input user if not admin
     const isAdmin = context.getIsAdmin();
     if (!isAdmin && requesterId !== userId) {
-      throw new UserInputError("You cannot create kanbans for users other than yourself!");
+      throw new AuthenticationError("You cannot create kanbans for users other than yourself!");
     }
 
     // ensure kanbanCanon exists

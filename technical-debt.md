@@ -17,3 +17,13 @@ export const ensureExists = <T>(entityName: string) => <T>(entity: T | undefined
   }
 };
 ```
+
+### [S] Refactor all tests to test for error CODES instead of error MESSAGES
+
+Check for one of the 3 apollo error types used in this application :
+
+- "UNAUTHENTICATED"
+- "BAD_USER_INPUT"
+- "INTERNAL_SERVER_ERROR"
+
+see kanban related tests for reference. There is probably a more elegant way to do this, for example creating an `expectErrorUnauthenticated()`, `expectErrorBadUserInput()` etc. methods on the test manager, and changing error codes to constants.

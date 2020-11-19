@@ -72,24 +72,24 @@ describe("Querying kanbanCanonCards", () => {
   });
   it("throws an error if requested kanban canon card does not exist", async () => {
     await testManager
-      .getErrorMessage({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .getErrorCode({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
   it("throws an error if requested kanban canon does not exist", async () => {
     await testManager
-      .getErrorMessage({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_2_RAW.id } })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .getErrorCode({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_2_RAW.id } })
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
   it("throws an error if requested kanban canon card has been deleted", async () => {
     await testManager.addKanbanCanonCards([{ ...KANBAN_CANON_CARD_1, deleted: true } as any]);
     await testManager
-      .getErrorMessage({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .getErrorCode({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
   it("does not retrieve deleted kanbanCanonCards", async () => {
@@ -209,48 +209,48 @@ describe("Creating kanbanCanonCards", () => {
   // it defaults to TODO and index 0 if no status/index provided
   it("returns an 'unauthorized' error message when creating a kanbanCanonCard without admin cookies", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
         variables: { input: CREATE_KANBAN_CANON_CARD_1_INPUT },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)]authorized/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
 
   it("returns an appropriate error message when a field is missing", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
         variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, body: undefined } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/body/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 
   it("returns an appropriate error message when a field is in wrong type", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
         variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, title: 100 } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/title/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
   it("gives an error message from validator when an input is invalid", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_CARD_MUTATION,
         variables: { input: { ...CREATE_KANBAN_CANON_CARD_1_INPUT, title: "a" } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/short/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("BAD_USER_INPUT");
       });
   });
 });
@@ -293,73 +293,73 @@ describe("Editing kanbanCanonCards", () => {
 
   it("returns an 'unauthorized' error message when editing a kanbanCanonCard without admin cookies", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_CARD_MUTATION,
         variables: { id: KANBAN_CANON_CARD_1.id, input: EDIT_KANBAN_CANON_CARD_INPUT },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
 
   it("gives an error message from validator when the id of the meet does not exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_CARD_MUTATION,
         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_KANBAN_CANON_CARD_INPUT },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 
   it("gives an error message from validator when an input is invalid", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_CARD_MUTATION,
         variables: { id: KANBAN_CANON_CARD_1.id, input: { body: "a" } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/short/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("BAD_USER_INPUT");
       });
   });
 
   it("gives an error message when no edit fields are specified in the mutation", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_CARD_MUTATION,
         variables: { id: KANBAN_CANON_CARD_1.id, input: {} },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/field/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("BAD_USER_INPUT");
       });
   });
 
   it("gives an error message when trying to edit a non-existent field", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_CARD_MUTATION,
         variables: { id: KANBAN_CANON_CARD_1.id, input: { nonexistent: "hello" } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
+        expect(errorMessage).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 
   it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_CARD_MUTATION,
         variables: { id: KANBAN_CANON_CARD_1.id, input: { deleted: true } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 });
@@ -436,25 +436,25 @@ describe("Deleting kanbanCanonCards", () => {
 
   it("returns an 'unauthorized' error message when deleting a kanbanCanonCard without admin cookies", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_KANBAN_CANON_CARD_MUTATION,
         variables: { id: KANBAN_CANON_CARD_1.id },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
 
   it("gives an error message from validator when the id of the kanbanCanonCard does not exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_KANBAN_CANON_CARD_MUTATION,
         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 });

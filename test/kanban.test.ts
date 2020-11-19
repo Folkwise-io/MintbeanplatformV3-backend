@@ -145,18 +145,17 @@ describe("Querying kanbans", () => {
       });
   });
   it("throws a 'not authorized' error if currently logged in user tries to get a kanban they don't own by id", async () => {
-    await testManager
-      .addKanbans([{ ...MEET_KANBAN_RAW_1, userId: DORTHY.id }])
-      .then(() =>
-        testManager.getErrorMessage({
+    await testManager.addKanbans([{ ...MEET_KANBAN_RAW_1, userId: DORTHY.id }]).then(() =>
+      testManager
+        .getErrorCode({
           query: GET_KANBAN_QUERY,
           variables: { id: MEET_KANBAN_RAW_1.id },
           cookies: bobCookies,
+        })
+        .then((errorCode) => {
+          expect(errorCode).toBe("UNAUTHENTICATED");
         }),
-      )
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
-      });
+    );
   });
   it("gets a kanban by id for another user if logged in as admin", async () => {
     await testManager
@@ -178,14 +177,14 @@ describe("Querying kanbans", () => {
     await testManager
       .addKanbans([MEET_KANBAN_RAW_1])
       .then(() =>
-        testManager.getErrorMessage({
+        testManager.getErrorCode({
           query: GET_KANBAN_QUERY,
           variables: { kanbanCanonId: MEET_KANBAN_RAW_1.kanbanCanonId },
           cookies: adminCookies,
         }),
       )
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch("must provide");
+      .then((errorCode) => {
+        expect(errorCode).toBe("BAD_USER_INPUT");
       });
   });
   // TODO: why can you get this when no cookies passed?
@@ -280,14 +279,14 @@ describe("Querying kanbans", () => {
     await testManager
       .addKanbans([MEET_KANBAN_RAW_1, MEET_KANBAN_RAW_2])
       .then(() =>
-        testManager.getErrorMessage({
+        testManager.getErrorCode({
           query: GET_KANBANS_QUERY,
           variables: { meetId: MEET_KANBAN_RAW_1.meetId },
           cookies: bobCookies,
         }),
       )
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
   it("returns an empty array if there are no kanbans", async () => {
@@ -331,13 +330,13 @@ describe("Creating kanbans", () => {
   });
   it("throws 'not authorized' user attempts to create kanban while not logged in", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_MUTATION,
         variables: { input: CREATE_ISOLATED_KANBAN_INPUT },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/log(ged)? in/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
   it("allows admin to create a kanban on behalf of another user", async () => {
@@ -354,36 +353,36 @@ describe("Creating kanbans", () => {
   });
   it("throws 'not authorized' error if non-admin user attempts to create a kanban on behalf of another user", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_MUTATION,
         variables: { input: { ...CREATE_ISOLATED_KANBAN_INPUT, userId: DORTHY.id } },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(cannot | can't)] create kanban/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
   it("returns an appropriate error message when a required field is missing", async () => {
     const partialInput = { kanbanCanonId: KANBAN_CANON_1_RAW.id };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_MUTATION,
         variables: { input: partialInput },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/userId/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
   it("returns an appropriate error message when a field is in wrong type", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_MUTATION,
         variables: { input: { ...CREATE_ISOLATED_KANBAN_INPUT, kanbanCanonId: 100 } },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/kanbanCanonId/i);
+      .then((errorCode) => {
+        expect(errorCode).toMatch("INTERNAL_SERVER_ERROR");
       });
   });
 });
@@ -427,25 +426,25 @@ describe("Deleting kanbans", () => {
   it("returns an 'unauthorized' error message when deleting a kanban owned by another user without admin cookies", async () => {
     await testManager.addKanbans([MEET_KANBAN_RAW_2]); // owned by Dorthy
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_KANBAN_MUTATION,
         variables: { id: MEET_KANBAN_RAW_2.id },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
 
   it("gives an error message from validator when the id of the meet does not exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_KANBAN_MUTATION,
         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 });
@@ -534,13 +533,13 @@ describe("Updating card positions", () => {
     };
 
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: UPDATE_KANBAN_CARD_POSITIONS_MUTATION,
         variables: { id: ISOLATED_KANBAN_RAW_1.id, input },
         cookies: dorthyCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)]authorized/);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
 });

@@ -85,46 +85,46 @@ describe("Creating kanbanCanons", () => {
   });
   it("throws 'not authorized' error if createKanbanSession is called while user not logged in", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_MUTATION,
         variables: { input: CREATE_KANBAN_CANON_1_RAW_INPUT },
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)]authorized/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
   it("throws 'not authorized' error if createKanbanSession is called by non-admin user", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_MUTATION,
         variables: { input: CREATE_KANBAN_CANON_1_RAW_INPUT },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)]authorized/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
   it("returns an appropriate error message when a field is missing", async () => {
     const partialInput = { title: "A title" };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_MUTATION,
         variables: { input: partialInput },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/description/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
   it("returns an appropriate error message when a field is in wrong type", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_KANBAN_CANON_MUTATION,
         variables: { input: { ...CREATE_KANBAN_CANON_1_RAW_INPUT, title: 100 } },
         cookies: adminCookies,
       })
       .then((errorMessage) => {
-        expect(errorMessage).toMatch(/title/i);
+        expect(errorMessage).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 });
@@ -166,61 +166,61 @@ describe("Editing kanbanCanons", () => {
 
   it("returns an 'unauthorized' error message when editing a kanbanCanon without admin cookies", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_MUTATION,
         variables: { id: KANBAN_CANON_1_RAW.id, input: EDIT_KANBAN_CANON_INPUT },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      .then((errorCode) => {
+        expect(errorCode).toMatch("UNAUTHENTICATED");
       });
   });
 
   it("gives an error message from validator when the id of the meet does not exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_MUTATION,
         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_KANBAN_CANON_INPUT },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .then((errorCode) => {
+        expect(errorCode).toMatch("INTERNAL_SERVER_ERROR");
       });
   });
 
   it("gives an error message when no edit fields are specified in the mutation", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_MUTATION,
         variables: { id: KANBAN_CANON_1_RAW.id, input: {} },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/field/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("BAD_USER_INPUT");
       });
   });
 
   it("gives an error message when trying to edit a non-existent field", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_MUTATION,
         variables: { id: KANBAN_CANON_1_RAW.id, input: { nonexistent: "hello" } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 
   it("gives an error message when trying to edit a field that exists in db but is not defined in schema", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_KANBAN_CANON_MUTATION,
         variables: { id: KANBAN_CANON_1_RAW.id, input: { createdAt: "2020-11-12T23:43:08.348Z" } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
       });
   });
 });
@@ -308,13 +308,13 @@ describe("Updating card positions", () => {
     };
 
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: UPDATE_KANBAN_CANON_CARD_POSITIONS_MUTATION,
         variables: { id: KANBAN_CANON_1_RAW.id, input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)]authorized/);
+      .then((errorCode) => {
+        expect(errorCode).toBe("UNAUTHENTICATED");
       });
   });
 });

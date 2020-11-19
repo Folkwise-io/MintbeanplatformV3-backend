@@ -4,8 +4,8 @@ import { buildExpressServerContext } from "../../src/buildServerContext";
 import buildApolloServer from "../../src/buildApolloServer";
 import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
-import { DocumentNode, GraphQLSchema, print } from "graphql";
-import { ApolloServer } from "apollo-server-express";
+import { DocumentNode, GraphQLFormattedError, GraphQLSchema, print } from "graphql";
+import { ApolloError, ApolloServer } from "apollo-server-express";
 import { KanbanCanonCard, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
@@ -178,10 +178,27 @@ export default class TestManager {
     return { data, errors };
   }
 
+  getError(postParams: PostParams): Promise<GraphQLFormattedError> {
+    return this.getGraphQLResponse(postParams)
+      .then(this.parseError)
+      .then((error) => error);
+  }
+
   getErrorMessage(postParams: PostParams): Promise<string> {
     return this.getGraphQLResponse(postParams)
       .then(this.parseError)
       .then((error) => error.message);
+  }
+
+  getErrorCode(postParams: PostParams): Promise<string> {
+    return this.getGraphQLResponse(postParams)
+      .then(this.parseError)
+      .then((error) => {
+        if (!error.extensions?.code) {
+          throw new Error("Test expected both an error with a code but did not get it");
+        }
+        return error.extensions?.code;
+      });
   }
 
   getGraphQLData(postParams: PostParams) {
