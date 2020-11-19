@@ -1,10 +1,12 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import MediaAssetService, { MediaAssetServiceAddManyArgs } from "../../service/MediaAssetService";
+import MediaAssetService from "../../service/MediaAssetService";
 import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
-import ProjectMediaAssetService, { ProjectMediaAssetServiceAddOneArgs } from "../../service/ProjectMediaAssetService";
+import ProjectMediaAssetService from "../../service/ProjectMediaAssetService";
+import { MediaAssetDaoAddManyArgs } from "../../dao/MediaAssetDao";
+import { ProjectMediaAssetDaoAddOneArgs } from "../../dao/ProjectMediaAssetDao";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
@@ -74,7 +76,7 @@ const projectResolver = (
         // Media assets are received as an array of cloudinaryPublicIds for convenience, so we must transform the
         // array into an object that includes userId and meetId to hand off to MediaAssetService and
         // ProjectMediaAssetService
-        const mediaAssets: MediaAssetServiceAddManyArgs = cloudinaryPublicIds.map((cloudinaryPublicId, index) => ({
+        const mediaAssets: MediaAssetDaoAddManyArgs = cloudinaryPublicIds.map((cloudinaryPublicId, index) => ({
           userId,
           cloudinaryPublicId,
           index,
@@ -83,7 +85,7 @@ const projectResolver = (
 
         // Add join table info to link newly created media asset to project
         const createdMediaAssets = await mediaAssetService.addMany(mediaAssets);
-        const projectMediaAssets: ProjectMediaAssetServiceAddOneArgs[] = createdMediaAssets.map((mediaAsset) => ({
+        const projectMediaAssets: ProjectMediaAssetDaoAddOneArgs[] = createdMediaAssets.map((mediaAsset) => ({
           projectId,
           mediaAssetId: mediaAsset.id,
         }));

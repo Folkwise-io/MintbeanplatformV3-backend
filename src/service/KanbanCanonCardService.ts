@@ -9,12 +9,12 @@ import { KanbanCanonCard, KanbanCanonCardStatusEnum } from "../types/gqlGenerate
 import { EntityService } from "./EntityService";
 
 export interface KanbanCanonCardServiceAddOneInput extends KanbanCanonCardDaoAddOneInput {
-  status?: KanbanCanonCardStatusEnum;
-  index?: number;
+  status?: KanbanCanonCardStatusEnum | null;
+  index?: number | null;
 }
 export interface KanbanCanonCardServiceEditOneInput extends KanbanCanonCardDaoEditOneInput {
-  status?: KanbanCanonCardStatusEnum;
-  index?: number;
+  status?: KanbanCanonCardStatusEnum | null;
+  index?: number | null;
 }
 
 const mapServiceAddOneInputToDaoAddOneInput = ({
