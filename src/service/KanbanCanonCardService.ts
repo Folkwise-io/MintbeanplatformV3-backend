@@ -1,22 +1,21 @@
 import KanbanCanonCardDao, {
   KanbanCanonCardDaoAddOneInput,
   KanbanCanonCardDaoEditOneInput,
+  KanbanCanonCardDaoGetManyArgs,
+  KanbanCanonCardDaoGetOneArgs,
 } from "../dao/KanbanCanonCardDao";
 import KanbanCanonDao from "../dao/KanbanCanonDao";
-import {
-  CreateKanbanCanonCardInput,
-  EditKanbanCanonCardInput,
-  KanbanCanonCard,
-  KanbanCanonCardStatusEnum,
-  QueryKanbanCanonCardArgs,
-  QueryKanbanCanonCardsArgs,
-} from "../types/gqlGeneratedTypes";
+import { KanbanCanonCard, KanbanCanonCardStatusEnum } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
-export interface KanbanCanonCardServiceGetOneArgs extends QueryKanbanCanonCardArgs {}
-export interface KanbanCanonCardServiceGetManyArgs extends QueryKanbanCanonCardsArgs {}
-export interface KanbanCanonCardServiceAddOneInput extends CreateKanbanCanonCardInput {}
-export interface KanbanCanonCardServiceEditOneInput extends EditKanbanCanonCardInput {}
+export interface KanbanCanonCardServiceAddOneInput extends KanbanCanonCardDaoAddOneInput {
+  status?: KanbanCanonCardStatusEnum;
+  index?: number;
+}
+export interface KanbanCanonCardServiceEditOneInput extends KanbanCanonCardDaoEditOneInput {
+  status?: KanbanCanonCardStatusEnum;
+  index?: number;
+}
 
 const mapServiceAddOneInputToDaoAddOneInput = ({
   title,
@@ -30,11 +29,11 @@ const mapServiceEditOneInputToDaoEditOneInput = ({
 
 export default class KanbanCanonCardService implements EntityService<KanbanCanonCard> {
   constructor(private kanbanCanonCardDao: KanbanCanonCardDao, private kanbanCanonDao: KanbanCanonDao) {}
-  async getOne(args: KanbanCanonCardServiceGetOneArgs): Promise<KanbanCanonCard> {
+  async getOne(args: KanbanCanonCardDaoGetOneArgs): Promise<KanbanCanonCard> {
     return this.kanbanCanonCardDao.getOne(args);
   }
 
-  async getMany(args: KanbanCanonCardServiceGetManyArgs): Promise<KanbanCanonCard[]> {
+  async getMany(args: KanbanCanonCardDaoGetManyArgs): Promise<KanbanCanonCard[]> {
     return this.kanbanCanonCardDao.getMany(args);
   }
 
