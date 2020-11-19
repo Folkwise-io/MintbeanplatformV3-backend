@@ -5,7 +5,10 @@ import handleDatabaseError from "../util/handleDatabaseError";
 import MediaAssetDao from "./MediaAssetDao";
 
 export default class MediaAssetDaoKnex implements MediaAssetDao {
-  constructor(private knex: Knex) {}
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
 
   getOne(args: any): Promise<MediaAsset> {
     throw new Error("Method not implemented.");
@@ -38,9 +41,5 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
 
   deleteOne(id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
-  }
-
-  deleteAll(): Promise<void> {
-    return this.knex<MediaAsset>("mediaAssets").delete();
   }
 }

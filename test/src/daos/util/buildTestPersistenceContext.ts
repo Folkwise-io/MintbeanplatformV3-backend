@@ -1,28 +1,26 @@
 import Knex from "knex";
-import MediaAssetDao from "../../../../src/dao/MediaAssetDao";
-import MediaAssetDaoKnex from "../../../../src/dao/MediaAssetDaoKnex";
+import { PersistenceContext } from "../../../../src/buildContext";
 import MeetDao from "../../../../src/dao/MeetDao";
 import MeetDaoKnex from "../../../../src/dao/MeetDaoKnex";
 import ProjectDao from "../../../../src/dao/ProjectDao";
 import ProjectDaoKnex from "../../../../src/dao/ProjectDaoKnex";
-import ProjectMediaAssetDao from "../../../../src/dao/ProjectMediaAssetDao";
-import ProjectMediaAssetDaoKnex from "../../../../src/dao/ProjectMediaAssetKnex";
 import UserDao from "../../../../src/dao/UserDao";
 import UserDaoKnex from "../../../../src/dao/UserDaoKnex";
 import TestKanbanCanonDaoKnex from "../TestKanbanCanonDaoKnex";
 import knexConfig from "../../../../src/db/knexfile";
-import { PersistenceContext } from "../../../../src/buildContext";
 import TestKanbanCanonCardDaoKnex from "../TestKanbanCanonCardDaoKnex";
 import TestKanbanDaoKnex from "../TestKanbanDaoKnex";
 import TestMeetRegistrationDaoKnex from "../TestMeetRegistrationDaoKnex";
+import ProjectMediaAssetDaoKnex from "../../../../src/dao/ProjectMediaAssetKnex";
+import TestMediaAssetDaoKnex from "../TestMediaAssetDaoKnex";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
   userDao: UserDao;
   meetDao: MeetDao;
   projectDao: ProjectDao;
-  mediaAssetDao: MediaAssetDao;
-  projectMediaAssetDao: ProjectMediaAssetDao;
+  mediaAssetDao: TestMediaAssetDaoKnex;
+  projectMediaAssetDao: ProjectMediaAssetDaoKnex; // Uses actual dao since no extension necessary
   meetRegistrationDao: TestMeetRegistrationDaoKnex;
   kanbanCanonDao: TestKanbanCanonDaoKnex;
   kanbanCanonCardDao: TestKanbanCanonCardDaoKnex;
@@ -36,7 +34,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const userDao = new UserDaoKnex(knex);
   const meetDao = new MeetDaoKnex(knex);
   const projectDao = new ProjectDaoKnex(knex);
-  const mediaAssetDao = new MediaAssetDaoKnex(knex);
+  const mediaAssetDao = new TestMediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new TestMeetRegistrationDaoKnex(knex);
   const kanbanCanonDao = new TestKanbanCanonDaoKnex(knex);

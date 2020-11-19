@@ -11,13 +11,14 @@ export interface KanbanCanonRaw {
   cardPositions?: KanbanCardPositions;
 }
 
+// Has stringified cardPositions for db
 interface KanbanCanonDbFormat {
   id?: string;
   title: string;
   description: string;
   createdAt?: string;
   updatedAt?: string;
-  cardPositions?: string; // stringified cardPositions for db
+  cardPositions?: string;
 }
 
 const toDbFormat = <T extends KanbanCanonRaw>(kanbanCanonInput: T): KanbanCanonDbFormat => {
