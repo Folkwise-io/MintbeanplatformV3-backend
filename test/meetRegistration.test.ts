@@ -11,6 +11,7 @@ import {
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/constants/userConstants";
 import { getBobCookies, getAdminCookies } from "./src/util";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 let bobCookies: string[];
@@ -102,12 +103,12 @@ describe("Registering for a meet", () => {
         variables: { meetId: ANIMATION_TOYS_2.id },
         cookies: undefined,
       })
-      .then((errorCode) => expect(errorCode).toBe("UNAUTHENTICATED"));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("returns an error message if trying to register for non-existent meet", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
-      .then((errorMsg) => expect(errorMsg).toMatch(/exist/i));
+      .getErrorCode({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
+      .then((errroCode) => expect(errroCode).toMatch(ApolloErrorCodeEnum.InternalServerError));
   });
 });

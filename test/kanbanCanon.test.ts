@@ -15,6 +15,7 @@ import {
 import TestManager from "./src/TestManager";
 import { AMY, BOB } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 
@@ -90,7 +91,7 @@ describe("Creating kanbanCanons", () => {
         variables: { input: CREATE_KANBAN_CANON_1_RAW_INPUT },
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
   it("throws 'not authorized' error if createKanbanSession is called by non-admin user", async () => {
@@ -101,7 +102,7 @@ describe("Creating kanbanCanons", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
   it("returns an appropriate error message when a field is missing", async () => {
@@ -113,7 +114,7 @@ describe("Creating kanbanCanons", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("returns an appropriate error message when a field is in wrong type", async () => {
@@ -124,7 +125,7 @@ describe("Creating kanbanCanons", () => {
         cookies: adminCookies,
       })
       .then((errorMessage) => {
-        expect(errorMessage).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorMessage).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -172,7 +173,7 @@ describe("Editing kanbanCanons", () => {
         cookies: [],
       })
       .then((errorCode) => {
-        expect(errorCode).toMatch("UNAUTHENTICATED");
+        expect(errorCode).toMatch(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 
@@ -184,7 +185,7 @@ describe("Editing kanbanCanons", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toMatch("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toMatch(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 
@@ -208,7 +209,7 @@ describe("Editing kanbanCanons", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 
@@ -220,7 +221,7 @@ describe("Editing kanbanCanons", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -314,7 +315,7 @@ describe("Updating card positions", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 });

@@ -17,6 +17,7 @@ import TestManager from "./src/TestManager";
 import { AMY, BOB, DORTHY } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies, getDorthyCookies } from "./src/util";
 import { KanbanSessionRaw } from "./src/daos/TestKanbanDaoKnex";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 
@@ -153,7 +154,7 @@ describe("Querying kanbans", () => {
           cookies: bobCookies,
         })
         .then((errorCode) => {
-          expect(errorCode).toBe("UNAUTHENTICATED");
+          expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
         }),
     );
   });
@@ -286,7 +287,7 @@ describe("Querying kanbans", () => {
         }),
       )
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
   it("returns an empty array if there are no kanbans", async () => {
@@ -336,7 +337,7 @@ describe("Creating kanbans", () => {
         cookies: [],
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
   it("allows admin to create a kanban on behalf of another user", async () => {
@@ -359,7 +360,7 @@ describe("Creating kanbans", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
   it("returns an appropriate error message when a required field is missing", async () => {
@@ -371,7 +372,7 @@ describe("Creating kanbans", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("returns an appropriate error message when a field is in wrong type", async () => {
@@ -382,7 +383,7 @@ describe("Creating kanbans", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toMatch("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toMatch(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -432,7 +433,7 @@ describe("Deleting kanbans", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 
@@ -444,7 +445,7 @@ describe("Deleting kanbans", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -539,7 +540,7 @@ describe("Updating card positions", () => {
         cookies: dorthyCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 });

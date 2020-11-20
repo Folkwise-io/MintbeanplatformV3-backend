@@ -1,3 +1,4 @@
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 import {
   CREATE_KANBAN_CANON_CARD_MUTATION,
   GET_KANBAN_CANON_CARDS_QUERY,
@@ -74,14 +75,14 @@ describe("Querying kanbanCanonCards", () => {
     await testManager
       .getErrorCode({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("throws an error if requested kanban canon does not exist", async () => {
     await testManager
       .getErrorCode({ query: GET_KANBAN_CANON_CARDS_QUERY, variables: { kanbanCanonId: KANBAN_CANON_2_RAW.id } })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("throws an error if requested kanban canon card has been deleted", async () => {
@@ -89,7 +90,7 @@ describe("Querying kanbanCanonCards", () => {
     await testManager
       .getErrorCode({ query: GET_KANBAN_CANON_CARD_QUERY, variables: { id: KANBAN_CANON_CARD_1.id } })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("does not retrieve deleted kanbanCanonCards", async () => {
@@ -215,7 +216,7 @@ describe("Creating kanbanCanonCards", () => {
         cookies: [],
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 
@@ -227,7 +228,7 @@ describe("Creating kanbanCanonCards", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 
@@ -239,7 +240,7 @@ describe("Creating kanbanCanonCards", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("gives an error message from validator when an input is invalid", async () => {
@@ -299,7 +300,7 @@ describe("Editing kanbanCanonCards", () => {
         cookies: [],
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 
@@ -311,7 +312,7 @@ describe("Editing kanbanCanonCards", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 
@@ -347,7 +348,7 @@ describe("Editing kanbanCanonCards", () => {
         cookies: adminCookies,
       })
       .then((errorMessage) => {
-        expect(errorMessage).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorMessage).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 
@@ -359,7 +360,7 @@ describe("Editing kanbanCanonCards", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -442,7 +443,7 @@ describe("Deleting kanbanCanonCards", () => {
         cookies: [],
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("UNAUTHENTICATED");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 
@@ -454,7 +455,7 @@ describe("Deleting kanbanCanonCards", () => {
         cookies: adminCookies,
       })
       .then((errorCode) => {
-        expect(errorCode).toBe("INTERNAL_SERVER_ERROR");
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });

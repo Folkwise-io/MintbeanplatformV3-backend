@@ -38,6 +38,23 @@ if (!context.getIsAdmin()) {
 }
 ```
 
-### [M] Remove all unnecessary services and call directly from the Dao
+### [S] Figure out why some moment tests fail after 4PM PST when run in PST timezone..
 
-Remove services that are not performing any logic and callt eh dao directly instead
+Maybe only Claire can tackle this one.
+
+## [S] Make validation errors always return "BAD_USER_INPUT" apollo errors
+
+Currently error like 'wrong input type' are being thrown as 'INTERNAL_SERVER_ERROR" because they are handled in `handleServerError`. The error type "BAD_USER_INPUT" would be more appropriate. Make sure resolver validators are throwing the correct error types and reflect this in the tests.
+
+For reference, the 3 major apollo error types used in this application are shown below.
+
+- AuthenticationError (code: "UNAUTHENTICATED")
+- UserInputError (code: "BAD_USER_INPUT")
+- ApolloError (code : "INTERNAL_SERVER_ERROR")
+
+```
+// you can inport and throw errors like so
+import { AuthenticationError } from "apollo-server-express";
+
+throw new AuthenticationError('This in an error message')
+```
