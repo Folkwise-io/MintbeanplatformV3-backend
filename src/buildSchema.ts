@@ -67,7 +67,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     meetResolver(meetResolverValidator, meetService, meetRegistrationDao, userDao, emailService, meetDao),
     projectResolver(projectResolverValidator, projectDao, mediaAssetDao, projectMediaAssetDao),
     mediaAssetResolver(mediaAssetDao),
-    emailResolver(emailResolverValidator, emailService, meetService),
+    emailResolver(emailResolverValidator, emailService, meetDao),
     kanbanCanonResolver(kanbanCanonResolverValidator, kanbanCanonService, kanbanCanonDao),
     kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService, kanbanCanonCardDao),
     kanbanResolver(kanbanResolverValidator, kanbanService, kanbanDao),
