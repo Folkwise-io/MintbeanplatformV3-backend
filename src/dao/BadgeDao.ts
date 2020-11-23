@@ -7,4 +7,8 @@ export default interface BadgeDao {
   addOne(input: BadgeServiceAddOneInput): Promise<Badge>;
   editOne(id: string, input: BadgeServiceEditOneInput): Promise<Badge>;
   deleteOne(id: string): Promise<boolean>;
+
+  // Below are TestManager methods
+  deleteAll(): Promise<void>;
+  addMany(meets: Badge[]): Promise<void>;
 }

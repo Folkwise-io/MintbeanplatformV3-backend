@@ -46,8 +46,14 @@ export default class ProjectResolverValidator {
       .then(({ id }) => id);
   }
 
-  async awardBadges({ projectId, badgeIds }: MutationAwardBadgesArgs): Promise<MutationAwardBadgesArgs> {
-    this.projectDao.getOne({ id: projectId }).then((project) => ensureExists("Project")(project));
-    return { projectId, badgeIds };
+  async awardBadges(
+    { projectId, badgeIds }: MutationAwardBadgesArgs,
+    _context: ServerContext,
+  ): Promise<MutationAwardBadgesArgs> {
+    // TODO: ensure badges exist, same problem as above
+    return this.projectDao
+      .getOne({ id: projectId })
+      .then((project) => ensureExists("Project")(project))
+      .then(() => ({ projectId, badgeIds }));
   }
 }

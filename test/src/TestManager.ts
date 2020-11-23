@@ -11,13 +11,14 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
+import { Badge, MediaAsset, Meet, MutationAwardBadgesArgs, Project } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
+import BadgeProject from "../../src/types/badgeProject";
 
 interface TestManagerParams {
   persistenceContext: PersistenceContext;
@@ -69,6 +70,10 @@ export default class TestManager {
     return this.params.persistenceContext.projectDao.addMany(projects).then(() => this);
   }
 
+  addBadges(badges: Badge[]): Promise<TestManager> {
+    return this.params.persistenceContext.badgeDao.addMany(badges).then(() => this);
+  }
+
   addMediaAssets(mediaAssets: MediaAsset[]): Promise<MediaAsset[]> {
     return this.params.persistenceContext.mediaAssetDao.addMany(mediaAssets);
   }
@@ -77,8 +82,12 @@ export default class TestManager {
     return this.params.persistenceContext.projectMediaAssetDao.addMany(projectMediaAssets);
   }
 
-  addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void>{
+  addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void> {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
+  }
+
+  awardBadges(badgeProject: MutationAwardBadgesArgs): Promise<BadgeProject> {
+    return this.params.persistenceContext.badgeProjectDao.addOne(badgeProject);
   }
 
   deleteAllUsers(): Promise<void> {
@@ -93,12 +102,20 @@ export default class TestManager {
     return this.params.persistenceContext.projectDao.deleteAll();
   }
 
+  deleteAllBadges(): Promise<void> {
+    return this.params.persistenceContext.badgeDao.deleteAll();
+  }
+
   deleteAllMediaAssets() {
     return this.params.persistenceContext.mediaAssetDao.deleteAll();
   }
 
-  deleteAllMeetRegistrations(){
+  deleteAllMeetRegistrations() {
     return this.params.persistenceContext.meetRegistrationDao.deleteAll();
+  }
+
+  deleteAllAwardedBadges() {
+    return this.params.persistenceContext.badgeProjectDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {

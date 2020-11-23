@@ -52,4 +52,13 @@ export default class BadgeDaoKnex implements BadgeDao {
       return true;
     });
   }
+
+  // Testing methods below, for TestManager to call
+  async addMany(badges: Badge[]): Promise<void> {
+    return this.knex<Badge>("badges").insert(badges);
+  }
+
+  deleteAll(): Promise<void> {
+    return this.knex<Badge>("badges").delete();
+  }
 }
