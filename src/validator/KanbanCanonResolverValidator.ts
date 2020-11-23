@@ -9,7 +9,6 @@ import KanbanCanonDao, {
 
 import {
   MutationCreateKanbanCanonArgs,
-  MutationDeleteKanbanCanonArgs,
   MutationEditKanbanCanonArgs,
   MutationUpdateKanbanCanonCardPositionsArgs,
 } from "../types/gqlGeneratedTypes";
@@ -34,19 +33,6 @@ export default class KanbanCanonResolverValidator {
     }
     validateAgainstSchema<KanbanCanonDaoAddOneInput>(createKanbanCanonInputSchema, input);
     return { input };
-  }
-
-  async deleteOne(
-    { id }: MutationDeleteKanbanCanonArgs,
-    context: ServerContext,
-  ): Promise<MutationDeleteKanbanCanonArgs> {
-    if (!context.getIsAdmin()) {
-      throw new AuthenticationError("You are not authorized to delete kanban canons!");
-    }
-
-    await this.kanbanCanonDao.getOne({ id }).then((kanbanCanon) => ensureExists("Kanban Canon")(kanbanCanon));
-
-    return { id };
   }
 
   async editOne(
