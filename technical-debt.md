@@ -17,3 +17,8 @@ export const ensureExists = <T>(entityName: string) => <T>(entity: T | undefined
   }
 };
 ```
+
+### [M] Remove v7.sql from git history
+
+added in commit 509a88a7773d3b061a756835e2d3a15947d75c89
+https://github.com/Mintbean/MintbeanplatformV3-backend/pull/40/commits/509a88a7773d3b061a756835e2d3a15947d75c89
