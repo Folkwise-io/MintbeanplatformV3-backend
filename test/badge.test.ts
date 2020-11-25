@@ -1,20 +1,14 @@
-import badge from "../src/graphql/typedef/badge";
 import {
-  AWARD_BADGES,
   CREATE_BADGE,
   DELETE_BADGE,
   EDIT_BADGE,
   EDIT_BADGE_INPUT,
   GET_ALL_BADGES,
   GET_BADGE_BY_ID,
-  GET_BADGE_WITH_NESTED_PROJECT,
-  GET_PROJECT_WITH_NESTED_BADGES,
   NEW_BADGE_INPUT,
   WINNER_FIRST,
   WINNER_SECOND,
-  WINNER_THIRD,
 } from "./src/badgeConstants";
-import { AMY_PAPERJS_PROJECT, GET_PROJECT } from "./src/projectConstants";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 

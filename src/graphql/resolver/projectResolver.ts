@@ -111,7 +111,7 @@ const projectResolver = (
       },
 
       awardBadgesToProject: (_root, args, context: ServerContext): Promise<Project> => {
-        return projectResolverValidator.awardBadges(args, context).then(async ({ projectId, badgeIds }) => {
+        return projectResolverValidator.awardBadgesToProject(args, context).then(async ({ projectId, badgeIds }) => {
           await badgeProjectService.addOne({ projectId, badgeIds }, context);
           return projectService.getOne({ id: projectId }, context);
         });

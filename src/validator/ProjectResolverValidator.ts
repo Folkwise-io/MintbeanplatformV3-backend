@@ -46,7 +46,7 @@ export default class ProjectResolverValidator {
     return id;
   }
 
-  async awardBadges(
+  async awardBadgesToProject(
     { projectId, badgeIds }: MutationAwardBadgesToProjectArgs,
     _context: ServerContext,
   ): Promise<MutationAwardBadgesToProjectArgs> {

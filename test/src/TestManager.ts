@@ -11,7 +11,7 @@ import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLSchema, print } from "graphql";
 import { ApolloServer } from "apollo-server-express";
-import { Badge, MediaAsset, Meet, MutationAwardBadgesArgs, Project } from "../../src/types/gqlGeneratedTypes";
+import { Badge, MediaAsset, Meet, MutationAwardBadgesToProjectArgs, Project } from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
@@ -86,7 +86,7 @@ export default class TestManager {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
   }
 
-  awardBadges(badgeProject: MutationAwardBadgesArgs): Promise<BadgeProject> {
+  awardBadgesToProject(badgeProject: MutationAwardBadgesToProjectArgs): Promise<BadgeProject> {
     return this.params.persistenceContext.badgeProjectDao.addOne(badgeProject);
   }
 
@@ -112,10 +112,6 @@ export default class TestManager {
 
   deleteAllMeetRegistrations() {
     return this.params.persistenceContext.meetRegistrationDao.deleteAll();
-  }
-
-  deleteAllAwardedBadges() {
-    return this.params.persistenceContext.badgeProjectDao.deleteAll();
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {
