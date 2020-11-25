@@ -270,7 +270,6 @@ export type CreateMeetInput = {
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
-  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl: Scalars['String'];
   /** Wallclock times */
   startTime: Scalars['String'];
@@ -289,7 +288,6 @@ export type EditMeetInput = {
   /** The instructions in markdown format */
   instructions?: Maybe<Scalars['String']>;
   registerLink?: Maybe<Scalars['String']>;
-  registerLinkStatus?: Maybe<RegisterLinkStatus>;
   coverImageUrl?: Maybe<Scalars['String']>;
   /** Wallclock times */
   startTime?: Maybe<Scalars['String']>;

@@ -7,7 +7,7 @@ export async function seed(knex: Knex): Promise<void> {
   await knex("meets").insert([
     {
       id: "00000000-0000-0000-0000-000000000000",
-      meetType: "hackMeet",
+      meetType: "hackathon",
       title: "Animation Toys 1",
       description: "Building impressive portfolio projects with PaperJS.",
       instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
@@ -19,7 +19,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "00000000-0000-4000-a000-000000000000",
-      meetType: "hackMeet",
+      meetType: "hackathon",
       title: "Algolia gives you super powers 1",
       description: "Buiilding impressive portfolio projects with Algolia.",
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
@@ -31,7 +31,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
-      meetType: "hackMeet",
+      meetType: "hackathon",
       title: "Hack the Hack",
       description: "Building impressive portfolio projects with PaperJS.",
       instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
@@ -44,7 +44,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "87496d2d-ae36-4039-bd14-45bd0de3929c",
-      meetType: "hackMeet",
+      meetType: "hackathon",
       title: "Algolia gives you super powers 2",
       description: "Buiilding impressive portfolio projects with Algolia.",
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
@@ -56,7 +56,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "e093af41-8238-4fd6-ae2e-145497c3e038",
-      meetType: "hackMeet",
+      meetType: "hackathon",
       title: "Animation Toys 2",
       description: "Building impressive portfolio projects with PaperJS.",
       instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
@@ -68,7 +68,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "5ba2fc6b-e910-43dc-8dbc-75acd139ecfa",
-      meetType: "hackMeet",
+      meetType: "hackathon",
       title: "Algolia gives you super powers 3",
       description: "Buiilding impressive portfolio projects with Algolia.",
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",

@@ -17,3 +17,7 @@ export const ensureExists = <T>(entityName: string) => <T>(entity: T | undefined
   }
 };
 ```
+
+### [S] Refactor Badges to not use enum for badgeShape
+
+When badges is merged in, convert badgeShape to string and verify enum types in typescript
