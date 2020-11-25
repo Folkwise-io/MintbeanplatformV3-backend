@@ -1,9 +1,10 @@
-import { UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
+import { string } from "yup";
 import { ServerContext } from "../buildServerContext";
 import ProjectDao from "../dao/ProjectDao";
 import { ProjectServiceAddOneInput, ProjectServiceGetOneArgs } from "../service/ProjectService";
 import {
-  MutationAwardBadgesArgs,
+  MutationAwardBadgesToProjectArgs,
   MutationCreateProjectArgs,
   MutationDeleteProjectArgs,
   QueryProjectArgs,
@@ -40,20 +41,20 @@ export default class ProjectResolverValidator {
 
   async deleteOne({ id }: MutationDeleteProjectArgs): Promise<string> {
     // Check if project id exists in db
-    return this.projectDao
-      .getOne({ id })
-      .then((project) => ensureExists("Project")(project))
-      .then(({ id }) => id);
+    const project = await this.projectDao.getOne({ id });
+    ensureExists("Project")(project);
+    return id;
   }
 
   async awardBadges(
-    { projectId, badgeIds }: MutationAwardBadgesArgs,
+    { projectId, badgeIds }: MutationAwardBadgesToProjectArgs,
     _context: ServerContext,
-  ): Promise<MutationAwardBadgesArgs> {
-    // TODO: ensure badges exist, same problem as above
-    return this.projectDao
-      .getOne({ id: projectId })
-      .then((project) => ensureExists("Project")(project))
-      .then(() => ({ projectId, badgeIds }));
+  ): Promise<MutationAwardBadgesToProjectArgs> {
+    if (!_context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to award badges!");
+    }
+    const project = await this.projectDao.getOne({ id: projectId });
+    ensureExists("Project")(project);
+    return { projectId, badgeIds };
   }
 }

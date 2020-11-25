@@ -433,24 +433,6 @@ describe("awarding badges", () => {
       .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)authorized]/i));
   });
 
-  it("gives an error message id of a badge does not exist", async () => {
-    // TODO: add validator for badges
-    await testManager
-      .getErrorMessage({
-        query: AWARD_BADGES,
-        variables: {
-          projectId: AMY_PAPERJS_PROJECT.id,
-          badgeIds: ["7fab763c-0bac-4ccc-b2b7-b8587104c10c"],
-        },
-        cookies: adminCookies,
-      })
-      .then((errorMessage) => {
-        // When properly validated
-        // expect(errorMessage).toMatch(/not exist/i);
-        expect(errorMessage).toMatch(/server/i);
-      });
-  });
-
   it("gives an error message from validator if id of project does not exist", async () => {
     await testManager
       .getErrorMessage({

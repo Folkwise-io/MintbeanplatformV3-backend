@@ -81,7 +81,7 @@ export type Query = {
   project?: Maybe<Project>;
   /** Gets all the badges */
   badges?: Maybe<Array<Maybe<Badge>>>;
-  /** gets one badge by id or alias */
+  /** Gets one badge by id or alias */
   badge?: Maybe<Badge>;
 };
 
@@ -150,7 +150,7 @@ export type Mutation = {
   /** Deletes a project by ID (user must be logged in and own the project) */
   deleteProject: Scalars['Boolean'];
   /** adds badges to a project by id (admin only) */
-  awardBadges: Project;
+  awardBadgesToProject: Project;
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
   /** Sends a test email (admin-only) */
@@ -205,7 +205,7 @@ export type MutationDeleteProjectArgs = {
 };
 
 
-export type MutationAwardBadgesArgs = {
+export type MutationAwardBadgesToProjectArgs = {
   projectId: Scalars['UUID'];
   badgeIds: Array<Maybe<Scalars['UUID']>>;
 };
@@ -357,10 +357,10 @@ export type Project = {
   user?: Maybe<PublicUser>;
   /** The meet associated with the project */
   meet?: Maybe<Meet>;
-  /** the badges associated with the project */
-  badges?: Maybe<Array<Maybe<Badge>>>;
   /** A list of MediaAssets for this Project, ordered by index */
   mediaAssets?: Maybe<Array<MediaAsset>>;
+  /** The badges associated with the project */
+  badges?: Maybe<Array<Maybe<Badge>>>;
 };
 
 /** Fields required to create a new project */
@@ -418,61 +418,61 @@ export type Badge = {
   badgeShape: Scalars['String'];
   /** The Font Awesome icon that will be the graphic of the badge (required) */
   faIcon: Scalars['String'];
-  /** The hex code for the background color (all 6 digits, no # before code) */
+  /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
   backgroundHex?: Maybe<Scalars['String']>;
-  /** The hex code for the icon color (all 6 digits, no # before code) */
+  /** The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white) */
   iconHex?: Maybe<Scalars['String']>;
-  /** the official title of the badge */
+  /** The official title of the badge */
   title: Scalars['String'];
-  /** the official description of the badge */
+  /** The official description of the badge */
   description?: Maybe<Scalars['String']>;
-  /** the weight of this badge */
+  /** The weight of this badge */
   weight?: Maybe<Scalars['Int']>;
-  /** when this badge was first created */
+  /** When this badge was first created */
   createdAt: Scalars['DateTime'];
-  /** when this badge was last updated */
+  /** When this badge was last updated */
   updatedAt: Scalars['DateTime'];
-  /** a list of projects awarded this badge */
+  /** A list of projects awarded this badge */
   projects?: Maybe<Array<Maybe<Project>>>;
 };
 
-/** the input needed to create a new badge */
+/** The input needed to create a new badge */
 export type CreateBadgeInput = {
-  /** the alias of the badge */
+  /** The alias of the badge */
   alias: Scalars['String'];
-  /** the shape of the badge from an enumerable list */
+  /** The shape of the badge from an enumerable list */
   badgeShape: Scalars['String'];
   /** The Font Awesome icon that will be the graphic of the badge (required) */
   faIcon: Scalars['String'];
-  /** the background color of the badge(optional) */
+  /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
   backgroundHex?: Maybe<Scalars['String']>;
-  /** the color of the icon(optional) */
+  /** The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white) */
   iconHex?: Maybe<Scalars['String']>;
-  /** the title of the badge */
+  /** The title of the badge */
   title: Scalars['String'];
-  /** a description of the badge (optional) */
+  /** A description of the badge (optional) */
   description?: Maybe<Scalars['String']>;
-  /** how heavily this badge should be weighted(optional) */
+  /** How heavily this badge should be weighted(optional) */
   weight?: Maybe<Scalars['Int']>;
 };
 
 /** Input that can be used to edit a badge - all fields are optional */
 export type EditBadgeInput = {
-  /** the alias of the badge */
+  /** The alias of the badge */
   alias?: Maybe<Scalars['String']>;
-  /** the shape of the badge from an enumerable list */
+  /** The shape of the badge from an enumerable list */
   badgeShape?: Maybe<Scalars['String']>;
   /** The Font Awesome icon that will be the graphic of the badge (required) */
   faIcon?: Maybe<Scalars['String']>;
-  /** the background color of the badge(optional) */
+  /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
   backgroundHex?: Maybe<Scalars['String']>;
-  /** the color of the icon(optional) */
+  /** The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white) */
   iconHex?: Maybe<Scalars['String']>;
-  /** the title of the badge */
+  /** The title of the badge */
   title?: Maybe<Scalars['String']>;
-  /** a description of the badge (optional) */
+  /** A description of the badge (optional) */
   description?: Maybe<Scalars['String']>;
-  /** how heavily this badge should be weighted(optional) */
+  /** How heavily this badge should be weighted(optional) */
   weight?: Maybe<Scalars['Int']>;
 };
 
@@ -663,7 +663,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
-  awardBadges?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationAwardBadgesArgs, 'projectId' | 'badgeIds'>>;
+  awardBadgesToProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationAwardBadgesToProjectArgs, 'projectId' | 'badgeIds'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
   sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
   sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
@@ -713,8 +713,8 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType>;
-  badges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Badge']>>>, ParentType, ContextType>;
   mediaAssets?: Resolver<Maybe<Array<ResolversTypes['MediaAsset']>>, ParentType, ContextType>;
+  badges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Badge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 

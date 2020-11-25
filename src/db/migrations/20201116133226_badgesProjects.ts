@@ -10,6 +10,7 @@ export async function up(knex: Knex): Promise<void> {
 
     // Constraints and indices
     table.primary(["id"]);
+    table.unique(["projectId", "badgeId"]);
     table.foreign("projectId").references("projects.id").onDelete("CASCADE");
     table.foreign("badgeId").references("badges.id").onDelete("CASCADE");
   });

@@ -1,4 +1,4 @@
-import { UserInputError } from "apollo-server-express";
+import { AuthenticationError, UserInputError } from "apollo-server-express";
 import { ServerContext } from "../buildServerContext";
 import BadgeDao from "../dao/BadgeDao";
 import { BadgeServiceAddOneInput, BadgeServiceEditOneInput, BadgeServiceGetManyArgs } from "../service/BadgeService";
@@ -7,7 +7,6 @@ import {
   MutationCreateBadgeArgs,
   MutationEditBadgeArgs,
   MutationDeleteBadgeArgs,
-  Badge,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import createBadgeInputSchema from "./yupSchemas/createBadgeInputSchema";
@@ -21,6 +20,9 @@ export default class BadgeResolverValidator {
     return args;
   }
   async addOne({ input }: MutationCreateBadgeArgs, _context: ServerContext): Promise<BadgeServiceAddOneInput> {
+    if (!_context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to create a badge!");
+    }
     try {
       createBadgeInputSchema.validateSync(input);
     } catch (e) {
@@ -32,16 +34,22 @@ export default class BadgeResolverValidator {
     { id, input }: MutationEditBadgeArgs,
     _context: ServerContext,
   ): Promise<{ id: string; input: BadgeServiceEditOneInput }> {
-    await this.badgeDao.getOne({ id }).then((badge) => ensureExists("Badge")(badge));
+    if (!_context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to edit a badge!");
+    }
+    const badge = await this.badgeDao.getOne({ id });
+    ensureExists("Badge")(badge);
     if (Object.keys(input).length === 0) {
       throw new UserInputError("Must edit at least one field!");
     }
     return { id, input };
   }
-  async deleteOne({ id }: MutationDeleteBadgeArgs): Promise<string> {
-    return this.badgeDao
-      .getOne({ id })
-      .then((badge) => ensureExists("Badge")(badge))
-      .then(({ id }) => id);
+  async deleteOne({ id }: MutationDeleteBadgeArgs, _context: ServerContext): Promise<string> {
+    if (!_context.getIsAdmin()) {
+      throw new AuthenticationError("You are not authorized to edit a badge!");
+    }
+    const badge = await this.badgeDao.getOne({ id });
+    ensureExists("Badge")(badge);
+    return id;
   }
 }

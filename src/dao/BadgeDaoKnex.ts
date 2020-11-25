@@ -8,42 +8,34 @@ export default class BadgeDaoKnex implements BadgeDao {
   constructor(private knex: Knex) {}
   async getMany(args: BadgeServiceGetManyArgs): Promise<Badge[]> {
     return handleDatabaseError(async () => {
-      const badges: Badge[] = await this.knex("badges as b")
-        .select(["b.*"])
-        .leftJoin("badgesProjects as bp", "b.id", "=", "bp.badgeId")
+      const badges: Badge[] = await this.knex("badges")
+        .select(["badges.*"])
+        .leftJoin("badgesProjects", "badges.id", "=", "badgesProjects.badgeId")
         .where({ ...args })
-        .distinct()
-        .orderBy("b.createdAt", "desc")
-        .options({ nestTables: true });
+        .orderBy("badges.createdAt", "desc");
       return badges;
     });
   }
   async getOne(args: QueryBadgeArgs): Promise<Badge> {
     const { id } = args;
     return handleDatabaseError(async () => {
-      const badge: Badge = await this.knex("badges as b")
-        .select(["b.*"])
-        .leftJoin("badgesProjects as bp", "b.id", "=", "bp.badgeId")
-        .where({ "b.id": id })
-        .distinct()
-        .first()
-        .options({ nestTables: true });
+      const badge: Badge = await this.knex("badges as b").select(["b.*"]).where({ "b.id": id }).first();
       return badge;
     });
   }
   async addOne(args: BadgeServiceAddOneInput): Promise<Badge> {
     return handleDatabaseError(async () => {
-      const newBadge = (await this.knex("badges").insert(args).returning("*")) as Badge[];
-      return newBadge[0];
+      const newBadges = (await this.knex("badges").insert(args).returning("*")) as Badge[];
+      return newBadges[0];
     });
   }
   async editOne(id: string, input: BadgeServiceEditOneInput): Promise<Badge> {
     return handleDatabaseError(async () => {
-      const editedBadge = (await this.knex("badges")
+      const editedBadges = (await this.knex("badges")
         .where({ id })
         .update({ ...input, updatedAt: this.knex.fn.now() })
         .returning("*")) as Badge[];
-      return editedBadge[0];
+      return editedBadges[0];
     });
   }
   async deleteOne(id: string): Promise<boolean> {
