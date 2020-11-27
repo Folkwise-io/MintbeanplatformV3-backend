@@ -32,7 +32,7 @@
     "graphql-iso-date": "3.6.1",
     "ics": "2.25.0",
     "jsonwebtoken": "8.5.1",
-    "knex": "0.21.5",
+    "knex": "0.21.10",
     "moment-timezone": "0.5.31",
     "pg": "8.3.2",
     "ts-node": "9.0.0",

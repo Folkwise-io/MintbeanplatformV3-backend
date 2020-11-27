@@ -29,6 +29,7 @@ export default class ProjectDaoKnex implements ProjectDao {
         .select("projects.*")
         .leftJoin("badgesProjects", "projects.id", "=", "badgesProjects.projectId")
         .where({ ...args, deleted: false })
+        .groupBy("projects.id")
         .orderBy("projects.createdAt", "desc");
       return projects;
     });

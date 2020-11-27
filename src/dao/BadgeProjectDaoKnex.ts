@@ -1,4 +1,5 @@
 import Knex from "knex";
+import { knex } from "../db/knex";
 import BadgeProject from "../types/badgeProject";
 import { MutationAwardBadgesToProjectArgs } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
@@ -10,8 +11,12 @@ export default class BadgeProjectDaoKnex implements BadgeProjectDao {
     const { projectId, badgeIds } = badgesProject;
     const bpToInsert = badgeIds.map((badgeId) => ({ projectId, badgeId }));
     return handleDatabaseError(async () => {
-      await this.knex("badgesProjects").where({ projectId }).del();
-      await this.knex("badgesProjects").insert(bpToInsert);
+      await this.knex("badgesProjects").del();
+      await this.knex("badgesProjects")
+        .insert(bpToInsert)
+        .onConflict(["projectId", "badgeId"])
+        .merge()
+        .groupBy("projectId");
     });
   }
 }
