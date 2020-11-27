@@ -7,11 +7,11 @@ import {
   AMY_PAPERJS_MEDIA_ASSET_1_JOIN,
   AMY_PAPERJS_MEDIA_ASSET_2_JOIN,
   BOB_PAPERJS_MEDIA_ASSET_1_JOIN,
-} from "./src/mediaAssetConstants";
-import { PAPERJS, ALGOLIA } from "./src/meetConstants";
-import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT } from "./src/projectConstants";
+} from "./src/constants/mediaAssetConstants";
+import { PAPERJS, ALGOLIA } from "./src/constants/meetConstants";
+import { AMY_ALGOLIA_PROJECT, AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT } from "./src/constants/projectConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 
 const testManager = TestManager.build();
 

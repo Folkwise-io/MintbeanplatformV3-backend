@@ -1,17 +1,15 @@
 import Knex from "knex";
-import { MediaAssetServiceAddManyArgs, MediaAssetServiceGetManyArgs } from "../service/MediaAssetService";
 import { MediaAsset } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
-import MediaAssetDao from "./MediaAssetDao";
+import MediaAssetDao, { MediaAssetDaoAddManyArgs, MediaAssetDaoGetManyArgs } from "./MediaAssetDao";
 
 export default class MediaAssetDaoKnex implements MediaAssetDao {
-  constructor(private knex: Knex) {}
-
-  getOne(args: any): Promise<MediaAsset> {
-    throw new Error("Method not implemented.");
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
   }
 
-  async getMany(args: MediaAssetServiceGetManyArgs): Promise<MediaAsset[]> {
+  async getMany(args: MediaAssetDaoGetManyArgs): Promise<MediaAsset[]> {
     // Only tested with projectId lookup for now
     // TODO: Add support for userId lookup
     return handleDatabaseError(async () => {
@@ -28,7 +26,7 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
     throw new Error("Method not implemented.");
   }
 
-  addMany(mediaAssets: MediaAssetServiceAddManyArgs): Promise<MediaAsset[]> {
+  addMany(mediaAssets: MediaAssetDaoAddManyArgs): Promise<MediaAsset[]> {
     return handleDatabaseError(() => this.knex<MediaAsset>("mediaAssets").insert(mediaAssets).returning("*"));
   }
 
@@ -38,9 +36,5 @@ export default class MediaAssetDaoKnex implements MediaAssetDao {
 
   deleteOne(id: string): Promise<boolean> {
     throw new Error("Method not implemented.");
-  }
-
-  deleteAll(): Promise<void> {
-    return this.knex<MediaAsset>("mediaAssets").delete();
   }
 }

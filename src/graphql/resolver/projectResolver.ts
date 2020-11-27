@@ -1,44 +1,48 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import MediaAssetService, { MediaAssetServiceAddManyArgs } from "../../service/MediaAssetService";
-import ProjectService from "../../service/ProjectService";
 import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
-import ProjectMediaAssetService, { ProjectMediaAssetServiceAddOneArgs } from "../../service/ProjectMediaAssetService";
+import MediaAssetDao, { MediaAssetDaoAddManyArgs } from "../../dao/MediaAssetDao";
+import ProjectMediaAssetDao, { ProjectMediaAssetDaoAddOneArgs } from "../../dao/ProjectMediaAssetDao";
+import ProjectDao from "../../dao/ProjectDao";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
-  projectService: ProjectService,
-  mediaAssetService: MediaAssetService,
-  projectMediaAssetService: ProjectMediaAssetService,
+  projectDao: ProjectDao,
+  mediaAssetDao: MediaAssetDao,
+  projectMediaAssetDao: ProjectMediaAssetDao,
 ): Resolvers => {
   return {
     Query: {
       // TODO: Show "deleted=true" projects for admin? Currently this query does not get Projects with "deleted=true"
-      project: (_root, args, context: ServerContext): Promise<Project> => {
-        return projectResolverValidator.getOne(args, context).then((args) => projectService.getOne(args, context));
+      project: (_root, args, context: ServerContext): Promise<Project | null> => {
+        return projectResolverValidator
+          .getOne(args, context)
+          .then((args) => projectDao.getOne(args))
+          .then((result) => (result ? result : null));
       },
     },
 
     PublicUser: {
       projects: (user, context) => {
-        return projectService.getMany({ userId: user.id }, context);
+        return projectDao.getMany({ userId: user.id });
       },
     },
 
     PrivateUser: {
       projects: (user, context) => {
-        return projectService.getMany({ userId: user.id }, context);
+        return projectDao.getMany({ userId: user.id });
       },
     },
 
     Meet: {
       projects: (meet, context) => {
-        return projectService.getMany({ meetId: meet.id }, context);
+        return projectDao.getMany({ meetId: meet.id });
       },
     },
 
     Mutation: {
+      // TODO: why's there so much logic here??? Move to validator/services
       createProject: async (_root, args, context: ServerContext): Promise<Project> => {
         const inputUserId = args.input.userId;
         const currentUserId = context.getUserId();
@@ -54,7 +58,7 @@ const projectResolver = (
         // Add the new project to db first
         const newProject = await projectResolverValidator
           .addOne(argsWithResolvedUserId)
-          .then((input) => projectService.addOne(input));
+          .then((input) => projectDao.addOne(input));
 
         // If no media assets were received, simply return the project as is
         const { cloudinaryPublicIds, userId } = argsWithResolvedUserId.input;
@@ -70,7 +74,7 @@ const projectResolver = (
         // Media assets are received as an array of cloudinaryPublicIds for convenience, so we must transform the
         // array into an object that includes userId and meetId to hand off to MediaAssetService and
         // ProjectMediaAssetService
-        const mediaAssets: MediaAssetServiceAddManyArgs = cloudinaryPublicIds.map((cloudinaryPublicId, index) => ({
+        const mediaAssets: MediaAssetDaoAddManyArgs = cloudinaryPublicIds.map((cloudinaryPublicId, index) => ({
           userId,
           cloudinaryPublicId,
           index,
@@ -78,28 +82,19 @@ const projectResolver = (
         const { id: projectId } = newProject;
 
         // Add join table info to link newly created media asset to project
-        const createdMediaAssets = await mediaAssetService.addMany(mediaAssets);
-        const projectMediaAssets: ProjectMediaAssetServiceAddOneArgs[] = createdMediaAssets.map((mediaAsset) => ({
+        const createdMediaAssets = await mediaAssetDao.addMany(mediaAssets);
+        const projectMediaAssets: ProjectMediaAssetDaoAddOneArgs[] = createdMediaAssets.map((mediaAsset) => ({
           projectId,
           mediaAssetId: mediaAsset.id,
         }));
-        await projectMediaAssetService.addMany(projectMediaAssets);
+        await projectMediaAssetDao.addMany(projectMediaAssets);
 
         // Query the project again to retrieve its associated media assets
-        return projectService.getOne({ id: projectId }, context);
+        return (projectDao.getOne({ id: projectId }) as unknown) as Project;
       },
 
       deleteProject: (_root, args, context: ServerContext): Promise<boolean> => {
-        return projectResolverValidator.deleteOne(args).then(async (projectId) => {
-          const { userId: projectOwnerId } = await projectService.getOne({ id: projectId }, context);
-          const currentUserId = context.getUserId();
-
-          if (!context.getIsAdmin() && currentUserId !== projectOwnerId) {
-            throw new AuthenticationError("You are not authorized to delete the project!");
-          }
-
-          return projectService.deleteOne(projectId);
-        });
+        return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectDao.deleteOne(id));
       },
     },
   };
