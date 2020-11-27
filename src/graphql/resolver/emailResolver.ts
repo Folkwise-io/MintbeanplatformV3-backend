@@ -2,16 +2,16 @@ import { Email } from "../../types/Email";
 import { EmailService } from "../../service/EmailService";
 import { Meet, Resolvers } from "../../types/gqlGeneratedTypes";
 import EmailResolverValidator from "../../validator/EmailResolverValidator";
-import MeetService from "../../service/MeetService";
 import { ServerContext } from "../../buildServerContext";
 import { ensureExists } from "../../util/ensureExists";
 import { User } from "../../types/User";
 import ensureAdmin from "../../util/ensureAdmin";
+import MeetDao from "../../dao/MeetDao";
 
 const emailResolver = (
   emailResolverValidator: EmailResolverValidator,
   emailService: EmailService,
-  meetService: MeetService,
+  meetDao: MeetDao,
 ): Resolvers => {
   return {
     Mutation: {
@@ -31,7 +31,7 @@ const emailResolver = (
       sendReminderEmailForMeet: async (_root, { input }, context: ServerContext) => {
         ensureAdmin(context);
         const { meetId, subject, body } = input;
-        const meet = ensureExists("Meet")(await meetService.getOne({ id: meetId }));
+        const meet = ensureExists<Meet>("Meet")(await meetDao.getOne({ id: meetId }));
         // TODO: get users and map over their emails and send them all
         const email = emailService.generateMeetReminderEmail("jimmy.peng@mintbean.io", meet);
         return emailService.sendEmail(email);
@@ -50,7 +50,7 @@ const emailResolver = (
           updatedAt: "2019-10-15",
           isAdmin: false,
         };
-        const meet = ensureExists("Meet")(await meetService.getOne({ id: args.meetId }));
+        const meet = ensureExists<Meet>("Meet")(await meetDao.getOne({ id: args.meetId }));
         const email = emailService.generateMeetRegistrationEmail(user, meet, "REGISTRATION_UUID_WILL_GO_HERE");
         return emailService.sendEmail(email);
       },

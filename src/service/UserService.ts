@@ -1,23 +1,6 @@
 import { User } from "../types/User";
-import { EntityService } from "./EntityService";
 import bcrypt from "bcryptjs";
-import UserDao from "../dao/UserDao";
-
-export interface UserServiceGetOneArgs {
-  id?: string | null;
-  email?: string | null;
-}
-
-export interface UserServiceGetManyArgs {
-  firstName?: string | null;
-  lastName?: string | null;
-  meetId?: string;
-}
-
-export interface UserServiceLoginArgs {
-  email: string;
-  password: string;
-}
+import UserDao, { UserDaoLoginArgs } from "../dao/UserDao";
 
 export interface UserServiceAddOneArgs {
   email: string;
@@ -26,19 +9,11 @@ export interface UserServiceAddOneArgs {
   password: string;
 }
 
-export default class UserService implements EntityService<User> {
+export default class UserService {
   constructor(private userDao: UserDao) {}
 
-  async getOne(args: UserServiceGetOneArgs): Promise<User> {
-    return this.userDao.getOne(args);
-  }
-
-  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
-    return this.userDao.getMany(args);
-  }
-
-  async checkPassword(args: UserServiceLoginArgs): Promise<boolean> {
-    const user: User = await this.userDao.getOne({ email: args.email });
+  async checkPassword(args: UserDaoLoginArgs): Promise<boolean> {
+    const user = await this.userDao.getOne({ email: args.email });
     if (!user) {
       return false;
     }

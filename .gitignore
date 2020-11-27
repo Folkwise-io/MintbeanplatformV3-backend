@@ -137,3 +137,6 @@ tsconfig.tsbuildinfo
 
 # ENV files
 .env
+
+# Backup files 
+/db/backups

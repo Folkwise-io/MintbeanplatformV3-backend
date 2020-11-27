@@ -1,21 +1,25 @@
 import { User } from "../types/User";
 import Knex from "knex";
-import { UserServiceGetManyArgs, UserServiceGetOneArgs } from "../service/UserService";
-import UserDao, { UserDaoAddOneArgs } from "./UserDao";
+import UserDao, { UserDaoAddOneArgs, UserDaoGetManyArgs, UserDaoGetOneArgs } from "./UserDao";
 import handleDatabaseError from "../util/handleDatabaseError";
+import { ensureExists } from "../util/ensureExists";
 
 export default class UserDaoKnex implements UserDao {
-  constructor(private knex: Knex) {}
-  async getOne(args: UserServiceGetOneArgs): Promise<User> {
-    return handleDatabaseError(() => {
-      const user = this.knex("users")
+  knex: Knex;
+  constructor(knex: Knex) {
+    this.knex = knex;
+  }
+
+  async getOne(args: UserDaoGetOneArgs): Promise<User | undefined> {
+    return handleDatabaseError(async () => {
+      const user = await this.knex("users")
         .where({ ...args, deleted: false })
         .first();
-      return user as Promise<User>;
+      return user;
     });
   }
 
-  async getMany(args: UserServiceGetManyArgs): Promise<User[]> {
+  async getMany(args: UserDaoGetManyArgs): Promise<User[]> {
     return handleDatabaseError(() => {
       const { meetId } = args;
       // Use meetRegistrations join table to get registrants
@@ -39,18 +43,5 @@ export default class UserDaoKnex implements UserDao {
       const insertedUsers = (await this.knex<User>("users").insert(args).returning("*")) as User[];
       return insertedUsers[0];
     });
-  }
-
-  // Testing methods below, for TestManager to call
-  async addMany(users: User[]): Promise<void> {
-    return this.knex<User>("users").insert(users);
-  }
-
-  async deleteAll(): Promise<void> {
-    return this.knex<User>("users").delete();
-  }
-
-  async destroy(): Promise<void> {
-    return this.knex.destroy();
   }
 }

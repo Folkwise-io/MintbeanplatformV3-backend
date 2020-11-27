@@ -17,6 +17,7 @@ export async function seed(knex: Knex): Promise<void> {
       startTime: "2020-09-30T13:00:00",
       endTime: "2020-09-30T17:00:00",
       createdAt: "2020-08-15",
+      kanbanCanonId: "00000000-0000-0000-0000-000000000000",
     },
     {
       id: "00000000-0000-4000-a000-000000000000",

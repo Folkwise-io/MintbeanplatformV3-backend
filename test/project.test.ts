@@ -1,4 +1,5 @@
 import { MediaAsset, Meet, Project } from "../src/types/gqlGeneratedTypes";
+<<<<<<< HEAD
 import {
   AWARD_BADGES,
   GET_MEET_WITH_NESTED_BADGES,
@@ -9,6 +10,10 @@ import {
 } from "./src/badgeConstants";
 import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/mediaAssetConstants";
 import { ALGOLIA, PAPERJS } from "./src/meetConstants";
+=======
+import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/constants/mediaAssetConstants";
+import { ALGOLIA, PAPERJS } from "./src/constants/meetConstants";
+>>>>>>> 8b997210eeb98198105e8f060125eb5d22ff928d
 import {
   AMY_ALGOLIA_PROJECT,
   AMY_PAPERJS_PROJECT,
@@ -22,10 +27,11 @@ import {
   GET_USER_WITH_NESTED_PROJECTS,
   NEW_PROJECT,
   NEW_PROJECT_WITH_MEDIA_ASSETS,
-} from "./src/projectConstants";
+} from "./src/constants/projectConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 
@@ -72,16 +78,16 @@ describe("'project' by id root query", () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
-      .getErrorMessage({ query: GET_PROJECT, variables: { id: "12345" } })
-      .then((errorMessage) => expect(errorMessage).toMatch(/invalid.*UUID/i));
+      .getErrorCode({ query: GET_PROJECT, variables: { id: "12345" } })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 
   it("returns an appropriate error message if no UUID is supplied", async () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
-      .getErrorMessage({ query: GET_PROJECT, variables: {} })
-      .then((errorMessage) => expect(errorMessage).toMatch(/id.*not provided/i));
+      .getErrorCode({ query: GET_PROJECT, variables: {} })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 });
 
@@ -175,19 +181,19 @@ describe("Creating projects without media assets", () => {
 
   it("gives an error message when accessing createProject without being logged in", async () => {
     await testManager
-      .getErrorMessage({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+      .getErrorCode({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("gives an error message when supplying a userId that differs from cookie's userId", async () => {
     const input = { ...NEW_PROJECT, userId: AMY.id };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("does not give an error message when supplying a userId that is the same as cookie's userId", async () => {
@@ -219,12 +225,12 @@ describe("Creating projects without media assets", () => {
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/title/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.BadUserInput));
   });
 
   it("gives an error message when the url is not valid", async () => {
@@ -233,12 +239,12 @@ describe("Creating projects without media assets", () => {
       liveUrl: "httpaaaaaaaaaaaaaaaaaaaaa",
     };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/url/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.BadUserInput));
   });
 });
 
@@ -278,12 +284,12 @@ describe("Creating projects with media assets", () => {
       mediaAssets: [1, 2],
     };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/mediaAssets/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 });
 
@@ -315,26 +321,26 @@ describe("Deleting projects", () => {
     await testManager
       .addProjects([BOB_PAPERJS_PROJECT])
       .then(() =>
-        testManager.getErrorMessage({
+        testManager.getErrorCode({
           query: DELETE_PROJECT,
           variables: { id: BOB_PAPERJS_PROJECT.id },
           cookies: undefined,
         }),
       )
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("gives an error message when trying to delete someone else's project", async () => {
     await testManager
       .addProjects([AMY_PAPERJS_PROJECT])
       .then(() =>
-        testManager.getErrorMessage({
+        testManager.getErrorCode({
           query: DELETE_PROJECT,
           variables: { id: AMY_PAPERJS_PROJECT.id },
           cookies: bobCookies,
         }),
       )
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("lets the admin delete someone else's project", async () => {
@@ -352,12 +358,12 @@ describe("Deleting projects", () => {
 
   it("gives an error message when trying to delete a project that doesn't exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_PROJECT,
         variables: { id: AMY_PAPERJS_PROJECT.id },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/not exist/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 });
 

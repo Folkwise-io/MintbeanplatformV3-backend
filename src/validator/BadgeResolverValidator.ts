@@ -7,7 +7,6 @@ import {
   MutationCreateBadgeArgs,
   MutationEditBadgeArgs,
   MutationDeleteBadgeArgs,
-  Badge,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import createBadgeInputSchema from "./yupSchemas/createBadgeInputSchema";
@@ -38,10 +37,9 @@ export default class BadgeResolverValidator {
     }
     return { id, input };
   }
-  async deleteOne({ id }: MutationDeleteBadgeArgs): Promise<string> {
-    return this.badgeDao
-      .getOne({ id })
-      .then((badge) => ensureExists("Badge")(badge))
-      .then(({ id }) => id);
+  async deleteOne({ id }: MutationDeleteBadgeArgs): Promise<MutationDeleteBadgeArgs> {
+    const badge = await this.badgeDao.getOne({ id });
+    ensureExists("Badge")(badge);
+    return { id };
   }
 }
