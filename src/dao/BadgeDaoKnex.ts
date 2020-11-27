@@ -19,7 +19,7 @@ export default class BadgeDaoKnex implements BadgeDao {
   async getOne(args: QueryBadgeArgs): Promise<Badge> {
     const { id } = args;
     return handleDatabaseError(async () => {
-      const badge: Badge = await this.knex("badges as b").select(["b.*"]).where({ "b.id": id }).first();
+      const badge: Badge = await this.knex("badges").select(["*"]).where({ "badges.id": id }).first();
       return badge;
     });
   }

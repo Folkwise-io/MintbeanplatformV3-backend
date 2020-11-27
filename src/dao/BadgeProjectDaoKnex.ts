@@ -12,11 +12,7 @@ export default class BadgeProjectDaoKnex implements BadgeProjectDao {
     const bpToInsert = badgeIds.map((badgeId) => ({ projectId, badgeId }));
     return handleDatabaseError(async () => {
       await this.knex("badgesProjects").del();
-      await this.knex("badgesProjects")
-        .insert(bpToInsert)
-        .onConflict(["projectId", "badgeId"])
-        .merge()
-        .groupBy("projectId");
+      await this.knex("badgesProjects").insert(bpToInsert).groupBy("projectId");
     });
   }
 }
