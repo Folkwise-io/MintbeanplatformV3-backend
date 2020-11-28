@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-const createBadgeInputSchema = yup.object().shape({
+export const createBadgeInputSchema = yup.object().shape({
   id: yup.string().uuid("Badge ID must be a valid UUID"),
   alias: yup.string().max(25, "Alias must be shorter than 25 characters").required("alias required!"),
   badgeShape: yup
@@ -13,5 +13,3 @@ const createBadgeInputSchema = yup.object().shape({
   description: yup.string().max(150, "Description must be shorter than 150 characters"),
   weight: yup.number().max(9999, "That number's a bit too high... try one lower than 9999"),
 });
-
-export default createBadgeInputSchema;

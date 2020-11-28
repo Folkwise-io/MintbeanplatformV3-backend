@@ -105,10 +105,11 @@ const projectResolver = (
         return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectDao.deleteOne(id));
       },
 
-      awardBadges: (_root, args, context: ServerContext): Promise<Project> => {
-        return projectResolverValidator.awardBadges(args, context).then(async ({ projectId, badgeIds }) => {
+      awardBadgesToProject: (_root, args, context: ServerContext): Promise<Project | null> => {
+        return projectResolverValidator.awardBadgesToProject(args, context).then(async ({ projectId, badgeIds }) => {
           await badgeProjectService.addOne({ projectId, badgeIds }, context);
-          return (projectDao.getOne({ id: projectId }) as unknown) as Project;
+          const project = await projectDao.getOne({ id: projectId });
+          return project || null;
         });
       },
     },

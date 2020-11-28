@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("backgroundHex", 6).defaultTo("000000");
     table.string("iconHex", 6).defaultTo("ffffff");
     table.text("title").notNullable();
-    table.text("description");
+    table.text("description").notNullable().defaultTo("No description provided.");
     table.integer("weight").notNullable().defaultTo(0);
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());

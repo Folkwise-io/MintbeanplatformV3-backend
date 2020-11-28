@@ -4,28 +4,26 @@ import { buildExpressServerContext } from "../../src/buildServerContext";
 import buildApolloServer from "../../src/buildApolloServer";
 import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
-<<<<<<< HEAD
-import { DocumentNode, GraphQLSchema, print } from "graphql";
-import { ApolloServer } from "apollo-server-express";
-import { Badge, MediaAsset, Meet, MutationAwardBadgesArgs, Project } from "../../src/types/gqlGeneratedTypes";
-=======
 import { DocumentNode, GraphQLFormattedError, GraphQLSchema, print } from "graphql";
-import { ApolloError, ApolloServer } from "apollo-server-express";
-import { KanbanCanonCard, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
->>>>>>> 8b997210eeb98198105e8f060125eb5d22ff928d
+import { ApolloServer } from "apollo-server-express";
+import {
+  Badge,
+  KanbanCanonCard,
+  MediaAsset,
+  Meet,
+  MutationAwardBadgesToProjectArgs,
+  Project,
+} from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
-<<<<<<< HEAD
 import BadgeProject from "../../src/types/badgeProject";
-=======
 import { KanbanCanonRaw } from "./daos/TestKanbanCanonDaoKnex";
 import { buildTestPersistenceContext, TestPersistenceContext } from "./daos/util/buildTestPersistenceContext";
 import { KanbanSessionRaw } from "./daos/TestKanbanDaoKnex";
->>>>>>> 8b997210eeb98198105e8f060125eb5d22ff928d
 
 interface TestManagerParams {
   persistenceContext: TestPersistenceContext;
@@ -90,13 +88,11 @@ export default class TestManager {
   addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void> {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
   }
-<<<<<<< HEAD
 
-  awardBadges(badgeProject: MutationAwardBadgesArgs): Promise<BadgeProject> {
+  awardBadgesToProject(badgeProject: MutationAwardBadgesToProjectArgs): Promise<BadgeProject> {
     return this.params.persistenceContext.badgeProjectDao.addOne(badgeProject);
   }
 
-=======
   addKanbanCanons(kanbanCanons: KanbanCanonRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanCanonDao.addMany(kanbanCanons);
   }
@@ -106,7 +102,6 @@ export default class TestManager {
   addKanbans(kanbans: KanbanSessionRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanDao.addMany(kanbans);
   }
->>>>>>> 8b997210eeb98198105e8f060125eb5d22ff928d
   deleteAllUsers(): Promise<void> {
     return this.params.persistenceContext.userDao.deleteAll();
   }
@@ -131,10 +126,6 @@ export default class TestManager {
     return this.params.persistenceContext.meetRegistrationDao.deleteAll();
   }
 
-<<<<<<< HEAD
-  deleteAllAwardedBadges() {
-    return this.params.persistenceContext.badgeProjectDao.deleteAll();
-=======
   deleteAllKanbanCanons() {
     return this.params.persistenceContext.kanbanCanonDao.deleteAll();
   }
@@ -145,7 +136,6 @@ export default class TestManager {
 
   deleteAllKanbans() {
     return this.params.persistenceContext.kanbanDao.deleteAll();
->>>>>>> 8b997210eeb98198105e8f060125eb5d22ff928d
   }
 
   getRawResponse({ query, cookies = [], variables }: PostParams): Promise<Response> {

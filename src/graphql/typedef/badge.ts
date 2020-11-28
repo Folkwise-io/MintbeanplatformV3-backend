@@ -11,67 +11,67 @@ const badge = gql`
     badgeShape: String!
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String!
-    "The hex code for the background color (all 6 digits, no # before code)"
+    "The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black)"
     backgroundHex: String
-    "The hex code for the icon color (all 6 digits, no # before code)"
+    "The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white)"
     iconHex: String
-    "the official title of the badge"
+    "The official title of the badge"
     title: String!
-    "the official description of the badge"
+    "The official description of the badge"
     description: String
-    "the weight of this badge"
+    "The weight of this badge"
     weight: Int
-    "when this badge was first created"
+    "When this badge was first created"
     createdAt: DateTime!
-    "when this badge was last updated"
+    "When this badge was last updated"
     updatedAt: DateTime!
-    "a list of projects awarded this badge"
+    "A list of projects awarded this badge"
     projects: [Project]
   }
   extend type Query {
     "Gets all the badges"
     badges: [Badge]
-    "gets one badge by id or alias"
+    "Gets one badge by id or alias"
     badge(id: UUID!): Badge
   }
 
-  "the input needed to create a new badge"
+  "The input needed to create a new badge"
   input CreateBadgeInput {
-    "the alias of the badge"
+    "The alias of the badge"
     alias: String!
-    "the shape of the badge from an enumerable list"
+    "The shape of the badge from an enumerable list"
     badgeShape: String!
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String!
-    "the background color of the badge(optional)"
+    "The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black)"
     backgroundHex: String
-    "the color of the icon(optional)"
+    "The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white)"
     iconHex: String
-    "the title of the badge"
+    "The title of the badge"
     title: String!
-    "a description of the badge (optional)"
+    "A description of the badge (optional)"
     description: String
-    "how heavily this badge should be weighted(optional)"
+    "How heavily this badge should be weighted(optional)"
     weight: Int
   }
 
   "Input that can be used to edit a badge - all fields are optional"
   input EditBadgeInput {
-    "the alias of the badge"
+    "The alias of the badge"
     alias: String
-    "the shape of the badge from an enumerable list"
+    "The shape of the badge from an enumerable list"
     badgeShape: String
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String
-    "the background color of the badge(optional)"
+    "The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black)"
     backgroundHex: String
-    "the color of the icon(optional)"
+    "The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white)"
     iconHex: String
-    "the title of the badge"
+    "The title of the badge"
     title: String
-    "a description of the badge (optional)"
+    "A description of the badge (optional)"
     description: String
-    "how heavily this badge should be weighted(optional)"
+    "How heavily this badge should be weighted(optional)"
     weight: Int
   }
 
@@ -82,6 +82,11 @@ const badge = gql`
     editBadge(id: UUID!, input: EditBadgeInput!): Badge!
     "Deletes a badge (requires admin privileges)"
     deleteBadge(id: UUID!): Boolean!
+  }
+
+  extend type Project {
+    "The badges associated with the project"
+    badges: [Badge]
   }
 `;
 

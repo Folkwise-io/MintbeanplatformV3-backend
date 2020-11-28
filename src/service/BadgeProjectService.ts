@@ -1,7 +1,7 @@
 import { ServerContext } from "../buildServerContext";
 import BadgeProjectDao from "../dao/BadgeProjectDao";
 import BadgeProject from "../types/badgeProject";
-import { MutationAwardBadgesArgs } from "../types/gqlGeneratedTypes";
+import { MutationAwardBadgesToProjectArgs } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 export default class BadgeProjectService implements EntityService<BadgeProject> {
@@ -19,7 +19,7 @@ export default class BadgeProjectService implements EntityService<BadgeProject> 
     throw new Error("not implemented");
   }
 
-  async addOne(input: MutationAwardBadgesArgs, _context: ServerContext): Promise<BadgeProject> {
+  async addOne(input: MutationAwardBadgesToProjectArgs, _context: ServerContext): Promise<BadgeProject> {
     return this.badgeProjectDao.addOne(input);
   }
 }

@@ -42,7 +42,7 @@ const kanbanResolver = (
       kanban: (meet, _args, context) => {
         // Return null if this meet does not have a kanbanCanon
         if (!meet.kanbanCanonId) return null;
-        // Return null if no logged in user maing request kanbanCanon
+        // Return null if no logged in user making request for kanban
         if (!context.getUserId()) return null;
         // retrieve kanban of requesting user
         const requesterId = context.getUserId();

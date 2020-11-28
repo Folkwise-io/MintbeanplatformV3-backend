@@ -12,26 +12,23 @@ export default class ProjectDaoKnex implements ProjectDao {
   async getOne(args: ProjectDaoGetOneArgs): Promise<Project | undefined> {
     const { id } = args;
     return handleDatabaseError(async () => {
-      const project: Project = await this.knex("projects as p")
-        .select("p.*")
-        .leftJoin("badgesProjects as bp", "p.id", "=", "bp.projectId")
-        .where({ "p.id": id, deleted: false })
-        .distinct()
-        .first()
-        .options({ nestTables: true });
+      const project: Project = await this.knex("projects")
+        .select("projects.*")
+        .leftJoin("badgesProjects", "projects.id", "=", "badgesProjects.projectId")
+        .where({ "projects.id": id, deleted: false })
+        .first();
       return project;
     });
   }
 
   async getMany(args: ProjectDaoGetManyArgs): Promise<Project[]> {
     return handleDatabaseError(async () => {
-      const projects: Project[] = await this.knex("projects as p")
-        .select("p.*")
-        .leftJoin("badgesProjects as bp", "p.id", "=", "bp.projectId")
+      const projects: Project[] = await this.knex("projects")
+        .select("projects.*")
+        .leftJoin("badgesProjects", "projects.id", "=", "badgesProjects.projectId")
         .where({ ...args, deleted: false })
-        .distinct()
-        .orderBy("p.createdAt", "desc")
-        .options({ nestTables: true });
+        .groupBy("projects.id")
+        .orderBy("projects.createdAt", "desc");
       return projects;
     });
   }

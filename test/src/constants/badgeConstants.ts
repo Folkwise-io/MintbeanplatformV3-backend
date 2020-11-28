@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { Badge, CreateBadgeInput, EditBadgeInput, MutationAwardBadgesArgs } from "../../src/types/gqlGeneratedTypes";
+import { Badge, CreateBadgeInput, EditBadgeInput } from "../../../src/types/gqlGeneratedTypes";
 
 export const WINNER_FIRST: Badge = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -220,9 +220,9 @@ export const GET_MEET_WITH_NESTED_BADGES = gql`
   }
 `;
 
-export const AWARD_BADGES = gql`
+export const AWARD_BADGES_TO_PROJECT = gql`
   mutation awardBadgesToProject($projectId: UUID!, $badgeIds: [UUID]!) {
-    awardBadges(projectId: $projectId, badgeIds: $badgeIds) {
+    awardBadgesToProject(projectId: $projectId, badgeIds: $badgeIds) {
       id
       title
       sourceCodeUrl

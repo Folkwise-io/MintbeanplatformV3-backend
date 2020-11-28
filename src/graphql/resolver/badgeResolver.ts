@@ -1,4 +1,3 @@
-import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import BadgeService from "../../service/BadgeService";
 import { Badge, Resolvers } from "../../types/gqlGeneratedTypes";
@@ -21,22 +20,13 @@ const badgeResolver = (badgeResolverValidator: BadgeResolverValidator, badgeServ
     },
     Mutation: {
       createBadge: (_root, args, context: ServerContext): Promise<Badge> => {
-        if (!context.getIsAdmin()) {
-          throw new AuthenticationError("You are not authorized to create a badge!");
-        }
         return badgeResolverValidator.addOne(args, context).then((input) => badgeService.addOne(input));
       },
       editBadge: (_root, args, context: ServerContext): Promise<Badge> => {
-        if (!context.getIsAdmin()) {
-          throw new AuthenticationError("You are not authorized to edit a badge!");
-        }
         return badgeResolverValidator.editOne(args, context).then(({ id, input }) => badgeService.editOne(id, input));
       },
       deleteBadge: (_root, args, context: ServerContext): Promise<boolean> => {
-        if (!context.getIsAdmin()) {
-          throw new AuthenticationError("You are not authorized to edit a badge!");
-        }
-        return badgeResolverValidator.deleteOne(args).then((id) => badgeService.deleteOne(id));
+        return badgeResolverValidator.deleteOne(args, context).then((id) => badgeService.deleteOne(id));
       },
     },
   };

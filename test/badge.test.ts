@@ -1,20 +1,15 @@
-import badge from "../src/graphql/typedef/badge";
 import {
-  AWARD_BADGES,
   CREATE_BADGE,
   DELETE_BADGE,
   EDIT_BADGE,
   EDIT_BADGE_INPUT,
   GET_ALL_BADGES,
   GET_BADGE_BY_ID,
-  GET_BADGE_WITH_NESTED_PROJECT,
-  GET_PROJECT_WITH_NESTED_BADGES,
   NEW_BADGE_INPUT,
   WINNER_FIRST,
   WINNER_SECOND,
-  WINNER_THIRD,
-} from "./src/badgeConstants";
-import { AMY_PAPERJS_PROJECT, GET_PROJECT } from "./src/projectConstants";
+} from "./src/constants/badgeConstants";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 import TestManager from "./src/TestManager";
 import { getAdminCookies } from "./src/util";
 
@@ -85,32 +80,30 @@ describe("creating badges", () => {
       });
   });
   it("returns an 'unauthorized' error message when creating a badge without admin cookies", async () => {
-    await testManager
-      .getErrorMessage({ query: CREATE_BADGE, variables: { input: NEW_BADGE_INPUT } })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)]authorized/i);
-      });
+    await testManager.getErrorCode({ query: CREATE_BADGE, variables: { input: NEW_BADGE_INPUT } }).then((errorCode) => {
+      expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
+    });
   });
   it("returns an appropriate error message when a field is missing", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_BADGE,
         variables: { input: { ...CREATE_BADGE, alias: undefined } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/alias/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
   it("returns an appropriate error message when a field is in wrong type", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_BADGE,
         variables: { input: { ...CREATE_BADGE, alias: 100 } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/alias/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -168,49 +161,49 @@ describe("Editing badges", () => {
 
   it("returns 'unauthorized' error message when editing a badge without admin cookies", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_BADGE,
         variables: { id: badgeId, input: EDIT_BADGE_INPUT },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
 
   it("gives an error message from the validator when the id of the badge does not exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_BADGE,
         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c", input: EDIT_BADGE_INPUT },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 
   it("gives an error when no edit fields are specified in the mutation", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_BADGE,
         variables: { id: badgeId, input: {} },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/field/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.BadUserInput);
       });
   });
 
   it("gives an error message when trying to edit a non-existent field", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: EDIT_BADGE,
         variables: { id: badgeId, input: { nonexistent: "hello" } },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/invalid/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
@@ -247,24 +240,24 @@ describe("deleting badges", () => {
 
   it("returns 'unauthorized' error when deleting badge without admin cookies", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_BADGE,
         variables: { id: badgeId },
         cookies: [],
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/[(not |un)authorized]/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated);
       });
   });
   it("gives an error message from validator if id of badge does not exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_BADGE,
         variables: { id: "7fab763c-0bac-4ccc-b2b7-b8587104c10c" },
         cookies: adminCookies,
       })
-      .then((errorMessage) => {
-        expect(errorMessage).toMatch(/not exist/i);
+      .then((errorCode) => {
+        expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError);
       });
   });
 });
