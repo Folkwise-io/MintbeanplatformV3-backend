@@ -8,11 +8,12 @@ import {
   MutationEditBadgeArgs,
   MutationDeleteBadgeArgs,
   CreateBadgeInput,
+  EditBadgeInput,
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { validateAgainstSchema } from "../util/validateAgainstSchema";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
-import { createBadgeInputSchema } from "./yupSchemas/badge";
+import { createBadgeInputSchema, editBadgeInputSchema } from "./yupSchemas/badge";
 
 export default class BadgeResolverValidator {
   constructor(private badgeDao: BadgeDao) {}
@@ -40,6 +41,7 @@ export default class BadgeResolverValidator {
     const badge = await this.badgeDao.getOne({ id });
     ensureExists("Badge")(badge);
     validateAtLeastOneFieldPresent(input);
+    validateAgainstSchema<EditBadgeInput>(editBadgeInputSchema, input);
 
     return { id, input };
   }
