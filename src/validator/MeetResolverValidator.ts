@@ -37,12 +37,11 @@ export default class MeetResolverValidator {
     return { id, input };
   }
 
-  async deleteOne({ id }: MutationDeleteMeetArgs): Promise<string> {
+  async deleteOne({ id }: MutationDeleteMeetArgs): Promise<MutationDeleteMeetArgs> {
     // Check if meet id exists in db
-    return this.meetDao
-      .getOne({ id })
-      .then((meet) => ensureExists<Meet>("Meet")(meet))
-      .then(({ id }) => id);
+    const meet = await this.meetDao.getOne({ id });
+    ensureExists("Meet")(meet);
+    return { id };
   }
 
   async registerForMeet(
@@ -55,7 +54,8 @@ export default class MeetResolverValidator {
       throw new AuthenticationError("You must be logged in to register for a meet!");
     }
     // Check if meet id exists in db
-    await this.meetDao.getOne({ id: meetId }).then((meet) => ensureExists<Meet>("Meet")(meet));
+    const meet = await this.meetDao.getOne({ id: meetId });
+    ensureExists<Meet>("Meet")(meet);
     return { meetId };
   }
 }

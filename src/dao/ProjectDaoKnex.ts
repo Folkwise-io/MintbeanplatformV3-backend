@@ -1,5 +1,4 @@
 import Knex from "knex";
-
 import { Project } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import ProjectDao, { ProjectDaoAddOneInput, ProjectDaoGetManyArgs, ProjectDaoGetOneArgs } from "./ProjectDao";
@@ -11,9 +10,12 @@ export default class ProjectDaoKnex implements ProjectDao {
   }
 
   async getOne(args: ProjectDaoGetOneArgs): Promise<Project | undefined> {
+    const { id } = args;
     return handleDatabaseError(async () => {
       const project: Project = await this.knex("projects")
-        .where({ ...args, deleted: false })
+        .select("projects.*")
+        .leftJoin("badgesProjects", "projects.id", "=", "badgesProjects.projectId")
+        .where({ "projects.id": id, deleted: false })
         .first();
       return project;
     });
@@ -22,9 +24,11 @@ export default class ProjectDaoKnex implements ProjectDao {
   async getMany(args: ProjectDaoGetManyArgs): Promise<Project[]> {
     return handleDatabaseError(async () => {
       const projects: Project[] = await this.knex("projects")
+        .select("projects.*")
+        .leftJoin("badgesProjects", "projects.id", "=", "badgesProjects.projectId")
         .where({ ...args, deleted: false })
-        .orderBy("createdAt", "desc");
-
+        .groupBy("projects.id")
+        .orderBy("projects.createdAt", "desc");
       return projects;
     });
   }

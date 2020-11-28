@@ -5,12 +5,14 @@ import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
 import MediaAssetDao, { MediaAssetDaoAddManyArgs } from "../../dao/MediaAssetDao";
 import ProjectMediaAssetDao, { ProjectMediaAssetDaoAddOneArgs } from "../../dao/ProjectMediaAssetDao";
 import ProjectDao from "../../dao/ProjectDao";
+import BadgeProjectService from "../../service/BadgeProjectService";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
   projectDao: ProjectDao,
   mediaAssetDao: MediaAssetDao,
   projectMediaAssetDao: ProjectMediaAssetDao,
+  badgeProjectService: BadgeProjectService,
 ): Resolvers => {
   return {
     Query: {
@@ -38,6 +40,12 @@ const projectResolver = (
     Meet: {
       projects: (meet, context) => {
         return projectDao.getMany({ meetId: meet.id });
+      },
+    },
+
+    Badge: {
+      projects: (badge, context) => {
+        return projectDao.getMany({ badgeId: badge.id });
       },
     },
 
@@ -95,6 +103,14 @@ const projectResolver = (
 
       deleteProject: (_root, args, context: ServerContext): Promise<boolean> => {
         return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectDao.deleteOne(id));
+      },
+
+      awardBadgesToProject: (_root, args, context: ServerContext): Promise<Project | null> => {
+        return projectResolverValidator.awardBadgesToProject(args, context).then(async ({ projectId, badgeIds }) => {
+          await badgeProjectService.addOne({ projectId, badgeIds }, context);
+          const project = await projectDao.getOne({ id: projectId });
+          return project || null;
+        });
       },
     },
   };

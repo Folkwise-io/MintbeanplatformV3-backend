@@ -54,7 +54,7 @@ const meetResolver = (
           throw new AuthenticationError("You are not authorized to delete meets!");
         }
 
-        return meetResolverValidator.deleteOne(args).then((id) => meetDao.deleteOne(id));
+        return meetResolverValidator.deleteOne(args).then(({ id }) => meetDao.deleteOne(id));
       },
 
       // TODO: antipattern here. Force args interface to require explicit userId

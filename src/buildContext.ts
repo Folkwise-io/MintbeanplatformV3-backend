@@ -21,6 +21,13 @@ import { EmailService } from "./service/EmailService";
 import { EmailDao } from "./dao/EmailDao";
 import config from "./util/config";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
+import BadgeResolverValidator from "./validator/BadgeResolverValidator";
+import BadgeService from "./service/BadgeService";
+import BadgeDao from "./dao/BadgeDao";
+import BadgeDaoKnex from "./dao/BadgeDaoKnex";
+import BadgeProjectDao from "./dao/BadgeProjectDao";
+import BadgeProjectDaoKnex from "./dao/BadgeProjectDaoKnex";
+import BadgeProjectService from "./service/BadgeProjectService";
 import KanbanCanonDao from "./dao/KanbanCanonDao";
 import KanbanCanonDaoKnex from "./dao/KanbanCanonDaoKnex";
 import KanbanCanonService from "./service/KanbanCanonService";
@@ -41,6 +48,8 @@ export interface PersistenceContext {
   mediaAssetDao: MediaAssetDao;
   projectMediaAssetDao: ProjectMediaAssetDao;
   meetRegistrationDao: MeetRegistrationDao;
+  badgeDao: BadgeDao;
+  badgeProjectDao: BadgeProjectDao;
   kanbanCanonDao: KanbanCanonDao;
   kanbanCanonCardDao: KanbanCanonCardDao;
   kanbanDao: KanbanDao;
@@ -54,6 +63,8 @@ export function buildPersistenceContext(): PersistenceContext {
   const mediaAssetDao = new MediaAssetDaoKnex(knex);
   const projectMediaAssetDao = new ProjectMediaAssetDaoKnex(knex);
   const meetRegistrationDao = new MeetRegistrationDaoKnex(knex);
+  const badgeDao = new BadgeDaoKnex(knex);
+  const badgeProjectDao = new BadgeProjectDaoKnex(knex);
   const kanbanCanonDao = new KanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new KanbanCanonCardDaoKnex(knex);
   const kanbanDao = new KanbanDaoKnex(knex);
@@ -65,6 +76,8 @@ export function buildPersistenceContext(): PersistenceContext {
     mediaAssetDao,
     projectMediaAssetDao,
     meetRegistrationDao,
+    badgeDao,
+    badgeProjectDao,
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
@@ -79,6 +92,9 @@ export interface ResolverContext {
   projectResolverValidator: ProjectResolverValidator;
   emailResolverValidator: EmailResolverValidator;
   emailService: EmailService;
+  badgeResolverValidator: BadgeResolverValidator;
+  badgeService: BadgeService;
+  badgeProjectService: BadgeProjectService;
   kanbanCanonService: KanbanCanonService;
   kanbanCanonResolverValidator: KanbanCanonResolverValidator;
   kanbanCanonCardService: KanbanCanonCardService;
@@ -104,6 +120,8 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     mediaAssetDao,
     projectMediaAssetDao,
     meetRegistrationDao,
+    badgeDao,
+    badgeProjectDao,
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
@@ -130,6 +148,9 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailResolverValidator = new EmailResolverValidator();
   const emailDao = new EmailDao(sendGridKey);
   const emailService = new EmailService(emailDao);
+  const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
+  const badgeService = new BadgeService(badgeDao);
+  const badgeProjectService = new BadgeProjectService(badgeProjectDao);
 
   return {
     userResolverValidator,
@@ -139,6 +160,9 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     projectResolverValidator,
     emailResolverValidator,
     emailService,
+    badgeResolverValidator,
+    badgeService,
+    badgeProjectService,
     kanbanCanonService,
     kanbanCanonCardService,
     kanbanCanonCardResolverValidator,

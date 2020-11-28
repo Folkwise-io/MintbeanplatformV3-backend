@@ -79,6 +79,10 @@ export type Query = {
   projects?: Maybe<Array<Maybe<Project>>>;
   /** Get a single project by its ID */
   project?: Maybe<Project>;
+  /** Gets all the badges */
+  badges?: Maybe<Array<Maybe<Badge>>>;
+  /** Gets one badge by id or alias */
+  badge?: Maybe<Badge>;
   /** Get a kanbanCanon by ID */
   kanbanCanon?: Maybe<KanbanCanon>;
   /** Gets all the kanbanCanons */
@@ -121,6 +125,11 @@ export type QueryProjectsArgs = {
 
 
 export type QueryProjectArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryBadgeArgs = {
   id: Scalars['UUID'];
 };
 
@@ -182,6 +191,8 @@ export type Mutation = {
   createProject: Project;
   /** Deletes a project by ID (user must be logged in and own the project) */
   deleteProject: Scalars['Boolean'];
+  /** adds badges to a project by id (admin only) */
+  awardBadgesToProject?: Maybe<Project>;
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
   /** Sends a test email (admin-only) */
@@ -190,6 +201,12 @@ export type Mutation = {
   sendReminderEmailForMeet: Scalars['Boolean'];
   /** Sends a sample registration email with json-ld for Google whitelist approval (admin-only) */
   sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
+  /** Creates a new badge (requires admin privileges */
+  createBadge: Badge;
+  /** Edits a badge (requires admin privileges) */
+  editBadge: Badge;
+  /** Deletes a badge (requires admin privileges) */
+  deleteBadge: Scalars['Boolean'];
   /** Creates a new kanbanCanon (requires admin privileges) */
   createKanbanCanon: KanbanCanon;
   /** Edits an existing kanbanCanon (requires admin privileges) */
@@ -247,6 +264,12 @@ export type MutationDeleteProjectArgs = {
 };
 
 
+export type MutationAwardBadgesToProjectArgs = {
+  projectId: Scalars['UUID'];
+  badgeIds: Array<Maybe<Scalars['UUID']>>;
+};
+
+
 export type MutationRegisterForMeetArgs = {
   meetId: Scalars['UUID'];
 };
@@ -264,6 +287,22 @@ export type MutationSendReminderEmailForMeetArgs = {
 
 export type MutationSendSampleRegistrationEmailForMeetArgs = {
   meetId: Scalars['UUID'];
+};
+
+
+export type MutationCreateBadgeArgs = {
+  input: CreateBadgeInput;
+};
+
+
+export type MutationEditBadgeArgs = {
+  id: Scalars['UUID'];
+  input: EditBadgeInput;
+};
+
+
+export type MutationDeleteBadgeArgs = {
+  id: Scalars['UUID'];
 };
 
 
@@ -435,6 +474,8 @@ export type Project = {
   meet?: Maybe<Meet>;
   /** A list of MediaAssets for this Project, ordered by index */
   mediaAssets?: Maybe<Array<MediaAsset>>;
+  /** The badges associated with the project */
+  badges?: Maybe<Array<Maybe<Badge>>>;
 };
 
 /** Fields required to create a new project */
@@ -479,6 +520,75 @@ export type MeetReminderEmailInput = {
   meetId: Scalars['UUID'];
   subject: Scalars['String'];
   body: Scalars['String'];
+};
+
+/** A badge awarded by Mintbean for excellence within the Mintbean community! */
+export type Badge = {
+  __typename?: 'Badge';
+  /** ID of the badge in UUID */
+  id: Scalars['UUID'];
+  /** A user friendly :colon-surrounded: badge alias. */
+  alias: Scalars['String'];
+  /** The shape of the enclosing badge from an enumerable list */
+  badgeShape: Scalars['String'];
+  /** The Font Awesome icon that will be the graphic of the badge (required) */
+  faIcon: Scalars['String'];
+  /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
+  backgroundHex?: Maybe<Scalars['String']>;
+  /** The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white) */
+  iconHex?: Maybe<Scalars['String']>;
+  /** The official title of the badge */
+  title: Scalars['String'];
+  /** The official description of the badge */
+  description?: Maybe<Scalars['String']>;
+  /** The weight of this badge */
+  weight?: Maybe<Scalars['Int']>;
+  /** When this badge was first created */
+  createdAt: Scalars['DateTime'];
+  /** When this badge was last updated */
+  updatedAt: Scalars['DateTime'];
+  /** A list of projects awarded this badge */
+  projects?: Maybe<Array<Maybe<Project>>>;
+};
+
+/** The input needed to create a new badge */
+export type CreateBadgeInput = {
+  /** The alias of the badge */
+  alias: Scalars['String'];
+  /** The shape of the badge from an enumerable list */
+  badgeShape: Scalars['String'];
+  /** The Font Awesome icon that will be the graphic of the badge (required) */
+  faIcon: Scalars['String'];
+  /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
+  backgroundHex?: Maybe<Scalars['String']>;
+  /** The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white) */
+  iconHex?: Maybe<Scalars['String']>;
+  /** The title of the badge */
+  title: Scalars['String'];
+  /** A description of the badge (optional) */
+  description?: Maybe<Scalars['String']>;
+  /** How heavily this badge should be weighted(optional) */
+  weight?: Maybe<Scalars['Int']>;
+};
+
+/** Input that can be used to edit a badge - all fields are optional */
+export type EditBadgeInput = {
+  /** The alias of the badge */
+  alias?: Maybe<Scalars['String']>;
+  /** The shape of the badge from an enumerable list */
+  badgeShape?: Maybe<Scalars['String']>;
+  /** The Font Awesome icon that will be the graphic of the badge (required) */
+  faIcon?: Maybe<Scalars['String']>;
+  /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
+  backgroundHex?: Maybe<Scalars['String']>;
+  /** The hex code for the icon color (all 6 digits, no # before code). defaults to ffffff (white) */
+  iconHex?: Maybe<Scalars['String']>;
+  /** The title of the badge */
+  title?: Maybe<Scalars['String']>;
+  /** A description of the badge (optional) */
+  description?: Maybe<Scalars['String']>;
+  /** How heavily this badge should be weighted(optional) */
+  weight?: Maybe<Scalars['Int']>;
 };
 
 /** The master definition of a kanban that serves as a guide for projects. */
@@ -702,6 +812,9 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  Badge: ResolverTypeWrapper<Badge>;
+  CreateBadgeInput: CreateBadgeInput;
+  EditBadgeInput: EditBadgeInput;
   KanbanCanon: ResolverTypeWrapper<KanbanCanon>;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
@@ -736,6 +849,9 @@ export type ResolversParentTypes = {
   Int: Scalars['Int'];
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  Badge: Badge;
+  CreateBadgeInput: CreateBadgeInput;
+  EditBadgeInput: EditBadgeInput;
   KanbanCanon: KanbanCanon;
   CreateKanbanCanonInput: CreateKanbanCanonInput;
   EditKanbanCanonInput: EditKanbanCanonInput;
@@ -793,6 +909,8 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   meets?: Resolver<Maybe<Array<Maybe<ResolversTypes['Meet']>>>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType, RequireFields<QueryProjectsArgs, never>>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>;
+  badges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Badge']>>>, ParentType, ContextType>;
+  badge?: Resolver<Maybe<ResolversTypes['Badge']>, ParentType, ContextType, RequireFields<QueryBadgeArgs, 'id'>>;
   kanbanCanon?: Resolver<Maybe<ResolversTypes['KanbanCanon']>, ParentType, ContextType, RequireFields<QueryKanbanCanonArgs, 'id'>>;
   kanbanCanons?: Resolver<Maybe<Array<Maybe<ResolversTypes['KanbanCanon']>>>, ParentType, ContextType>;
   kanbanCanonCard?: Resolver<Maybe<ResolversTypes['KanbanCanonCard']>, ParentType, ContextType, RequireFields<QueryKanbanCanonCardArgs, 'id'>>;
@@ -810,10 +928,14 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
+  awardBadgesToProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationAwardBadgesToProjectArgs, 'projectId' | 'badgeIds'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
   sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
   sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
   sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
+  createBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationCreateBadgeArgs, 'input'>>;
+  editBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationEditBadgeArgs, 'id' | 'input'>>;
+  deleteBadge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteBadgeArgs, 'id'>>;
   createKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationCreateKanbanCanonArgs, 'input'>>;
   editKanbanCanon?: Resolver<ResolversTypes['KanbanCanon'], ParentType, ContextType, RequireFields<MutationEditKanbanCanonArgs, 'id' | 'input'>>;
   updateKanbanCanonCardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType, RequireFields<MutationUpdateKanbanCanonCardPositionsArgs, 'id' | 'input'>>;
@@ -869,6 +991,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   user?: Resolver<Maybe<ResolversTypes['PublicUser']>, ParentType, ContextType>;
   meet?: Resolver<Maybe<ResolversTypes['Meet']>, ParentType, ContextType>;
   mediaAssets?: Resolver<Maybe<Array<ResolversTypes['MediaAsset']>>, ParentType, ContextType>;
+  badges?: Resolver<Maybe<Array<Maybe<ResolversTypes['Badge']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -879,6 +1002,22 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
   index?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type BadgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']> = {
+  id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
+  alias?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  badgeShape?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  faIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  backgroundHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  iconHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  weight?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
@@ -935,6 +1074,7 @@ export type Resolvers<ContextType = any> = {
   Meet?: MeetResolvers<ContextType>;
   Project?: ProjectResolvers<ContextType>;
   MediaAsset?: MediaAssetResolvers<ContextType>;
+  Badge?: BadgeResolvers<ContextType>;
   KanbanCanon?: KanbanCanonResolvers<ContextType>;
   KanbanCanonCard?: KanbanCanonCardResolvers<ContextType>;
   KanbanCardPositions?: KanbanCardPositionsResolvers<ContextType>;

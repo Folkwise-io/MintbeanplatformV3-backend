@@ -7,11 +7,11 @@ import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
 import {
   Kanban,
+  MutationCreateKanbanArgs,
   KanbanCanon,
   Meet,
-  MutationCreateKanbanArgs,
-  MutationDeleteKanbanArgs,
   MutationUpdateKanbanCanonCardPositionsArgs,
+  MutationDeleteKanbanArgs,
 } from "../types/gqlGeneratedTypes";
 import { User } from "../types/User";
 import { ensureExists } from "../util/ensureExists";

@@ -12,7 +12,6 @@ const kanbanCanonCardResolver = (
   return {
     Query: {
       kanbanCanonCard: (_root, args, context: ServerContext): Promise<KanbanCanonCard> => {
-        // TODO: validate?
         return kanbanCanonCardResolverValidator
           .getOne(args, context)
           .then((args) => kanbanCanonCardService.getOne(args));

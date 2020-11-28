@@ -5,14 +5,22 @@ import buildApolloServer from "../../src/buildApolloServer";
 import buildExpressServer from "../../src/buildExpressServer";
 import { GraphQLResponse } from "apollo-server-types";
 import { DocumentNode, GraphQLFormattedError, GraphQLSchema, print } from "graphql";
-import { ApolloError, ApolloServer } from "apollo-server-express";
-import { KanbanCanonCard, MediaAsset, Meet, Project } from "../../src/types/gqlGeneratedTypes";
+import { ApolloServer } from "apollo-server-express";
+import {
+  Badge,
+  KanbanCanonCard,
+  MediaAsset,
+  Meet,
+  MutationAwardBadgesToProjectArgs,
+  Project,
+} from "../../src/types/gqlGeneratedTypes";
 import { User } from "../../src/types/User";
 import { Application } from "express";
 import supertest, { Response, SuperTest, Test } from "supertest";
 import setCookieParser, { Cookie } from "set-cookie-parser";
 import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
 import MeetRegistration from "../../src/types/MeetRegistration";
+import BadgeProject from "../../src/types/badgeProject";
 import { KanbanCanonRaw } from "./daos/TestKanbanCanonDaoKnex";
 import { buildTestPersistenceContext, TestPersistenceContext } from "./daos/util/buildTestPersistenceContext";
 import { KanbanSessionRaw } from "./daos/TestKanbanDaoKnex";
@@ -65,6 +73,10 @@ export default class TestManager {
     return this.params.persistenceContext.projectDao.addMany(projects).then(() => this);
   }
 
+  addBadges(badges: Badge[]): Promise<TestManager> {
+    return this.params.persistenceContext.badgeDao.addMany(badges).then(() => this);
+  }
+
   addMediaAssets(mediaAssets: MediaAsset[]): Promise<MediaAsset[]> {
     return this.params.persistenceContext.mediaAssetDao.addMany(mediaAssets);
   }
@@ -76,6 +88,11 @@ export default class TestManager {
   addMeetRegistrations(meetRegistrations: MeetRegistration[]): Promise<void> {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
   }
+
+  awardBadgesToProject(badgeProject: MutationAwardBadgesToProjectArgs): Promise<BadgeProject> {
+    return this.params.persistenceContext.badgeProjectDao.addOne(badgeProject);
+  }
+
   addKanbanCanons(kanbanCanons: KanbanCanonRaw[]): Promise<void> {
     return this.params.persistenceContext.kanbanCanonDao.addMany(kanbanCanons);
   }
@@ -95,6 +112,10 @@ export default class TestManager {
 
   deleteAllProjects(): Promise<void> {
     return this.params.persistenceContext.projectDao.deleteAll();
+  }
+
+  deleteAllBadges(): Promise<void> {
+    return this.params.persistenceContext.badgeDao.deleteAll();
   }
 
   deleteAllMediaAssets() {

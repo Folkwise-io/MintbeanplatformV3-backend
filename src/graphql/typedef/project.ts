@@ -80,6 +80,9 @@ const project = gql`
 
     "Deletes a project by ID (user must be logged in and own the project)"
     deleteProject(id: UUID!): Boolean!
+
+    "adds badges to a project by id (admin only)"
+    awardBadgesToProject(projectId: UUID!, badgeIds: [UUID]!): Project
   }
 `;
 

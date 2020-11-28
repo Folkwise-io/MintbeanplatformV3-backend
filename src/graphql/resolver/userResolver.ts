@@ -104,7 +104,7 @@ const userResolver = (
 
         return userResolverValidator
           .addOne(args)
-          .then((input) => userService.addOne(input))
+          .then(({ input }) => userService.addOne(input))
           .then(mapUserToPrivateUser)
           .then((user) => {
             const token = generateJwt(user);

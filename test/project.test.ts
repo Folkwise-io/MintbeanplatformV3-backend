@@ -1,4 +1,12 @@
 import { MediaAsset, Meet, Project } from "../src/types/gqlGeneratedTypes";
+import {
+  AWARD_BADGES_TO_PROJECT,
+  GET_MEET_WITH_NESTED_BADGES,
+  GET_PROJECT_WITH_NESTED_BADGES,
+  WINNER_FIRST,
+  WINNER_SECOND,
+  WINNER_THIRD,
+} from "./src/constants/badgeConstants";
 import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/constants/mediaAssetConstants";
 import { ALGOLIA, PAPERJS } from "./src/constants/meetConstants";
 import {
@@ -351,5 +359,151 @@ describe("Deleting projects", () => {
         cookies: bobCookies,
       })
       .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
+  });
+});
+
+describe("awarding badges", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllBadges();
+    await testManager.deleteAllProjects();
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+    await testManager.addBadges([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]);
+  });
+
+  it("returns project with awarded badge if admin is logged in and gives valid params (single badge)", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+        expect(awardBadgesToProject.badges).toEqual(expect.arrayContaining([WINNER_FIRST]));
+      });
+  });
+
+  it("returns project with awarded badges if admin is logged in and gives valid params (multiple badges)", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+        expect(awardBadgesToProject.badges).toEqual(
+          expect.arrayContaining([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]),
+        );
+      });
+  });
+
+  it("returns project with no badges if given empty array", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+        expect(awardBadgesToProject.badges).toEqual([]);
+      });
+  });
+
+  it("throws an 'authentication' error if no admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: [],
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)authorized]/i));
+  });
+
+  it("gives an error message from validator if id of project does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: "7fab763c-0bac-4ccc-b2b7-b8587104c10c",
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+});
+
+describe("nested badge queries", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllBadges();
+    await testManager.deleteAllProjects();
+    await testManager.deleteAllMeets();
+    await testManager.addMeets([PAPERJS]);
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+    await testManager.addBadges([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]);
+  });
+
+  it("gets the projects that have been awarded this project as a nested field", async () => {
+    //award badges to project
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+      });
+
+    //then query for the new data
+    await testManager
+      .getGraphQLResponse({
+        query: GET_PROJECT_WITH_NESTED_BADGES,
+        variables: {
+          id: AMY_PAPERJS_PROJECT.id,
+        },
+      })
+      .then(testManager.parseData)
+      .then(({ project }) => {
+        expect(project.id).toMatch(AMY_PAPERJS_PROJECT.id);
+        expect(project.badges).toEqual(expect.arrayContaining([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]));
+      });
+  });
+
+  it("returns a meet with nested project and badges", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: GET_MEET_WITH_NESTED_BADGES,
+        variables: {
+          id: PAPERJS.id,
+        },
+      })
+      .then(testManager.parseData)
+      .then(({ meet }) => {
+        expect(meet.id).toBe(PAPERJS.id);
+      });
   });
 });

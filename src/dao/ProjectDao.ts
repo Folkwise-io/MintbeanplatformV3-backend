@@ -7,6 +7,7 @@ export interface ProjectDaoGetOneArgs {
 export interface ProjectDaoGetManyArgs {
   userId?: string;
   meetId?: string;
+  badgeId?: string;
 }
 
 export interface ProjectDaoAddOneInput {

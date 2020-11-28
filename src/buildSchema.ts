@@ -15,6 +15,8 @@ import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 import meetRegistration from "./graphql/typedef/meetRegistration";
 import email from "./graphql/typedef/email";
 import emailResolver from "./graphql/resolver/emailResolver";
+import badge from "./graphql/typedef/badge";
+import badgeResolver from "./graphql/resolver/badgeResolver";
 import kanbanCanon from "./graphql/typedef/kanbanCanon";
 import kanbanCanonResolver from "./graphql/resolver/kanbanCanonResolver";
 import kanbanCanonCard from "./graphql/typedef/kanbanCanonCard";
@@ -32,6 +34,9 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectResolverValidator,
     emailResolverValidator,
     emailService,
+    badgeResolverValidator,
+    badgeService,
+    badgeProjectService,
     kanbanCanonService,
     kanbanCanonResolverValidator,
     kanbanCanonCardService,
@@ -57,6 +62,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     mediaAsset,
     meetRegistration,
     email,
+    badge,
     kanbanCanon,
     kanbanCanonCard,
     kanban,
@@ -65,9 +71,10 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     customScalarsResolver,
     userResolver(userResolverValidator, userService, userDao),
     meetResolver(meetResolverValidator, meetService, meetRegistrationDao, userDao, emailService, meetDao),
-    projectResolver(projectResolverValidator, projectDao, mediaAssetDao, projectMediaAssetDao),
+    projectResolver(projectResolverValidator, projectDao, mediaAssetDao, projectMediaAssetDao, badgeProjectService),
     mediaAssetResolver(mediaAssetDao),
     emailResolver(emailResolverValidator, emailService, meetDao),
+    badgeResolver(badgeResolverValidator, badgeService),
     kanbanCanonResolver(kanbanCanonResolverValidator, kanbanCanonService, kanbanCanonDao),
     kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService, kanbanCanonCardDao),
     kanbanResolver(kanbanResolverValidator, kanbanService, kanbanDao),
