@@ -150,7 +150,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailService = new EmailService(emailDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
-  const badgeProjectService = new BadgeProjectService(badgeProjectDao);
+  const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
 
   return {
     userResolverValidator,

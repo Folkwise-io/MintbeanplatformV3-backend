@@ -107,7 +107,7 @@ const projectResolver = (
 
       awardBadgesToProject: (_root, args, context: ServerContext): Promise<Project | null> => {
         return projectResolverValidator.awardBadgesToProject(args, context).then(async ({ projectId, badgeIds }) => {
-          await badgeProjectService.addOne({ projectId, badgeIds }, context);
+          await badgeProjectService.syncBadges({ projectId, badgeIds }, context);
           const project = await projectDao.getOne({ id: projectId });
           return project || null;
         });
