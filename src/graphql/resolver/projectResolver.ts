@@ -113,6 +113,7 @@ const projectResolver = (
         return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectDao.deleteOne(id));
       },
 
+      //awards an array of badges to a project. this deletes previous badges in the database
       awardBadgesToProject: (_root, args, context: ServerContext): Promise<Project | null> => {
         return projectResolverValidator.awardBadgesToProject(args, context).then(async ({ projectId, badgeIds }) => {
           await badgeProjectService.syncBadges({ projectId, badgeIds }, context);

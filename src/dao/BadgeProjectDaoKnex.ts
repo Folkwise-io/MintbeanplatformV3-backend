@@ -15,8 +15,6 @@ export default class BadgeProjectDaoKnex implements BadgeProjectDao {
       return badges;
     });
   }
-
-  // "select "badges".* from "badgesProjects" left join "badges" on "badges"."id" = "badgesProjects"."badgeId" where "projectId" = '00000000-"
   async syncBadges({ projectId, badgeIds }: MutationAwardBadgesToProjectArgs): Promise<void> {
     const bpToInsert = badgeIds.map((badgeId) => ({ projectId, badgeId }));
     return handleDatabaseError(async () => {
