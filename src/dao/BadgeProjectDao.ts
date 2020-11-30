@@ -1,6 +1,11 @@
 import BadgeProject from "../types/badgeProject";
-import { MutationAwardBadgesToProjectArgs } from "../types/gqlGeneratedTypes";
+import { Badge, MutationAwardBadgesToProjectArgs } from "../types/gqlGeneratedTypes";
+
+export interface BadgeProjectDaoGetManyArgs {
+  projectId: string;
+}
 
 export default interface BadgeProjectDao {
-  addOne(badgesProject: MutationAwardBadgesToProjectArgs): Promise<BadgeProject>;
+  syncBadges(badgesProject: MutationAwardBadgesToProjectArgs): Promise<void>;
+  getMany(args: BadgeProjectDaoGetManyArgs): Promise<Badge[]>;
 }

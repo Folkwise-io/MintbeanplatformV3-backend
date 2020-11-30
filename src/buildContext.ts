@@ -94,6 +94,7 @@ export interface ResolverContext {
   emailService: EmailService;
   badgeResolverValidator: BadgeResolverValidator;
   badgeService: BadgeService;
+  badgeProjectDao: BadgeProjectDao;
   badgeProjectService: BadgeProjectService;
   kanbanCanonService: KanbanCanonService;
   kanbanCanonResolverValidator: KanbanCanonResolverValidator;
@@ -150,7 +151,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailService = new EmailService(emailDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
-  const badgeProjectService = new BadgeProjectService(badgeProjectDao);
+  const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
 
   return {
     userResolverValidator,
@@ -162,6 +163,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     emailService,
     badgeResolverValidator,
     badgeService,
+    badgeProjectDao,
     badgeProjectService,
     kanbanCanonService,
     kanbanCanonCardService,

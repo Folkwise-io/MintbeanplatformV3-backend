@@ -13,11 +13,6 @@ const badgeResolver = (badgeResolverValidator: BadgeResolverValidator, badgeServ
         return badgeResolverValidator.getOne(args, context).then((args) => badgeService.getOne(args));
       },
     },
-    Project: {
-      badges: (project): Promise<Badge[]> => {
-        return badgeService.getMany({ projectId: project.id });
-      },
-    },
     Mutation: {
       createBadge: (_root, args, context: ServerContext): Promise<Badge> => {
         return badgeResolverValidator.addOne(args, context).then((input) => badgeService.addOne(input));

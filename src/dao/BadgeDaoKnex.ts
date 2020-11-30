@@ -12,10 +12,9 @@ export default class BadgeDaoKnex implements BadgeDao {
   async getMany(args: BadgeServiceGetManyArgs): Promise<Badge[]> {
     return handleDatabaseError(async () => {
       const badges: Badge[] = await this.knex("badges")
-        .select(["badges.*"])
-        .leftJoin("badgesProjects", "badges.id", "=", "badgesProjects.badgeId")
+        .select("*")
         .where({ ...args })
-        .orderBy("badges.createdAt", "desc");
+        .orderBy("createdAt", "desc");
       return badges;
     });
   }
