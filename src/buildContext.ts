@@ -94,6 +94,7 @@ export interface ResolverContext {
   emailService: EmailService;
   badgeResolverValidator: BadgeResolverValidator;
   badgeService: BadgeService;
+  badgeProjectDao: BadgeProjectDao;
   badgeProjectService: BadgeProjectService;
   kanbanCanonService: KanbanCanonService;
   kanbanCanonResolverValidator: KanbanCanonResolverValidator;
@@ -162,6 +163,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     emailService,
     badgeResolverValidator,
     badgeService,
+    badgeProjectDao,
     badgeProjectService,
     kanbanCanonService,
     kanbanCanonCardService,
