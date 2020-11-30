@@ -10,6 +10,7 @@ import {
 } from "../types/gqlGeneratedTypes";
 import { ensureExists } from "../util/ensureExists";
 import { validateAtLeastOneFieldPresent } from "../util/validateAtLeastOneFieldPresent";
+import ensureAdmin from "../util/ensureAdmin";
 
 export default class MeetResolverValidator {
   constructor(private meetDao: MeetDao) {}
@@ -19,15 +20,17 @@ export default class MeetResolverValidator {
     return args;
   }
 
-  async addOne({ input }: MutationCreateMeetArgs, _context: ServerContext): Promise<MeetDaoAddOneInput> {
+  async addOne({ input }: MutationCreateMeetArgs, context: ServerContext): Promise<MeetDaoAddOneInput> {
     //TODO: Validate createMeet args
+    ensureAdmin(context);
     return input;
   }
 
   async editOne(
     { id, input }: MutationEditMeetArgs,
-    _context: ServerContext,
+    context: ServerContext,
   ): Promise<{ id: string; input: MeetDaoEditOneInput }> {
+    ensureAdmin(context);
     // Check if meet id exists in db
     await this.meetDao.getOne({ id }).then((meet) => ensureExists("Meet")(meet));
 
@@ -37,7 +40,8 @@ export default class MeetResolverValidator {
     return { id, input };
   }
 
-  async deleteOne({ id }: MutationDeleteMeetArgs): Promise<MutationDeleteMeetArgs> {
+  async deleteOne({ id }: MutationDeleteMeetArgs, context: ServerContext): Promise<MutationDeleteMeetArgs> {
+    ensureAdmin(context);
     // Check if meet id exists in db
     const meet = await this.meetDao.getOne({ id });
     ensureExists("Meet")(meet);

@@ -35,25 +35,13 @@ const meetResolver = (
 
     Mutation: {
       createMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-        if (!context.getIsAdmin()) {
-          throw new AuthenticationError("You are not authorized to create new meets!");
-        }
-
         return meetResolverValidator.addOne(args, context).then((input) => meetDao.addOne(input));
       },
       editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
-        if (!context.getIsAdmin()) {
-          throw new AuthenticationError("You are not authorized to edit meets!");
-        }
-
         return meetResolverValidator.editOne(args, context).then(({ id, input }) => meetDao.editOne(id, input));
       },
       deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
-        if (!context.getIsAdmin()) {
-          throw new AuthenticationError("You are not authorized to delete meets!");
-        }
-
-        return meetResolverValidator.deleteOne(args).then(({ id }) => meetDao.deleteOne(id));
+        return meetResolverValidator.deleteOne(args, context).then(({ id }) => meetDao.deleteOne(id));
       },
 
       // TODO: antipattern here. Force args interface to require explicit userId
