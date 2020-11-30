@@ -1,4 +1,4 @@
-import { ALGOLIA } from "./src/meetConstants";
+import { ALGOLIA } from "./src/constants/meetConstants";
 import {
   ALGOLIA_3,
   AMY_ANIMATION_TOYS_2_REGISTRATION,
@@ -7,10 +7,11 @@ import {
   GET_REGISTRANTS_FOR_MEET_QUERY,
   GET_USER_REGISTERED_MEETS_QUERY,
   REGISTER_FOR_MEET_QUERY,
-} from "./src/meetRegistrationConstants";
+} from "./src/constants/meetRegistrationConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getBobCookies, getAdminCookies } from "./src/util";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 let bobCookies: string[];
@@ -68,7 +69,11 @@ describe("Registering for a meet", () => {
 
   it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
     await testManager
-      .getGraphQLData({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ANIMATION_TOYS_2.id }, cookies: adminCookies })
+      .getGraphQLData({
+        query: REGISTER_FOR_MEET_QUERY,
+        variables: { meetId: ANIMATION_TOYS_2.id },
+        cookies: adminCookies,
+      })
       .then(({ registerForMeet }) => expect(registerForMeet).toBe(true));
 
     // Check for registeredMeets in me query
@@ -93,13 +98,17 @@ describe("Registering for a meet", () => {
 
   it("returns an error message if trying to register without being logged in", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ANIMATION_TOYS_2.id }, cookies: undefined })
-      .then((errorMsg) => expect(errorMsg).toMatch(/not authorized/i));
+      .getErrorCode({
+        query: REGISTER_FOR_MEET_QUERY,
+        variables: { meetId: ANIMATION_TOYS_2.id },
+        cookies: undefined,
+      })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("returns an error message if trying to register for non-existent meet", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
-      .then((errorMsg) => expect(errorMsg).toMatch(/exist/i));
+      .getErrorCode({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
+      .then((errroCode) => expect(errroCode).toMatch(ApolloErrorCodeEnum.InternalServerError));
   });
 });

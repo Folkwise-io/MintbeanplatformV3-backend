@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { CreateProjectInput } from "../../src/types/gqlGeneratedTypes";
+import { CreateProjectInput } from "../../../src/types/gqlGeneratedTypes";
 
 export const AMY_PAPERJS_PROJECT = {
   id: "00000000-0000-0000-0000-000000000000",

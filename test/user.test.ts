@@ -16,7 +16,7 @@ import {
   ME_QUERY,
   NEW_USER_INPUT,
   REGISTER,
-} from "./src/userConstants";
+} from "./src/constants/userConstants";
 import { User } from "../src/types/User";
 const { jwtSecret } = config;
 

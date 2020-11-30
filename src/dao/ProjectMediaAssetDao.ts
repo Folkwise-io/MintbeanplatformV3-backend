@@ -1,7 +1,8 @@
-import { ProjectMediaAssetServiceAddOneArgs } from "../service/ProjectMediaAssetService";
+export interface ProjectMediaAssetDaoAddOneArgs {
+  mediaAssetId: string;
+  projectId: string;
+}
 
 export default interface ProjectMediaAssetDao {
-  // Below are TestManager methods
-  deleteAll(): Promise<void>;
-  addMany(projectMediaAssets: ProjectMediaAssetServiceAddOneArgs[]): Promise<void>;
+  addMany(projectMediaAssets: ProjectMediaAssetDaoAddOneArgs[]): Promise<void>;
 }

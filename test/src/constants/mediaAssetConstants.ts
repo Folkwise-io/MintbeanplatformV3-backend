@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
-import { MediaAsset } from "../../src/types/gqlGeneratedTypes";
-import ProjectMediaAsset from "../../src/types/ProjectMediaAsset";
+import { MediaAsset } from "../../../src/types/gqlGeneratedTypes";
+import ProjectMediaAsset from "../../../src/types/ProjectMediaAsset";
 import { AMY_PAPERJS_PROJECT, BOB_PAPERJS_PROJECT } from "./projectConstants";
 
 export const AMY_PAPERJS_MEDIA_ASSET_1: MediaAsset = {
