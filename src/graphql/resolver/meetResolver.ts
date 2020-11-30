@@ -1,13 +1,12 @@
-import { AuthenticationError } from "apollo-server-express";
+import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import EmailService from "../../service/EmailService";
-import MeetRegistrationService from "../../service/MeetRegistrationService";
 import MeetService from "../../service/MeetService";
-import UserService from "../../service/UserService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 import config from "../../util/config";
 import { EmailCommander, ScheduledEmailInput } from "../../types/Email";
+import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
+import MeetDao from "../../dao/MeetDao";
 const { disableRegistrationEmail } = config;
 import { EmailTemplateName } from "../../types/Email";
 const { MEET_REGISTRATION } = EmailTemplateName;
@@ -15,18 +14,22 @@ const { MEET_REGISTRATION } = EmailTemplateName;
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
-  meetRegistrationService: MeetRegistrationService,
   emailCommander: EmailCommander,
+  meetRegistrationDao: MeetRegistrationDao,
+  meetDao: MeetDao,
 ): Resolvers => {
   return {
     Query: {
       // TODO: Show "deleted=true" meets for admin? Currently this query does not get Meets with "deleted=true"
       meets: (_root, args, context: ServerContext): Promise<Meet[]> => {
-        return meetResolverValidator.getMany(args, context).then((args) => meetService.getMany(args));
+        return meetResolverValidator.getMany(args, context).then((args) => meetDao.getMany(args));
       },
 
       meet: (_root, args, context: ServerContext): Promise<Meet> => {
-        return meetService.getOne(args);
+        return meetDao.getOne(args).then((result) => {
+          if (!result) throw new ApolloError("Meet not found");
+          return result;
+        });
       },
     },
 
@@ -36,33 +39,32 @@ const meetResolver = (
           throw new AuthenticationError("You are not authorized to create new meets!");
         }
 
-        return meetResolverValidator.addOne(args, context).then((input) => meetService.addOne(input));
+        return meetResolverValidator.addOne(args, context).then((input) => meetDao.addOne(input));
       },
       editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
         if (!context.getIsAdmin()) {
           throw new AuthenticationError("You are not authorized to edit meets!");
         }
 
-        return meetResolverValidator.editOne(args, context).then(({ id, input }) => meetService.editOne(id, input));
+        return meetResolverValidator.editOne(args, context).then(({ id, input }) => meetDao.editOne(id, input));
       },
       deleteMeet: (_root, args, context: ServerContext): Promise<boolean> => {
         if (!context.getIsAdmin()) {
           throw new AuthenticationError("You are not authorized to delete meets!");
         }
 
-        return meetResolverValidator.deleteOne(args).then((id) => meetService.deleteOne(id));
+        return meetResolverValidator.deleteOne(args).then(({ id }) => meetDao.deleteOne(id));
       },
-      registerForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
-        const currentUserId = context.getUserId();
 
-        if (!currentUserId) {
-          throw new AuthenticationError("You are not authorized to register for a meet! Please log in first.");
-        }
+      // TODO: antipattern here. Force args interface to require explicit userId
+      registerForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
+        // TODO: get userId from args, add valid user check in meetResolverValidator once above antipattern addressed
+        const userId = context.getUserId();
 
         return meetResolverValidator
-          .registerForMeet(args)
-          .then((meetId) => meetRegistrationService.addOne({ userId: currentUserId, meetId }, context))
-          .then(async ({ userId, meetId }) => {
+          .registerForMeet(args, context)
+          .then(({ meetId }) => meetRegistrationDao.addOne({ userId, meetId }))
+          .then(async ({ userId, meetId, id }) => {
             if (disableRegistrationEmail) {
               return true;
             }
@@ -81,7 +83,7 @@ const meetResolver = (
 
     Project: {
       meet: (project) => {
-        return meetService.getOne({ id: project.meetId });
+        return meetDao.getOne({ id: project.meetId }).then((result) => (result ? result : null));
       },
     },
 

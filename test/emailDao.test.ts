@@ -1,9 +1,9 @@
 import { ScheduledEmail } from "../src/types/Email";
 import { nDaysAndHoursFromNowInUtcTime } from "../src/util/timeUtils";
-import { ALGOLIA } from "./src/meetConstants";
+import { ALGOLIA } from "./src/constants/meetConstants";
 import { AMY_ALGOLIA_SCHEDULED_EMAIL } from "./src/scheduledEmailConstants";
 import TestManager from "./src/TestManager";
-import { AMY } from "./src/userConstants";
+import { AMY } from "./src/constants/userConstants";
 
 const testManager = TestManager.build();
 const { emailDao } = testManager.params.persistenceContext;

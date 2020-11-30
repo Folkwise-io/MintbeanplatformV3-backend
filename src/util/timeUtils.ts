@@ -29,7 +29,6 @@ export const calculateMeetRegisterLinkStatus = (meet: Meet): RegisterLinkStatus 
 
   const eventStarted = nowUtc.isAfter(startUtc);
   const eventEnded = nowUtc.isAfter(endUtc);
-
   if (eventStarted) {
     if (eventEnded) {
       return RegisterLinkStatus.Closed;

@@ -5,6 +5,7 @@ import { Meet } from "../../../types/gqlGeneratedTypes";
 import { User } from "../../../types/User";
 import config from "../../../util/config";
 import { generateJsonLdHtml, generateIcsAttachments } from "../../../util/emailUtils";
+import { ApolloError } from "apollo-server-express";
 
 const { senderEmail } = config;
 
@@ -28,8 +29,8 @@ export default class MeetRegistrationEmailTemplate implements EmailTemplate {
 
   async inflateVars(scheduledEmail: ScheduledEmail): Promise<MeetRegistrationEmailVars> {
     const { id, userId, meetId } = this.ensureVars(scheduledEmail);
-    const user: User = await this.userDao.getOne({ id: userId });
-    const meet: Meet = await this.meetDao.getOne({ id: meetId });
+    const user = (await this.userDao.getOne({ id: userId })) as User;
+    const meet = (await this.meetDao.getOne({ id: meetId })) as Meet;
     return { id, user, meet };
   }
 

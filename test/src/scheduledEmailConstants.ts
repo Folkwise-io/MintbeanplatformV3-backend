@@ -1,7 +1,7 @@
 import { EmailTemplateName, ScheduledEmail } from "../../src/types/Email";
 import { nDaysAndHoursFromNowInUtcTime } from "../../src/util/timeUtils";
-import { ALGOLIA } from "./meetConstants";
-import { AMY } from "./userConstants";
+import { ALGOLIA } from "./constants/meetConstants";
+import { AMY } from "./constants/userConstants";
 
 const { MEET_REGISTRATION, CHECK_IN_AFTER_SIGN_UP, ALL } = EmailTemplateName;
 

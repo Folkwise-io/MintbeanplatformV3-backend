@@ -1,5 +1,6 @@
 import { EmailTemplateName, ScheduledEmail } from "../src/types/Email";
-import { ALGOLIA, DELETE_MEET } from "./src/meetConstants";
+import { ALGOLIA, DELETE_MEET } from "./src/constants/meetConstants";
+
 import {
   ALGOLIA_3,
   AMY_ANIMATION_TOYS_2_REGISTRATION,
@@ -8,10 +9,11 @@ import {
   GET_REGISTRANTS_FOR_MEET_QUERY,
   GET_USER_REGISTERED_MEETS_QUERY,
   REGISTER_FOR_MEET_QUERY,
-} from "./src/meetRegistrationConstants";
+} from "./src/constants/meetRegistrationConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getBobCookies, getAdminCookies } from "./src/util";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 const { emailDao } = testManager.params.persistenceContext;
@@ -100,18 +102,18 @@ describe("Registering for a meet", () => {
 
   it("returns an error message if trying to register without being logged in", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: REGISTER_FOR_MEET_QUERY,
         variables: { meetId: ANIMATION_TOYS_2.id },
         cookies: undefined,
       })
-      .then((errorMsg) => expect(errorMsg).toMatch(/not authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("returns an error message if trying to register for non-existent meet", async () => {
     await testManager
-      .getErrorMessage({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
-      .then((errorMsg) => expect(errorMsg).toMatch(/exist/i));
+      .getErrorCode({ query: REGISTER_FOR_MEET_QUERY, variables: { meetId: ALGOLIA.id }, cookies: adminCookies })
+      .then((errroCode) => expect(errroCode).toMatch(ApolloErrorCodeEnum.InternalServerError));
   });
 });
 

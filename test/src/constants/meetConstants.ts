@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { CreateMeetInput, EditMeetInput, Meet } from "../../src/types/gqlGeneratedTypes";
+import { CreateMeetInput, EditMeetInput, Meet } from "../../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -31,7 +31,7 @@ export const ALGOLIA: Meet = {
   region: "America/Toronto",
 };
 
-export const GET_MEETS_BY_ID = gql`
+export const GET_MEET_QUERY = gql`
   query getMeetById($id: UUID!) {
     meet(id: $id) {
       id
@@ -46,6 +46,27 @@ export const GET_MEETS_BY_ID = gql`
       createdAt
       updatedAt
       region
+      kanbanCanonId
+      kanbanCanon {
+        id
+        title
+        description
+      }
+      kanban {
+        userId
+        kanbanCanonId
+        createdAt
+        updatedAt
+        meetId
+        id
+        title
+        description
+        kanbanCards {
+          id
+          title
+          body
+        }
+      }
     }
   }
 `;
@@ -65,6 +86,12 @@ export const GET_ALL_MEETS = gql`
       createdAt
       updatedAt
       region
+      kanbanCanonId
+      kanbanCanon {
+        id
+        title
+        description
+      }
     }
   }
 `;

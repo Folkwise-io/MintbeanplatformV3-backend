@@ -1,6 +1,14 @@
 import { MediaAsset, Meet, Project } from "../src/types/gqlGeneratedTypes";
-import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/mediaAssetConstants";
-import { ALGOLIA, PAPERJS } from "./src/meetConstants";
+import {
+  AWARD_BADGES_TO_PROJECT,
+  GET_MEET_WITH_NESTED_BADGES,
+  GET_PROJECT_WITH_NESTED_BADGES,
+  WINNER_FIRST,
+  WINNER_SECOND,
+  WINNER_THIRD,
+} from "./src/constants/badgeConstants";
+import { GET_PROJECT_WITH_NESTED_MEDIA_ASSETS } from "./src/constants/mediaAssetConstants";
+import { ALGOLIA, PAPERJS } from "./src/constants/meetConstants";
 import {
   AMY_ALGOLIA_PROJECT,
   AMY_PAPERJS_PROJECT,
@@ -14,10 +22,11 @@ import {
   GET_USER_WITH_NESTED_PROJECTS,
   NEW_PROJECT,
   NEW_PROJECT_WITH_MEDIA_ASSETS,
-} from "./src/projectConstants";
+} from "./src/constants/projectConstants";
 import TestManager from "./src/TestManager";
-import { AMY, BOB } from "./src/userConstants";
+import { AMY, BOB } from "./src/constants/userConstants";
 import { getAdminCookies, getBobCookies } from "./src/util";
+import { ApolloErrorCodeEnum } from "./src/constants/errors";
 
 const testManager = TestManager.build();
 
@@ -64,16 +73,16 @@ describe("'project' by id root query", () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
-      .getErrorMessage({ query: GET_PROJECT, variables: { id: "12345" } })
-      .then((errorMessage) => expect(errorMessage).toMatch(/invalid.*UUID/i));
+      .getErrorCode({ query: GET_PROJECT, variables: { id: "12345" } })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 
   it("returns an appropriate error message if no UUID is supplied", async () => {
     await testManager.addProjects([AMY_PAPERJS_PROJECT]);
 
     await testManager
-      .getErrorMessage({ query: GET_PROJECT, variables: {} })
-      .then((errorMessage) => expect(errorMessage).toMatch(/id.*not provided/i));
+      .getErrorCode({ query: GET_PROJECT, variables: {} })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 });
 
@@ -167,19 +176,19 @@ describe("Creating projects without media assets", () => {
 
   it("gives an error message when accessing createProject without being logged in", async () => {
     await testManager
-      .getErrorMessage({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+      .getErrorCode({ query: CREATE_PROJECT, variables: { input: NEW_PROJECT } })
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("gives an error message when supplying a userId that differs from cookie's userId", async () => {
     const input = { ...NEW_PROJECT, userId: AMY.id };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not | un)]authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("does not give an error message when supplying a userId that is the same as cookie's userId", async () => {
@@ -211,12 +220,12 @@ describe("Creating projects without media assets", () => {
         "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/title/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.BadUserInput));
   });
 
   it("gives an error message when the url is not valid", async () => {
@@ -225,12 +234,12 @@ describe("Creating projects without media assets", () => {
       liveUrl: "httpaaaaaaaaaaaaaaaaaaaaa",
     };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/url/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.BadUserInput));
   });
 });
 
@@ -270,12 +279,12 @@ describe("Creating projects with media assets", () => {
       mediaAssets: [1, 2],
     };
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: CREATE_PROJECT,
         variables: { input },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/mediaAssets/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
   });
 });
 
@@ -307,26 +316,26 @@ describe("Deleting projects", () => {
     await testManager
       .addProjects([BOB_PAPERJS_PROJECT])
       .then(() =>
-        testManager.getErrorMessage({
+        testManager.getErrorCode({
           query: DELETE_PROJECT,
           variables: { id: BOB_PAPERJS_PROJECT.id },
           cookies: undefined,
         }),
       )
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("gives an error message when trying to delete someone else's project", async () => {
     await testManager
       .addProjects([AMY_PAPERJS_PROJECT])
       .then(() =>
-        testManager.getErrorMessage({
+        testManager.getErrorCode({
           query: DELETE_PROJECT,
           variables: { id: AMY_PAPERJS_PROJECT.id },
           cookies: bobCookies,
         }),
       )
-      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)]authorized/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.Unauthenticated));
   });
 
   it("lets the admin delete someone else's project", async () => {
@@ -344,11 +353,157 @@ describe("Deleting projects", () => {
 
   it("gives an error message when trying to delete a project that doesn't exist", async () => {
     await testManager
-      .getErrorMessage({
+      .getErrorCode({
         query: DELETE_PROJECT,
         variables: { id: AMY_PAPERJS_PROJECT.id },
         cookies: bobCookies,
       })
-      .then((errorMessage) => expect(errorMessage).toMatch(/not exist/i));
+      .then((errorCode) => expect(errorCode).toBe(ApolloErrorCodeEnum.InternalServerError));
+  });
+});
+
+describe("awarding badges", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllBadges();
+    await testManager.deleteAllProjects();
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+    await testManager.addBadges([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]);
+  });
+
+  it("returns project with awarded badge if admin is logged in and gives valid params (single badge)", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+        expect(awardBadgesToProject.badges).toEqual(expect.arrayContaining([WINNER_FIRST]));
+      });
+  });
+
+  it("returns project with awarded badges if admin is logged in and gives valid params (multiple badges)", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+        expect(awardBadgesToProject.badges).toEqual(
+          expect.arrayContaining([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]),
+        );
+      });
+  });
+
+  it("returns project with no badges if given empty array", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+        expect(awardBadgesToProject.badges).toEqual([]);
+      });
+  });
+
+  it("throws an 'authentication' error if no admin cookies", async () => {
+    await testManager
+      .getErrorMessage({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: [],
+      })
+      .then((errorMessage) => expect(errorMessage).toMatch(/[(not |un)authorized]/i));
+  });
+
+  it("gives an error message from validator if id of project does not exist", async () => {
+    await testManager
+      .getErrorMessage({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: "7fab763c-0bac-4ccc-b2b7-b8587104c10c",
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: adminCookies,
+      })
+      .then((errorMessage) => {
+        expect(errorMessage).toMatch(/not exist/i);
+      });
+  });
+});
+
+describe("nested badge queries", () => {
+  beforeEach(async () => {
+    await testManager.deleteAllBadges();
+    await testManager.deleteAllProjects();
+    await testManager.deleteAllMeets();
+    await testManager.addMeets([PAPERJS]);
+    await testManager.addProjects([AMY_PAPERJS_PROJECT]);
+    await testManager.addBadges([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]);
+  });
+
+  it("gets the projects that have been awarded this project as a nested field", async () => {
+    //award badges to project
+    await testManager
+      .getGraphQLResponse({
+        query: AWARD_BADGES_TO_PROJECT,
+        variables: {
+          projectId: AMY_PAPERJS_PROJECT.id,
+          badgeIds: [WINNER_FIRST.id, WINNER_SECOND.id, WINNER_THIRD.id],
+        },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ awardBadgesToProject }) => {
+        expect(awardBadgesToProject.id).toBe(AMY_PAPERJS_PROJECT.id);
+      });
+
+    //then query for the new data
+    await testManager
+      .getGraphQLResponse({
+        query: GET_PROJECT_WITH_NESTED_BADGES,
+        variables: {
+          id: AMY_PAPERJS_PROJECT.id,
+        },
+      })
+      .then(testManager.parseData)
+      .then(({ project }) => {
+        expect(project.id).toMatch(AMY_PAPERJS_PROJECT.id);
+        expect(project.badges).toEqual(expect.arrayContaining([WINNER_FIRST, WINNER_SECOND, WINNER_THIRD]));
+      });
+  });
+
+  it("returns a meet with nested project and badges", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: GET_MEET_WITH_NESTED_BADGES,
+        variables: {
+          id: PAPERJS.id,
+        },
+      })
+      .then(testManager.parseData)
+      .then(({ meet }) => {
+        expect(meet.id).toBe(PAPERJS.id);
+      });
   });
 });
