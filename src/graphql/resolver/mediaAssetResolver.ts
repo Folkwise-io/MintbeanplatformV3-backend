@@ -1,15 +1,11 @@
-import MediaAssetService from "../../service/MediaAssetService";
+import MediaAssetDao from "../../dao/MediaAssetDao";
 import { MediaAsset, Resolvers } from "../../types/gqlGeneratedTypes";
-import MediaAssetResolverValidator from "../../validator/MediaAssetResolverValidator";
 
-const mediaAssetResolver = (
-  mediaAssetResolverValidator: MediaAssetResolverValidator,
-  mediaAssetService: MediaAssetService,
-): Resolvers => {
+const mediaAssetResolver = (mediaAssetDao: MediaAssetDao): Resolvers => {
   return {
     Project: {
       mediaAssets: (project): Promise<MediaAsset[]> => {
-        return mediaAssetService.getMany({ projectId: project.id });
+        return mediaAssetDao.getMany({ projectId: project.id });
       },
     },
   };
