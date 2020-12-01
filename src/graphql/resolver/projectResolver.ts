@@ -1,17 +1,19 @@
 import { AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import { Project, Resolvers } from "../../types/gqlGeneratedTypes";
+import { Badge, Project, Resolvers } from "../../types/gqlGeneratedTypes";
 import ProjectResolverValidator from "../../validator/ProjectResolverValidator";
 import MediaAssetDao, { MediaAssetDaoAddManyArgs } from "../../dao/MediaAssetDao";
 import ProjectMediaAssetDao, { ProjectMediaAssetDaoAddOneArgs } from "../../dao/ProjectMediaAssetDao";
 import ProjectDao from "../../dao/ProjectDao";
 import BadgeProjectService from "../../service/BadgeProjectService";
+import BadgeProjectDao from "../../dao/BadgeProjectDao";
 
 const projectResolver = (
   projectResolverValidator: ProjectResolverValidator,
   projectDao: ProjectDao,
   mediaAssetDao: MediaAssetDao,
   projectMediaAssetDao: ProjectMediaAssetDao,
+  badgeProjectDao: BadgeProjectDao,
   badgeProjectService: BadgeProjectService,
 ): Resolvers => {
   return {
@@ -46,6 +48,12 @@ const projectResolver = (
     Badge: {
       projects: (badge, context) => {
         return projectDao.getMany({ badgeId: badge.id });
+      },
+    },
+
+    Project: {
+      badges: (project, context): Promise<Badge[]> => {
+        return badgeProjectDao.getMany({ projectId: project.id });
       },
     },
 
@@ -105,9 +113,10 @@ const projectResolver = (
         return projectResolverValidator.deleteOne(args, context).then(({ id }) => projectDao.deleteOne(id));
       },
 
+      //awards an array of badges to a project. this deletes previous badges in the database
       awardBadgesToProject: (_root, args, context: ServerContext): Promise<Project | null> => {
         return projectResolverValidator.awardBadgesToProject(args, context).then(async ({ projectId, badgeIds }) => {
-          await badgeProjectService.addOne({ projectId, badgeIds }, context);
+          await badgeProjectService.syncBadges({ projectId, badgeIds }, context);
           const project = await projectDao.getOne({ id: projectId });
           return project || null;
         });

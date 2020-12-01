@@ -91,8 +91,8 @@ export default class TestManager {
     return this.params.persistenceContext.meetRegistrationDao.addMany(meetRegistrations);
   }
 
-  awardBadgesToProject(badgeProject: MutationAwardBadgesToProjectArgs): Promise<BadgeProject> {
-    return this.params.persistenceContext.badgeProjectDao.addOne(badgeProject);
+  awardBadgesToProject(badgeProject: MutationAwardBadgesToProjectArgs): Promise<void> {
+    return this.params.persistenceContext.badgeProjectDao.syncBadges(badgeProject);
   }
 
   addKanbanCanons(kanbanCanons: KanbanCanonRaw[]): Promise<void> {

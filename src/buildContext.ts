@@ -102,6 +102,7 @@ export interface ResolverContext {
   cronService: CronService;
   badgeResolverValidator: BadgeResolverValidator;
   badgeService: BadgeService;
+  badgeProjectDao: BadgeProjectDao;
   badgeProjectService: BadgeProjectService;
   kanbanCanonService: KanbanCanonService;
   kanbanCanonResolverValidator: KanbanCanonResolverValidator;
@@ -159,7 +160,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
 
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
-  const badgeProjectService = new BadgeProjectService(badgeProjectDao);
+  const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
 
   return {
     userResolverValidator,
@@ -173,6 +174,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     cronService,
     badgeResolverValidator,
     badgeService,
+    badgeProjectDao,
     badgeProjectService,
     kanbanCanonService,
     kanbanCanonCardService,
