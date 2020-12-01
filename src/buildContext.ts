@@ -43,6 +43,7 @@ import EmailDaoSendgridKnex from "./dao/EmailDaoSendgridKnex";
 import { EmailCommander } from "./types/Email";
 import CronService from "./service/CronService";
 import EmailCommanderImpl from "./service/EmailService/EmailCommander";
+import MeetRegistrationService from "./service/meetRegistrationService";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -115,6 +116,7 @@ export interface ResolverContext {
   kanbanDao: KanbanDao;
   mediaAssetDao: MediaAssetDao;
   meetRegistrationDao: MeetRegistrationDao;
+  meetRegistrationService: MeetRegistrationService;
   meetDao: MeetDao;
   projectMediaAssetDao: ProjectMediaAssetDao;
   projectDao: ProjectDao;
@@ -162,6 +164,8 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
 
+  const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao, emailCommander);
+
   return {
     userResolverValidator,
     userService,
@@ -187,6 +191,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanDao,
     mediaAssetDao,
     meetRegistrationDao,
+    meetRegistrationService,
     meetDao,
     projectMediaAssetDao,
     projectDao,

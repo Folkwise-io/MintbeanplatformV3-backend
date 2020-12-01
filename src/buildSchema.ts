@@ -49,7 +49,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCanonDao,
     kanbanDao,
     mediaAssetDao,
-    meetRegistrationDao,
+    meetRegistrationService,
     meetDao,
     projectMediaAssetDao,
     projectDao,
@@ -72,7 +72,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService, userDao),
-    meetResolver(meetResolverValidator, meetService, emailCommander, meetRegistrationDao, meetDao),
+    meetResolver(meetResolverValidator, meetService, emailCommander, meetRegistrationService, meetDao),
     projectResolver(
       projectResolverValidator,
       projectDao,

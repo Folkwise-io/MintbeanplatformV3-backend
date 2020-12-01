@@ -1,21 +1,19 @@
-import { ApolloError, AuthenticationError } from "apollo-server-express";
+import { ApolloError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import MeetService from "../../service/MeetService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
-import config from "../../util/config";
-import { EmailCommander, ScheduledEmailInput } from "../../types/Email";
+
+import { EmailCommander } from "../../types/Email";
 import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
-const { disableRegistrationEmail } = config;
-import { EmailTemplateName } from "../../types/Email";
-const { MEET_REGISTRATION } = EmailTemplateName;
+import MeetRegistrationService from "../../service/meetRegistrationService";
 
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
   emailCommander: EmailCommander,
-  meetRegistrationDao: MeetRegistrationDao,
+  meetRegistrationService: MeetRegistrationService,
   meetDao: MeetDao,
 ): Resolvers => {
   return {
@@ -51,20 +49,7 @@ const meetResolver = (
 
         return meetResolverValidator
           .registerForMeet(args, context)
-          .then(({ meetId }) => meetRegistrationDao.addOne({ userId, meetId }))
-          .then(async ({ userId, meetId, id }) => {
-            if (disableRegistrationEmail) {
-              return true;
-            }
-            const scheduledEmail: ScheduledEmailInput = {
-              templateName: MEET_REGISTRATION,
-              userId,
-              meetId,
-              sendAt: new Date().toISOString(),
-            };
-
-            return emailCommander.queue(scheduledEmail);
-          })
+          .then(({ meetId }) => meetRegistrationService.addOne({ userId, meetId }))
           .then(() => true);
       },
     },
