@@ -27,13 +27,18 @@ const project = gql`
     updatedAt: DateTime!
 
     "The user who created the project"
-    user: User
+    user: PublicUser
 
     "The meet associated with the project"
     meet: Meet
   }
 
-  extend type User {
+  extend type PublicUser {
+    "All the projects that the user has submitted"
+    projects: [Project!]
+  }
+
+  extend type PrivateUser {
     "All the projects that the user has submitted"
     projects: [Project!]
   }
@@ -75,6 +80,9 @@ const project = gql`
 
     "Deletes a project by ID (user must be logged in and own the project)"
     deleteProject(id: UUID!): Boolean!
+
+    "Adds badges to a project by ids (WARNING: overwrites existing badges for project) (admin only)"
+    awardBadgesToProject(projectId: UUID!, badgeIds: [UUID]!): Project
   }
 `;
 

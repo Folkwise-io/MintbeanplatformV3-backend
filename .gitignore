@@ -1,3 +1,5 @@
+db/backups/
+
 ### Linux ###
 *~
 
@@ -118,6 +120,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# VSCode settings file
+/.vscode/settings.json
+
 
 # End of https://www.gitignore.io/api/osx,node,linux,windows
 
@@ -132,3 +137,6 @@ tsconfig.tsbuildinfo
 
 # ENV files
 .env
+
+# Backup files 
+/db/backups
