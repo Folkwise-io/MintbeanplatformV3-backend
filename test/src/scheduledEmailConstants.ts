@@ -3,11 +3,11 @@ import { nDaysAndHoursFromNowInUtcTime } from "../../src/util/timeUtils";
 import { ALGOLIA } from "./constants/meetConstants";
 import { AMY } from "./constants/userConstants";
 
-const { MEET_REGISTRATION, CHECK_IN_AFTER_SIGN_UP, ALL } = EmailTemplateName;
+const { HACKATHON_REGISTRATION_CONFIRM } = EmailTemplateName;
 
 export const AMY_ALGOLIA_SCHEDULED_EMAIL: ScheduledEmail = {
   id: "00000000-0000-0000-0000-000000000000",
-  templateName: MEET_REGISTRATION,
+  templateName: HACKATHON_REGISTRATION_CONFIRM,
   userId: AMY.id,
   meetId: ALGOLIA.id,
   sendAt: nDaysAndHoursFromNowInUtcTime(0),

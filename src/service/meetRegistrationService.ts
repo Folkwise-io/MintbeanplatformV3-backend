@@ -32,14 +32,13 @@ export default class MeetRegistrationService {
     const meet = ((await this.meetDao.getOne({ id: meetId })) as unknown) as Meet;
     ensureExists("Meet")(meet);
 
-    console.log("entered addOne");
     if (!disableRegistrationEmail) {
       let confirmationEmail: ScheduledEmailInput;
       let reminder1: ScheduledEmailInput;
       let reminder2: ScheduledEmailInput;
       // TODO: align meetTypes with Celeste's new branch - currently 'hackMeet' but will become 'hackathon'
       if (meet.meetType === "hackMeet") {
-        // TODO: refactor the templating of these three emails to a single method since they all take same params
+        // TODO: refactor the templating of these emails to a single method since they all take same params
         confirmationEmail = {
           templateName: HACKATHON_REGISTRATION_CONFIRM,
           userId,
@@ -64,7 +63,7 @@ export default class MeetRegistrationService {
           sendAt: new Date().toISOString(),
         };
       } else {
-        // TODO: refactor the templating of these three emails to a single method since they all take same params
+        // TODO: refactor the templating of these emails to a single method since they all take same params
         confirmationEmail = {
           templateName: WORKSHOP_REGISTRATION_CONFIRM,
           userId,
