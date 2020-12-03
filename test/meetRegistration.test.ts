@@ -69,8 +69,6 @@ describe("Querying to find registrants of meets", () => {
 });
 
 describe("Registering for a meet", () => {
-  beforeAll(async () => {});
-
   it("lets a logged in user register for a meet and then the meet shows up in registeredMeets query", async () => {
     await testManager
       .getGraphQLData({
@@ -118,23 +116,72 @@ describe("Registering for a meet", () => {
 });
 
 describe("Email queue after registering for a meet", () => {
-  it("lets a logged in user register for a meet and then the email gets queued as is part of the overdue scheduled emails", async () => {
+  it("lets a logged in user register for a hackathon meet and then 3 emails get queued including one for immediate sending", async () => {
     await testManager.getGraphQLData({
       query: REGISTER_FOR_MEET_QUERY,
       variables: { meetId: ANIMATION_TOYS_2.id },
       cookies: adminCookies,
     });
 
-    // Check that an email is queued in the db for immediate sending
+    // Check that 3 emails are queued in the db : confirm (immediate), reminder 1 (T-24hr), reminder 2 (T-30min)
     await emailDao.getOverdueScheduledEmails().then((scheduledEmails: ScheduledEmail[]) => {
-      expect(scheduledEmails).toHaveLength(1);
+      expect(scheduledEmails).toHaveLength(3); //
+      const confirm = scheduledEmails[0];
+      const reminder1 = scheduledEmails[1];
+      const reminder2 = scheduledEmails[2];
 
-      expect(scheduledEmails[0]).toMatchObject({
-        templateName: EmailTemplateName.MEET_REGISTRATION,
+      expect(confirm).toMatchObject({
+        templateName: EmailTemplateName.HACKATHON_REGISTRATION_CONFIRM,
+        userId: AMY.id,
+        meetId: ANIMATION_TOYS_2.id,
+      });
+      expect(new Date(confirm.sendAt) <= new Date()).toBe(true);
+
+      expect(reminder1).toMatchObject({
+        templateName: EmailTemplateName.HACKATHON_REGISTRATION_REMINDER_1,
+        userId: AMY.id,
+        meetId: ANIMATION_TOYS_2.id,
+      });
+      expect(reminder2).toMatchObject({
+        templateName: EmailTemplateName.HACKATHON_REGISTRATION_REMINDER_2,
         userId: AMY.id,
         meetId: ANIMATION_TOYS_2.id,
       });
     });
+    // TODO: test the same for workshop meet
+
+    // it("lets a logged in user register for a hackathon meet and then 3 emails get queued including one for immediate sending", async () => {
+    //   await testManager.getGraphQLData({
+    //     query: REGISTER_FOR_MEET_QUERY,
+    //     variables: { meetId: ANIMATION_TOYS_2.id },
+    //     cookies: adminCookies,
+    //   });
+
+    //   // Check that 3 emails are queued in the db : confirm (immediate), reminder 1 (T-24hr), reminder 2 (T-30min)
+    //   await emailDao.getOverdueScheduledEmails().then((scheduledEmails: ScheduledEmail[]) => {
+    //     expect(scheduledEmails).toHaveLength(3); //
+    //     const confirm = scheduledEmails[0];
+    //     const reminder1 = scheduledEmails[1];
+    //     const reminder2 = scheduledEmails[2];
+
+    //     expect(confirm).toMatchObject({
+    //       templateName: EmailTemplateName.HACKATHON_REGISTRATION_CONFIRM,
+    //       userId: AMY.id,
+    //       meetId: ANIMATION_TOYS_2.id,
+    //     });
+    //     expect(new Date(confirm.sendAt) <= new Date()).toBe(true);
+
+    //     expect(reminder1).toMatchObject({
+    //       templateName: EmailTemplateName.HACKATHON_REGISTRATION_REMINDER_1,
+    //       userId: AMY.id,
+    //       meetId: ANIMATION_TOYS_2.id,
+    //     });
+    //     expect(reminder2).toMatchObject({
+    //       templateName: EmailTemplateName.HACKATHON_REGISTRATION_REMINDER_2,
+    //       userId: AMY.id,
+    //       meetId: ANIMATION_TOYS_2.id,
+    //     });
+    //   });
   });
 
   it("doesn't find the scheduled email if admin deletes meet after the user registers", async () => {

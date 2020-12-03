@@ -21,11 +21,15 @@ export interface Attachment {
 // Do not change the string literals after scheduleEmails has been created on staging/prod!
 /** Possible names for the email templates. Each generates different html, which may be based on userId and meetId */
 export enum EmailTemplateName {
-  MEET_REGISTRATION = "meetRegistration",
-  MEET_REMINDER = "meetReminder",
-  WELCOME = "welcome",
-  CHECK_IN_AFTER_SIGN_UP = "checkInAfterSignup",
-  ALL = "all",
+  HACKATHON_REGISTRATION_CONFIRM = "hackathonRegistrationConfirm",
+  HACKATHON_REGISTRATION_REMINDER_1 = "hackathonRegistrationReminder1",
+  HACKATHON_REGISTRATION_REMINDER_2 = "hackathonRegistrationReminder2",
+  WORKSHOP_REGISTRATION_CONFIRM = "workshopRegistrationConfirm",
+  WORKSHOP_REGISTRATION_REMINDER_1 = "workshopRegistrationReminder1",
+  WORKSHOP_REGISTRATION_REMINDER_2 = "workshopRegistrationReminder2",
+  // WELCOME = "welcome",
+  // CHECK_IN_AFTER_SIGN_UP = "checkInAfterSignup",
+  // ALL = "all",
 }
 
 /** The database representation of a scheduled email */

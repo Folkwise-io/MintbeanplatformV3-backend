@@ -164,7 +164,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
 
-  const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao, emailCommander);
+  const meetRegistrationService = new MeetRegistrationService(meetRegistrationDao, emailCommander, meetDao);
 
   return {
     userResolverValidator,

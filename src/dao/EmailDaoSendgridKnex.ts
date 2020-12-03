@@ -12,6 +12,8 @@ sgMail.setApiKey(sendgridKey);
 export default class EmailDaoSendgridKnex implements EmailDao {
   constructor(private knex: Knex) {}
 
+  // TODO: Add try catch to queue to fail silently
+  // TODO: Manually test a bad apple email in the queue batch
   queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
     return handleDatabaseError(() => {
       return this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmail);
@@ -22,6 +24,8 @@ export default class EmailDaoSendgridKnex implements EmailDao {
     return handleDatabaseError(() => {
       return this.knex<ScheduledEmail>("scheduledEmails").where({ sent: false }).orderBy("sendAt");
     });
+    // TODO: filter out deleted meets/users?
+
     // return handleDatabaseError(() => {
     //   return this.knex<ScheduledEmail>("scheduledEmails")
     //     .select("scheduledEmails.*")
@@ -50,6 +54,9 @@ export default class EmailDaoSendgridKnex implements EmailDao {
       await this.knex<ScheduledEmail>("scheduledEmails").update({ sent: true }).where({ id });
     });
   }
+
+  // TODO: Manually test a bad apple email in the send batch
+  // TOOD: make it clear that we are failing silently (intentionally) in partial fail case
 
   sendEmail(email: Email): Promise<EmailResponse> {
     return sgMail.send(email).then(

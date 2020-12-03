@@ -10,21 +10,36 @@ import {
   ScheduledEmail,
   ScheduledEmailInput,
 } from "../../types/Email";
-import MeetRegistrationEmailTemplate from "./templates/MeetRegistrationEmailTemplate";
-import MeetReminderEmailTemplate from "./templates/MeetReminderEmailTemplate";
+import HackathonRegistrationConfirmEmailTemplate from "./templates/meetRegistration/hackathon/HackathonRegistrationConfirmEmailTemplate";
+import HackathonRegistrationReminder1EmailTemplate from "./templates/meetRegistration/hackathon/HackathonRegistrationReminder1EmailTemplate";
+import HackathonRegistrationReminder2EmailTemplate from "./templates/meetRegistration/hackathon/HackathonRegistrationReminder2EmailTemplate";
+import WorkshopRegistrationConfirmEmailTemplate from "./templates/meetRegistration/workshop/WorkshopRegistrationConfirmEmailTemplate";
+import WorkshopRegistrationReminder2EmailTemplate from "./templates/meetRegistration/workshop/WorkshopRegistrationReminder2EmailTemplate";
+import WorkshopRegistrationReminder1EmailTemplate from "./templates/meetRegistration/workshop/WorkshopRegistrationReminder2EmailTemplate";
 
-const { MEET_REGISTRATION, MEET_REMINDER, WELCOME, ALL, CHECK_IN_AFTER_SIGN_UP } = EmailTemplateName;
+const {
+  HACKATHON_REGISTRATION_CONFIRM,
+  HACKATHON_REGISTRATION_REMINDER_1,
+  HACKATHON_REGISTRATION_REMINDER_2,
+  WORKSHOP_REGISTRATION_CONFIRM,
+  WORKSHOP_REGISTRATION_REMINDER_1,
+  WORKSHOP_REGISTRATION_REMINDER_2,
+} = EmailTemplateName;
 export default class EmailCommanderImpl implements EmailCommander {
   constructor(private emailDao: EmailDao, private userDao: UserDao, private meetDao: MeetDao) {}
 
   templates: {
     [key in EmailTemplateName]: EmailTemplate;
   } = {
-    [MEET_REGISTRATION]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
-    [MEET_REMINDER]: new MeetReminderEmailTemplate(this.userDao, this.meetDao),
-    [WELCOME]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
-    [ALL]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
-    [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
+    [HACKATHON_REGISTRATION_CONFIRM]: new HackathonRegistrationConfirmEmailTemplate(this.userDao, this.meetDao),
+    [HACKATHON_REGISTRATION_REMINDER_1]: new HackathonRegistrationReminder1EmailTemplate(this.userDao, this.meetDao),
+    [HACKATHON_REGISTRATION_REMINDER_2]: new HackathonRegistrationReminder2EmailTemplate(this.userDao, this.meetDao),
+    [WORKSHOP_REGISTRATION_CONFIRM]: new WorkshopRegistrationConfirmEmailTemplate(this.userDao, this.meetDao),
+    [WORKSHOP_REGISTRATION_REMINDER_1]: new WorkshopRegistrationReminder1EmailTemplate(this.userDao, this.meetDao),
+    [WORKSHOP_REGISTRATION_REMINDER_2]: new WorkshopRegistrationReminder2EmailTemplate(this.userDao, this.meetDao),
+    // [WELCOME]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
+    // [ALL]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
+    // [CHECK_IN_AFTER_SIGN_UP]: new MeetRegistrationEmailTemplate(this.userDao, this.meetDao),
   };
 
   queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
