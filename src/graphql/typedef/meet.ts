@@ -13,7 +13,7 @@ const meet = gql`
     "ID of the Meet in UUID"
     id: UUID!
 
-    "The type of the Meet as enum string. Only hackMeet is supported for now"
+    "The type of the Meet as enum string. (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
     meetType: String!
 
     title: String!
@@ -52,7 +52,7 @@ const meet = gql`
 
   "The input needed to create a new meet"
   input CreateMeetInput {
-    "The type of the Meet as enum string. Only hackMeet is supported for now"
+    "The type of the Meet as enum string. (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
     meetType: String!
 
     title: String!
@@ -76,7 +76,7 @@ const meet = gql`
 
   "Input that can be used to edit a meet - all fields are optional"
   input EditMeetInput {
-    "The type of the Meet as enum string. Only hackMeet is supported for now"
+    "The type of the Meet as enum string. Only (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
     meetType: String
 
     title: String
@@ -99,7 +99,7 @@ const meet = gql`
   }
 
   extend type Mutation {
-    "Creates a new meet (only hackMeet is supported for now)"
+    "Creates a new meet (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
     createMeet(input: CreateMeetInput!): Meet!
 
     "Edits a meet (requires admin privileges)"
