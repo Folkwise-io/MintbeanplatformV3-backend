@@ -18,10 +18,6 @@ export const ensureExists = <T>(entityName: string) => <T>(entity: T | undefined
 };
 ```
 
-### [S] Refactor Badges to not use enum for badgeShape
-
-When badges is merged in, convert badgeShape to string and verify enum types in typescript
-
 ### [M] Remove v7.sql from git history
 
 added in commit 509a88a7773d3b061a756835e2d3a15947d75c89

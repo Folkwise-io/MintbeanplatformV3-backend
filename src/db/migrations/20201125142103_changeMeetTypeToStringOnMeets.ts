@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
   ALTER TABLE "meets" DROP CONSTRAINT "meets_meetType_check"
   `);
   const result = await knex.schema.alterTable("meets", (table) => {
-    table.text("meetType").notNullable().defaultTo("hackathon").alter();
+    table.text("meetType").notNullable().defaultTo("HACKATHON").alter();
   });
   return result;
 }

@@ -1,9 +1,9 @@
 import { gql } from "apollo-server-express";
-import { CreateMeetInput, EditMeetInput, Meet } from "../../../src/types/gqlGeneratedTypes";
+import { CreateMeetInput, EditMeetInput, Meet, MeetType } from "../../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
-  meetType: "hackathon",
+  meetType: MeetType.Hackathon,
   title: "Animation Toys",
   description: "Building impressive portfolio projects with PaperJS.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
@@ -18,7 +18,7 @@ export const PAPERJS: Meet = {
 
 export const ALGOLIA: Meet = {
   id: "00000000-0000-4000-a000-000000000000",
-  meetType: "workshop",
+  meetType: MeetType.Workshop,
   title: "Algolia gives you super powers",
   description: "Buiilding impressive portfolio projects with Algolia.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
@@ -116,7 +116,7 @@ export const CREATE_MEET = gql`
 `;
 
 export const NEW_MEET_INPUT: CreateMeetInput = {
-  meetType: "lecture",
+  meetType: MeetType.Lecture,
   title: "Color Palette Generator",
   description: "Exploring pre-existing color libraries while building visually impressive projects.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-08-color-scheme-genera/home",

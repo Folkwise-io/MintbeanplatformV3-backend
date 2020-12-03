@@ -1,4 +1,4 @@
-import { Meet } from "../types/gqlGeneratedTypes";
+import { Meet, MeetType } from "../types/gqlGeneratedTypes";
 
 // Only allow ID lookup for now
 export interface MeetDaoGetOneArgs {
@@ -11,7 +11,7 @@ export interface MeetDaoGetManyArgs {
 }
 
 export interface MeetDaoAddOneInput {
-  meetType: string;
+  meetType: MeetType;
   title: string;
   description: string;
   instructions: string;
@@ -23,7 +23,7 @@ export interface MeetDaoAddOneInput {
 }
 
 export interface MeetDaoEditOneInput {
-  meetType?: string | null;
+  meetType?: MeetType | null;
   title?: string | null;
   description?: string | null;
   instructions?: string | null;

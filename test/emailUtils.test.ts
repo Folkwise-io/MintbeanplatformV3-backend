@@ -1,9 +1,9 @@
-import { Meet } from "../src/types/gqlGeneratedTypes";
+import { Meet, MeetType } from "../src/types/gqlGeneratedTypes";
 import { mapMeetToIcsEventAttributes, generateIcsFileInBase64 } from "../src/util/emailUtils";
 
 const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
-  meetType: "hackathon",
+  meetType: MeetType.Hackathon,
   title: "Animation Toys",
   description: "Building impressive portfolio projects with PaperJS.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",

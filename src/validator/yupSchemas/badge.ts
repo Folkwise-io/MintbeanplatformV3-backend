@@ -1,4 +1,7 @@
 import * as yup from "yup";
+import { BadgeShape } from "../../types/gqlGeneratedTypes";
+
+export const badgeShapeRegex = new RegExp(`^(${Object.values(BadgeShape).join("|")})$`, "i");
 
 export const createBadgeInputSchema = yup.object().shape({
   id: yup.string().uuid("Badge ID must be a valid UUID"),
@@ -7,10 +10,7 @@ export const createBadgeInputSchema = yup.object().shape({
     .min(3, "Too Short!")
     .max(25, "Alias must be shorter than 25 characters")
     .required("alias required!"),
-  badgeShape: yup
-    .string()
-    .matches(/(star|square|circle)/, "Invalid shape, please try again")
-    .required(),
+  badgeShape: yup.string().matches(badgeShapeRegex, "Invalid shape, please try again").required(),
   backgroundHex: yup.string().length(6, "Background hex value must be a valid 6 character hex code"),
   iconHex: yup.string().length(6, "Icon hex value must be a valid 6 character hex code"),
   title: yup
@@ -25,7 +25,7 @@ export const createBadgeInputSchema = yup.object().shape({
 export const editBadgeInputSchema = yup.object().shape({
   id: yup.string().uuid("Badge ID must be a valid UUID"),
   alias: yup.string().min(3, "Too Short!").max(25, "Alias must be shorter than 25 characters"),
-  badgeShape: yup.string().matches(/(star|square|circle)/, "Invalid shape, please try again"),
+  badgeShape: yup.string().matches(badgeShapeRegex, "Invalid shape, please try again"),
   backgroundHex: yup.string().length(6, "Background hex value must be a valid 6 character hex code"),
   iconHex: yup.string().length(6, "Icon hex value must be a valid 6 character hex code"),
   title: yup.string().min(2, "Too Short!").max(64, "Whoa! we're gonna need a shorter title. (max 64 characters)"),

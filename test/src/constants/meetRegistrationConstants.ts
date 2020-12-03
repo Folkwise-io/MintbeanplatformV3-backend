@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { Meet } from "../../../src/types/gqlGeneratedTypes";
+import { Meet, MeetType } from "../../../src/types/gqlGeneratedTypes";
 import { nDaysAndHoursFromNowInWallClockTime } from "../../../src/util/timeUtils";
 import MeetRegistration from "../../../src/types/MeetRegistration";
 import { AMY } from "./userConstants";
@@ -55,7 +55,7 @@ export const REGISTER_FOR_MEET_QUERY = gql`
 
 export const ANIMATION_TOYS_2: Meet = {
   id: "e093af41-8238-4fd6-ae2e-145497c3e038",
-  meetType: "webinar",
+  meetType: MeetType.Webinar,
   title: "Animation Toys 2",
   description: "Building impressive portfolio projects with PaperJS.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
@@ -70,7 +70,7 @@ export const ANIMATION_TOYS_2: Meet = {
 
 export const ALGOLIA_3: Meet = {
   id: "5ba2fc6b-e910-43dc-8dbc-75acd139ecfa",
-  meetType: "hackathon",
+  meetType: MeetType.Hackathon,
   title: "Algolia gives you super powers 3",
   description: "Buiilding impressive portfolio projects with Algolia.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
