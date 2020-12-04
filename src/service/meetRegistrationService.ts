@@ -6,7 +6,6 @@ import MeetRegistration from "../types/MeetRegistration";
 import config from "../util/config";
 import { ensureExists } from "../util/ensureExists";
 import { nDaysAndHoursFromTargetInUtcTime, wallclockToUtcDate } from "../util/timeUtils";
-import moment from "moment-timezone";
 
 const { disableRegistrationEmail } = config;
 const {
@@ -35,65 +34,77 @@ export default class MeetRegistrationService {
     ensureExists("Meet")(meet);
 
     if (!disableRegistrationEmail) {
-      let confirmationEmail: ScheduledEmailInput;
-      let reminder1: ScheduledEmailInput;
-      let reminder2: ScheduledEmailInput;
       // TODO: align meetTypes with Celeste's new branch - currently 'hackMeet' but will become 'hackathon'
       if (meet.meetType === "hackMeet") {
-        // TODO: refactor the templating of these emails to a single method since they all take same params
-        confirmationEmail = {
-          templateName: HACKATHON_REGISTRATION_CONFIRM,
-          userId,
-          meetId,
-          sendAt: nDaysAndHoursFromTargetInUtcTime(0, 0, wallclockToUtcDate(meet.startTime, meet.region)),
-        };
-        // 2. reminder 1 (T-24 hr)
-        reminder1 = {
-          templateName: HACKATHON_REGISTRATION_REMINDER_1,
-          userId,
-          meetId,
-          // TODO: calculate sendAt time
-          sendAt: new Date().toISOString(),
-        };
-
-        // 3. reminder 2 (T-30 min)
-        reminder2 = {
-          templateName: HACKATHON_REGISTRATION_REMINDER_2,
-          userId,
-          meetId,
-          // TODO: calculate sendAt time
-          sendAt: new Date().toISOString(),
-        };
+        const hackathonEmails = buildHackathonEmailQueue(meet, userId);
+        await this.emailCommander.queue(hackathonEmails);
       } else {
-        // TODO: refactor the templating of these emails to a single method since they all take same params
-        confirmationEmail = {
-          templateName: WORKSHOP_REGISTRATION_CONFIRM,
-          userId,
-          meetId,
-          sendAt: new Date().toISOString(),
-        };
-        // 2. reminder 1 (T-24 hr)
-        reminder1 = {
-          templateName: WORKSHOP_REGISTRATION_REMINDER_1,
-          userId,
-          meetId,
-          // TODO: calculate sendAt time
-          sendAt: new Date().toISOString(),
-        };
-
-        // 3. reminder 2 (T-30 min)
-        reminder2 = {
-          templateName: WORKSHOP_REGISTRATION_REMINDER_2,
-          userId,
-          meetId,
-          // TODO: calculate sendAt time
-          sendAt: new Date().toISOString(),
-        };
+        const workshopEmails = buildWorkshopEmailQueue(meet, userId);
+        await this.emailCommander.queue(workshopEmails);
       }
-
-      await this.emailCommander.queue([confirmationEmail, reminder1, reminder2]);
     }
 
     return meetRegistration;
   }
 }
+
+const buildHackathonEmailQueue = (meet: Meet, userId: string): ScheduledEmailInput[] => {
+  // immediate
+  const sendAtConfirm = new Date().toISOString();
+  // startTime -1 day
+  const sendAtReminder1 = nDaysAndHoursFromTargetInUtcTime(-1, 0, wallclockToUtcDate(meet.startTime, meet.region));
+  // startTime -30 mins
+  const sendAtReminder2 = nDaysAndHoursFromTargetInUtcTime(0, -0.5, wallclockToUtcDate(meet.startTime, meet.region));
+  console.log({ sendAtConfirm, sendAtReminder1, sendAtReminder2 });
+  const confirmationEmail = {
+    templateName: HACKATHON_REGISTRATION_CONFIRM,
+    userId,
+    meetId: meet.id,
+    // immediately
+    sendAt: sendAtConfirm,
+  };
+
+  // only send reminder1 if registration precedes reminder1 sendAt time
+  const reminder1 = {
+    templateName: HACKATHON_REGISTRATION_REMINDER_1,
+    userId,
+    meetId: meet.id,
+    // startTime -1 day
+    sendAt: sendAtReminder1,
+  };
+  const reminder2 = {
+    templateName: HACKATHON_REGISTRATION_REMINDER_2,
+    userId,
+    meetId: meet.id,
+    // startTime -30 min
+    sendAt: sendAtReminder2,
+  };
+  return [confirmationEmail, reminder1, reminder2];
+};
+
+const buildWorkshopEmailQueue = (meet: Meet, userId: string): ScheduledEmailInput[] => {
+  const confirmationEmail = {
+    templateName: WORKSHOP_REGISTRATION_CONFIRM,
+    userId,
+    meetId: meet.id,
+    // immediately
+    sendAt: new Date().toISOString(),
+  };
+  const reminder1 = {
+    templateName: WORKSHOP_REGISTRATION_REMINDER_1,
+    userId,
+    meetId: meet.id,
+    sendAt: new Date().toISOString(),
+    // startTime -1 day
+    // sendAt: nDaysAndHoursFromTargetInUtcTime(-1, 0, wallclockToUtcDate(meet.startTime, meet.region)),
+  };
+  const reminder2 = {
+    templateName: WORKSHOP_REGISTRATION_REMINDER_2,
+    userId,
+    meetId: meet.id,
+    sendAt: new Date().toISOString(),
+    // startTime -30 min
+    // sendAt: nDaysAndHoursFromTargetInUtcTime(0, -0.5, wallclockToUtcDate(meet.startTime, meet.region)),
+  };
+  return [confirmationEmail, reminder1, reminder2];
+};

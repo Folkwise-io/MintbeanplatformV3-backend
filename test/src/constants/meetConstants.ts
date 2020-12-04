@@ -1,5 +1,6 @@
 import { gql } from "apollo-server-express";
 import { CreateMeetInput, EditMeetInput, Meet } from "../../../src/types/gqlGeneratedTypes";
+import { nDaysAndHoursFromTargetInUtcTime } from "../../../src/util/timeUtils";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -9,8 +10,8 @@ export const PAPERJS: Meet = {
   instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
   registerLink: "http://eventbrite.com",
   coverImageUrl: "https://www.grafik.com.au/wp-content/uploads/2019/06/think-design.png",
-  startTime: "2024-09-30T13:00:00.000",
-  endTime: "2024-09-30T17:00:00.000",
+  startTime: nDaysAndHoursFromTargetInUtcTime(7, 0).replace(/z$/i, ""), // 7 days from now
+  endTime: nDaysAndHoursFromTargetInUtcTime(14, 0).replace(/z$/i, ""), // 14 days from now
   createdAt: "2020-08-15T12:00:00.000Z",
   updatedAt: "2020-08-15T12:00:00.000Z",
   region: "America/Toronto",
@@ -24,12 +25,27 @@ export const ALGOLIA: Meet = {
   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
   registerLink: "http://eventbrite.com",
   coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-  startTime: "2024-10-15T13:00:00.000",
-  endTime: "2024-10-15T17:00:00.000",
+  startTime: nDaysAndHoursFromTargetInUtcTime(14, 0).replace(/z$/i, ""), // 14 days from now
+  endTime: nDaysAndHoursFromTargetInUtcTime(21, 0).replace(/z$/i, ""), // 21 days from now
   createdAt: "2020-10-15T12:00:00.000Z",
   updatedAt: "2020-10-15T12:00:00.000Z",
   region: "America/Toronto",
 };
+
+// export const WORKSHOP: Meet = {
+//   id: "51cbbe32-74b0-4905-90c4-558c084f0a69",
+//   meetType: "hackMeet",
+//   title: "Algolia gives you super powers",
+//   description: "Buiilding impressive portfolio projects with Algolia.",
+//   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
+//   registerLink: "http://eventbrite.com",
+//   coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
+//   startTime: nDaysAndHoursFromTargetInUtcTime(14, 0).replace(/z$/i, ""), // 14 days from now
+//   endTime: nDaysAndHoursFromTargetInUtcTime(21, 0).replace(/z$/i, ""), // 21 days from now
+//   createdAt: "2020-10-15T12:00:00.000Z",
+//   updatedAt: "2020-10-15T12:00:00.000Z",
+//   region: "America/Toronto",
+// };
 
 export const GET_MEET_QUERY = gql`
   query getMeetById($id: UUID!) {

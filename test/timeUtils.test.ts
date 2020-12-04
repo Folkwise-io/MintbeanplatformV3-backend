@@ -28,7 +28,7 @@ describe("nDaysAndHoursFromTargetInUtcTime", () => {
 });
 
 describe("wallclockToUtcDate", () => {
-  it("returns utc Date object based of wallclock time and region", () => {
+  it("returns utc Date object based off wallclock time and region", () => {
     // 2020-12-03T15:00 Los Angeles should be 2020-12-03T23:00 UTC  (LA is -8hrs at that point in history)
     const wallclockTime = "2020-12-03T15:00";
     const region = "America/Los_Angeles";
