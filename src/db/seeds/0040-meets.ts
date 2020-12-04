@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { MeetType } from "../../types/gqlGeneratedTypes";
 import { nDaysAndHoursFromNowInWallClockTime } from "../../util/timeUtils";
 
 export async function seed(knex: Knex): Promise<void> {
