@@ -1,5 +1,5 @@
 import BadgeDao from "../dao/BadgeDao";
-import { Badge, Maybe, QueryBadgeArgs, Scalars } from "../types/gqlGeneratedTypes";
+import { Badge, BadgeShape, Maybe, QueryBadgeArgs, Scalars } from "../types/gqlGeneratedTypes";
 import { EntityService } from "./EntityService";
 
 export interface BadgeServiceGetManyArgs {
@@ -9,7 +9,7 @@ export interface BadgeServiceGetManyArgs {
 
 export interface BadgeServiceAddOneInput {
   alias: string;
-  badgeShape: string;
+  badgeShape: BadgeShape;
   faIcon: string;
   backgroundHex?: string | null;
   iconHex?: string | null;
@@ -19,15 +19,15 @@ export interface BadgeServiceAddOneInput {
 }
 
 export interface BadgeServiceEditOneInput {
-  id?: Maybe<Scalars["String"]>;
-  alias?: Maybe<Scalars["String"]>;
-  badgeShape?: Maybe<Scalars["String"]>;
-  faIcon?: Maybe<Scalars["String"]>;
-  backgroundHex?: Maybe<Scalars["String"]>;
-  iconHex?: Maybe<Scalars["String"]>;
-  title?: Maybe<Scalars["String"]>;
-  description?: Maybe<Scalars["String"]>;
-  weight?: Maybe<Scalars["Int"]>;
+  id?: string | null;
+  alias?: string | null;
+  badgeShape?: BadgeShape | null;
+  faIcon?: string | null;
+  backgroundHex?: string | null;
+  iconHex?: string | null;
+  title?: string | null;
+  description?: string | null;
+  weight?: number | null;
 }
 
 export default class BadgeService implements EntityService<Badge> {

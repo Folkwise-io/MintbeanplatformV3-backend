@@ -1,10 +1,10 @@
 import { gql } from "apollo-server-express";
-import { CreateMeetInput, EditMeetInput, Meet } from "../../../src/types/gqlGeneratedTypes";
 import { nDaysAndHoursFromTargetInUtcTime } from "../../../src/util/timeUtils";
+import { CreateMeetInput, EditMeetInput, Meet, MeetType } from "../../../src/types/gqlGeneratedTypes";
 
 export const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
-  meetType: "hackMeet",
+  meetType: MeetType.Hackathon,
   title: "Animation Toys",
   description: "Building impressive portfolio projects with PaperJS.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-01-animation-toys/home",
@@ -19,7 +19,7 @@ export const PAPERJS: Meet = {
 
 export const ALGOLIA: Meet = {
   id: "00000000-0000-4000-a000-000000000000",
-  meetType: "hackMeet",
+  meetType: MeetType.Workshop,
   title: "Algolia gives you super powers",
   description: "Buiilding impressive portfolio projects with Algolia.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
@@ -31,21 +31,6 @@ export const ALGOLIA: Meet = {
   updatedAt: "2020-10-15T12:00:00.000Z",
   region: "America/Toronto",
 };
-
-// export const WORKSHOP: Meet = {
-//   id: "51cbbe32-74b0-4905-90c4-558c084f0a69",
-//   meetType: "hackMeet",
-//   title: "Algolia gives you super powers",
-//   description: "Buiilding impressive portfolio projects with Algolia.",
-//   instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
-//   registerLink: "http://eventbrite.com",
-//   coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
-//   startTime: nDaysAndHoursFromTargetInUtcTime(14, 0).replace(/z$/i, ""), // 14 days from now
-//   endTime: nDaysAndHoursFromTargetInUtcTime(21, 0).replace(/z$/i, ""), // 21 days from now
-//   createdAt: "2020-10-15T12:00:00.000Z",
-//   updatedAt: "2020-10-15T12:00:00.000Z",
-//   region: "America/Toronto",
-// };
 
 export const GET_MEET_QUERY = gql`
   query getMeetById($id: UUID!) {
@@ -132,7 +117,7 @@ export const CREATE_MEET = gql`
 `;
 
 export const NEW_MEET_INPUT: CreateMeetInput = {
-  meetType: "hackMeet",
+  meetType: MeetType.Lecture,
   title: "Color Palette Generator",
   description: "Exploring pre-existing color libraries while building visually impressive projects.",
   instructions: "See https://sites.google.com/mintbean.io/2020-06-08-color-scheme-genera/home",
