@@ -181,7 +181,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   /** Register a user */
   register: PrivateUser;
-  /** Creates a new meet (currently supported meetTypes are hackathon, workshop, webinar and lecture) */
+  /** Creates a new meet  */
   createMeet: Meet;
   /** Edits a meet (requires admin privileges) */
   editMeet: Meet;
@@ -390,7 +390,7 @@ export type Meet = {
   __typename?: 'Meet';
   /** ID of the Meet in UUID */
   id: Scalars['UUID'];
-  /** The type of the Meet as enum string. (currently supported meetTypes are hackathon, workshop, webinar and lecture) */
+  /** The type of the Meet as enum string. */
   meetType: MeetType;
   title: Scalars['String'];
   /** A short blurb about the Meet */
@@ -422,7 +422,7 @@ export type Meet = {
 
 /** The input needed to create a new meet */
 export type CreateMeetInput = {
-  /** The type of the Meet as enum string. (currently supported meetTypes are hackathon, workshop, webinar and lecture) */
+  /** The type of the Meet as enum string.  */
   meetType: MeetType;
   title: Scalars['String'];
   /** A short blurb about the Meet */
@@ -440,7 +440,7 @@ export type CreateMeetInput = {
 
 /** Input that can be used to edit a meet - all fields are optional */
 export type EditMeetInput = {
-  /** The type of the Meet as enum string. Only (currently supported meetTypes are hackathon, workshop, webinar and lecture) */
+  /** The type of the Meet as enum string. */
   meetType?: Maybe<MeetType>;
   title?: Maybe<Scalars['String']>;
   /** A short blurb about the Meet */
