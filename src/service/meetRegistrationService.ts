@@ -5,6 +5,8 @@ import { Meet } from "../types/gqlGeneratedTypes";
 import MeetRegistration from "../types/MeetRegistration";
 import config from "../util/config";
 import { ensureExists } from "../util/ensureExists";
+import { nDaysAndHoursFromTargetInUtcTime, wallclockToUtcDate } from "../util/timeUtils";
+import moment from "moment-timezone";
 
 const { disableRegistrationEmail } = config;
 const {
@@ -43,7 +45,7 @@ export default class MeetRegistrationService {
           templateName: HACKATHON_REGISTRATION_CONFIRM,
           userId,
           meetId,
-          sendAt: new Date().toISOString(),
+          sendAt: nDaysAndHoursFromTargetInUtcTime(0, 0, wallclockToUtcDate(meet.startTime, meet.region)),
         };
         // 2. reminder 1 (T-24 hr)
         reminder1 = {

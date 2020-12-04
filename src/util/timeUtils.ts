@@ -11,13 +11,23 @@ export const nDaysAndHoursFromNowInWallClockTime = (days: number, hour: number =
   return timestamp;
 };
 
-export const nDaysAndHoursFromNowInUtcTime = (days: number, hours: number = 0): string => {
-  const now = new Date();
-  const newTime = new Date();
+// Target time defaults to now
+export const nDaysAndHoursFromTargetInUtcTime = (
+  days: number,
+  hours: number = 0,
+  targetDate: Date = new Date(),
+): string => {
+  // clone target date
+  const offsetDate = new Date(targetDate.getTime());
   const totalMillisecondsOffset = days * MILLISECONDS_IN_ONE_DAY + hours * MILLISECONDS_IN_ONE_HOUR;
-  newTime.setTime(now.getTime() + totalMillisecondsOffset);
+  offsetDate.setTime(targetDate.getTime() + totalMillisecondsOffset);
 
-  return newTime.toISOString();
+  return offsetDate.toISOString();
+};
+
+export const wallclockToUtcDate = (wallclockTime: string, region: string): Date => {
+  const m = moment.tz(wallclockTime, region);
+  return new Date(m.year(), m.month(), m.date(), m.hours(), m.minutes());
 };
 
 export const calculateMeetRegisterLinkStatus = (meet: Meet): RegisterLinkStatus => {

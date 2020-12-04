@@ -191,7 +191,7 @@ export type Mutation = {
   createProject: Project;
   /** Deletes a project by ID (user must be logged in and own the project) */
   deleteProject: Scalars['Boolean'];
-  /** adds badges to a project by id (admin only) */
+  /** Adds badges to a project by ids (WARNING: overwrites existing badges for project) (admin only) */
   awardBadgesToProject?: Maybe<Project>;
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];

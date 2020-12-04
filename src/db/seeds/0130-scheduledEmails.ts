@@ -1,6 +1,6 @@
 import * as Knex from "knex";
 import { ScheduledEmail } from "../../types/Email";
-import { nDaysAndHoursFromNowInUtcTime } from "../../util/timeUtils";
+import { nDaysAndHoursFromTargetInUtcTime } from "../../util/timeUtils";
 import { EmailTemplateName } from "../../types/Email";
 
 const {
@@ -16,19 +16,19 @@ export async function seed(knex: Knex): Promise<void> {
       templateName: HACKATHON_REGISTRATION_CONFIRM,
       userId: "00000000-0000-0000-0000-000000000000",
       meetId: "00000000-0000-0000-0000-000000000000",
-      sendAt: nDaysAndHoursFromNowInUtcTime(0, 1),
+      sendAt: nDaysAndHoursFromTargetInUtcTime(0, 1),
     },
     {
       templateName: HACKATHON_REGISTRATION_REMINDER_1,
       userId: "00000000-0000-4000-a000-000000000000",
       meetId: "00000000-0000-0000-0000-000000000000",
-      sendAt: nDaysAndHoursFromNowInUtcTime(1),
+      sendAt: nDaysAndHoursFromTargetInUtcTime(1),
     },
     {
       templateName: HACKATHON_REGISTRATION_REMINDER_2,
       userId: "00000000-0000-0000-0000-000000000000",
       meetId: "00000000-0000-0000-0000-000000000000",
-      sendAt: nDaysAndHoursFromNowInUtcTime(2),
+      sendAt: nDaysAndHoursFromTargetInUtcTime(2),
     },
   ]);
 }
