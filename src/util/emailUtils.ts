@@ -81,7 +81,7 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
       },
       "reservationFor": {
         "@type": "Event",
-        "name": "${title} - ${registerLink}",
+        "name": "${title} - ${registerLink || meetUrl}",
         "startDate": "${startTimeIsoWithTimezone}",
         "endDate": "${endTimeIsoWithTimezone}",
         "location": {
@@ -126,3 +126,48 @@ export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: strin
 `;
   return email;
 };
+
+// start Claire's proposed methods that separate json ld generations from body genertaion below (TODO)
+
+// export const generateMeetKickoffJsonLdHead = (user: User, meet: Meet, registrationId: string): string => {
+//   const { id, title, description, startTime, endTime, region, registerLink } = meet;
+//   const { firstName, lastName } = user;
+//   const startTimeIsoWithTimezone = moment.tz(startTime, region).format();
+//   const endTimeIsoWithTimezone = moment.tz(endTime, region).format();
+
+//   const meetUrl = generateMeetUrl(id);
+//   const head = `
+//   <head>
+//     <script type="application/ld+json">
+//     {
+//       "@context": "http://schema.org",
+//       "@type": "EventReservation",
+//       "reservationNumber": "${registrationId}",
+//       "reservationStatus": "http://schema.org/Confirmed",
+//       "underName": {
+//         "@type": "Person",
+//         "name": "${firstName} ${lastName}"
+//       },
+//       "reservationFor": {
+//         "@type": "Event",
+//         "name": "Kickoff for ${title}",
+//         "startDate": "${startTimeIsoWithTimezone}",
+//         "endDate": "${endTimeIsoWithTimezone}",
+//         "location": {
+//           "@type": "Place",
+//           "name": "Mintbean",
+//           "address": {
+//             "@type": "PostalAddress",
+//             "addressLocality": "Toronto",
+//             "addressRegion": "ON"
+//           },
+//           "url": "${registerLink || meetUrl}"
+//         }
+//       }
+//     }
+//     </script>
+//   </head>
+
+//   `;
+//   return head;
+// };

@@ -34,7 +34,6 @@ export default class MeetRegistrationService {
     ensureExists("Meet")(meet);
 
     if (!disableRegistrationEmail) {
-      // TODO: align meetTypes with Celeste's new branch - currently 'hackMeet' but will become 'hackathon'
       if (meet.meetType === MeetType.Hackathon) {
         const hackathonEmails = buildHackathonEmailQueue(meet, userId);
         await this.emailCommander.queue(hackathonEmails);

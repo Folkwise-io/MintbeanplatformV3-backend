@@ -4,6 +4,12 @@ This is a log of technical debt that needs to be addressed.
 
 Update anytime you find something smelly in the code that can't be addressed in your current working branch. Label each issue with it's time-complexity in "T-shirt size": [S] (< 1hr), [M] (1-3 hrs), [L] (3+ hrs)
 
+### [M] Convert time utils into a TimeService
+
+Time should be treated as an external dependency. A `TimeDao` in production would have a method like `getNow()` that returns `new Date()` for, while for testing the `TestTimeDao` would be configurable to set 'now' to sometime in the future or past via TestManager.
+
+`TimeService` would be a class dynamically constructed with a prod or test TimeDao, and would contain all the current time utilities.
+
 ### [S] Refactor ensureExists function to not require explicit generics
 
 Once `ensureExists` typing has been updated like below, remove generics from all `ensureExists` calls

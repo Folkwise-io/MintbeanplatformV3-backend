@@ -29,7 +29,6 @@ export default class HackathonRegistrationConfirmEmailTemplate implements EmailT
 
   async inflateVars(scheduledEmail: ScheduledEmail): Promise<HackathonRegistrationConfirmEmailVars> {
     const { id, userId, meetId } = this.ensureVars(scheduledEmail);
-    // TODO: ensure these entities exist
     const user = (await this.userDao.getOne({ id: userId })) as User;
     const meet = (await this.meetDao.getOne({ id: meetId })) as Meet;
     ensureExists("User")(user);
