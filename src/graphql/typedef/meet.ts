@@ -107,7 +107,7 @@ const meet = gql`
   }
 
   extend type Mutation {
-    "Creates a new meet (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
+    "Creates a new meet "
     createMeet(input: CreateMeetInput!): Meet!
 
     "Edits a meet (requires admin privileges)"
