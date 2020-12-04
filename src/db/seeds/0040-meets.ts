@@ -21,7 +21,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "00000000-0000-4000-a000-000000000000",
-      meetType: "HACKATHON",
+      meetType: MeetType.Hackathon,
       title: "Algolia gives you super powers 3",
       description:
         "Hack in our Mintbean JavaScript Campus Playoffs! This is a FACE-OFF with other individual devs from other coding bootcamps, colleges, and universities. Show off your school pride and represent them in our weekend long javascript hackathon!",
