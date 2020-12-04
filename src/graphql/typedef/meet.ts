@@ -60,7 +60,7 @@ const meet = gql`
 
   "The input needed to create a new meet"
   input CreateMeetInput {
-    "The type of the Meet as enum string. (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
+    "The type of the Meet as enum string. "
     meetType: MeetType!
 
     title: String!
