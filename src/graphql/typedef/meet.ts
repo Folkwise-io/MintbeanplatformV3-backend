@@ -21,7 +21,7 @@ const meet = gql`
     "ID of the Meet in UUID"
     id: UUID!
 
-    "The type of the Meet as enum string. (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
+    "The type of the Meet as enum string."
     meetType: MeetType!
 
     title: String!
