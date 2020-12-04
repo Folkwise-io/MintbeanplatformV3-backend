@@ -84,7 +84,7 @@ const meet = gql`
 
   "Input that can be used to edit a meet - all fields are optional"
   input EditMeetInput {
-    "The type of the Meet as enum string. Only (currently supported meetTypes are hackathon, workshop, webinar and lecture)"
+    "The type of the Meet as enum string."
     meetType: MeetType
 
     title: String
