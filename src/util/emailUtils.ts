@@ -21,10 +21,9 @@ export const generateIcsAttachments = (meet: Meet): Attachment[] => {
   ];
 };
 
-export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
-  const { title, description, region, id, startTime, endTime, registerLink } = meet;
+export const mapMeetToIcsEventAttributes = (meet: Meet, durationMins: number = 60): EventAttributes => {
+  const { title, description, region, id, startTime, registerLink } = meet;
   const startTimeUTC = moment.tz(startTime, region).utc();
-  const endTimeUTC = moment.tz(endTime, region).utc();
 
   const IcsEventAttributes: EventAttributes = {
     startInputType: "utc",
@@ -38,10 +37,10 @@ export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
       startTimeUTC.hours(),
       startTimeUTC.minutes(),
     ],
-    end: [endTimeUTC.year(), endTimeUTC.month() + 1, endTimeUTC.date(), endTimeUTC.hours(), endTimeUTC.minutes()],
-    title,
+    duration: { minutes: durationMins },
+    title: `Kick off for ${title}`,
     description,
-    location: region,
+    location: registerLink || generateMeetUrl(id),
     url: registerLink || generateMeetUrl(id),
     status: "CONFIRMED",
     organizer: { name: "Mintbean", email: "info@mintbean.io" },

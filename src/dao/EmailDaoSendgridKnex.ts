@@ -64,6 +64,7 @@ export default class EmailDaoSendgridKnex implements EmailDao {
 
       (error) => {
         console.log(JSON.stringify(error, null, 2));
+
         return {
           statusCode: error.code || 400,
           // Sendgrid error codes: https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html
@@ -74,6 +75,15 @@ export default class EmailDaoSendgridKnex implements EmailDao {
     );
   }
 
+  // Actually deletes record from DB - does not archive it
+  async deleteOne(id: string): Promise<boolean> {
+    return handleDatabaseError(async () => {
+      await this.knex("scheduledEmails").where({ id }).del();
+      return true;
+    });
+  }
+
+  // TODO: move to TestEmailDao
   deleteAll(): Promise<void> {
     return this.knex<ScheduledEmail>("scheduledEmails").delete();
   }

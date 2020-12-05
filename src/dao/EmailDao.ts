@@ -16,6 +16,10 @@ export default interface EmailDao {
   /** Sends an email */
   sendEmail(email: Email): Promise<EmailResponse>;
 
+  /** Deletes a scheduled email */
+  deleteOne(id: string): Promise<boolean>;
+
+  // TODO: move this to TestEmailDao
   /** For TestManager to call */
   deleteAll(): Promise<void>;
 }

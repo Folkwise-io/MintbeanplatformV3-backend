@@ -8,6 +8,7 @@ import { User } from "../../types/User";
 import ensureAdmin from "../../util/ensureAdmin";
 import { ApolloError } from "apollo-server-express";
 import MeetDao from "../../dao/MeetDao";
+// This resolver is currently used for testing emails by devs, but will eventually be set for admins to test emails too
 
 // TODO: Should this response validation and error handling happen in service layer?
 const { SUCCESS } = EmailResponseStatus;
@@ -55,10 +56,10 @@ const emailResolver = (
 
         const user: User = {
           id: "00000000-0000-0000-0000-000000000000",
-          email: "jimmy.peng@mintbean.io",
+          email: "claire.froelich@gmail.com",
           passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
-          firstName: "Jimmy",
-          lastName: "Peng",
+          firstName: "Claire",
+          lastName: "Froelich",
           createdAt: "2019-10-15",
           updatedAt: "2019-10-15",
           isAdmin: false,

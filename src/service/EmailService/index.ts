@@ -5,7 +5,6 @@ import { Meet } from "../../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../../util/emailUtils";
 import { User } from "../../types/User";
 
-// Do we need this file? Only used in Email resolver - do we still need email resolver?
 const { senderEmail } = config;
 export default class EmailService {
   constructor(private emailDao: EmailDao) {}
