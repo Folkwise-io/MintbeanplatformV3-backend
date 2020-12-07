@@ -1,5 +1,5 @@
 import { Meet, MeetType } from "../src/types/gqlGeneratedTypes";
-import { mapMeetToIcsEventAttributes, generateIcsFileInBase64 } from "../src/util/emailUtils";
+import { mapMeetToIcsEventAttributes, generateIcsFileInBase64, generateMeetUrl } from "../src/util/emailUtils";
 
 const PAPERJS: Meet = {
   id: "00000000-0000-0000-0000-000000000000",
@@ -19,9 +19,14 @@ const PAPERJS: Meet = {
 describe("Mapping a Meet object to ICS event attributes", () => {
   it("maps the Meet correctly", () => {
     const paperJsIcsEvent = mapMeetToIcsEventAttributes(PAPERJS);
-    const { title, description, url } = paperJsIcsEvent;
-    expect(PAPERJS).toMatchObject({ title, description });
+    const { title, description, url, location, duration } = paperJsIcsEvent;
+    console.log({ paperJsIcsEvent });
+    expect(PAPERJS).toMatchObject({ description });
+    expect(title).toMatch(PAPERJS.title);
     expect(url).toBe(PAPERJS.registerLink);
+    expect(location).toBe(PAPERJS.registerLink || generateMeetUrl(PAPERJS.id));
+    // expect(typeof duration).toMatch("number");
+    expect(durationMins > 0).toBe(true);
   });
 
   it("maps the time in UTC correctly", () => {

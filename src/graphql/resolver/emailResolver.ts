@@ -53,9 +53,9 @@ const emailResolver = (
 
       sendSampleRegistrationEmailForMeet: async (_root, args, context: ServerContext): Promise<boolean> => {
         ensureAdmin(context);
-
+        // TODO: make recipient email dynamic as arg
         const user: User = {
-          id: "00000000-0000-0000-0000-000000000000",
+          id: "e6c17048-72bf-4940-bd92-52e383219fe9",
           email: "claire.froelich@gmail.com",
           passwordHash: "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u.",
           firstName: "Claire",

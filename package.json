@@ -36,6 +36,7 @@
     "jsonwebtoken": "8.5.1",
     "knex": "0.21.10",
     "moment-timezone": "0.5.31",
+    "mustache": "4.1.0",
     "pg": "8.3.2",
     "promise.allsettled": "1.0.2",
     "ts-node": "9.0.0",

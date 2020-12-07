@@ -146,7 +146,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailService = new EmailService(emailDao);
   const emailCommander = new EmailCommanderImpl(emailDao, userDao, meetDao);
   const emailResolverValidator = new EmailResolverValidator();
-  const cronService = new CronService(emailCommander);
+  const cronService = new CronService(emailCommander, emailDao);
   const kanbanCanonService = new KanbanCanonService(kanbanCanonDao);
   const kanbanCanonResolverValidator = new KanbanCanonResolverValidator(kanbanCanonDao, kanbanCanonCardDao);
   const kanbanCanonCardService = new KanbanCanonCardService(kanbanCanonCardDao, kanbanCanonDao);

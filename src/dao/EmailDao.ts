@@ -2,7 +2,7 @@ import { Email, EmailResponse, ScheduledEmail, ScheduledEmailInput } from "../ty
 
 export default interface EmailDao {
   /** Queues an email template to be sent (i.e. by persisting in a db) */
-  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void>;
+  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<ScheduledEmail>;
 
   /** Retrieves scheduled emails that have not been sent */
   getUnsentScheduledEmails(): Promise<ScheduledEmail[]>;

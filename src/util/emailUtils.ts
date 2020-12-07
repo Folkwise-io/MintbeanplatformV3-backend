@@ -6,7 +6,7 @@ import { Attachment } from "../types/Email";
 import { User } from "../types/User";
 const DISCORD_URL = "https://discord.gg/j7CjBAz";
 
-const generateMeetUrl = (id: string) => `https://mintbean.io/meets/${id}`;
+export const generateMeetUrl = (id: string) => `https://mintbean.io/meets/${id}`;
 
 export const generateIcsAttachments = (meet: Meet): Attachment[] => {
   const icsEventAttribute = mapMeetToIcsEventAttributes(meet);

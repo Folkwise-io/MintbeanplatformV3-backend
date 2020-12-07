@@ -3,6 +3,7 @@ import MeetRegistrationDao, { MeetRegistrationDaoAddOneArgs } from "../dao/MeetR
 import { EmailCommander, EmailTemplateName, ScheduledEmailInput } from "../types/Email";
 import { Meet, MeetType } from "../types/gqlGeneratedTypes";
 import MeetRegistration from "../types/MeetRegistration";
+import { User } from "../types/User";
 import config from "../util/config";
 import { ensureExists } from "../util/ensureExists";
 import { nDaysAndHoursFromTargetInUtcTime, wallclockToUtcDate } from "../util/timeUtils";
@@ -54,30 +55,34 @@ const buildHackathonEmailQueue = (meet: Meet, userId: string): ScheduledEmailInp
   const sendAtReminder1 = nDaysAndHoursFromTargetInUtcTime(-1, 0, wallclockToUtcDate(meet.startTime, meet.region));
   // startTime -30 mins
   const sendAtReminder2 = nDaysAndHoursFromTargetInUtcTime(0, -0.5, wallclockToUtcDate(meet.startTime, meet.region));
-  const confirm = () => ({
+
+  const confirm = {
     templateName: HACKATHON_REGISTRATION_CONFIRM,
     userId,
     meetId: meet.id,
     sendAt: sendAtConfirm,
-  });
-  const reminder1 = () => ({
+  };
+
+  const reminder1 = {
     templateName: HACKATHON_REGISTRATION_REMINDER_1,
     userId,
     meetId: meet.id,
     sendAt: sendAtReminder1,
-  });
-  const reminder2 = () => ({
+  };
+
+  const reminder2 = {
     templateName: HACKATHON_REGISTRATION_REMINDER_2,
     userId,
     meetId: meet.id,
     sendAt: sendAtReminder2,
-  });
+  };
+
   const now = new Date();
   // skip reminder1 if registration occurs after reminder1 sendAt time
   if (now > new Date(sendAtReminder1)) {
-    return [confirm(), reminder2()];
+    return [confirm, reminder2];
   }
-  return [confirm(), reminder1(), reminder2()];
+  return [confirm, reminder1, reminder2];
 };
 
 const buildWorkshopEmailQueue = (meet: Meet, userId: string): ScheduledEmailInput[] => {

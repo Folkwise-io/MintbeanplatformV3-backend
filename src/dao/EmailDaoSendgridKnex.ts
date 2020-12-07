@@ -14,9 +14,10 @@ export default class EmailDaoSendgridKnex implements EmailDao {
 
   // TODO: Add try catch to queue to fail silently
   // TODO: Manually test a bad apple email in the queue batch
-  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
-    return handleDatabaseError(() => {
-      return this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmail);
+  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<ScheduledEmail> {
+    return handleDatabaseError(async () => {
+      const email = await this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmail).returning("*");
+      return email[0];
     });
   }
 

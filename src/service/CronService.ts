@@ -2,10 +2,10 @@ import cron from "cron";
 const { CronJob } = cron;
 
 import { EmailCommander, EmailResponse } from "../types/Email";
-import EmailDaoSendgridKnex from "../dao/EmailDaoSendgridKnex";
+import EmailDao from "../dao/EmailDao";
 
 export default class CronService {
-  constructor(private emailCommander: EmailCommander, private emailDao: EmailDaoSendgridKnex) {}
+  constructor(private emailCommander: EmailCommander, private emailDao: EmailDao) {}
 
   // Needs to be an arrow function, otherwise this.emailCommander is undefined
   // sendEmails = () => {
