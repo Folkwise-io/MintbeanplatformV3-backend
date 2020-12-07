@@ -35,7 +35,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "6d32252b-c85c-45d3-8f55-dd05d2e9cfd0",
-      meetType: "HACKATHON",
+      meetType: MeetType.Hackathon,
       title: "Hack the Hack",
       description:
         "Are you a software developer? Want to show off your skills? Two days of programming with a very active community of growth oriented developers gathered in one virtual place to help each other learn. Come join a fun and challenging coding competition, learn new skills, and meet new people from the comfort of your own home with Mintbean Hackathons.",
@@ -49,7 +49,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "87496d2d-ae36-4039-bd14-45bd0de3929c",
-      meetType: "HACKATHON",
+      meetType: MeetType.Hackathon,
       title: "Algolia gives you super powers 2",
       description:
         "Are you a software developer? Want to show off your skills? Two days of programming with a very active community of growth oriented developers gathered in one virtual place to help each other learn. Come join a fun and challenging coding competition, learn new skills, and meet new people from the comfort of your own home with Mintbean Hackathons.",
@@ -62,7 +62,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "e093af41-8238-4fd6-ae2e-145497c3e038",
-      meetType: "HACKATHON",
+      meetType: MeetType.Hackathon,
       title: "Animation Toys 1",
       description:
         "Level up your Javascript and use an in-demand framework in the Vue.js Hackathon! Vue.js is an open source framework that emphasizes approachability, versatility and performance.",
@@ -75,7 +75,7 @@ export async function seed(knex: Knex): Promise<void> {
     },
     {
       id: "5ba2fc6b-e910-43dc-8dbc-75acd139ecfa",
-      meetType: "HACKATHON",
+      meetType: MeetType.Hackathon,
       title: "Algolia gives you super powers",
       description:
         "Level up your Javascript and use an in-demand framework in the Vue.js Hackathon! Vue.js is an open source framework that emphasizes approachability, versatility and performance.",
