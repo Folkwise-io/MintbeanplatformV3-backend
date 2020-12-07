@@ -14,6 +14,7 @@ export interface MeetDaoAddOneInput {
   meetType: string;
   title: string;
   description: string;
+  longDescription?: string;
   instructions: string;
   registerLink?: string | null;
   coverImageUrl: string;
@@ -26,6 +27,7 @@ export interface MeetDaoEditOneInput {
   meetType?: string | null;
   title?: string | null;
   description?: string | null;
+  longDescription?: string | null;
   instructions?: string | null;
   registerLink?: string | null;
   coverImageUrl?: string | null;

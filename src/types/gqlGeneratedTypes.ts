@@ -191,7 +191,7 @@ export type Mutation = {
   createProject: Project;
   /** Deletes a project by ID (user must be logged in and own the project) */
   deleteProject: Scalars['Boolean'];
-  /** adds badges to a project by id (admin only) */
+  /** Adds badges to a project by ids (WARNING: overwrites existing badges for project) (admin only) */
   awardBadgesToProject?: Maybe<Project>;
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
@@ -387,6 +387,8 @@ export type Meet = {
   title: Scalars['String'];
   /** A short blurb about the Meet */
   description: Scalars['String'];
+  /** A detailed description of the Meet */
+  detailedDescription?: Maybe<Scalars['String']>;
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
@@ -419,6 +421,8 @@ export type CreateMeetInput = {
   title: Scalars['String'];
   /** A short blurb about the Meet */
   description: Scalars['String'];
+  /** A detailed description of the Meet in markdown format */
+  detailedDescription?: Maybe<Scalars['String']>;
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
@@ -437,6 +441,8 @@ export type EditMeetInput = {
   title?: Maybe<Scalars['String']>;
   /** A short blurb about the Meet */
   description?: Maybe<Scalars['String']>;
+  /** A detailed description of the Meet in markdown format */
+  detailedDescription?: Maybe<Scalars['String']>;
   /** The instructions in markdown format */
   instructions?: Maybe<Scalars['String']>;
   registerLink?: Maybe<Scalars['String']>;
@@ -962,6 +968,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   meetType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  detailedDescription?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   registerLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   registerLinkStatus?: Resolver<Maybe<ResolversTypes['RegisterLinkStatus']>, ParentType, ContextType>;
