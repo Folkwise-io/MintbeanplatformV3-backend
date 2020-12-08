@@ -1,6 +1,6 @@
 import Knex from "knex";
 
-import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
+import { Meet, MeetType, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import handleDatabaseError from "../util/handleDatabaseError";
 import MeetDao, { MeetDaoAddOneInput, MeetDaoEditOneInput, MeetDaoGetManyArgs, MeetDaoGetOneArgs } from "./MeetDao";
 import { calculateMeetRegisterLinkStatus } from "../util/timeUtils";
@@ -8,7 +8,7 @@ import { calculateMeetRegisterLinkStatus } from "../util/timeUtils";
 // "Fresh out of the DB oven" meet type. Not extending the Meet type because Meet type includes composed properties that don't exist in DB
 interface MeetRaw {
   id: string;
-  meetType: string;
+  meetType: MeetType;
   title: string;
   description: string;
   longDescription?: string;

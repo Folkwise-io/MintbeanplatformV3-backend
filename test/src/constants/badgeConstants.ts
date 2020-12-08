@@ -1,10 +1,10 @@
 import { gql } from "apollo-server-express";
-import { Badge, CreateBadgeInput, EditBadgeInput } from "../../../src/types/gqlGeneratedTypes";
+import { Badge, BadgeShape, CreateBadgeInput, EditBadgeInput } from "../../../src/types/gqlGeneratedTypes";
 
 export const WINNER_FIRST: Badge = {
   id: "00000000-0000-0000-0000-000000000000",
   alias: ":winner-first:",
-  badgeShape: "star",
+  badgeShape: BadgeShape.Star,
   faIcon: "trophy",
   backgroundHex: "000000",
   iconHex: "f9ce13",
@@ -18,7 +18,7 @@ export const WINNER_FIRST: Badge = {
 export const WINNER_SECOND: Badge = {
   id: "00000000-0000-4000-a000-000000000000",
   alias: ":winner-second:",
-  badgeShape: "square",
+  badgeShape: BadgeShape.Square,
   faIcon: "medal",
   backgroundHex: "2bf0e5",
   iconHex: "f26d35",
@@ -32,7 +32,7 @@ export const WINNER_SECOND: Badge = {
 export const WINNER_THIRD: Badge = {
   id: "00000000-0000-4000-a000-000000000001",
   alias: ":winner-third:",
-  badgeShape: "circle",
+  badgeShape: BadgeShape.Circle,
   faIcon: "award",
   backgroundHex: "fb8a13",
   iconHex: "b418cb",
@@ -45,7 +45,7 @@ export const WINNER_THIRD: Badge = {
 
 export const NEW_BADGE_INPUT: CreateBadgeInput = {
   alias: ":anchored:",
-  badgeShape: "square",
+  badgeShape: BadgeShape.Square,
   faIcon: "anchor",
   backgroundHex: "5B25D3",
   iconHex: "24E5A3",

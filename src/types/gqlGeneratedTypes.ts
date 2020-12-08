@@ -181,7 +181,7 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   /** Register a user */
   register: PrivateUser;
-  /** Creates a new meet (only hackMeet is supported for now) */
+  /** Creates a new meet  */
   createMeet: Meet;
   /** Edits a meet (requires admin privileges) */
   editMeet: Meet;
@@ -377,13 +377,21 @@ export enum RegisterLinkStatus {
   Closed = 'CLOSED'
 }
 
+/** The different meet types that are currently available */
+export enum MeetType {
+  Hackathon = 'HACKATHON',
+  Workshop = 'WORKSHOP',
+  Webinar = 'WEBINAR',
+  Lecture = 'LECTURE'
+}
+
 /** An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future */
 export type Meet = {
   __typename?: 'Meet';
   /** ID of the Meet in UUID */
   id: Scalars['UUID'];
-  /** The type of the Meet as enum string. Only hackMeet is supported for now */
-  meetType: Scalars['String'];
+  /** The type of the Meet as enum string. */
+  meetType: MeetType;
   title: Scalars['String'];
   /** A short blurb about the Meet */
   description: Scalars['String'];
@@ -416,8 +424,8 @@ export type Meet = {
 
 /** The input needed to create a new meet */
 export type CreateMeetInput = {
-  /** The type of the Meet as enum string. Only hackMeet is supported for now */
-  meetType: Scalars['String'];
+  /** The type of the Meet as enum string.  */
+  meetType: MeetType;
   title: Scalars['String'];
   /** A short blurb about the Meet */
   description: Scalars['String'];
@@ -436,8 +444,8 @@ export type CreateMeetInput = {
 
 /** Input that can be used to edit a meet - all fields are optional */
 export type EditMeetInput = {
-  /** The type of the Meet as enum string. Only hackMeet is supported for now */
-  meetType?: Maybe<Scalars['String']>;
+  /** The type of the Meet as enum string. */
+  meetType?: Maybe<MeetType>;
   title?: Maybe<Scalars['String']>;
   /** A short blurb about the Meet */
   description?: Maybe<Scalars['String']>;
@@ -528,6 +536,12 @@ export type MeetReminderEmailInput = {
   body: Scalars['String'];
 };
 
+export enum BadgeShape {
+  Star = 'STAR',
+  Circle = 'CIRCLE',
+  Square = 'SQUARE'
+}
+
 /** A badge awarded by Mintbean for excellence within the Mintbean community! */
 export type Badge = {
   __typename?: 'Badge';
@@ -536,7 +550,7 @@ export type Badge = {
   /** A user friendly :colon-surrounded: badge alias. */
   alias: Scalars['String'];
   /** The shape of the enclosing badge from an enumerable list */
-  badgeShape: Scalars['String'];
+  badgeShape: BadgeShape;
   /** The Font Awesome icon that will be the graphic of the badge (required) */
   faIcon: Scalars['String'];
   /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
@@ -562,7 +576,7 @@ export type CreateBadgeInput = {
   /** The alias of the badge */
   alias: Scalars['String'];
   /** The shape of the badge from an enumerable list */
-  badgeShape: Scalars['String'];
+  badgeShape: BadgeShape;
   /** The Font Awesome icon that will be the graphic of the badge (required) */
   faIcon: Scalars['String'];
   /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
@@ -582,7 +596,7 @@ export type EditBadgeInput = {
   /** The alias of the badge */
   alias?: Maybe<Scalars['String']>;
   /** The shape of the badge from an enumerable list */
-  badgeShape?: Maybe<Scalars['String']>;
+  badgeShape?: Maybe<BadgeShape>;
   /** The Font Awesome icon that will be the graphic of the badge (required) */
   faIcon?: Maybe<Scalars['String']>;
   /** The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black) */
@@ -809,6 +823,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
   RegisterLinkStatus: RegisterLinkStatus;
+  MeetType: MeetType;
   Meet: ResolverTypeWrapper<Meet>;
   CreateMeetInput: CreateMeetInput;
   EditMeetInput: EditMeetInput;
@@ -818,6 +833,7 @@ export type ResolversTypes = {
   Int: ResolverTypeWrapper<Scalars['Int']>;
   TestEmailInput: TestEmailInput;
   MeetReminderEmailInput: MeetReminderEmailInput;
+  BadgeShape: BadgeShape;
   Badge: ResolverTypeWrapper<Badge>;
   CreateBadgeInput: CreateBadgeInput;
   EditBadgeInput: EditBadgeInput;
@@ -965,7 +981,7 @@ export type PostResolvers<ContextType = any, ParentType extends ResolversParentT
 
 export type MeetResolvers<ContextType = any, ParentType extends ResolversParentTypes['Meet'] = ResolversParentTypes['Meet']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
-  meetType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  meetType?: Resolver<ResolversTypes['MeetType'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   detailedDescription?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1015,7 +1031,7 @@ export type MediaAssetResolvers<ContextType = any, ParentType extends ResolversP
 export type BadgeResolvers<ContextType = any, ParentType extends ResolversParentTypes['Badge'] = ResolversParentTypes['Badge']> = {
   id?: Resolver<ResolversTypes['UUID'], ParentType, ContextType>;
   alias?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  badgeShape?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  badgeShape?: Resolver<ResolversTypes['BadgeShape'], ParentType, ContextType>;
   faIcon?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   backgroundHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   iconHex?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
