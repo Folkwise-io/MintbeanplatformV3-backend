@@ -1,7 +1,14 @@
 import EmailDao from "../../dao/EmailDao";
 import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
-import { EmailTemplateName, ScheduledEmailInput, ScheduledEmail, EmailResponse, Attachment } from "../../types/Email";
+import {
+  EmailTemplateName,
+  ScheduledEmailInput,
+  ScheduledEmail,
+  EmailResponse,
+  Attachment,
+  Email,
+} from "../../types/Email";
 
 import { Meet } from "../../types/gqlGeneratedTypes";
 import { User } from "../../types/User";
@@ -72,55 +79,52 @@ export default class EmailCommanderImpl implements EmailCommander {
     };
   }
 
+  /**  Build and send emails for given scheduledEmail */
   async dispatch(scheduledEmail: ScheduledEmail): Promise<EmailResponse[]> {
     const { templateName, id, meetId } = scheduledEmail;
 
-    // 1. define recipients Ids
+    // 1. [GET RECIPIENTS] for this scheduld email
     const recipientIds = await this.emailDao.getRecipients(id);
 
-    // 2. map over recipients to build context and email promise for that recipient
+    // 2. [BUILD EMAILS] by mapping over recipients to build context and email promise for that recipient
     const emailPromises = recipientIds.map(async (recipientId) => {
-      const context = await this.buildEmailContext(templateName, { recipientId, meetId });
-      const email = generateEmail(templateName, context);
-      return email;
+      // TODO: does this need try/catch to handle errors from context building phase?
+
+      // const context = await this.buildEmailContext(templateName, { recipientId, meetId });
+      // const email = generateEmail(templateName, context);
+      // return email;
+
+      // TODO: remove below. temp only
+      const fakeEmailForTesting = {
+        to: "claire.froelich@gmail.com",
+        from: "noreply@mintbean.io",
+        title: "TEST EMAIL " + new Date(),
+        html: "test",
+      };
+      return fakeEmailForTesting;
     });
 
+    // 3. [HANDLE EMAIL BUILDS]
     const emails = await Promise.allSettled(emailPromises);
+    ////=> (case: build failed) log any emails that failed the build phase
+    const failedEmailsPromiseResult = (emails.filter(
+      (em) => em.status === "rejected",
+    ) as unknown) as PromiseRejectedResult[];
+    failedEmailsPromiseResult.forEach((failed) =>
+      console.warn(`Email build failed for email in scheduledEmail: ${id}.\nReason: ${failed.reason}`),
+    );
+    ////=> (case: build successful) get successfully built emails for dispatch
+    const successEmailsPromiseResult = (emails.filter(
+      (em) => em.status === "fulfilled",
+    ) as unknown) as PromiseFulfilledResult<Email>[];
+    const successEmails = successEmailsPromiseResult.map((res) => res.value);
 
-    // 3. await send of all emails
-    const emailResponsePromises = emails.map(async (email) => await this.emailDao.sendEmail(id, email));
+    // 4. [SEND EMAILS] and get responses
+    const emailResponsePromises = successEmails.map(async (email) => await this.emailDao.sendEmail(id, email));
+    // It is OK to use Promise.all here because emailDao#sendEmail gracefully handles failed sends
+    const emailResponses = await Promise.all(emailResponsePromises);
 
-    // // LOG ALL FAILURES (id, reason, recipient, time)
-    // // SUCCESS: delete scheduledEmail if sent (ignore invalid recipient emails for bulk)
-    // return template
-    //   .inflateVars(scheduledEmail)
-    //   .then(template.generateEmails)
-    //   .then((emails) => emails.map(this.emailDao.sendEmail))
-    //   .then((emailResponsePromises) => Promise.all(emailResponsePromises))
-    //   .then(async (emailResponses) => {
-    //     // TODO: write logic that checks emailResponses to decide when to delete the scheduled email from entry
-    //     await this.emailDao.markAsSent(id);
-    //     return emailResponses;
-    //   });
+    // 5. [RETURN EMAIL RESPONSES]
+    return emailResponses;
   }
 }
-
-// Q: Now we need to delete the scheduledEmail entry, is it better to do it here or in cron scheduler?
-/* Q: How to decide for when to delete the entry? (i.e. wrong email address vs. sendgrid servers are down).
-I think sendgrid server errors (500 codes) = don't delete, request errors like wrong email (400 codes) = delete */
-// console.log({ emailResponses });
-// const successes = (emailResponses.filter(
-//   (x) => x.status === "fulfilled",
-// ) as unknown) as PromiseFulfilledResult<EmailResponse>[];
-// const failures = (emailResponses.filter((x) => x.status === "rejected") as unknown) as PromiseRejectedResult[];
-
-// failures.forEach((failure) => console.log(failure.reason));
-
-// const deletePromises = successes.map((x) => new Promise(this.emailDao.deleteOne(x.id)));
-// const deleteResults = ((await Promise.allSettled(
-//   deletePromises,
-// )) as unknown) as PromiseSettledResult<EmailResponse>[];
-
-// const deleteFailures = deleteResults.filter((x) => x.status === "rejected") as PromiseRejectedResult[];
-
-// deleteFailures.forEach((failure) => console.log(failure.reason));
