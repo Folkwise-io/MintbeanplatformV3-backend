@@ -53,3 +53,8 @@ import { AuthenticationError } from "apollo-server-express";
 
 throw new AuthenticationError('This in an error message')
 ```
+
+### [S] Add meet validations for edit/create
+
+Meet entities are missing validations in backend. Align with frontend meet create/edit forms.
+\*Note: only do this after an upper character limit for short description has been established.
