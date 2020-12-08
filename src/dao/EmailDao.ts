@@ -1,17 +1,18 @@
-import sgMail from "@sendgrid/mail";
-import { Email } from "../types/Email";
+import { Email, EmailResponse, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
 
-export class EmailDao {
-  constructor(private apiKey: string) {}
+export default interface EmailDao {
+  /** Queues an email template to be sent (i.e. by persisting in a db) */
+  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void>;
 
-  async sendEmail(email: Email): Promise<boolean> {
-    sgMail.setApiKey(this.apiKey);
-    try {
-      await sgMail.send(email);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
-  }
+  /** Retrieves overdue scheduled emails that should be sent right away */
+  getOverdueScheduledEmails(): Promise<ScheduledEmail[]>;
+
+  /** Marks a scheduled email as sent */
+  markAsSent(id: string): Promise<void>;
+
+  /** Sends an email */
+  sendEmail(email: Email): Promise<EmailResponse>;
+
+  /** Deletes a scheduled email */
+  deleteOne(id: string): Promise<boolean>;
 }

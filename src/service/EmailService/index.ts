@@ -1,11 +1,13 @@
-import config from "../util/config";
-import { EmailDao } from "../dao/EmailDao";
-import { Email } from "../types/Email";
-import { Meet } from "../types/gqlGeneratedTypes";
-import { generateIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
-import { User } from "../types/User";
+import config from "../../util/config";
+import EmailDao from "../../dao/EmailDao";
+import { Email } from "../../types/Email";
+import { Meet } from "../../types/gqlGeneratedTypes";
+import { generateIcsAttachments, generateJsonLdHtml } from "../../util/emailUtils";
+import { User } from "../../types/User";
 
 const { senderEmail } = config;
+
+// This service will be used for giving Admins custom emailing/preview abilities
 export class EmailService {
   constructor(private emailDao: EmailDao) {}
 
