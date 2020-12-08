@@ -29,6 +29,9 @@ const meet = gql`
     "A short blurb about the Meet"
     description: String!
 
+    "A detailed description of the Meet"
+    detailedDescription: String
+
     "The instructions in markdown format"
     instructions: String!
 
@@ -68,6 +71,9 @@ const meet = gql`
     "A short blurb about the Meet"
     description: String!
 
+    "A detailed description of the Meet in markdown format"
+    detailedDescription: String
+
     "The instructions in markdown format"
     instructions: String!
 
@@ -91,6 +97,9 @@ const meet = gql`
 
     "A short blurb about the Meet"
     description: String
+
+    "A detailed description of the Meet in markdown format"
+    detailedDescription: String
 
     "The instructions in markdown format"
     instructions: String

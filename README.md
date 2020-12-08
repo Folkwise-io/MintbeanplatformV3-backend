@@ -107,21 +107,22 @@ Remember to run `yarn gen-types` after every schema change, to ensure `tsTypes` 
 
 ### NPM Scripts Reference
 
-| Script      | Description                                                                                        |
-| ----------- | -------------------------------------------------------------------------------------------------- |
-| `start`     | Starts the server with `ts-node`                                                                   |
-| `dev`       | Starts the server with `ts-node` & hot-reload                                                      |
-| `build`     | Builds `*.ts` in `./src` to `*.js` in `./build`                                                    |
-| `db:reset`  | Drops and recreates all databases, nuking all the tables                                           |
-| `gen-types` | See [above](#auto-generating-typescript-types)                                                     |
-| `knex`      | Runs knex cli tools for migration/seeds, using the default database specified in `.env`            |
-| `knex:test` | Runs knex cli tools for migration/seeds, using the test database (specified in `./test/.env.test`) |
-| `postgres`  | Starts the Postgres docker container                                                               |
-| `pristine`  | Runs `db:reset` then runs all the migrations and seeds on both the dev and test databases.         |
-| `psql`      | Enters the psql CLI in the docker container                                                        |
-| `tdd`       | Runs the tests in watch mode for a TDD workflow                                                    |
-| `test`      | Runs the tests once and generates a coverage report                                                |
-| `dump:prod` | Dumps production backups into `db/backups/*`                                                       |
+| Script        | Description                                                                                                                                                                                                                                                    |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `start`       | Starts the server with `ts-node`                                                                                                                                                                                                                               |
+| `dev`         | Starts the server with `ts-node` & hot-reload                                                                                                                                                                                                                  |
+| `build`       | Builds `*.ts` in `./src` to `*.js` in `./build`                                                                                                                                                                                                                |
+| `db:reset`    | Drops and recreates all databases, nuking all the tables                                                                                                                                                                                                       |
+| `gen-types`   | See [above](#auto-generating-typescript-types)                                                                                                                                                                                                                 |
+| `knex`        | Runs knex cli tools for migration/seeds, using the default database specified in `.env`                                                                                                                                                                        |
+| `knex:test`   | Runs knex cli tools for migration/seeds, using the test database (specified in `./test/.env.test`)                                                                                                                                                             |
+| `postgres`    | Starts the Postgres docker container                                                                                                                                                                                                                           |
+| `pristine`    | Runs `db:reset` then runs all the migrations and seeds on both the dev and test databases.                                                                                                                                                                     |
+| `psql`        | Enters the psql CLI in the docker container                                                                                                                                                                                                                    |
+| `tdd`         | Runs the tests in watch mode for a TDD workflow                                                                                                                                                                                                                |
+| `test`        | Runs the tests once and generates a coverage report                                                                                                                                                                                                            |
+| `dump:prod`   | Dumps production backups into `db/backups/*`                                                                                                                                                                                                                   |
+| `rollback:db` | Clears knex's cache of past migrations. This is useful when switching between branches with different migrations in development if you encounter corrupt migration error. After rolling back, use `yarn pristine` to build tables with current branch's schema |
 
 ### Knex CLI Reference
 

@@ -395,6 +395,8 @@ export type Meet = {
   title: Scalars['String'];
   /** A short blurb about the Meet */
   description: Scalars['String'];
+  /** A detailed description of the Meet */
+  detailedDescription?: Maybe<Scalars['String']>;
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
@@ -427,6 +429,8 @@ export type CreateMeetInput = {
   title: Scalars['String'];
   /** A short blurb about the Meet */
   description: Scalars['String'];
+  /** A detailed description of the Meet in markdown format */
+  detailedDescription?: Maybe<Scalars['String']>;
   /** The instructions in markdown format */
   instructions: Scalars['String'];
   registerLink?: Maybe<Scalars['String']>;
@@ -445,6 +449,8 @@ export type EditMeetInput = {
   title?: Maybe<Scalars['String']>;
   /** A short blurb about the Meet */
   description?: Maybe<Scalars['String']>;
+  /** A detailed description of the Meet in markdown format */
+  detailedDescription?: Maybe<Scalars['String']>;
   /** The instructions in markdown format */
   instructions?: Maybe<Scalars['String']>;
   registerLink?: Maybe<Scalars['String']>;
@@ -978,6 +984,7 @@ export type MeetResolvers<ContextType = any, ParentType extends ResolversParentT
   meetType?: Resolver<ResolversTypes['MeetType'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  detailedDescription?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   instructions?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   registerLink?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   registerLinkStatus?: Resolver<Maybe<ResolversTypes['RegisterLinkStatus']>, ParentType, ContextType>;

@@ -11,6 +11,7 @@ interface MeetRaw {
   meetType: MeetType;
   title: string;
   description: string;
+  longDescription?: string;
   instructions: string;
   registerLink?: string;
   coverImageUrl: string;
