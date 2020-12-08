@@ -1,5 +1,5 @@
 import { EmailTemplateName } from "../../../types/Email";
-import { render, renderFile } from "../../../util/templatingUtils";
+import { /* render, */ renderFile } from "../../../util/templatingUtils";
 import { EmailContext } from "../EmailCommanderImpl";
 import path from "path";
 
