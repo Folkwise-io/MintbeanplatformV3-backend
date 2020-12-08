@@ -78,14 +78,17 @@ export default class EmailCommanderImpl implements EmailCommander {
     // 1. define recipients Ids
     const recipientIds = await this.emailDao.getRecipients(id);
 
-    // 2. map over recipients to build context and email for that recipient
-    const emails = recipientIds.map(async (recipientId) => {
+    // 2. map over recipients to build context and email promise for that recipient
+    const emailPromises = recipientIds.map(async (recipientId) => {
       const context = await this.buildEmailContext(templateName, { recipientId, meetId });
       const email = generateEmail(templateName, context);
+      return email;
     });
 
+    const emails = await Promise.allSettled(emailPromises);
+
     // 3. await send of all emails
-    // TODO
+    const emailResponsePromises = emails.map(async (email) => await this.emailDao.sendEmail(id, email));
 
     // // LOG ALL FAILURES (id, reason, recipient, time)
     // // SUCCESS: delete scheduledEmail if sent (ignore invalid recipient emails for bulk)
