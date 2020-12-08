@@ -12,6 +12,7 @@ import TestMeetDaoKnex from "../TestMeetDaoKnex";
 import TestUserDaoKnex from "../TestUserDaoKnex";
 import TestBadgeDaoKnex from "../TestBadgeDaoKnex";
 import BadgeProjectDaoKnex from "../../../../src/dao/BadgeProjectDaoKnex";
+import EmailDaoSendgridKnex from "../../../../src/dao/EmailDaoSendgridKnex";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
@@ -43,6 +44,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const kanbanDao = new TestKanbanDaoKnex(knex);
   const badgeDao = new TestBadgeDaoKnex(knex);
   const badgeProjectDao = new BadgeProjectDaoKnex(knex);
+  const emailDao = new EmailDaoSendgridKnex(knex);
 
   return {
     userDao,
@@ -56,5 +58,6 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
     kanbanDao,
     badgeDao,
     badgeProjectDao,
+    emailDao,
   };
 }

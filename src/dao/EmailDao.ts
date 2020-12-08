@@ -10,8 +10,11 @@ export default interface EmailDao {
   /** Marks a scheduled email as sent */
   markAsSent(id: string): Promise<void>;
 
+  /** Retrieves the userIds of all recipients for a given scheduled email */
+  getRecipients(id: string): Promise<string[]>;
+
   /** Sends an email */
-  sendEmail(email: Email): Promise<EmailResponse>;
+  sendEmail(id: string, email: Email): Promise<EmailResponse>;
 
   /** Deletes a scheduled email */
   deleteOne(id: string): Promise<boolean>;

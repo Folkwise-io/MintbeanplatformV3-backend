@@ -17,9 +17,8 @@ import ProjectMediaAssetDaoKnex from "./dao/ProjectMediaAssetKnex";
 import ProjectMediaAssetDao from "./dao/ProjectMediaAssetDao";
 import MeetRegistrationDaoKnex from "./dao/MeetRegistrationDaoKnex";
 import MeetRegistrationDao from "./dao/MeetRegistrationDao";
-import { EmailService } from "./service/EmailService";
-import { EmailDao } from "./dao/EmailDao";
-import config from "./util/config";
+import EmailService from "./service/EmailService";
+import EmailDao from "./dao/EmailDao";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
 import BadgeResolverValidator from "./validator/BadgeResolverValidator";
 import BadgeService from "./service/BadgeService";
@@ -40,6 +39,7 @@ import KanbanDaoKnex from "./dao/KanbanDaoKnex";
 import KanbanService from "./service/KanbanService";
 import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
+import EmailDaoSendgridKnex from "./dao/EmailDaoSendgridKnex";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -53,6 +53,7 @@ export interface PersistenceContext {
   kanbanCanonDao: KanbanCanonDao;
   kanbanCanonCardDao: KanbanCanonCardDao;
   kanbanDao: KanbanDao;
+  emailDao: EmailDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -68,6 +69,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const kanbanCanonDao = new KanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new KanbanCanonCardDaoKnex(knex);
   const kanbanDao = new KanbanDaoKnex(knex);
+  const emailDao = new EmailDaoSendgridKnex(knex);
 
   return {
     userDao,
@@ -81,6 +83,7 @@ export function buildPersistenceContext(): PersistenceContext {
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
+    emailDao,
   };
 }
 
@@ -126,6 +129,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
+    emailDao,
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
@@ -145,9 +149,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetDao,
   );
 
-  const { sendGridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
-  const emailDao = new EmailDao(sendGridKey);
   const emailService = new EmailService(emailDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);

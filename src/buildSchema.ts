@@ -71,7 +71,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService, userDao),
-    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, userDao, emailService, meetDao),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, userDao, meetDao),
     projectResolver(
       projectResolverValidator,
       projectDao,

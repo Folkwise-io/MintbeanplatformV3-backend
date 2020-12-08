@@ -1,6 +1,5 @@
 import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import { EmailService } from "../../service/EmailService";
 import MeetService from "../../service/MeetService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
@@ -16,7 +15,6 @@ const meetResolver = (
   meetService: MeetService,
   meetRegistrationDao: MeetRegistrationDao,
   userDao: UserDao,
-  emailService: EmailService,
   meetDao: MeetDao,
 ): Resolvers => {
   return {
@@ -72,9 +70,6 @@ const meetResolver = (
 
             const user = ((await userDao.getOne({ id: userId })) as unknown) as User; // temporary casting as we know user exists bc logged in user exists.
             const meet = await meetDao.getOne({ id: meetId });
-            const email = emailService.generateMeetRegistrationEmail(user, meet as Meet, id);
-
-            return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
           })
           .then(() => true);
       },

@@ -1,6 +1,3 @@
-import { Meet } from "./gqlGeneratedTypes";
-import { User } from "./User";
-
 /** The email object expected by SendGrid */
 export interface Email {
   to: string;
@@ -35,7 +32,6 @@ export interface ScheduledEmail {
   templateName: EmailTemplateName;
   userRecipientId?: string | null;
   meetRecipientIds?: string[] | null;
-  userId?: string | null;
   meetId?: string | null;
   sendAt: string;
   sent: boolean;
@@ -47,7 +43,6 @@ export interface ScheduledEmailInput {
   templateName: EmailTemplateName;
   userRecipientId?: string | null;
   meetRecipientIds?: string[] | null;
-  userId?: string | null;
   meetId?: string | null;
   sendAt: string;
 }
@@ -59,6 +54,7 @@ export enum EmailResponseStatus {
 }
 
 export interface EmailResponse {
+  scheduledEmailId: string;
   statusCode: number;
   status: EmailResponseStatus;
   errorMessage?: string;

@@ -37,17 +37,35 @@ export default class EmailDaoSendgridKnex implements EmailDao {
     });
   }
 
+  getRecipients(id: string): Promise<string[]> {
+    return handleDatabaseError(async () => {
+      const scheduledEmails = (await this.knex<ScheduledEmail>("scheduledEmails").select(
+        "userRecipientId",
+        "meetRecipientIds",
+      )) as ScheduledEmail[];
+      const scheduledEmail = scheduledEmails[0];
+      const { userRecipientId, meetRecipientIds } = scheduledEmail;
+      // Note: userRecipientId is currently singular but in future may become a serialized array like meetRecipientIds. Once that change is made, concat all recipient ids from all recipient columns and return that array
+      // For now, returning singular recipient as an array if specified.
+      if (userRecipientId) {
+        return [userRecipientId];
+      } else {
+        return meetRecipientIds || [];
+      }
+    });
+  }
+
   // TODO: Manually test a bad apple email in the send batch
   // TOOD: make it clear that we are failing silently (intentionally) in partial fail case
-
-  async sendEmail(email: Email): Promise<EmailResponse> {
+  async sendEmail(id: string, email: Email): Promise<EmailResponse> {
     try {
       const [res] = await sgMail.send(email);
-      return { statusCode: res.statusCode, status: SUCCESS };
+      return { scheduledEmailId: id, statusCode: res.statusCode, status: SUCCESS };
     } catch (e) {
       console.log(JSON.stringify(e, null, 2));
 
       return {
+        scheduledEmailId: id,
         statusCode: e.code || 400,
         // Sendgrid e codes: https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html
         status: e?.code < 500 ? REQUEST_ERROR : SERVER_ERROR,
