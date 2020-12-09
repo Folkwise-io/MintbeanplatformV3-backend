@@ -9,8 +9,9 @@ import ResponseError from "@sendgrid/helpers/classes/response-error";
 
 interface EmailWithIdResponse {
   scheduledEmailId: string;
-  response?: ClientResponse;
-  error?: ResponseError;
+  statusCode: number;
+  response: ClientResponse;
+  errors?: ResponseError[];
 }
 
 const { sendgridKey } = config;
@@ -63,6 +64,59 @@ const deleteScheduledEmailById = async (id: string) => {
 
 // Job definition =================================================================
 const job = async () => {
+  lockJob(async () => {
+    const scheduledEmails = await knex<ScheduledEmail>("scheduledEmails");
+
+    const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
+      to,
+      from,
+      html,
+      subject,
+    });
+
+    const emailsWithId = scheduledEmails.map((se) => {
+      const email = generateEmailFromScheduledEmail(se);
+      return {
+        scheduledEmailId: se.id,
+        email,
+      };
+    });
+
+    const emailsWithIdPromises = emailsWithId.map(({ scheduledEmailId, email }) => {
+      return new Promise<EmailWithIdResponse>(async (resolve, reject) => {
+        try {
+          const [response] = await sgMail.send(email);
+          console.log({ response });
+          resolve({ scheduledEmailId, response, statusCode: response.statusCode });
+        } catch (e) {
+          console.log("Bad email error: ", e);
+          console.log("Error response body: ", e.response.body);
+          reject({ scheduledEmailId, response: e.response.body, errors: e.response.body.errors });
+        }
+        // const wasSuccess = (response: ClientResponse): boolean => {
+        //   const { statusCode } = response;
+        //   return statusCode >= 200 && statusCode < 300;
+        // };
+      });
+    });
+
+    const promises = await Promise.allSettled(emailsWithIdPromises);
+    promises.forEach(async (promise) => {
+      if (promise.status === "rejected") {
+        console.log("Reject reason: ", promise.reason);
+      } else {
+        // TOOD: Remove. Debugging only
+        console.log("Resolved: ", promise.value);
+        // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
+        const { scheduledEmailId } = promise.value;
+        await deleteScheduledEmailById(scheduledEmailId);
+      }
+    });
+  });
+};
+
+// Wrap job logic in lockfile flow
+const lockJob = (jobCb: () => void) => {
   // only run job if lockfile not present
   if (doesFileExist()) {
     if (isExpiryReached()) {
@@ -93,52 +147,8 @@ const job = async () => {
   }
 
   try {
-    // get all scheduledEmails, convert to email format
-    const scheduledEmails = await knex<ScheduledEmail>("scheduledEmails");
-
-    const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
-      to,
-      from,
-      html,
-      subject,
-    });
-
-    const emailsWithId = scheduledEmails.map((se) => {
-      const email = generateEmailFromScheduledEmail(se);
-      return {
-        scheduledEmailId: se.id,
-        email,
-      };
-    });
-
-    const emailsWithIdPromises = emailsWithId.map(({ scheduledEmailId, email }) => {
-      return new Promise<EmailWithIdResponse>(async (resolve, reject) => {
-        try {
-          const [response] = await sgMail.send(email);
-          resolve({ scheduledEmailId, response });
-        } catch (e) {
-          console.log("Bad email error: ", e);
-          reject({ scheduledEmailId, error: e });
-        }
-        // const wasSuccess = (response: ClientResponse): boolean => {
-        //   const { statusCode } = response;
-        //   return statusCode >= 200 && statusCode < 300;
-        // };
-      });
-    });
-
-    const promises = await Promise.allSettled(emailsWithIdPromises);
-    promises.forEach(async (promise) => {
-      if (promise.status === "rejected") {
-        console.log("Reject reason: ", promise.reason);
-      } else {
-        // TOOD: Remove. Debugging only
-        console.log(promise.value);
-        // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
-        const { scheduledEmailId } = promise.value;
-        await deleteScheduledEmailById(scheduledEmailId);
-      }
-    });
+    // Run job
+    jobCb();
   } finally {
     try {
       deleteLockfileSync();
