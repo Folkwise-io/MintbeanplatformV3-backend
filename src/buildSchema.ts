@@ -54,6 +54,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectDao,
     userDao,
     emailScheduleDao,
+    emailApiDao,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -80,6 +81,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
       emailService,
       meetDao,
       emailScheduleDao,
+      emailApiDao,
     ),
     projectResolver(
       projectResolverValidator,

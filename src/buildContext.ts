@@ -42,7 +42,14 @@ import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
 import EmailScheduleDao from "./dao/EmailScheduleDao";
 import EmailScheduleDaoImpl from "./dao/EmailScheduleDaoImpl";
+import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
+import EmailApiDao from "./dao/EmailApiDao";
 
+/* 
+=======================================================================================
+-- PERSISTENCE CONTEXT 
+=======================================================================================
+*/
 export interface PersistenceContext {
   userDao: UserDao;
   meetDao: MeetDao;
@@ -88,7 +95,11 @@ export function buildPersistenceContext(): PersistenceContext {
     emailScheduleDao,
   };
 }
-
+/* 
+=======================================================================================
+-- RESOLVER CONTEXT 
+=======================================================================================
+*/
 export interface ResolverContext {
   userResolverValidator: UserResolverValidator;
   userService: UserService;
@@ -117,6 +128,7 @@ export interface ResolverContext {
   projectDao: ProjectDao;
   userDao: UserDao;
   emailScheduleDao: EmailScheduleDao;
+  emailApiDao: EmailApiDao;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -152,13 +164,15 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetDao,
   );
 
-  const { sendGridKey } = config;
+  // TODO: remove sendgrid key, old emailDao and old emailService
+  const { sendgridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
-  const emailDao = new EmailDao(sendGridKey);
+  const emailDao = new EmailDao(sendgridKey);
   const emailService = new EmailService(emailDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
+  const emailApiDao = new EmailApiDaoImpl();
 
   return {
     userResolverValidator,
@@ -188,5 +202,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     projectDao,
     userDao,
     emailScheduleDao,
+    emailApiDao,
   };
 }
