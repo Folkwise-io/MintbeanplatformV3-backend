@@ -93,19 +93,3 @@ const job = async () => {
 };
 
 job();
-
-// const showStats = () => {
-//   fs.stat(LOCKFILE_PATH, (error, stats) => {
-//     if (error) {
-//       return false;
-//     } else {
-//       console.log(`Stats object for: ${LOCKFILE_PATH}`);
-//       console.log(stats);
-
-//       // Using methods of the Stats object
-//       console.log("Path is file:", stats.isFile());
-//       console.log("Path is directory:", stats.isDirectory());
-//       console.log("created at", new Date(stats.birthtime));
-//     }
-//   });
-// };
