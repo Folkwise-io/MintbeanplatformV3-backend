@@ -5,7 +5,7 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
     table.text("templateName").notNullable();
     table.uuid("userRecipientId"); // This will later be converted to a jsonb array field "userRecipientIds" when a use case for multiple user recipients arises
-    table.jsonb("meetRecipientIds");
+    table.uuid("meetRecipientId");
     table.uuid("meetId");
     table.timestamp("sendAt").notNullable().defaultTo(knex.fn.now());
     table.boolean("sent").notNullable().defaultTo(false);
@@ -16,6 +16,7 @@ export async function up(knex: Knex): Promise<void> {
     table.primary(["id"]);
     table.foreign("userRecipientId").references("users.id").onDelete("CASCADE");
     table.foreign("meetId").references("meets.id").onDelete("CASCADE");
+    table.foreign("meetRecipientId").references("meets.id").onDelete("CASCADE");
   });
 }
 

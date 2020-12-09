@@ -42,7 +42,7 @@ export interface ScheduledEmail {
 export interface ScheduledEmailInput {
   templateName: EmailTemplateName;
   userRecipientId?: string | null;
-  meetRecipientIds?: string[] | null;
+  meetRecipientId?: string | null;
   meetId?: string | null;
   sendAt?: string;
 }

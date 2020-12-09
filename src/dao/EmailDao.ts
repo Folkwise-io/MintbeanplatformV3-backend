@@ -11,13 +11,8 @@ export default interface EmailDao {
   markAsSent(id: string): Promise<void>;
 
   /** Retrieves the userIds of all recipients for a given scheduled email */
+  // TODO: return array of users instead
   getRecipients(id: string): Promise<string[]>;
-
-  /** Sends an email */
-  sendEmail(email: Email): Promise<EmailResponse>;
-
-  /** Sends a a scheduled email that persists the the scheduledEmailId in the response */
-  sendScheduledEmail(id: string, email: Email): Promise<ScheduledEmailResponse>;
 
   /** Deletes a scheduled email */
   deleteOne(id: string): Promise<boolean>;
