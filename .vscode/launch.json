@@ -5,15 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Example",
       "type": "node",
+      "name": "vscode-jest-tests",
       "request": "launch",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["--nolazy", "-r", "ts-node/register/transpile-only"],
-      "args": ["src/index.ts"],
-      "cwd": "${workspaceRoot}",
-      "internalConsoleOptions": "openOnSessionStart",
-      "skipFiles": ["<node_internals>/**", "node_modules/**"]
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["test"]
     }
   ]
 }

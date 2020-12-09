@@ -120,8 +120,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# VSCode settings
-/.vscode/settings.json
+# VSCode folder
+/.vscode/
+
 
 # End of https://www.gitignore.io/api/osx,node,linux,windows
 

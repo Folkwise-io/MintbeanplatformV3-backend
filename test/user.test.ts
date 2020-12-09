@@ -3,11 +3,13 @@ import jwt from "jsonwebtoken";
 
 import config from "../src/util/config";
 import { ParsedToken } from "../src/util/jwtUtils";
-import { getCurrentUnixTime } from "./src/util";
+import { getBobCookies, getCookies, getCurrentUnixTime } from "./src/util";
 import {
   AMY,
   AMY_CREDENTIALS,
   BOB,
+  EDIT_USER,
+  EDIT_USER_INPUT,
   GET_ALL_USERS_QUERY,
   GET_USER_QUERY,
   LOGIN,
@@ -18,6 +20,7 @@ import {
   REGISTER,
 } from "./src/constants/userConstants";
 import { User } from "../src/types/User";
+import { Console } from "console";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();
@@ -325,6 +328,59 @@ describe("User registration", () => {
       expect(parsedToken.sub).toBe(id);
     });
   });
+});
+
+describe("Editing a user", () => {
+  let cookies: Promise<string[]>;
+  let newUser: User;
+
+  // beforeEach(() => {
+  //   testManager
+  //     .getGraphQLResponse({ query: REGISTER, variables: { input: NEW_USER_INPUT } })
+  //     .then(testManager.parseData)
+  //     .then((data) => {
+  //       newUser = data.register;
+  //       console.log(newUser);
+  //     })
+  //     .then(() => {
+  //       cookies = getCookies(newUser, { email: newUser.email, password: NEW_USER_INPUT.password });
+  //     })
+  //     .then(() => {
+  //       testManager.addUsers([newUser]);
+  //     })
+  //     .catch((e) => console.log(e));
+  // });
+
+  it("allows a user, when logged in, to edit their first and last name", async () => {
+    // console.log(cookies);
+    // testManager
+    //   .getGraphQLResponse({
+    //     query: EDIT_USER,
+    //     variables: { id: newUser.id, input: EDIT_USER_INPUT },
+    //     cookies,
+    //   })
+    //   .then(testManager.parseData)
+    //   .then(({ editUser }) => {
+    //     console.log("meow", editUser);
+    //     expect(editUser.firstName).toBe(EDIT_USER_INPUT.firstName);
+    //     expect(editUser.lastName).toBe(EDIT_USER_INPUT.lastName);
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
+  });
+
+  //   it("doesn't let a user edit if cookies don't match target user id", async () => {
+  //     testManager
+  //       .getErrorCode({
+  //         query: EDIT_USER,
+  //         variables: { id: BOB.id, input: EDIT_USER_INPUT },
+  //         cookies: [],
+  //       })
+  //       .then((error) => {
+  //         expect(error).toMatch(/unauthenticated/i);
+  //       });
+  //   });
 });
 
 afterAll(async () => {

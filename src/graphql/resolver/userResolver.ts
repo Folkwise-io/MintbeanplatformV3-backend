@@ -113,6 +113,19 @@ const userResolver = (
             return { ...user, token };
           });
       },
+      editUser: (_root, { id, input }, context: ServerContext): Promise<User> => {
+        const userId = context.getUserId();
+        if (!userId) {
+          throw new AuthenticationError("You are not logged in!");
+        }
+        if (userId !== id) {
+          throw new AuthenticationError("You are not authorized to edit this user's details.");
+        }
+
+        return userResolverValidator
+          .editOne({ id, input }, context)
+          .then(({ id, input }) => userDao.editOne(id, input));
+      },
     },
     Project: {
       user: async (project): Promise<PublicUserDto> => {
