@@ -81,20 +81,20 @@ const lockJob = async (jobCb: () => void) => {
       return;
     }
   } else {
-    // there is no lock, just continue.
-  }
-
-  try {
-    writeLockfileSync();
-  } catch (e) {
-    console.log("Problem writing lockfile. Canceling job.");
-    console.log(e);
-    return;
+    // there is no lock, just continue after creating new lock file.
+    try {
+      writeLockfileSync();
+    } catch (e) {
+      console.log("Problem writing lockfile. Canceling job.");
+      console.log(e);
+      return;
+    }
   }
 
   try {
     // JOB START
     jobCb();
+    // await sleep(3000); // simulate long api call
   } finally {
     try {
       deleteLockfileSync();
@@ -106,9 +106,9 @@ const lockJob = async (jobCb: () => void) => {
 };
 
 // TODO: remove this. Used for testing only to mock api call without spamming claire's inbox
-// const sleep = (ms: number) => {
-//   return new Promise((resolve) => setTimeout(resolve, ms));
-// };
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 const deleteScheduledEmailById = async (id: string) => {
   try {
