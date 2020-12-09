@@ -113,7 +113,7 @@ const deleteScheduledEmailById = async (id: string) => {
   try {
     await knex("scheduledEmails").where({ id }).del();
   } catch (e) {
-    console.error("Error when deleting scheduled email: ", e);
+    console.error(`Error when deleting scheduled email with id ${id}: `, e);
   }
 };
 
@@ -121,7 +121,7 @@ const getScheduledEmails = async () => {
   try {
     return await knex<ScheduledEmail>("scheduledEmails");
   } catch (e) {
-    console.error("Error when deleting scheduled email: ", e);
+    console.error("Error attempting to fetch scheduled emails: ", e);
   }
 };
 
