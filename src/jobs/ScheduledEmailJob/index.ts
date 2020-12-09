@@ -164,7 +164,8 @@ const job = async () => {
 
       return new Promise<EmailResponse>(async (resolve, reject) => {
         try {
-          const [response] = await sgMail.send(email);
+          // const [response] = await sgMail.send(email);
+          const [response] = await mockSgMailSend(email);
           const { statusCode } = response;
           resolve({
             ...metaData,
@@ -267,3 +268,64 @@ const job = async () => {
 //     }
 //   }
 // }
+
+/** include "!FAIL" in the email.subject to force failed return */
+const mockSgMailSend = async (email: Email): Promise<[ClientResponse]> => {
+  const shouldFail = !!email.subject.match(/!FAIL/);
+  if (shouldFail) {
+    console.log("FAKE SENDING FAILURE EMAIL...");
+    console.log(email);
+    sleep(500);
+    const failureResponse = {
+      code: 400,
+      response: {
+        body: {
+          errors: [
+            {
+              message: "A MOCKED FAIL",
+              field: null,
+              help: "save yourself",
+            },
+          ],
+        },
+        headers: {
+          server: "nginx",
+          date: new Date(),
+          "content-length": "0",
+          connection: "close",
+          "x-message-id": "LKLHvCgpSLSCUyPLlVM-Tg",
+          "access-control-allow-origin": "https://sendgrid.api-docs.io",
+          "access-control-allow-methods": "POST",
+          "access-control-allow-headers": "Authorization, Content-Type, On-behalf-of, x-sg-elas-acl",
+          "access-control-max-age": "600",
+          "x-no-cors-reason": "https://sendgrid.com/docs/Classroom/Basics/API/cors.html",
+        },
+      },
+    };
+    throw failureResponse;
+  }
+
+  const successResponse = ({
+    statusCode: 202,
+    response: {
+      body: "",
+      headers: {
+        server: "nginx",
+        date: new Date(),
+        "content-length": "0",
+        connection: "close",
+        "x-message-id": "LKLHvCgpSLSCUyPLlVM-Tg",
+        "access-control-allow-origin": "https://sendgrid.api-docs.io",
+        "access-control-allow-methods": "POST",
+        "access-control-allow-headers": "Authorization, Content-Type, On-behalf-of, x-sg-elas-acl",
+        "access-control-max-age": "600",
+        "x-no-cors-reason": "https://sendgrid.com/docs/Classroom/Basics/API/cors.html",
+      },
+    },
+  } as unknown) as ClientResponse;
+
+  console.log("FAKE SENDING SUCCESS EMAIL...");
+  console.log(email);
+  sleep(500);
+  return [successResponse];
+};

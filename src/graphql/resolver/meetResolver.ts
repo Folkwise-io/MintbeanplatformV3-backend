@@ -40,8 +40,7 @@ const meetResolver = (
           html: "<strong>testtttt</strong> hi",
         });
         await emailScheduleDao.send(emailWithSubject("Scheduled Email 1-" + new Date().getTime()));
-        await emailScheduleDao.send(emailWithSubject("Scheduled Email 2-" + new Date().getTime()));
-        await emailScheduleDao.send(emailWithSubject("Scheduled Email 3-" + new Date().getTime()));
+        await emailScheduleDao.send(emailWithSubject("!FAIL Scheduled Email 2-" + new Date().getTime()));
         // await emailApiDao.send(email);
 
         return meetDao.getOne(args).then((result) => {
