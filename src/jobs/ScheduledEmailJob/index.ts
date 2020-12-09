@@ -3,7 +3,7 @@ import { Email } from "../../types/Email";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";
-import path from "path";
+import path, { resolve } from "path";
 
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
@@ -39,6 +39,11 @@ const isExpiryReached = () => {
     false;
   }
 };
+
+// TODO: remove this. Used for testing only to mock api call without spamming claire's inbox
+// const sleep = (ms: number) => {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// };
 
 // Job definition =================================================================
 const job = async () => {
@@ -79,6 +84,7 @@ const job = async () => {
       if (promise.status === "rejected") {
         console.log(promise.reason);
       } else {
+        // TOOD: Remove. Debugging only
         console.log(promise.value);
       }
     });
