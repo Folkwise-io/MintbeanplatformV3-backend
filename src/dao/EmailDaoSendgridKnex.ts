@@ -1,6 +1,13 @@
 import Knex from "knex";
 import sgMail from "@sendgrid/mail";
-import { Email, EmailResponse, EmailResponseStatus, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
+import {
+  Email,
+  EmailResponse,
+  EmailResponseStatus,
+  ScheduledEmail,
+  ScheduledEmailInput,
+  ScheduledEmailResponse,
+} from "../types/Email";
 import config from "../util/config";
 import EmailDao from "./EmailDao";
 import handleDatabaseError from "../util/handleDatabaseError";
@@ -14,9 +21,9 @@ export default class EmailDaoSendgridKnex implements EmailDao {
 
   // TODO: Add try catch to queue to fail silently
   // TODO: Manually test a bad apple email in the queue batch
-  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
+  async queue(scheduledEmails: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
     return handleDatabaseError(async () => {
-      this.knex<ScheduledEmail>("scheduledEmails").insert(scheduledEmail);
+      await this.knex("scheduledEmails").insert(scheduledEmails).returning("*");
     });
   }
 
@@ -57,7 +64,7 @@ export default class EmailDaoSendgridKnex implements EmailDao {
 
   // TODO: Manually test a bad apple email in the send batch
   // TOOD: make it clear that we are failing silently (intentionally) in partial fail case
-  async sendEmail(id: string, email: Email): Promise<EmailResponse> {
+  async sendScheduledEmail(id: string, email: Email): Promise<ScheduledEmailResponse> {
     try {
       const [res] = await sgMail.send(email);
       return { scheduledEmailId: id, statusCode: res.statusCode, status: SUCCESS };
@@ -66,6 +73,22 @@ export default class EmailDaoSendgridKnex implements EmailDao {
 
       return {
         scheduledEmailId: id,
+        statusCode: e.code || 400,
+        // Sendgrid e codes: https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html
+        status: e?.code < 500 ? REQUEST_ERROR : SERVER_ERROR,
+        errorMessage: e?.response?.body?.errors[0]?.message || "Unknown error",
+      };
+    }
+  }
+
+  async sendEmail(email: Email): Promise<EmailResponse> {
+    try {
+      const [res] = await sgMail.send(email);
+      return { statusCode: res.statusCode, status: SUCCESS };
+    } catch (e) {
+      console.log(JSON.stringify(e, null, 2));
+
+      return {
         statusCode: e.code || 400,
         // Sendgrid e codes: https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html
         status: e?.code < 500 ? REQUEST_ERROR : SERVER_ERROR,

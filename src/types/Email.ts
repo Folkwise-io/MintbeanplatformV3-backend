@@ -44,7 +44,7 @@ export interface ScheduledEmailInput {
   userRecipientId?: string | null;
   meetRecipientIds?: string[] | null;
   meetId?: string | null;
-  sendAt: string;
+  sendAt?: string;
 }
 
 export enum EmailResponseStatus {
@@ -54,8 +54,11 @@ export enum EmailResponseStatus {
 }
 
 export interface EmailResponse {
-  scheduledEmailId: string;
   statusCode: number;
   status: EmailResponseStatus;
   errorMessage?: string;
+}
+
+export interface ScheduledEmailResponse extends EmailResponse {
+  scheduledEmailId: string;
 }

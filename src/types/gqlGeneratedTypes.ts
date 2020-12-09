@@ -195,12 +195,8 @@ export type Mutation = {
   awardBadgesToProject?: Maybe<Project>;
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
-  /** Sends a test email (admin-only) */
-  sendTestEmail: Scalars['Boolean'];
-  /** Sends a reminder email to registrants of a meet (admin-only) */
-  sendReminderEmailForMeet: Scalars['Boolean'];
-  /** Sends a sample registration email with json-ld for Google whitelist approval (admin-only) */
-  sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
+  /** [TEMP] sends hackathon conirm email immediately to user defined in commander */
+  queueTestEmail: Scalars['Boolean'];
   /** Creates a new badge (requires admin privileges */
   createBadge: Badge;
   /** Edits a badge (requires admin privileges) */
@@ -271,21 +267,6 @@ export type MutationAwardBadgesToProjectArgs = {
 
 
 export type MutationRegisterForMeetArgs = {
-  meetId: Scalars['UUID'];
-};
-
-
-export type MutationSendTestEmailArgs = {
-  input: TestEmailInput;
-};
-
-
-export type MutationSendReminderEmailForMeetArgs = {
-  input: MeetReminderEmailInput;
-};
-
-
-export type MutationSendSampleRegistrationEmailForMeetArgs = {
   meetId: Scalars['UUID'];
 };
 
@@ -523,17 +504,6 @@ export type MediaAsset = {
   createdAt: Scalars['DateTime'];
   /** DateTime that the MediaAsset was saved to the database */
   updatedAt: Scalars['DateTime'];
-};
-
-export type TestEmailInput = {
-  subject: Scalars['String'];
-  body: Scalars['String'];
-};
-
-export type MeetReminderEmailInput = {
-  meetId: Scalars['UUID'];
-  subject: Scalars['String'];
-  body: Scalars['String'];
 };
 
 export enum BadgeShape {
@@ -831,8 +801,6 @@ export type ResolversTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: ResolverTypeWrapper<MediaAsset>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  TestEmailInput: TestEmailInput;
-  MeetReminderEmailInput: MeetReminderEmailInput;
   BadgeShape: BadgeShape;
   Badge: ResolverTypeWrapper<Badge>;
   CreateBadgeInput: CreateBadgeInput;
@@ -869,8 +837,6 @@ export type ResolversParentTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: MediaAsset;
   Int: Scalars['Int'];
-  TestEmailInput: TestEmailInput;
-  MeetReminderEmailInput: MeetReminderEmailInput;
   Badge: Badge;
   CreateBadgeInput: CreateBadgeInput;
   EditBadgeInput: EditBadgeInput;
@@ -952,9 +918,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   awardBadgesToProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationAwardBadgesToProjectArgs, 'projectId' | 'badgeIds'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
-  sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
-  sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
-  sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
+  queueTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   createBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationCreateBadgeArgs, 'input'>>;
   editBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationEditBadgeArgs, 'id' | 'input'>>;
   deleteBadge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteBadgeArgs, 'id'>>;

@@ -1,6 +1,6 @@
 import { EmailTemplateName } from "../../../types/Email";
 import { /* render, */ renderFile } from "../../../util/templatingUtils";
-import { EmailContext } from "../EmailCommanderImpl";
+import { EmailContext } from "../EmailContextBuilder";
 import path from "path";
 
 export type EmailTemplates = {

@@ -1,4 +1,4 @@
-import { Email, EmailResponse, ScheduledEmail, ScheduledEmailInput } from "../types/Email";
+import { Email, EmailResponse, ScheduledEmail, ScheduledEmailInput, ScheduledEmailResponse } from "../types/Email";
 
 export default interface EmailDao {
   /** Queues an email template to be sent (i.e. by persisting in a db) */
@@ -14,7 +14,10 @@ export default interface EmailDao {
   getRecipients(id: string): Promise<string[]>;
 
   /** Sends an email */
-  sendEmail(id: string, email: Email): Promise<EmailResponse>;
+  sendEmail(email: Email): Promise<EmailResponse>;
+
+  /** Sends a a scheduled email that persists the the scheduledEmailId in the response */
+  sendScheduledEmail(id: string, email: Email): Promise<ScheduledEmailResponse>;
 
   /** Deletes a scheduled email */
   deleteOne(id: string): Promise<boolean>;

@@ -1,15 +1,19 @@
 import config from "../../util/config";
 import EmailDao from "../../dao/EmailDao";
-import { Email } from "../../types/Email";
+import { Email, EmailResponse, EmailTemplateName, ScheduledEmailInput } from "../../types/Email";
 import { Meet } from "../../types/gqlGeneratedTypes";
 // import { generateIcsAttachments, generateJsonLdHtml } from "../../util/emailUtils";
 import { User } from "../../types/User";
+import { EmailCommander } from "./EmailCommander";
+import email from "../../graphql/typedef/email";
 
 const { senderEmail } = config;
 
+type QueueImmediateTestEmailArgs = Omit<ScheduledEmailInput, "sendAt">;
+
 // This service will be used for giving Admins custom emailing/preview abilities
 export default class EmailService {
-  constructor(private emailDao: EmailDao) {}
+  constructor(private emailDao: EmailDao, private emailCommander: EmailCommander) {}
 
   // generateMeetReminderEmail(recipientEmailAddress: string, meet: Meet): Email {
   //   const { title, description } = meet;
@@ -23,16 +27,13 @@ export default class EmailService {
   //   return email;
   // }
 
-  // generateMeetRegistrationEmail(user: User, meet: Meet, registrationId: string): Email {
-  //   const { title, description } = meet;
-  //   const email: Email = {
-  //     to: user.email,
-  //     from: senderEmail,
-  //     subject: `Registration Confirmation for ${title}`,
-  //     html: generateJsonLdHtml(user, meet, registrationId),
-  //     attachments: generateIcsAttachments(meet),
-  //   };
-
-  //   return email;
-  // }
+  // TODO: Remove this method, for development only. queues hackathon confirm email for immediate sending
+  async queueTestEmail(): Promise<void> {
+    const now = new Date().toISOString();
+    const scheduledEmailInput = {
+      userRecipientId: "00000000-0000-0000-0000-000000000000",
+      templateName: EmailTemplateName.HACKATHON_REGISTRATION_CONFIRM,
+    };
+    return this.emailCommander.queue(scheduledEmailInput);
+  }
 }

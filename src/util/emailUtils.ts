@@ -2,8 +2,8 @@ import moment from "moment-timezone";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
 import * as ics from "ics";
+import { EmailContext } from "../service/EmailService/EmailContextBuilder";
 import { Attachment, Email, EmailTemplateName } from "../types/Email";
-import { EmailContext } from "../service/EmailService/EmailCommanderImpl";
 import { templates } from "../service/EmailService/templates";
 import config from "./config";
 

@@ -10,73 +10,19 @@ import {
   Email,
 } from "../../types/Email";
 
-import { Meet } from "../../types/gqlGeneratedTypes";
-import { User } from "../../types/User";
 import { EmailCommander } from "./EmailCommander";
-import { generateEmail, generateMeetIcsAttachments } from "../../util/emailUtils";
-
-/** Email context should contain all inflated variables for all email templates. */
-export interface EmailContext {
-  recipient: User;
-  meet?: Meet;
-  emailAttachments?: Attachment[];
-}
-
-interface InflatableVars {
-  recipientId: string;
-  meetId?: string | null;
-}
+// import { generateEmail, generateMeetIcsAttachments } from "../../util/emailUtils";
+import EmailContextBuilder from "./EmailContextBuilder";
 
 export default class EmailCommanderImpl implements EmailCommander {
-  constructor(private emailDao: EmailDao, private userDao: UserDao, private meetDao: MeetDao) {}
+  constructor(private emailDao: EmailDao, private emailContextBuilder: EmailContextBuilder) {}
 
-  queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
+  async queue(scheduledEmail: ScheduledEmailInput | ScheduledEmailInput[]): Promise<void> {
     return this.emailDao.queue(scheduledEmail);
   }
 
-  getOverdueScheduledEmails(): Promise<ScheduledEmail[]> {
+  async getOverdueScheduledEmails(): Promise<ScheduledEmail[]> {
     return this.emailDao.getOverdueScheduledEmails();
-  }
-
-  // Maybe this doesn't belong in EmailCommander but couldn't find another place for it as it relies on Dao context
-  async buildEmailContext(templateName: EmailTemplateName, inflatableVars: InflatableVars): Promise<EmailContext> {
-    const { recipientId, meetId } = inflatableVars;
-    const { HACKATHON_REGISTRATION_CONFIRM, WORKSHOP_REGISTRATION_CONFIRM } = EmailTemplateName;
-
-    // if error on fetching recipient, the email cannot be sent, so allow error to be thrown to be handled when context being built
-    const recipient = (await this.userDao.getOne({ id: recipientId })) as User;
-
-    // Below we are fetching optional variables, gracefully fail with log if entity not found.
-    let meet = undefined;
-    let emailAttachments: Attachment[] | undefined;
-
-    if (meetId) {
-      try {
-        meet = await this.meetDao.getOne({ id: meetId });
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    // Build calendar invite attachments for appropriate templates
-    if (meet) {
-      if (templateName === HACKATHON_REGISTRATION_CONFIRM) {
-        // Hackathon kickoff invites are duration 60mins from startTime
-        emailAttachments = generateMeetIcsAttachments(meet, {
-          duration: { minutes: 60 },
-          title: `Kickoff for Mintbean Hackathon "${meet.title}"`,
-        });
-      } else if ((templateName = WORKSHOP_REGISTRATION_CONFIRM)) {
-        emailAttachments = generateMeetIcsAttachments(meet, {
-          title: `[Mintbean] "${meet.title}"`,
-        });
-      }
-    }
-
-    return {
-      recipient,
-      meet,
-      emailAttachments,
-    };
   }
 
   /**  Build and send emails for given scheduledEmail */
@@ -90,15 +36,14 @@ export default class EmailCommanderImpl implements EmailCommander {
     const emailPromises = recipientIds.map(async (recipientId) => {
       // TODO: does this need try/catch to handle errors from context building phase?
 
-      // const context = await this.buildEmailContext(templateName, { recipientId, meetId });
+      // const context = this.emailContextBuilder.buildContext(templateName, { recipientId, meetId });
       // const email = generateEmail(templateName, context);
       // return email;
-
       // TODO: remove below. temp only
       const fakeEmailForTesting = {
         to: "claire.froelich@gmail.com",
         from: "noreply@mintbean.io",
-        title: "TEST EMAIL " + new Date(),
+        title: `TEST EMAIL template: ${templateName} ${new Date()}`,
         html: "test",
       };
       return fakeEmailForTesting;
@@ -120,7 +65,7 @@ export default class EmailCommanderImpl implements EmailCommander {
     const successEmails = successEmailsPromiseResult.map((res) => res.value);
 
     // 4. [SEND EMAILS] and get responses
-    const emailResponsePromises = successEmails.map(async (email) => await this.emailDao.sendEmail(id, email));
+    const emailResponsePromises = successEmails.map(async (email) => await this.emailDao.sendScheduledEmail(id, email));
     // It is OK to use Promise.all here because emailDao#sendEmail gracefully handles failed sends
     const emailResponses = await Promise.all(emailResponsePromises);
 

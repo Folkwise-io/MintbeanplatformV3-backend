@@ -40,6 +40,9 @@ import KanbanService from "./service/KanbanService";
 import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
 import EmailDaoSendgridKnex from "./dao/EmailDaoSendgridKnex";
+import EmailContextBuilder from "./service/EmailService/EmailContextBuilder";
+import { EmailCommander } from "./service/EmailService/EmailCommander";
+import EmailCommanderImpl from "./service/EmailService/EmailCommanderImpl";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -150,7 +153,10 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   );
 
   const emailResolverValidator = new EmailResolverValidator();
-  const emailService = new EmailService(emailDao);
+  const _emailContextBuilder = new EmailContextBuilder(userDao, meetDao);
+  const _emailCommander = new EmailCommanderImpl(emailDao, _emailContextBuilder);
+  const emailService = new EmailService(emailDao, _emailCommander);
+
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
