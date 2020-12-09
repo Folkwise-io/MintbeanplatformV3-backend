@@ -40,6 +40,8 @@ import KanbanDaoKnex from "./dao/KanbanDaoKnex";
 import KanbanService from "./service/KanbanService";
 import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
+import EmailScheduleDao from "./dao/EmailScheduleDao";
+import EmailScheduleDaoImpl from "./dao/EmailScheduleDaoImpl";
 
 export interface PersistenceContext {
   userDao: UserDao;
@@ -53,6 +55,7 @@ export interface PersistenceContext {
   kanbanCanonDao: KanbanCanonDao;
   kanbanCanonCardDao: KanbanCanonCardDao;
   kanbanDao: KanbanDao;
+  emailScheduleDao: EmailScheduleDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -68,6 +71,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const kanbanCanonDao = new KanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new KanbanCanonCardDaoKnex(knex);
   const kanbanDao = new KanbanDaoKnex(knex);
+  const emailScheduleDao = new EmailScheduleDaoImpl(knex);
 
   return {
     userDao,
@@ -81,6 +85,7 @@ export function buildPersistenceContext(): PersistenceContext {
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
+    emailScheduleDao,
   };
 }
 
@@ -111,6 +116,7 @@ export interface ResolverContext {
   projectMediaAssetDao: ProjectMediaAssetDao;
   projectDao: ProjectDao;
   userDao: UserDao;
+  emailScheduleDao: EmailScheduleDao;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -126,6 +132,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanCanonDao,
     kanbanCanonCardDao,
     kanbanDao,
+    emailScheduleDao,
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
@@ -180,5 +187,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     projectMediaAssetDao,
     projectDao,
     userDao,
+    emailScheduleDao,
   };
 }

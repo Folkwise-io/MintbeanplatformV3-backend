@@ -9,6 +9,7 @@ import { User } from "../../types/User";
 import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
+import EmailScheduleDao from "../../dao/EmailScheduleDao";
 const { disableRegistrationEmail } = config;
 
 const meetResolver = (
@@ -18,6 +19,7 @@ const meetResolver = (
   userDao: UserDao,
   emailService: EmailService,
   meetDao: MeetDao,
+  emailScheduleDao: EmailScheduleDao,
 ): Resolvers => {
   return {
     Query: {
@@ -26,7 +28,14 @@ const meetResolver = (
         return meetResolverValidator.getMany(args, context).then((args) => meetDao.getMany(args));
       },
 
-      meet: (_root, args, context: ServerContext): Promise<Meet> => {
+      meet: async (_root, args, context: ServerContext): Promise<Meet> => {
+        // drop in db for cron job to send later
+        await emailScheduleDao.send({
+          to: "claire.froelich@gmail.com",
+          from: "noreply@mintbean.io",
+          subject: "TEST email",
+          html: "<strong>testtttt</strong> hi",
+        });
         return meetDao.getOne(args).then((result) => {
           if (!result) throw new ApolloError("Meet not found");
           return result;
