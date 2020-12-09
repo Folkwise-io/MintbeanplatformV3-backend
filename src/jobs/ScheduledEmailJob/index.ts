@@ -1,9 +1,17 @@
 import { knex } from "../../db/knex";
-import { Email } from "../../types/Email";
+import { Email, ScheduledEmail } from "../../types/Email";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";
-import path, { resolve } from "path";
+import path from "path";
+import { ClientResponse } from "@sendgrid/client/src/response";
+import ResponseError from "@sendgrid/helpers/classes/response-error";
+
+interface EmailWithIdResponse {
+  scheduledEmailId: string;
+  response?: ClientResponse;
+  error?: ResponseError;
+}
 
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
@@ -21,12 +29,12 @@ const doesFileExist = () => {
   }
 };
 
-const writeLockfile = () => {
+const writeLockfileSync = () => {
   const expiry = new Date().getTime() + LOCKFILE_EXPIRY_SECONDS * 1000;
   fs.writeFileSync(LOCKFILE_PATH, "" + expiry);
 };
 
-const deleteLockfile = () => {
+const deleteLockfileSync = () => {
   fs.unlinkSync(LOCKFILE_PATH);
 };
 
@@ -45,6 +53,14 @@ const isExpiryReached = () => {
 //   return new Promise((resolve) => setTimeout(resolve, ms));
 // };
 
+const deleteScheduledEmailById = async (id: string) => {
+  try {
+    await knex("scheduledEmails").where({ id }).del();
+  } catch (e) {
+    console.error("Error when deleting scheduled email: ", e);
+  }
+};
+
 // Job definition =================================================================
 const job = async () => {
   // only run job if lockfile not present
@@ -53,14 +69,14 @@ const job = async () => {
       // there was a job that failed before, and could not clean up the lockfile
       // refresh the file with a new expiry
       try {
-        writeLockfile();
+        writeLockfileSync();
       } catch (e) {
         console.log("Problem writing lockfile. Canceling job");
         console.log(e);
         return;
       }
     } else {
-      console.warn("Job cancelled. Job was attempted while another process is running.");
+      console.log("Job cancelled. Job was attempted while another process is running.");
       // there is another process running (probably). do nothing, just stop.
       return;
     }
@@ -69,7 +85,7 @@ const job = async () => {
   }
 
   try {
-    writeLockfile();
+    writeLockfileSync();
   } catch (e) {
     console.log("Problem writing lockfile. Canceling job.");
     console.log(e);
@@ -77,20 +93,55 @@ const job = async () => {
   }
 
   try {
-    // get all scheduledEmails
-    const emails = await knex<Email>("scheduledEmails");
-    const promises = await Promise.allSettled(emails.map((email) => sgMail.send(email)));
-    promises.forEach((promise) => {
+    // get all scheduledEmails, convert to email format
+    const scheduledEmails = await knex<ScheduledEmail>("scheduledEmails");
+
+    const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
+      to,
+      from,
+      html,
+      subject,
+    });
+
+    const emailsWithId = scheduledEmails.map((se) => {
+      const email = generateEmailFromScheduledEmail(se);
+      return {
+        scheduledEmailId: se.id,
+        email,
+      };
+    });
+
+    const emailsWithIdPromises = emailsWithId.map(({ scheduledEmailId, email }) => {
+      return new Promise<EmailWithIdResponse>(async (resolve, reject) => {
+        try {
+          const [response] = await sgMail.send(email);
+          resolve({ scheduledEmailId, response });
+        } catch (e) {
+          console.log("Bad email error: ", e);
+          reject({ scheduledEmailId, error: e });
+        }
+        // const wasSuccess = (response: ClientResponse): boolean => {
+        //   const { statusCode } = response;
+        //   return statusCode >= 200 && statusCode < 300;
+        // };
+      });
+    });
+
+    const promises = await Promise.allSettled(emailsWithIdPromises);
+    promises.forEach(async (promise) => {
       if (promise.status === "rejected") {
-        console.log(promise.reason);
+        console.log("Reject reason: ", promise.reason);
       } else {
         // TOOD: Remove. Debugging only
         console.log(promise.value);
+        // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
+        const { scheduledEmailId } = promise.value;
+        await deleteScheduledEmailById(scheduledEmailId);
       }
     });
   } finally {
     try {
-      deleteLockfile();
+      deleteLockfileSync();
     } catch (e) {
       console.log("Problem deleting lock file");
       console.log(e);
@@ -98,4 +149,4 @@ const job = async () => {
   }
 };
 
-job();
+(async () => await job().catch((e) => console.log(e)))();
