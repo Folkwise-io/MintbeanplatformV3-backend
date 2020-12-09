@@ -62,7 +62,7 @@ const isExpiryReached = () => {
 };
 
 // Wrap job logic in lockfile flow
-const lockJob = async (jobCb: () => void) => {
+const lockJob = async (jobCb: () => Promise<void>) => {
   // only run job if lockfile not present
   if (doesFileExist()) {
     if (isExpiryReached()) {
@@ -93,7 +93,7 @@ const lockJob = async (jobCb: () => void) => {
 
   try {
     // JOB START
-    jobCb();
+    await jobCb();
     // await sleep(3000); // simulate long api call
   } finally {
     try {
@@ -103,11 +103,6 @@ const lockJob = async (jobCb: () => void) => {
       console.log(e);
     }
   }
-};
-
-// TODO: remove this. Used for testing only to mock api call without spamming claire's inbox
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
 const deleteScheduledEmailById = async (id: string) => {
@@ -127,6 +122,7 @@ const getScheduledEmails = async () => {
 };
 
 const mapResponseStatus = (statusCode: number): EmailResponseStatus => {
+  // Antipattern? This is currently designed for sendgrid email responses (2xx, 4xx, 5xx only)
   if (statusCode < 300) {
     return EmailResponseStatus.SUCCESS;
   }
@@ -136,82 +132,94 @@ const mapResponseStatus = (statusCode: number): EmailResponseStatus => {
   return EmailResponseStatus.API_SERVER_ERROR;
 };
 
+const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
+  to,
+  from,
+  html,
+  subject,
+});
+
 // Job definition =================================================================
-const job = async () => {
-  await lockJob(async () => {
-    const scheduledEmails = await getScheduledEmails();
-    if (!scheduledEmails) return;
+const job = (): Promise<void> => {
+  return lockJob(
+    async (): Promise<void> => {
+      const scheduledEmails = await getScheduledEmails();
+      if (!scheduledEmails) return;
 
-    const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
-      to,
-      from,
-      html,
-      subject,
-    });
+      const emailsWithDetails = scheduledEmails.map((se) => {
+        const email = generateEmailFromScheduledEmail(se);
+        return {
+          scheduledEmailId: se.id,
+          recipient: se.to,
+          sender: se.from,
+          email,
+        };
+      });
 
-    const emailsWithDetails = scheduledEmails.map((se) => {
-      const email = generateEmailFromScheduledEmail(se);
-      return {
-        scheduledEmailId: se.id,
-        recipient: se.to,
-        sender: se.from,
-        email,
-      };
-    });
+      const emailsWithDetailsPromises = emailsWithDetails.map(({ scheduledEmailId, recipient, sender, email }) => {
+        const metaData = { scheduledEmailId, recipient, sender };
 
-    const emailsWithDetailsPromises = emailsWithDetails.map(({ scheduledEmailId, recipient, sender, email }) => {
-      const metaData = { scheduledEmailId, recipient, sender };
+        return new Promise<EmailResponse>(async (resolve, reject) => {
+          try {
+            // const [response] = await sgMail.send(email);
+            const [response] = await mockSgMailSend(email);
+            const { statusCode } = response;
+            resolve({
+              ...metaData,
+              statusCode,
+              status: mapResponseStatus(statusCode),
+              response,
+            });
+          } catch (e) {
+            const { code, response } = e;
+            reject({
+              ...metaData,
+              statusCode: code,
+              status: mapResponseStatus(code),
+              response,
+              errors: response.body.errors,
+            });
+          }
+        });
+      });
 
-      return new Promise<EmailResponse>(async (resolve, reject) => {
-        try {
-          // const [response] = await sgMail.send(email);
-          const [response] = await mockSgMailSend(email);
-          const { statusCode } = response;
-          resolve({
-            ...metaData,
-            statusCode,
-            status: mapResponseStatus(statusCode),
-            response,
-          });
-        } catch (e) {
-          const { code, response } = e;
-          reject({
-            ...metaData,
-            statusCode: code,
-            status: mapResponseStatus(code),
-            response,
-            errors: response.body.errors,
-          });
+      const promises = await Promise.allSettled(emailsWithDetailsPromises);
+      promises.forEach(async (promise) => {
+        if (promise.status === "rejected") {
+          console.warn(`EMAIL SEND FAILED`);
+          console.warn(promise.reason);
+        } else {
+          // TOOD: Remove logging of success cases. Debugging only
+          console.log("EMAIL SEND SUCCESS");
+          console.log(promise.value);
+          // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
+          const { scheduledEmailId: id } = promise.value;
+          await deleteScheduledEmailById(id);
         }
       });
-    });
-
-    const promises = await Promise.allSettled(emailsWithDetailsPromises);
-    promises.forEach(async (promise) => {
-      if (promise.status === "rejected") {
-        console.warn(`EMAIL SEND FAILED`);
-        console.warn(promise.reason);
-      } else {
-        // TOOD: Remove logging of success cases. Debugging only
-        console.log("EMAIL SEND SUCCESS");
-        console.log(promise.value);
-        // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
-        const { scheduledEmailId: id } = promise.value;
-        await deleteScheduledEmailById(id);
-      }
-    });
-  });
+    },
+  );
 };
 
 // TODO: job is hanging - how to fix?
-(() =>
-  job()
-    .catch((e) => console.log(e))
-    .finally(() => console.log("Done")))();
-// job();
-// console.log("Done");
+// (() =>
+//   job()
+//     .then(() => console.log("Job success."))
+//     .catch((e) => console.log("Job failed: ", e))
+//     .finally(() => console.log("Shutting down")))();
 
-// sample rejected promise reason:
+(async () => {
+  try {
+    await job();
+  } catch (e) {
+    console.log("Job failed", e);
+  } finally {
+    console.log("Process shutdown started");
+    knex.destroy(() => {
+      console.log("Knex shut down successfully. Exiting process");
+    });
+  }
+})();
 
 // {
 //   scheduledEmailId: 'e7a12c54-8879-4e04-ab89-161f69db4f18',
@@ -269,13 +277,18 @@ const job = async () => {
 //   }
 // }
 
+// TODO: remove all this below. Used for testing only to mock api call without using API credits
+const sleep = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
+
 /** include "!FAIL" in the email.subject to force failed return */
 const mockSgMailSend = async (email: Email): Promise<[ClientResponse]> => {
   const shouldFail = !!email.subject.match(/!FAIL/);
   if (shouldFail) {
     console.log("FAKE SENDING FAILURE EMAIL...");
     console.log(email);
-    sleep(500);
+    await sleep(500);
     const failureResponse = {
       code: 400,
       response: {
@@ -326,6 +339,6 @@ const mockSgMailSend = async (email: Email): Promise<[ClientResponse]> => {
 
   console.log("FAKE SENDING SUCCESS EMAIL...");
   console.log(email);
-  sleep(500);
+  await sleep(500);
   return [successResponse];
 };
