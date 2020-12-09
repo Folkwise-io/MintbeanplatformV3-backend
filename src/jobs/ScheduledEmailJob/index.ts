@@ -203,7 +203,10 @@ const job = async () => {
 };
 
 // TODO: job is hanging - how to fix?
-(async () => await job().catch((e) => console.log(e)))().finally(() => console.log("Done"));
+(() =>
+  job()
+    .catch((e) => console.log(e))
+    .finally(() => console.log("Done")))();
 // job();
 // console.log("Done");
 
