@@ -15,6 +15,7 @@ enum EmailResponseStatus {
   API_SERVER_ERROR = "API_SERVER_ERROR", // sendgrid's fault
 }
 
+//** Normalized API response for sunny/bad scenarios */
 interface EmailResponse {
   scheduledEmailId: string;
   recipient: string;
