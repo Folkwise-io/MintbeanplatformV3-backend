@@ -173,14 +173,6 @@ export type UserRegistrationInput = {
   passwordConfirmation: Scalars['String'];
 };
 
-/** The fields supported for editing a user */
-export type EditUserInput = {
-  /** User first name */
-  firstName?: Maybe<Scalars['String']>;
-  /** User last name */
-  lastName?: Maybe<Scalars['String']>;
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   /** Login using email and password */
@@ -189,8 +181,6 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   /** Register a user */
   register: PrivateUser;
-  /** Edit a user by id */
-  editUser: PrivateUser;
   /** Creates a new meet  */
   createMeet: Meet;
   /** Edits a meet (requires admin privileges) */
@@ -245,12 +235,6 @@ export type MutationLoginArgs = {
 
 export type MutationRegisterArgs = {
   input: UserRegistrationInput;
-};
-
-
-export type MutationEditUserArgs = {
-  id: Scalars['UUID'];
-  input: EditUserInput;
 };
 
 
@@ -836,7 +820,6 @@ export type ResolversTypes = {
   PublicUser: ResolverTypeWrapper<PublicUser>;
   Query: ResolverTypeWrapper<{}>;
   UserRegistrationInput: UserRegistrationInput;
-  EditUserInput: EditUserInput;
   Mutation: ResolverTypeWrapper<{}>;
   Post: ResolverTypeWrapper<Post>;
   RegisterLinkStatus: RegisterLinkStatus;
@@ -877,7 +860,6 @@ export type ResolversParentTypes = {
   PublicUser: PublicUser;
   Query: {};
   UserRegistrationInput: UserRegistrationInput;
-  EditUserInput: EditUserInput;
   Mutation: {};
   Post: Post;
   Meet: Meet;
@@ -963,7 +945,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<ResolversTypes['PrivateUser'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   register?: Resolver<ResolversTypes['PrivateUser'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>;
-  editUser?: Resolver<ResolversTypes['PrivateUser'], ParentType, ContextType, RequireFields<MutationEditUserArgs, 'id' | 'input'>>;
   createMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationCreateMeetArgs, 'input'>>;
   editMeet?: Resolver<ResolversTypes['Meet'], ParentType, ContextType, RequireFields<MutationEditMeetArgs, 'id' | 'input'>>;
   deleteMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteMeetArgs, 'id'>>;
