@@ -8,7 +8,7 @@ export async function seed(knex: Knex): Promise<void> {
   await knex("meets").insert([
     {
       id: "00000000-0000-0000-0000-000000000000",
-      meetType: "hackMeet",
+      meetType: MeetType.Hackathon,
       title: "Animation Toys 2",
       description:
         "Are you a software developer? Want to show off your skills? Two days of programming with a very active community of growth oriented developers gathered in one virtual place to help each other learn. Come join a fun and challenging coding competition, learn new skills, and meet new people from the comfort of your own home with Mintbean Hackathons.",
