@@ -12,8 +12,8 @@ import TestMeetDaoKnex from "../TestMeetDaoKnex";
 import TestUserDaoKnex from "../TestUserDaoKnex";
 import TestBadgeDaoKnex from "../TestBadgeDaoKnex";
 import BadgeProjectDaoKnex from "../../../../src/dao/BadgeProjectDaoKnex";
-import ScheduledEmailDaoImpl from "../../../../src/dao/EmailScheduleDaoImpl";
-import ScheduledEmailDao from "../../../../src/dao/EmailScheduleDao";
+import ScheduledEmailDaoImpl from "../../../../src/dao/ScheduledEmailDaoImpl";
+import ScheduledEmailDao from "../../../../src/dao/ScheduledEmailDao";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {

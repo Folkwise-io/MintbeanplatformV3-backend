@@ -119,7 +119,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
   return () =>
     lockJob(
       async (): Promise<void> => {
-        const scheduledEmails = await context.emailScheduleDao.getMany();
+        const scheduledEmails = await context.scheduledEmailDao.getOverdueScheduledEmails();
         if (!scheduledEmails) return;
 
         const emailsWithScheduledEmailId = scheduledEmails.map((se) => {
@@ -167,7 +167,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
             // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
             const { scheduledEmailId: id } = promise.value;
             try {
-              await context.emailScheduleDao.deleteOne(id);
+              await context.scheduledEmailDao.deleteOne(id);
             } catch (e) {
               console.log("Failed to delete sent scheduled email. ", e);
             }

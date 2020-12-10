@@ -4,7 +4,7 @@ import { Email, EmailResponse } from "../types/Email";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
 import { User } from "../types/User";
-import ScheduledEmailDao from "../dao/EmailScheduleDao";
+import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 
 interface EmailResponseWithScheduledEmailId extends EmailResponse {
   scheduledEmailId: string;

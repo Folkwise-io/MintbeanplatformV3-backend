@@ -5,13 +5,11 @@ import MeetService from "../../service/MeetService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 import config from "../../util/config";
-import { User } from "../../types/User";
 import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
-import ScheduledEmailDao from "../../dao/EmailScheduleDao";
-import EmailApiDao from "../../dao/EmailApiDao";
-import { ScheduledEmail } from "../../types/Email";
+import ScheduledEmailDao from "../../dao/ScheduledEmailDao";
+import { EmailTemplateName } from "../../types/Email";
 const { disableRegistrationEmail } = config;
 
 const meetResolver = (
@@ -21,8 +19,7 @@ const meetResolver = (
   userDao: UserDao,
   emailService: EmailService,
   meetDao: MeetDao,
-  emailScheduleDao: ScheduledEmailDao,
-  emailApiDao: EmailApiDao,
+  scheduledEmailDao: ScheduledEmailDao,
 ): Resolvers => {
   return {
     Query: {
@@ -76,10 +73,12 @@ const meetResolver = (
             }
 
             // queue email
-            await emailScheduleDao.queue({
-              recipientUserId: userId,
+            await scheduledEmailDao.queue({
+              templateName: EmailTemplateName.HACKATHON_REGISTRATION_CONFIRM,
+              userRecipientId: userId,
               meetId,
             });
+
             return;
           })
           .then(() => true);

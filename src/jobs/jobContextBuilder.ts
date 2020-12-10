@@ -1,14 +1,14 @@
 import Knex from "knex";
 import knexConfig from "../db/knexfile";
 import EmailApiDao from "../dao/EmailApiDao";
-import ScheduledEmailDao from "../dao/EmailScheduleDao";
-import ScheduledEmailDaoImpl from "../dao/EmailScheduleDaoImpl";
+import ScheduledEmailDao from "../dao/ScheduledEmailDao";
+import ScheduledEmailDaoImpl from "../dao/ScheduledEmailDaoImpl";
 import EmailApiDaoImpl from "../dao/EmailApiDaoImpl";
 
 export interface JobContext {
   knex: Knex;
   emailApiDao: EmailApiDao;
-  emailScheduleDao: ScheduledEmailDao;
+  scheduledEmailDao: ScheduledEmailDao;
 }
 
 export default (): JobContext => {
@@ -20,6 +20,6 @@ export default (): JobContext => {
   return {
     knex,
     emailApiDao,
-    emailScheduleDao,
+    scheduledEmailDao: emailScheduleDao,
   };
 };

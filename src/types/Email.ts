@@ -1,7 +1,37 @@
 import ResponseError from "@sendgrid/helpers/classes/response-error";
 import { ClientResponse } from "@sendgrid/client/src/response";
+import { User } from "./User";
+import { Meet } from "./gqlGeneratedTypes";
 
-// today: move all to jobs world, except for ScheduledEmail
+// don't need sendAt yet - implied the email is ready for sending when retrieved via `scheduledAEmailDao.getOverdueScheduledEmails()`
+export enum EmailTemplateName {
+  HACKATHON_REGISTRATION_CONFIRM = "HACKATHON_REGISTRATION_CONFIRM",
+}
+
+export interface ScheduledEmail {
+  id: string;
+  templateName: EmailTemplateName;
+  userRecipient?: User | null;
+  meetRecipient?: Meet | null; // can get recipients via meet.registrants
+  meet?: Meet | null;
+  // in step 3:
+  // icsStart: string | null; // nullable
+  // icsDurationMins: number | null; //
+  // icsEnd: string | null;
+}
+export interface ScheduledEmailInput {
+  templateName: EmailTemplateName;
+  userRecipientId?: string | null;
+  meetRecipientId?: string | null; // can get recipients via meet.registrants
+  meetId?: string | null;
+  sendAt?: string | null; // ISO string (with 'Z'). defaults to now
+  // in step 3:
+  // icsStart: string | null; // nullable
+  // icsDurationMins: number | null; //
+  // icsEnd: string | null;
+}
+
+// today: move all types below in this file to jobs world
 export interface Email {
   to: string;
   from: string;
@@ -17,17 +47,6 @@ export interface Attachment {
   disposition: string;
 }
 
-export interface ScheduledEmail {
-  id: string;
-  sendAt: string;
-  sent: boolean;
-  // TODO: properties below will change when scheduledEmails table structure changes
-  to: string;
-  from: string;
-  subject: string;
-  html: string;
-}
-
 /** Covers possible response codes from email API. Sendgrid only returns: 2xx, 4xx, or 5xx.
 See https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html */
 export enum EmailResponseStatus {
@@ -39,12 +58,10 @@ export enum EmailResponseStatus {
 
 //** Normalized API response for sunny/bad scenarios */
 export interface EmailResponse {
-  // scheduledEmailId: string;
   recipient: string;
   sender: string;
   statusCode: number;
   status: EmailResponseStatus;
-  // response: ClientResponse;
   timestamp: string;
   errors?: {
     message: string;
