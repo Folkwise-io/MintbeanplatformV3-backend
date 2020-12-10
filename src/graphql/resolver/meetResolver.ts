@@ -9,7 +9,7 @@ import { User } from "../../types/User";
 import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
-import EmailScheduleDao from "../../dao/EmailScheduleDao";
+import ScheduledEmailDao from "../../dao/EmailScheduleDao";
 import EmailApiDao from "../../dao/EmailApiDao";
 import { ScheduledEmail } from "../../types/Email";
 const { disableRegistrationEmail } = config;
@@ -21,7 +21,7 @@ const meetResolver = (
   userDao: UserDao,
   emailService: EmailService,
   meetDao: MeetDao,
-  emailScheduleDao: EmailScheduleDao,
+  emailScheduleDao: ScheduledEmailDao,
   emailApiDao: EmailApiDao,
 ): Resolvers => {
   return {

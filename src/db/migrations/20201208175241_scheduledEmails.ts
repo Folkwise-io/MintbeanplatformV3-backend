@@ -3,8 +3,11 @@ import * as Knex from "knex";
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable("scheduledEmails", (table) => {
     table.uuid("id").notNullable().defaultTo(knex.raw("uuid_generate_v4()")).unique();
-    table.uuid("recipientUserId").notNullable();
+    table.text("templateName");
+    table.uuid("recipientUserId");
+    table.uuid("meetRecipientId");
     table.uuid("meetId");
+    table.timestamp("sendAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
 

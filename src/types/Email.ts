@@ -1,6 +1,7 @@
 import ResponseError from "@sendgrid/helpers/classes/response-error";
 import { ClientResponse } from "@sendgrid/client/src/response";
 
+// today: move all to jobs world, except for ScheduledEmail
 export interface Email {
   to: string;
   from: string;

@@ -3,6 +3,8 @@ import UserDao from "../../dao/UserDao";
 import { Meet } from "../../types/gqlGeneratedTypes";
 import { User } from "../../types/User";
 
+// TOOD: DELETE THIS FILE
+
 //** Inflated vars used to build emails. 'recipient' property will always be required such that recipient email address is known */
 export interface EmailContext {
   recipient: User;

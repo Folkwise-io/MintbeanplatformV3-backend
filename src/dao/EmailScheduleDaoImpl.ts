@@ -1,9 +1,9 @@
 import Knex from "knex";
-import EmailScheduleDao, { EmailScheduleDaoSendInput } from "./EmailScheduleDao";
+import ScheduledEmailDao, { ScheduledEmailDaoSendInput } from "./EmailScheduleDao";
 import handleDatabaseError from "../util/handleDatabaseError";
 import { ScheduledEmail } from "../types/Email";
 
-export default class EmailScheduleDaoImpl implements EmailScheduleDao {
+export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
   constructor(private knex: Knex) {}
 
   // TODO: filter for overdue emails (sendAt < now) and rename "getOverdueScheduledEmails"
@@ -13,7 +13,7 @@ export default class EmailScheduleDaoImpl implements EmailScheduleDao {
     });
   }
 
-  async queue(input: EmailScheduleDaoSendInput): Promise<void> {
+  async queue(input: ScheduledEmailDaoSendInput): Promise<void> {
     handleDatabaseError(async () => {
       await this.knex("scheduledEmails").insert(input);
     });

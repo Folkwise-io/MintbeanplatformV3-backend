@@ -12,8 +12,8 @@ import TestMeetDaoKnex from "../TestMeetDaoKnex";
 import TestUserDaoKnex from "../TestUserDaoKnex";
 import TestBadgeDaoKnex from "../TestBadgeDaoKnex";
 import BadgeProjectDaoKnex from "../../../../src/dao/BadgeProjectDaoKnex";
-import EmailScheduleDaoImpl from "../../../../src/dao/EmailScheduleDaoImpl";
-import EmailScheduleDao from "../../../../src/dao/EmailScheduleDao";
+import ScheduledEmailDaoImpl from "../../../../src/dao/EmailScheduleDaoImpl";
+import ScheduledEmailDao from "../../../../src/dao/EmailScheduleDao";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
@@ -28,7 +28,7 @@ export interface TestPersistenceContext extends PersistenceContext {
   kanbanDao: TestKanbanDaoKnex;
   badgeDao: TestBadgeDaoKnex;
   badgeProjectDao: BadgeProjectDaoKnex;
-  emailScheduleDao: EmailScheduleDao;
+  emailScheduleDao: ScheduledEmailDao;
 }
 
 // TODO: Help Monarch! The polymophism thing didn't work (setting return type to PersistenceContext caused errors in TestManager)
@@ -46,7 +46,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const kanbanDao = new TestKanbanDaoKnex(knex);
   const badgeDao = new TestBadgeDaoKnex(knex);
   const badgeProjectDao = new BadgeProjectDaoKnex(knex);
-  const emailScheduleDao = new EmailScheduleDaoImpl(knex);
+  const emailScheduleDao = new ScheduledEmailDaoImpl(knex);
 
   return {
     userDao,

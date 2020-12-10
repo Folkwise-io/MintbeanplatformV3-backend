@@ -40,8 +40,8 @@ import KanbanDaoKnex from "./dao/KanbanDaoKnex";
 import KanbanService from "./service/KanbanService";
 import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
-import EmailScheduleDao from "./dao/EmailScheduleDao";
-import EmailScheduleDaoImpl from "./dao/EmailScheduleDaoImpl";
+import ScheduledEmailDao from "./dao/EmailScheduleDao";
+import ScheduledEmailDaoImpl from "./dao/EmailScheduleDaoImpl";
 import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
 import EmailApiDao from "./dao/EmailApiDao";
 import { EmailContextBuilder } from "./service/EmailService/EmailContextBuilder";
@@ -63,7 +63,7 @@ export interface PersistenceContext {
   kanbanCanonDao: KanbanCanonDao;
   kanbanCanonCardDao: KanbanCanonCardDao;
   kanbanDao: KanbanDao;
-  emailScheduleDao: EmailScheduleDao;
+  emailScheduleDao: ScheduledEmailDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -79,7 +79,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const kanbanCanonDao = new KanbanCanonDaoKnex(knex);
   const kanbanCanonCardDao = new KanbanCanonCardDaoKnex(knex);
   const kanbanDao = new KanbanDaoKnex(knex);
-  const emailScheduleDao = new EmailScheduleDaoImpl(knex);
+  const emailScheduleDao = new ScheduledEmailDaoImpl(knex);
 
   return {
     userDao,
@@ -128,8 +128,7 @@ export interface ResolverContext {
   projectMediaAssetDao: ProjectMediaAssetDao;
   projectDao: ProjectDao;
   userDao: UserDao;
-  emailScheduleDao: EmailScheduleDao;
-  emailApiDao: EmailApiDao;
+  emailScheduleDao: ScheduledEmailDao;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -170,11 +169,10 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const emailResolverValidator = new EmailResolverValidator();
   const emailDao = new EmailDao(sendgridKey);
   const _emailContextBuilder = new EmailContextBuilder(userDao, meetDao);
-  const emailService = new EmailService(emailDao, emailScheduleDao, _emailContextBuilder);
+  const emailService = new EmailService(emailDao, emailScheduleDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
-  const emailApiDao = new EmailApiDaoImpl();
 
   return {
     userResolverValidator,
@@ -204,6 +202,5 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     projectDao,
     userDao,
     emailScheduleDao,
-    emailApiDao,
   };
 }

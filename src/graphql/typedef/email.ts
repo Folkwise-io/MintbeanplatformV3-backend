@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-
+// TODO: remove when removing old email system
 const email = gql`
   input TestEmailInput {
     subject: String!

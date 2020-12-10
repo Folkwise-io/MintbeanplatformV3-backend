@@ -1,6 +1,7 @@
 import sgMail from "@sendgrid/mail";
 import { Email } from "../types/Email";
 
+// TODO: remove when romving old email system
 export class EmailDao {
   constructor(private apiKey: string) {}
 

@@ -1,12 +1,12 @@
 import { ScheduledEmail } from "../types/Email";
 
-export interface EmailScheduleDaoSendInput {
+export interface ScheduledEmailDaoSendInput {
   recipientUserId: string;
   meetId: string; // required for now until nullable use case arises.
 }
 
-export default interface EmailScheduleDao {
-  queue(input: EmailScheduleDaoSendInput): Promise<void>;
+export default interface ScheduledEmailDao {
+  queue(input: ScheduledEmailDaoSendInput): Promise<void>;
   getMany(): Promise<ScheduledEmail[]>;
   //** Warning: This REALLY deletes record from database. Does NOT archive with deleted: true flag. */
   deleteOne(id: string): Promise<boolean>;

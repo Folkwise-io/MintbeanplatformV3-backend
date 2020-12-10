@@ -27,6 +27,7 @@ const mapResponseStatus = (statusCode: number): EmailResponseStatus => {
   return EmailResponseStatus.API_SERVER_ERROR;
 };
 
+// TODO: move this Dao to jobs world
 export default class EmailApiDaoImpl implements EmailApiDao {
   async send(email: Email): Promise<EmailResponse> {
     const meta = { recipient: email.to, sender: email.from };
@@ -51,7 +52,7 @@ export default class EmailApiDaoImpl implements EmailApiDao {
       const _responseDateStr = e.response?.headers?.date;
       const timestamp = _responseDateStr ? new Date(_responseDateStr).toISOString() : new Date().toISOString();
       const _responseErrors = e.response?.body?.errors;
-      let errors = [];
+      let errors = [{ message: "Unknown error occurred. Probably not a problem with the external email API" }];
       if (_responseErrors) {
         errors = _responseErrors.map((err: EmailResponseError) => {
           // stringify all non-message keys into an info string
@@ -62,8 +63,6 @@ export default class EmailApiDaoImpl implements EmailApiDao {
             info,
           };
         });
-      } else {
-        errors = [{ message: "Unknown error occurred. Probably not a problem with the external email API" }];
       }
 
       return {
