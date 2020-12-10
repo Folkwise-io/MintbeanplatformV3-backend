@@ -1,30 +1,12 @@
 import { knex } from "../../db/knex";
-import { Email, ScheduledEmail } from "../../types/Email";
+import { Email, EmailResponse, EmailResponseStatus, ScheduledEmail } from "../../types/Email";
+import { ClientResponse } from "@sendgrid/client/src/response";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";
 import path from "path";
-import { ClientResponse } from "@sendgrid/client/src/response";
-import ResponseError from "@sendgrid/helpers/classes/response-error";
 
-/** Covers possible response codes from email API. Sendgrid only returns: 2xx, 4xx, or 5xx.
-See https://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html */
-enum EmailResponseStatus {
-  SUCCESS = "SUCCESS",
-  BAD_REQUEST = "BAD_REQUEST",
-  API_SERVER_ERROR = "API_SERVER_ERROR", // sendgrid's fault
-}
-
-//** Normalized API response for sunny/bad scenarios */
-interface EmailResponse {
-  scheduledEmailId: string;
-  recipient: string;
-  sender: string;
-  statusCode: number;
-  status: EmailResponseStatus;
-  response: ClientResponse;
-  errors?: ResponseError[];
-}
+import { JobContext } from "../jobContextBuilder";
 
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
@@ -105,121 +87,108 @@ const lockJob = async (jobCb: () => Promise<void>) => {
   }
 };
 
-const deleteScheduledEmailById = async (id: string) => {
-  try {
-    await knex("scheduledEmails").where({ id }).del();
-  } catch (e) {
-    console.error(`Error when deleting scheduled email with id ${id}: `, e);
-  }
-};
+// const deleteScheduledEmailById = async (id: string) => {
+//   try {
+//     await knex("scheduledEmails").where({ id }).del();
+//   } catch (e) {
+//     console.error(`Error when deleting scheduled email with id ${id}: `, e);
+//   }
+// };
 
-const getScheduledEmails = async () => {
-  try {
-    return await knex<ScheduledEmail>("scheduledEmails");
-  } catch (e) {
-    console.error("Error attempting to fetch scheduled emails: ", e);
-  }
-};
+// const getScheduledEmails = async () => {
+//   try {
+//     return await knex<ScheduledEmail>("scheduledEmails");
+//   } catch (e) {
+//     console.error("Error attempting to fetch scheduled emails: ", e);
+//   }
+// };
 
-const mapResponseStatus = (statusCode: number): EmailResponseStatus => {
-  // Antipattern? This is currently designed for sendgrid email responses (2xx, 4xx, 5xx only)
-  if (statusCode < 300) {
-    return EmailResponseStatus.SUCCESS;
-  }
-  if (statusCode < 500) {
-    return EmailResponseStatus.BAD_REQUEST;
-  }
-  return EmailResponseStatus.API_SERVER_ERROR;
-};
+// const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
+//   to,
+//   from,
+//   html,
+//   subject,
+// });
 
-const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
-  to,
-  from,
-  html,
-  subject,
-});
+interface EmailResponseWithScheduledEmailId extends EmailResponse {
+  scheduledEmailId: string;
+}
 
 // Job definition =================================================================
-const job = (): Promise<void> => {
-  return lockJob(
-    async (): Promise<void> => {
-      const scheduledEmails = await getScheduledEmails();
-      if (!scheduledEmails) return;
+export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<void>) => {
+  return () =>
+    lockJob(
+      async (): Promise<void> => {
+        const scheduledEmails = await context.emailScheduleDao.getMany();
+        if (!scheduledEmails) return;
 
-      const emailsWithDetails = scheduledEmails.map((se) => {
-        const email = generateEmailFromScheduledEmail(se);
-        return {
-          scheduledEmailId: se.id,
-          recipient: se.to,
-          sender: se.from,
-          email,
-        };
-      });
+        const emailsWithScheduledEmailId = scheduledEmails.map((se) => {
+          return {
+            scheduledEmailId: se.id,
+            // TODO: use templating engine to build email
+            email: {
+              to: "claire.froelich@gmail.com",
+              from: "noreply@mintbean.io",
+              subject: "TODO - template" + new Date().toISOString(),
+              html: "TODO - template",
+            },
+          };
+        });
 
-      const emailsWithDetailsPromises = emailsWithDetails.map(({ scheduledEmailId, recipient, sender, email }) => {
-        const metaData = { scheduledEmailId, recipient, sender };
+        const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
+          return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
+            // No try/catch here because emailApiDao gracefully handles failed email sends
 
-        return new Promise<EmailResponse>(async (resolve, reject) => {
-          try {
-            // const [response] = await sgMail.send(email);
-            const [response] = await mockSgMailSend(email);
-            const { statusCode } = response;
-            resolve({
-              ...metaData,
-              statusCode,
-              status: mapResponseStatus(statusCode),
-              response,
-            });
-          } catch (e) {
-            const { code, response } = e;
-            reject({
-              ...metaData,
-              statusCode: code,
-              status: mapResponseStatus(code),
-              response,
-              errors: response.body.errors,
-            });
+            const emailResponse = await context.emailApiDao.send(email);
+            // const [response] = await mockSgMailSend(email);
+
+            const emailResponseWithScheduledEmailId = {
+              ...emailResponse,
+              scheduledEmailId,
+            };
+
+            if (emailResponse.status === EmailResponseStatus.SUCCESS) {
+              resolve(emailResponseWithScheduledEmailId);
+            } else {
+              reject(emailResponseWithScheduledEmailId);
+            }
+          });
+        });
+
+        const promises = await Promise.allSettled(emailsWithScheduledEmailIdPromises);
+        promises.forEach(async (promise) => {
+          if (promise.status === "rejected") {
+            console.warn(`EMAIL SEND FAILED`);
+            console.warn(promise.reason);
+          } else {
+            // TOOD: Remove logging of success cases. Debugging only
+            console.log("EMAIL SEND SUCCESS");
+            console.log(promise.value);
+            // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
+            const { scheduledEmailId: id } = promise.value;
+            try {
+              await context.emailScheduleDao.deleteOne(id);
+            } catch (e) {
+              console.log("Failed to delete sent scheduled email. ", e);
+            }
           }
         });
-      });
-
-      const promises = await Promise.allSettled(emailsWithDetailsPromises);
-      promises.forEach(async (promise) => {
-        if (promise.status === "rejected") {
-          console.warn(`EMAIL SEND FAILED`);
-          console.warn(promise.reason);
-        } else {
-          // TOOD: Remove logging of success cases. Debugging only
-          console.log("EMAIL SEND SUCCESS");
-          console.log(promise.value);
-          // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
-          const { scheduledEmailId: id } = promise.value;
-          await deleteScheduledEmailById(id);
-        }
-      });
-    },
-  );
+      },
+    );
 };
 
-// TODO: job is hanging - how to fix?
-// (() =>
-//   job()
-//     .then(() => console.log("Job success."))
-//     .catch((e) => console.log("Job failed: ", e))
-//     .finally(() => console.log("Shutting down")))();
-
-(async () => {
-  try {
-    await job();
-  } catch (e) {
-    console.log("Job failed", e);
-  } finally {
-    console.log("Process shutdown started");
-    knex.destroy(() => {
-      console.log("Knex shut down successfully. Exiting process");
-    });
-  }
-})();
+// (async () => {
+//   try {
+//     await job();
+//   } catch (e) {
+//     console.log("Job failed", e);
+//   } finally {
+//     console.log("Process shutdown started");
+//     knex.destroy(() => {
+//       console.log("Knex shut down successfully. Exiting process");
+//     });
+//   }
+// })();
 
 // {
 //   scheduledEmailId: 'e7a12c54-8879-4e04-ab89-161f69db4f18',

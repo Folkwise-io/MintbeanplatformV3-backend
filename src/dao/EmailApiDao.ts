@@ -1,5 +1,5 @@
-import { Email } from "../types/Email";
+import { Email, EmailResponse } from "../types/Email";
 
 export default interface EmailApiDao {
-  send(email: Email): Promise<void>;
+  send(email: Email): Promise<EmailResponse>;
 }
