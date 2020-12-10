@@ -1,6 +1,11 @@
 import { gql } from "apollo-server-express";
 
 const badge = gql`
+  enum BadgeShape {
+    STAR
+    CIRCLE
+    SQUARE
+  }
   "A badge awarded by Mintbean for excellence within the Mintbean community!"
   type Badge {
     "ID of the badge in UUID"
@@ -8,7 +13,7 @@ const badge = gql`
     "A user friendly :colon-surrounded: badge alias."
     alias: String!
     "The shape of the enclosing badge from an enumerable list"
-    badgeShape: String!
+    badgeShape: BadgeShape!
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String!
     "The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black)"
@@ -40,7 +45,7 @@ const badge = gql`
     "The alias of the badge"
     alias: String!
     "The shape of the badge from an enumerable list"
-    badgeShape: String!
+    badgeShape: BadgeShape!
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String!
     "The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black)"
@@ -60,7 +65,7 @@ const badge = gql`
     "The alias of the badge"
     alias: String
     "The shape of the badge from an enumerable list"
-    badgeShape: String
+    badgeShape: BadgeShape
     "The Font Awesome icon that will be the graphic of the badge (required)"
     faIcon: String
     "The hex code for the background color (all 6 digits, no # before code) defaults to 000000 (black)"

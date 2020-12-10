@@ -1,4 +1,5 @@
 import * as Knex from "knex";
+import { BadgeShape } from "../../types/gqlGeneratedTypes";
 
 export async function seed(knex: Knex): Promise<void> {
   // Deletes ALL existing entries
@@ -9,7 +10,7 @@ export async function seed(knex: Knex): Promise<void> {
     {
       id: "00000000-0000-4000-a000-000000000001",
       alias: ":winner-third:",
-      badgeShape: "circle",
+      badgeShape: BadgeShape.Circle,
       faIcon: "award",
       backgroundHex: "fb8a13",
       iconHex: "b418cb",
@@ -20,7 +21,7 @@ export async function seed(knex: Knex): Promise<void> {
     {
       id: "00000000-0000-0000-0000-000000000000",
       alias: ":winner-first:",
-      badgeShape: "star",
+      badgeShape: BadgeShape.Star,
       faIcon: "trophy",
       backgroundHex: "000000",
       iconHex: "f9ce13",
@@ -31,7 +32,7 @@ export async function seed(knex: Knex): Promise<void> {
     {
       id: "00000000-0000-4000-a000-000000000000",
       alias: ":winner-second:",
-      badgeShape: "square",
+      badgeShape: BadgeShape.Square,
       faIcon: "medal",
       backgroundHex: "2bf0e5",
       iconHex: "f26d35",

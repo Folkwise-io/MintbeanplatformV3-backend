@@ -18,12 +18,11 @@ export const ensureExists = <T>(entityName: string) => <T>(entity: T | undefined
 };
 ```
 
-<<<<<<< HEAD
 ### [M] Remove v7.sql from git history
 
 added in commit 509a88a7773d3b061a756835e2d3a15947d75c89
 https://github.com/Mintbean/MintbeanplatformV3-backend/pull/40/commits/509a88a7773d3b061a756835e2d3a15947d75c89
-=======
+
 ### [S] Refactor validations to throw more generic (resuable) error messages
 
 Make helpers like `ensureAdmin(context)` instead of below:
@@ -54,4 +53,8 @@ import { AuthenticationError } from "apollo-server-express";
 
 throw new AuthenticationError('This in an error message')
 ```
->>>>>>> 8b997210eeb98198105e8f060125eb5d22ff928d
+
+### [S] Add meet validations for edit/create
+
+Meet entities are missing validations in backend. Align with frontend meet create/edit forms.
+\*Note: only do this after an upper character limit for short description has been established.

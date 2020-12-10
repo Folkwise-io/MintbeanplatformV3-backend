@@ -8,18 +8,29 @@ const meet = gql`
     CLOSED
   }
 
+  "The different meet types that are currently available"
+  enum MeetType {
+    HACKATHON
+    WORKSHOP
+    WEBINAR
+    LECTURE
+  }
+
   "An event hosted by Mintbean. Only Hack Meets exist for now but will include workshops etc. in the future"
   type Meet {
     "ID of the Meet in UUID"
     id: UUID!
 
-    "The type of the Meet as enum string. Only hackMeet is supported for now"
-    meetType: String!
+    "The type of the Meet as enum string."
+    meetType: MeetType!
 
     title: String!
 
     "A short blurb about the Meet"
     description: String!
+
+    "A detailed description of the Meet"
+    detailedDescription: String
 
     "The instructions in markdown format"
     instructions: String!
@@ -52,13 +63,16 @@ const meet = gql`
 
   "The input needed to create a new meet"
   input CreateMeetInput {
-    "The type of the Meet as enum string. Only hackMeet is supported for now"
-    meetType: String!
+    "The type of the Meet as enum string. "
+    meetType: MeetType!
 
     title: String!
 
     "A short blurb about the Meet"
     description: String!
+
+    "A detailed description of the Meet in markdown format"
+    detailedDescription: String
 
     "The instructions in markdown format"
     instructions: String!
@@ -76,13 +90,16 @@ const meet = gql`
 
   "Input that can be used to edit a meet - all fields are optional"
   input EditMeetInput {
-    "The type of the Meet as enum string. Only hackMeet is supported for now"
-    meetType: String
+    "The type of the Meet as enum string."
+    meetType: MeetType
 
     title: String
 
     "A short blurb about the Meet"
     description: String
+
+    "A detailed description of the Meet in markdown format"
+    detailedDescription: String
 
     "The instructions in markdown format"
     instructions: String
@@ -99,7 +116,7 @@ const meet = gql`
   }
 
   extend type Mutation {
-    "Creates a new meet (only hackMeet is supported for now)"
+    "Creates a new meet "
     createMeet(input: CreateMeetInput!): Meet!
 
     "Edits a meet (requires admin privileges)"
