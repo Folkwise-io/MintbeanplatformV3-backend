@@ -44,6 +44,7 @@ import EmailScheduleDao from "./dao/EmailScheduleDao";
 import EmailScheduleDaoImpl from "./dao/EmailScheduleDaoImpl";
 import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
 import EmailApiDao from "./dao/EmailApiDao";
+import { EmailContextBuilder } from "./service/EmailService/EmailContextBuilder";
 
 /* 
 =======================================================================================
@@ -168,7 +169,8 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const { sendgridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
   const emailDao = new EmailDao(sendgridKey);
-  const emailService = new EmailService(emailDao);
+  const _emailContextBuilder = new EmailContextBuilder(userDao, meetDao);
+  const emailService = new EmailService(emailDao, emailScheduleDao, _emailContextBuilder);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);

@@ -32,19 +32,6 @@ const meetResolver = (
       },
 
       meet: async (_root, args, context: ServerContext): Promise<Meet> => {
-        // TODO: REMOVE
-        // drop in db for cron job to send later
-        // TODO: remove this - just dev testing
-        // const emailWithSubject = (subject: string) => ({
-        //   to: "claire.froelich@gmail.com",
-        //   from: "noreply@mintbean.io",
-        //   subject,
-        //   html: "<strong>testtttt</strong> hi",
-        // });
-        // await emailScheduleDao.send(emailWithSubject("Scheduled Email 1-" + new Date().getTime()));
-        // await emailScheduleDao.send(emailWithSubject("!FAIL Scheduled Email 2-" + new Date().getTime()));
-        // await emailApiDao.send(email);
-
         return meetDao.getOne(args).then((result) => {
           if (!result) throw new ApolloError("Meet not found");
           return result;
