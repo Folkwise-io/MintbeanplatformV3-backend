@@ -11,6 +11,7 @@ import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
 import EmailScheduleDao from "../../dao/EmailScheduleDao";
 import EmailApiDao from "../../dao/EmailApiDao";
+import { ScheduledEmail } from "../../types/Email";
 const { disableRegistrationEmail } = config;
 
 const meetResolver = (
@@ -31,16 +32,17 @@ const meetResolver = (
       },
 
       meet: async (_root, args, context: ServerContext): Promise<Meet> => {
+        // TODO: REMOVE
         // drop in db for cron job to send later
         // TODO: remove this - just dev testing
-        const emailWithSubject = (subject: string) => ({
-          to: "claire.froelich@gmail.com",
-          from: "noreply@mintbean.io",
-          subject,
-          html: "<strong>testtttt</strong> hi",
-        });
-        await emailScheduleDao.send(emailWithSubject("Scheduled Email 1-" + new Date().getTime()));
-        await emailScheduleDao.send(emailWithSubject("!FAIL Scheduled Email 2-" + new Date().getTime()));
+        // const emailWithSubject = (subject: string) => ({
+        //   to: "claire.froelich@gmail.com",
+        //   from: "noreply@mintbean.io",
+        //   subject,
+        //   html: "<strong>testtttt</strong> hi",
+        // });
+        // await emailScheduleDao.send(emailWithSubject("Scheduled Email 1-" + new Date().getTime()));
+        // await emailScheduleDao.send(emailWithSubject("!FAIL Scheduled Email 2-" + new Date().getTime()));
         // await emailApiDao.send(email);
 
         return meetDao.getOne(args).then((result) => {
@@ -78,23 +80,22 @@ const meetResolver = (
         // TODO: get userId from args, add valid user check in meetResolverValidator once above antipattern addressed
         const userId = context.getUserId();
 
-        return (
-          meetResolverValidator
-            .registerForMeet(args, context)
-            .then(({ meetId }) => meetRegistrationDao.addOne({ userId, meetId }))
-            // .then(async ({ userId, meetId, id }) => {
-            //   if (disableRegistrationEmail) {
-            //     return true;
-            //   }
+        return meetResolverValidator
+          .registerForMeet(args, context)
+          .then(({ meetId }) => meetRegistrationDao.addOne({ userId, meetId }))
+          .then(async ({ userId, meetId, id }) => {
+            if (disableRegistrationEmail) {
+              return true;
+            }
 
-            //   const user = ((await userDao.getOne({ id: userId })) as unknown) as User; // temporary casting as we know user exists bc logged in user exists.
-            //   const meet = await meetDao.getOne({ id: meetId });
-            //   const email = emailService.generateMeetRegistrationEmail(user, meet as Meet, id);
-
-            //   return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
-            // })
-            .then(() => true)
-        );
+            // queue email
+            await emailScheduleDao.queue({
+              recipientUserId: userId,
+              meetId,
+            });
+            return;
+          })
+          .then(() => true);
       },
     },
 

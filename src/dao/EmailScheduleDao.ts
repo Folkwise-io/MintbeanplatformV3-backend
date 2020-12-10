@@ -1,10 +1,8 @@
 export interface EmailScheduleDaoSendInput {
-  to: string;
-  from: string;
-  subject: string;
-  html: string;
+  recipientUserId: string;
+  meetId: string; // required for now until nullable use case arises.
 }
 
 export default interface EmailScheduleDao {
-  send(input: EmailScheduleDaoSendInput): Promise<void>;
+  queue(input: EmailScheduleDaoSendInput): Promise<void>;
 }
