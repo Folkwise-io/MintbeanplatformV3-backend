@@ -1,4 +1,4 @@
-import { Email } from "../../types/Email";
+import { Email } from "../../types/ScheduledEmail";
 import { EmailService } from "../../service/EmailService";
 import { Meet, Resolvers } from "../../types/gqlGeneratedTypes";
 import EmailResolverValidator from "../../validator/EmailResolverValidator";

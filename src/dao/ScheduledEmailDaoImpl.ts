@@ -1,22 +1,10 @@
 import Knex from "knex";
-import ScheduledEmailDao, { ScheduledEmailDaoSendInput } from "./ScheduledEmailDao";
+import ScheduledEmailDao from "./ScheduledEmailDao";
 import handleDatabaseError from "../util/handleDatabaseError";
-import { ScheduledEmail, ScheduledEmailInput } from "../types/Email";
+import { ScheduledEmailInput, ScheduledEmailRaw } from "../types/ScheduledEmail";
 
 export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
   constructor(private knex: Knex) {}
-
-  //   export interface ScheduledEmailInput {
-  //   templateName: EmailTemplateName;
-  //   userRecipientId?: string | null;
-  //   meetRecipientId?: string | null; // can get recipients via meet.registrants
-  //   meetId?: string | null;
-  //   sendAt?: string | null; // ISO string. defaults to now
-  //   // in step 3:
-  //   // icsStart: string | null; // nullable
-  //   // icsDurationMins: number | null; //
-  //   // icsEnd: string | null;
-  // }
 
   async queue(input: ScheduledEmailInput): Promise<void> {
     handleDatabaseError(async () => {
@@ -24,10 +12,11 @@ export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
     });
   }
 
-  // TODO: filter for overdue emails (sendAt < now) and rename "getOverdueScheduledEmails"
-  getOverdueScheduledEmails(): Promise<ScheduledEmail[]> {
+  getOverdueScheduledEmails(): Promise<ScheduledEmailRaw[]> {
+    const now = new Date();
+
     return handleDatabaseError(async () => {
-      return await this.knex("scheduledEmails").where({});
+      return this.knex<ScheduledEmailRaw>("scheduledEmails").where("sendAt", "<=", now).orderBy("sendAt");
     });
   }
 

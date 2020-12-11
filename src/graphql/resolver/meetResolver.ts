@@ -9,7 +9,7 @@ import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
 import ScheduledEmailDao from "../../dao/ScheduledEmailDao";
-import { EmailTemplateName } from "../../types/Email";
+import { EmailTemplateName } from "../../types/ScheduledEmail";
 const { disableRegistrationEmail } = config;
 
 const meetResolver = (

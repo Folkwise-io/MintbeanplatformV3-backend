@@ -1,4 +1,4 @@
-import { Email, EmailResponse, EmailResponseStatus } from "../types/Email";
+import { Email, EmailResponse, EmailResponseStatus } from "../types/ScheduledEmail";
 
 import EmailApiDao from "./EmailApiDao";
 import sgMail from "@sendgrid/mail";

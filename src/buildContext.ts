@@ -168,8 +168,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
   const { sendgridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
   const emailDao = new EmailDao(sendgridKey);
-  const _emailContextBuilder = new EmailContextBuilder(userDao, meetDao);
-  const emailService = new EmailService(emailDao, emailScheduleDao);
+  const emailService = new EmailService(emailDao, emailScheduleDao, userDao, meetDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);

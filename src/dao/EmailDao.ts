@@ -1,5 +1,5 @@
 import sgMail from "@sendgrid/mail";
-import { Email } from "../types/Email";
+import { Email } from "../types/ScheduledEmail";
 
 // TODO: remove when romving old email system
 export class EmailDao {

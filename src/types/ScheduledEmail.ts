@@ -8,21 +8,34 @@ export enum EmailTemplateName {
   HACKATHON_REGISTRATION_CONFIRM = "HACKATHON_REGISTRATION_CONFIRM",
 }
 
-export interface ScheduledEmail {
+//** Common to all ScheduledEmail types */
+export interface ScheduledEmailBase {
   id: string;
   templateName: EmailTemplateName;
-  userRecipient?: User | null;
-  meetRecipient?: Meet | null; // can get recipients via meet.registrants
+}
+
+//** Scheduled email fresh out of the database. Recipients are not resolved */
+export interface ScheduledEmailRaw extends ScheduledEmailBase {
+  userRecipientId?: string | null;
+  meetRecipientId?: string | null;
+  meetId?: string | null;
+}
+
+// ** Contains resolved recipients inflated variables */
+export interface ScheduledEmail extends ScheduledEmailBase {
+  recipients?: User[] | null;
   meet?: Meet | null;
   // in step 3:
   // icsStart: string | null; // nullable
   // icsDurationMins: number | null; //
   // icsEnd: string | null;
 }
+
+// ** Input shape when queueing a scheduledEmail */
 export interface ScheduledEmailInput {
   templateName: EmailTemplateName;
   userRecipientId?: string | null;
-  meetRecipientId?: string | null; // can get recipients via meet.registrants
+  meetRecipientId?: string | null;
   meetId?: string | null;
   sendAt?: string | null; // ISO string (with 'Z'). defaults to now
   // in step 3:
@@ -31,7 +44,7 @@ export interface ScheduledEmailInput {
   // icsEnd: string | null;
 }
 
-// today: move all types below in this file to jobs world
+// TODO: move all types below in this file to jobs world as Email types
 export interface Email {
   to: string;
   from: string;

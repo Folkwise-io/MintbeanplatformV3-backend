@@ -1,5 +1,5 @@
 import { knex } from "../../db/knex";
-import { Email, EmailResponse, EmailResponseStatus, ScheduledEmail } from "../../types/Email";
+import { Email, EmailResponse, EmailResponseStatus, ScheduledEmail } from "../../types/ScheduledEmail";
 import { ClientResponse } from "@sendgrid/client/src/response";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
@@ -119,8 +119,9 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
   return () =>
     lockJob(
       async (): Promise<void> => {
-        const scheduledEmails = await context.scheduledEmailDao.getOverdueScheduledEmails();
+        const scheduledEmails = await context.emailService.getOverdueScheduledEmails();
         if (!scheduledEmails) return;
+        console.log({ scheduledEmails });
 
         const emailsWithScheduledEmailId = scheduledEmails.map((se) => {
           return {
@@ -129,50 +130,51 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
             email: {
               to: "claire.froelich@gmail.com",
               from: "noreply@mintbean.io",
-              subject: "TODO - template" + new Date().toISOString(),
-              html: "TODO - template",
+              subject: se.meet?.title + new Date().toISOString(),
+              html: se.meet?.description || "<undefined>",
             },
           };
         });
+        console.log({ emailsWithScheduledEmailId });
 
-        const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
-          return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
-            // No try/catch here because emailApiDao gracefully handles failed email sends
+        // const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
+        //   return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
+        //     // No try/catch here because emailApiDao gracefully handles failed email sends
 
-            const emailResponse = await context.emailApiDao.send(email);
-            // const [response] = await mockSgMailSend(email);
+        //     const emailResponse = await context.emailApiDao.send(email);
+        //     // const [response] = await mockSgMailSend(email);
 
-            const emailResponseWithScheduledEmailId = {
-              ...emailResponse,
-              scheduledEmailId,
-            };
+        //     const emailResponseWithScheduledEmailId = {
+        //       ...emailResponse,
+        //       scheduledEmailId,
+        //     };
 
-            if (emailResponse.status === EmailResponseStatus.SUCCESS) {
-              resolve(emailResponseWithScheduledEmailId);
-            } else {
-              reject(emailResponseWithScheduledEmailId);
-            }
-          });
-        });
+        //     if (emailResponse.status === EmailResponseStatus.SUCCESS) {
+        //       resolve(emailResponseWithScheduledEmailId);
+        //     } else {
+        //       reject(emailResponseWithScheduledEmailId);
+        //     }
+        //   });
+        // });
 
-        const promises = await Promise.allSettled(emailsWithScheduledEmailIdPromises);
-        promises.forEach(async (promise) => {
-          if (promise.status === "rejected") {
-            console.warn(`EMAIL SEND FAILED`);
-            console.warn(promise.reason);
-          } else {
-            // TOOD: Remove logging of success cases. Debugging only
-            console.log("EMAIL SEND SUCCESS");
-            console.log(promise.value);
-            // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
-            const { scheduledEmailId: id } = promise.value;
-            try {
-              await context.scheduledEmailDao.deleteOne(id);
-            } catch (e) {
-              console.log("Failed to delete sent scheduled email. ", e);
-            }
-          }
-        });
+        // const promises = await Promise.allSettled(emailsWithScheduledEmailIdPromises);
+        // promises.forEach(async (promise) => {
+        //   if (promise.status === "rejected") {
+        //     console.warn(`EMAIL SEND FAILED`);
+        //     console.warn(promise.reason);
+        //   } else {
+        //     // TOOD: Remove logging of success cases. Debugging only
+        //     console.log("EMAIL SEND SUCCESS");
+        //     console.log(promise.value);
+        //     // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
+        //     const { scheduledEmailId: id } = promise.value;
+        //     try {
+        //       await context.scheduledEmailDao.deleteOne(id);
+        //     } catch (e) {
+        //       console.log("Failed to delete sent scheduled email. ", e);
+        //     }
+        //   }
+        // });
       },
     );
 };

@@ -2,7 +2,7 @@ import moment from "moment-timezone";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
 import * as ics from "ics";
-import { Attachment } from "../types/Email";
+import { Attachment } from "../types/ScheduledEmail";
 import { User } from "../types/User";
 const DISCORD_URL = "https://discord.gg/j7CjBAz";
 
