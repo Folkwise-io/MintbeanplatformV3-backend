@@ -74,7 +74,7 @@ const meetResolver = (
 
             // queue email
             await scheduledEmailDao.queue({
-              templateName: EmailTemplateName.HACKATHON_REGISTRATION_CONFIRM,
+              templateName: EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION,
               userRecipientId: userId,
               meetId,
             });
