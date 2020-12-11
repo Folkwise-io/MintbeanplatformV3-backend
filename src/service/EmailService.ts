@@ -8,8 +8,38 @@ import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
 import { rejects } from "assert";
+import UserService from "./UserService";
 
 const { senderEmail } = config;
+
+type EmailContext = {
+  scheduledEmailId: string;
+  type: "SUCCESS";
+  templateName: string;
+  recipients: User[];
+  meet?: Meet;
+};
+
+interface BuildErrorParams {
+  scheduledEmailId: string;
+  message: string;
+  jsError?: any;
+}
+const logError = (params: BuildErrorParams): void => {
+  const { jsError, scheduledEmailId, message } = params;
+
+  let errorText: string = message;
+
+  if (scheduledEmailId) {
+    errorText += `... The scheduledEmail.id was [${scheduledEmailId}]`;
+  }
+
+  if (jsError) {
+    console.error(errorText, jsError);
+  } else {
+    console.error(errorText);
+  }
+};
 
 export class EmailService {
   constructor(
@@ -19,72 +49,72 @@ export class EmailService {
     private meetDao: MeetDao,
   ) {}
 
-  async getOverdueScheduledEmails(): Promise<ScheduledEmail[]> {
-    const rawScheduledEmails = await this.scheduledEmailDao.getOverdueScheduledEmails();
-    if (!rawScheduledEmails.length) return [];
-
-    // inflate vars, gracefull fail all inflates except recipients. Those should log errors
-    const allInflatedPromises = rawScheduledEmails.map((raw) => {
-      return new Promise<ScheduledEmail>(async (resolve, reject) => {
-        // if no recipient(s) specified, log error and set this scheduled email to be omitted from return by flagging 'false'
-        const hasNoRecipients = !raw.userRecipientId && !raw.meetRecipientId;
-        if (hasNoRecipients) {
-          // console.warn("No recipient(s) specified in this scheduled email. ", JSON.stringify(raw, null, "\t"));
-          // return false;
-          reject("No recipient(s) specified in this scheduled email. " + JSON.stringify(raw, null, "\t"));
-        }
-        const { userRecipientId, meetRecipientId, meetId } = raw;
-
-        // Resolve recipients
-        let recipients: User[] = [];
-        // meetRecipient takes precedence
-        if (!!meetRecipientId) {
-          try {
-            recipients = await this.userDao.getMany({ meetId: meetRecipientId });
-          } catch (e) {
-            // console.warn("Could not resolve meet recipients for scheduled email: ", JSON.stringify(raw, null, "\t"));
-            // return false;
-            reject("Could not resolve meet recipients for scheduled email: " + JSON.stringify(raw, null, "\t"));
-          }
-        }
-        // for now only two recipient columns in db, so else block will handle userRecipientId
-        else {
-          try {
-            const recipient = await this.userDao.getOne({ id: userRecipientId });
-            if (recipient) {
-              recipients = [recipient];
-            } else {
-              // console.warn("Could not resolve user recipient for scheduled email: ", JSON.stringify(raw, null, "\t"));
-              // return false;
-              reject("Could not resolve meet recipients for scheduled email: " + JSON.stringify(raw, null, "\t"));
-            }
-          } catch (e) {
-            // console.warn("Could not resolve user recipient for scheduled email: ", JSON.stringify(raw, null, "\t"));
-            // return false;
-            reject("Could not resolve user recipient for scheduled email: " + JSON.stringify(raw, null, "\t"));
-          }
-        }
-        let meet: Meet | null = null;
-        if (meetId) {
-          try {
-            meet = (await this.meetDao.getOne({ id: meetId })) || null;
-          } catch (e) {
-            console.warn("Error attempting to inflate meet for scheduled email: ", JSON.stringify(raw, null, "\t"));
-          }
-        }
-        return resolve({
-          id: raw.id,
-          templateName: raw.templateName,
-          recipients,
-          meet,
-        });
+  async getEmailsToBeSent(): Promise<EmailContext[]> {
+    let records;
+    try {
+      records = await this.scheduledEmailDao.getOverdueScheduledEmails();
+    } catch (e) {
+      logError({
+        scheduledEmailId: "N/A",
+        message: "Failed to get emails to be sent from the database. See JS Error.",
+        jsError: e,
       });
+      return [];
+    }
+
+    const emailContextPromises: Promise<EmailContext>[] = records.map(
+      async ({ id, userRecipientId, meetRecipientId, templateName, meetId }): Promise<EmailContext> => {
+        try {
+          let recipients: User[] = [];
+          let meet: Meet | undefined;
+
+          if (meetRecipientId) {
+            recipients = await this.userDao.getMany({ meetId: meetRecipientId });
+          } else if (userRecipientId) {
+            const user = await this.userDao.getOne({ id: userRecipientId });
+            recipients = user ? [user] : [];
+          } else {
+            throw new Error("scheduledEmail Record did not have meetRecipientId or userReceipientId.");
+          }
+
+          if (meetId) {
+            meet = await this.meetDao.getOne({ id: meetId });
+          }
+
+          return {
+            type: "SUCCESS",
+            scheduledEmailId: id,
+            templateName,
+            recipients,
+            meet,
+          };
+        } catch (e) {
+          const errObj: BuildErrorParams = {
+            scheduledEmailId: id,
+            message: "Unexpected JavaScript exception. See stack trace.",
+            jsError: e,
+          };
+
+          throw errObj;
+        }
+      },
+    );
+
+    const settledResults = await Promise.allSettled(emailContextPromises);
+
+    const rejects: PromiseRejectedResult[] = <PromiseRejectedResult[]>(
+      settledResults.filter((x) => x.status === "rejected")
+    );
+    rejects.map((rejectedPromise: PromiseRejectedResult) => {
+      const reason = rejectedPromise.reason as BuildErrorParams;
+      logError(reason);
     });
 
-    const promisesSettled = await Promise.allSettled<ScheduledEmail>(allInflatedPromises);
-    // filter out non-truthy items
-    const validScheduledEmails = (allInflated.filter((item) => !!item) as unknown) as ScheduledEmail[];
-    return validScheduledEmails;
+    const fulfilleds: PromiseFulfilledResult<EmailContext>[] = <PromiseFulfilledResult<EmailContext>[]>(
+      settledResults.filter((x) => x.status === "fulfilled")
+    );
+
+    return fulfilleds.map((x) => x.value);
   }
 
   // TODO: remove these three methods below. They belong to old email system

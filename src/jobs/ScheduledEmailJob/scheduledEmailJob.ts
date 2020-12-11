@@ -114,28 +114,48 @@ interface EmailResponseWithScheduledEmailId extends EmailResponse {
   scheduledEmailId: string;
 }
 
+interface EmailParam {
+  scheduledEmailId: string;
+  email: {
+    to: string;
+    from: string;
+    subject: string;
+    html: string;
+  };
+}
+
 // Job definition =================================================================
 export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<void>) => {
   return () =>
     lockJob(
       async (): Promise<void> => {
-        const scheduledEmails = await context.emailService.getOverdueScheduledEmails();
-        if (!scheduledEmails) return;
-        console.log({ scheduledEmails });
+        const contexts = await context.emailService.getEmailsToBeSent();
 
-        const emailsWithScheduledEmailId = scheduledEmails.map((se) => {
-          return {
-            scheduledEmailId: se.id,
-            // TODO: use templating engine to build email
-            email: {
-              to: "claire.froelich@gmail.com",
-              from: "noreply@mintbean.io",
-              subject: se.meet?.title + new Date().toISOString(),
-              html: se.meet?.description || "<undefined>",
+        const emailParams = contexts.flatMap((context) => {
+          return context.recipients.map(
+            (recipient): EmailParam => {
+              return {
+                scheduledEmailId: context.scheduledEmailId,
+                // TODO: use templating engine to build email
+                email: {
+                  to: recipient.email,
+                  from: "noreply@mintbean.io",
+                  subject: context.meet?.title + new Date().toISOString(),
+                  html: context.meet?.description || "<undefined>",
+                },
+              };
             },
-          };
+          );
         });
-        console.log({ emailsWithScheduledEmailId });
+
+        emailParams.forEach((email) => {
+          if (true) {
+            console.log(email);
+          } else {
+            context.emailApiDao.send(email.email);
+          }
+        });
+        // console.log({ emailsWithScheduledEmailId: emails });
 
         // const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
         //   return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
