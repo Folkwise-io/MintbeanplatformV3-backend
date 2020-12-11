@@ -9,16 +9,17 @@ import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
 import { rejects } from "assert";
 import UserService from "./UserService";
+import { templateExists } from "../jobs/ScheduledEmailJob/templateUtil";
 
 const { senderEmail } = config;
 
-type EmailContext = {
+export interface EmailContext {
   scheduledEmailId: string;
   type: "SUCCESS";
   templateName: string;
   recipients: User[];
   meet?: Meet;
-};
+}
 
 interface BuildErrorParams {
   scheduledEmailId: string;
@@ -65,6 +66,10 @@ export class EmailService {
     const emailContextPromises: Promise<EmailContext>[] = records.map(
       async ({ id, userRecipientId, meetRecipientId, templateName, meetId }): Promise<EmailContext> => {
         try {
+          if (!templateExists(templateName)) {
+            throw new Error(`Template [${templateName}] does not exist.`);
+          }
+
           let recipients: User[] = [];
           let meet: Meet | undefined;
 

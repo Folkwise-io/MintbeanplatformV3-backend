@@ -7,6 +7,7 @@ import * as fs from "fs";
 import path from "path";
 
 import { JobContext } from "../jobContextBuilder";
+import { templateByName } from "./templateUtil";
 
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
@@ -110,10 +111,6 @@ const lockJob = async (jobCb: () => Promise<void>) => {
 //   subject,
 // });
 
-interface EmailResponseWithScheduledEmailId extends EmailResponse {
-  scheduledEmailId: string;
-}
-
 interface EmailParam {
   scheduledEmailId: string;
   email: {
@@ -134,14 +131,18 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
         const emailParams = contexts.flatMap((context) => {
           return context.recipients.map(
             (recipient): EmailParam => {
+              const { subject, body } = templateByName(context.templateName, {
+                recipient,
+                meet: context.meet,
+              });
               return {
                 scheduledEmailId: context.scheduledEmailId,
                 // TODO: use templating engine to build email
                 email: {
                   to: recipient.email,
                   from: "noreply@mintbean.io",
-                  subject: context.meet?.title + new Date().toISOString(),
-                  html: context.meet?.description || "<undefined>",
+                  subject,
+                  html: body,
                 },
               };
             },
