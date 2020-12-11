@@ -18,7 +18,8 @@
     "tdd": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --watch --runInBand --coverage=false",
     "test": "cross-env DOTENV_CONFIG_PATH=./test/.env.test node -r dotenv/config node_modules/jest/bin/jest.js --runInBand",
     "dump:prod": "cd db && ./pgdump_production.sh && cd ..",
-    "jobs:email": "ts-node src/jobs/ScheduledEmailJob/index.ts"
+    "jobs:email": "ts-node src/jobs/ScheduledEmailJob/index.ts",
+    "jest": "echo 'Use yarn test instead.'"
   },
   "author": "",
   "license": "UNLICENSED",
