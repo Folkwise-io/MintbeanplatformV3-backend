@@ -44,7 +44,6 @@ import ScheduledEmailDao from "./dao/ScheduledEmailDao";
 import ScheduledEmailDaoImpl from "./dao/ScheduledEmailDaoImpl";
 import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
 import EmailApiDao from "./dao/EmailApiDao";
-import { EmailContextBuilder } from "./service/EmailService/EmailContextBuilder";
 
 /* 
 =======================================================================================

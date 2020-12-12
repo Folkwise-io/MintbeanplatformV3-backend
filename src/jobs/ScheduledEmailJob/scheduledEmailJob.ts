@@ -120,14 +120,6 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
           );
         });
 
-        /**
-         * This is a map of emails in the following shape:
-         * {
-         *   "scheduledEmailId": {
-         *
-         *   }
-         * }
-         */
         const deletedEmails = new Set<string>();
 
         // send the emails
