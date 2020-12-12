@@ -112,8 +112,8 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
                 email: {
                   to: recipient.email,
                   // TODO: uncomment
-                  // from: "noreply@mintbean.io",
-                  from: "nope",
+                  from: "noreply@mintbean.io",
+                  // from: "nope",
                   subject,
                   html: body,
                 },

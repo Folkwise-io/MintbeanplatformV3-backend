@@ -25,8 +25,11 @@ export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
 
   async getRetriesLeft(id: string): Promise<number> {
     return handleDatabaseError(async () => {
-      const raws = await this.knex("scheduledEmails").select("retriesLeft").where({ id });
-      return raws[0].retriesLeft;
+      const pluckedRetries: number[] = await this.knex("scheduledEmails").where({ id }).pluck("retriesLeft");
+      if (!pluckedRetries.length) {
+        throw new Error(`Error when retrieving scheduled email retries. No scheduled email with id ${id} found.`);
+      }
+      return pluckedRetries[0];
     });
   }
 
@@ -39,15 +42,20 @@ export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
 
   async decrementRetriesLeft(id: string): Promise<number> {
     return handleDatabaseError(async () => {
-      let retriesLeft = (await this.knex("scheduledEmails").where({ id }).select("retriesLeft")) as number;
-      if (retriesLeft <= 0) return 0; // corrects bad data
+      const pluckedRetries: number[] = await this.knex("scheduledEmails").where({ id }).pluck("retriesLeft");
+      if (!pluckedRetries.length) {
+        throw new Error(`Error when decrementing scheduled email retries. No scheduled email with id ${id} found.`);
+      }
+
+      let retriesLeft = pluckedRetries[0];
+      if (retriesLeft <= 0) return 0; // gaurd to correct any bad data
 
       retriesLeft -= 1;
-      const raws = await this.knex<ScheduledEmailRaw>("scheduledEmails")
+      const rawRecords = await this.knex<ScheduledEmailRaw>("scheduledEmails")
         .where({ id })
         .update({ retriesLeft })
         .returning("*");
-      return raws[0].retriesLeft;
+      return rawRecords[0].retriesLeft;
     });
   }
 }
