@@ -39,4 +39,5 @@ export default {
   sendgridKey: hoc("SENDGRID_KEY"),
   senderEmail: hoc("SENDER_EMAIL"),
   disableRegistrationEmail: hoc("DISABLE_REGISTRATION_EMAILS", { defaultValue: false, required: false }),
+  disableNewMeetReminders: hoc("DISABLE_NEW_MEET_REMINDERS", { defaultValue: false, required: false }), // disable queuing of meet email reminders for newly created meets
 };

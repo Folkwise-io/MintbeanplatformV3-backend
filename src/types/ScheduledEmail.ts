@@ -1,9 +1,13 @@
 import { User } from "./User";
 import { Meet } from "./gqlGeneratedTypes";
 
-// don't need sendAt yet - implied the email is ready for sending when retrieved via `scheduledAEmailDao.getOverdueScheduledEmails()`
 export enum EmailTemplateName {
   HACKATHONS_REGISTRATION_CONFIRMATION = "hackathons/registration-confirmation",
+  HACKATHONS_REMINDER_1 = "hackathons/reminder-1",
+  HACKATHONS_REMINDER_2 = "hackathons/reminder-1",
+  WORKSHOPS_REGISTRATION_CONFIRMATION = "workshops/registration-confirmation",
+  WORKSHOPS_REMINDER_1 = "workshops/reminder-1",
+  WORKSHOPS_REMINDER_2 = "workshops/reminder-1",
 }
 
 //** Common to all ScheduledEmail types */

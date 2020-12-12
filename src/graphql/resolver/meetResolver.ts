@@ -2,7 +2,7 @@ import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
 import { EmailService } from "../../service/EmailService";
 import MeetService from "../../service/MeetService";
-import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
+import { Meet, MeetType, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 import config from "../../util/config";
 import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
@@ -10,7 +10,8 @@ import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
 import ScheduledEmailDao from "../../dao/ScheduledEmailDao";
 import { EmailTemplateName } from "../../types/ScheduledEmail";
-const { disableRegistrationEmail } = config;
+import { offsetTimeUTC } from "../../util/timeUtils";
+const { disableNewMeetReminders, disableRegistrationEmail } = config;
 
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
@@ -42,7 +43,59 @@ const meetResolver = (
           throw new AuthenticationError("You are not authorized to create new meets!");
         }
 
-        return meetResolverValidator.addOne(args, context).then((input) => meetDao.addOne(input));
+        return meetResolverValidator
+          .addOne(args, context)
+          .then((input) => meetDao.addOne(input))
+          .then(async (meet) => {
+            // queue meet reminders (unless disabled)
+            if (disableNewMeetReminders) {
+              return meet;
+            }
+
+            const meetId = meet.id;
+
+            const isHackathon = meet.meetType === MeetType.Hackathon; // WORKSHOPS templates cover meet types: WORKSHOP, WEBINAR, LECTURE
+            const templates = {
+              reminder1: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_1 : EmailTemplateName.WORKSHOPS_REMINDER_1,
+              reminder2: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_2 : EmailTemplateName.WORKSHOPS_REMINDER_2,
+            };
+
+            // queue reminder 1,  if (remind time - meet start time) is greater than reminder 1 offset from now
+            // TODO: conditional logic to skip if less than offset time
+            try {
+              const reminder1SendAt = offsetTimeUTC({
+                targetWallclock: meet.startTime,
+                targetRegion: meet.region,
+                offset: { days: -1 },
+              });
+              await scheduledEmailDao.queue({
+                templateName: templates.reminder1,
+                meetRecipientId: meetId,
+                meetId,
+                sendAt: reminder1SendAt,
+              });
+            } catch (e) {
+              console.error(`Failed to queue email [reminder 1] for meet with id ${meetId}`, e);
+            }
+
+            // queue reminder 2 - 30 mins before meet starts
+            try {
+              const reminder2SendAt = offsetTimeUTC({
+                targetWallclock: meet.startTime,
+                targetRegion: meet.region,
+                offset: { minutes: -30 },
+              });
+              await scheduledEmailDao.queue({
+                templateName: templates.reminder2,
+                meetRecipientId: meetId,
+                meetId,
+                sendAt: reminder2SendAt,
+              });
+            } catch (e) {
+              console.error(`Failed to queue email [reminder 2] for meet with id ${meetId}`, e);
+            }
+            return meet;
+          });
       },
       editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
         if (!context.getIsAdmin()) {
@@ -72,12 +125,16 @@ const meetResolver = (
               return true;
             }
 
-            // queue email
-            await scheduledEmailDao.queue({
-              templateName: EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION,
-              userRecipientId: userId,
-              meetId,
-            });
+            // queue confirmation email for immediate sending
+            try {
+              await scheduledEmailDao.queue({
+                templateName: EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION,
+                userRecipientId: userId,
+                meetId,
+              });
+            } catch (e) {
+              console.log(`Failed to queue meet registration confirmation for meet registration with id: ${id}`);
+            }
 
             return;
           })
