@@ -131,10 +131,10 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
             let emailResponse;
             try {
               emailResponse = await context.emailApiDao.send(data.email);
-              console.log("EMAIL RESPONSE\n", emailResponse);
+              console.log(`EMAIL RESPONSE from scheduled email: ${scheduledEmailId}\n`, emailResponse);
             } catch (e) {
               // Handle network failures
-              console.error(`Failed to send scheduledEmailId [${scheduledEmailId}].`, e);
+              console.error(`Failed to send scheduled email: [${scheduledEmailId}].`, e);
               return;
             }
             if (emailResponse.status === EmailResponseStatus.SUCCESS) {
