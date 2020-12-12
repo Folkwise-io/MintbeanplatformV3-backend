@@ -10,6 +10,7 @@ export enum EmailTemplateName {
 export interface ScheduledEmailBase {
   id: string;
   templateName: EmailTemplateName;
+  retriesLeft: number;
 }
 
 //** Scheduled email fresh out of the database. Recipients are not resolved */

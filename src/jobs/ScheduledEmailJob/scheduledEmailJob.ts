@@ -111,7 +111,9 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
                 scheduledEmailIdNonce: context.scheduledEmailId,
                 email: {
                   to: recipient.email,
-                  from: "noreply@mintbean.io",
+                  // TODO: uncomment
+                  // from: "noreply@mintbean.io",
+                  from: "nope",
                   subject,
                   html: body,
                 },
@@ -134,11 +136,9 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
               console.log("EMAIL RESPONSE\n", emailResponse);
             } catch (e) {
               // Handle network failures
-              // TODO: decrement retriesLeft
               console.error(`Failed to send scheduledEmailId [${scheduledEmailId}].`, e);
               return;
             }
-
             if (emailResponse.status === EmailResponseStatus.SUCCESS) {
               // Delete each successfully sent email from the DB
               if (deletedEmails.has(scheduledEmailId)) {
@@ -165,15 +165,25 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
               }
             } else {
               // Handle the case where the email could not be sent at all
-              // TODO: update the retriesLeft column
-              // 0. migration to create the retriesLeft column
-              // 0. SELECT query must only select scheduledEmails that have retriesLeft >= 1
-              // 0. give EmailService a `decrementRetriesLeft(scheduledEmailId)` method
-              // 1. get the current object
-              // 2. if (!retriesLeft), set retriesLeft to 2
-              //      else decrement the object's retriesLeft column
-              // 3. save the object
-              // 4. Make sure you wrap `decrementRetriesLeft` in a try/catch
+
+              let retriesLeft = 3; // in case step below fails
+
+              try {
+                console.log("checking retries...");
+                retriesLeft = await context.scheduledEmailDao.getRetriesLeft(scheduledEmailId);
+              } catch (e) {
+                console.log("Error when getting scheduled email retries left.", e);
+              }
+
+              // if (retriesLeft > 0) {
+              try {
+                console.log("decrementing retries...");
+                const c = await context.scheduledEmailDao.decrementRetriesLeft(scheduledEmailId);
+              } catch (e) {
+                console.log("Error when decrementing scheduled email retries left.", e);
+              }
+              // }
+
               console.log("Failed to send email", emailResponse);
             }
           }),

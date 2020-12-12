@@ -1,14 +1,13 @@
 import config from "../util/config";
 import { EmailDao } from "../dao/EmailDao";
-import { Email, EmailTemplateName, ScheduledEmail } from "../types/ScheduledEmail";
+import { Email } from "../types/ScheduledEmail";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
 import { User } from "../types/User";
 import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import MeetDao from "../dao/MeetDao";
 import UserDao from "../dao/UserDao";
-import { rejects } from "assert";
-import UserService from "./UserService";
+
 import { templateExists } from "../jobs/ScheduledEmailJob/templateUtil";
 
 const { senderEmail } = config;
@@ -54,7 +53,7 @@ export class EmailService {
   async getEmailsToBeSent(): Promise<EmailContext[]> {
     let records;
     try {
-      records = await this.scheduledEmailDao.getOverdueScheduledEmails();
+      records = await this.scheduledEmailDao.getEmailsToSend();
     } catch (e) {
       logError({
         scheduledEmailId: "N/A",
