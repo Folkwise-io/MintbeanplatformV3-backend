@@ -24,6 +24,7 @@ interface EmailDataObj {
   };
 }
 
+// FUTURE: Lockfile log: if more jobs added in the future that need lockfiles, this logic can be encapsulated in anoter file. Warning: must consider filepath resolution if calling from another file
 const doesFileExist = () => {
   try {
     fs.accessSync(LOCKFILE_PATH, fs.constants.R_OK);
@@ -83,7 +84,6 @@ const lockJob = async (jobCb: () => Promise<void>) => {
   try {
     // JOB START
     await jobCb();
-    // await sleep(3000); // simulate long api call
   } finally {
     try {
       deleteLockfileSync();
@@ -111,9 +111,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
                 scheduledEmailIdNonce: context.scheduledEmailId,
                 email: {
                   to: recipient.email,
-                  // TODO: uncomment
                   from: "noreply@mintbean.io",
-                  // from: "nope",
                   subject,
                   html: body,
                 },
@@ -175,14 +173,14 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
                 console.log("Error when getting scheduled email retries left.", e);
               }
 
-              // if (retriesLeft > 0) {
-              try {
-                console.log("decrementing retries...");
-                const c = await context.scheduledEmailDao.decrementRetriesLeft(scheduledEmailId);
-              } catch (e) {
-                console.log("Error when decrementing scheduled email retries left.", e);
+              if (retriesLeft > 0) {
+                try {
+                  console.log("decrementing retries...");
+                  await context.scheduledEmailDao.decrementRetriesLeft(scheduledEmailId);
+                } catch (e) {
+                  console.log("Error when decrementing scheduled email retries left.", e);
+                }
               }
-              // }
 
               console.log("Failed to send email", emailResponse);
             }
