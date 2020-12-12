@@ -103,12 +103,12 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
         const emailDataObjs = contexts.flatMap((context) => {
           return context.recipients.map(
             (recipient): EmailDataObj => {
-              const { subject, body } = templateByName(context.templateName, {
+              const { subject, body } = templateByName(context._templateName, {
                 recipient,
                 meet: context.meet,
               });
               return {
-                scheduledEmailIdNonce: context.scheduledEmailId,
+                scheduledEmailIdNonce: context._scheduledEmailId,
                 email: {
                   to: recipient.email,
                   from: "noreply@mintbean.io",

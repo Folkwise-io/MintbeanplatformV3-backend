@@ -12,10 +12,12 @@ import { templateExists } from "../jobs/ScheduledEmailJob/templateUtil";
 
 const { senderEmail } = config;
 
+/** _properties are meta data not used as templating vars */
 export interface EmailContext {
-  scheduledEmailId: string;
-  type: "SUCCESS";
-  templateName: string;
+  _scheduledEmailId: string;
+  // isBulkMember: boolean;
+  _type: "SUCCESS";
+  _templateName: string;
   recipients: User[];
   meet?: Meet;
 }
@@ -87,9 +89,9 @@ export class EmailService {
           }
 
           return {
-            type: "SUCCESS",
-            scheduledEmailId: id,
-            templateName,
+            _type: "SUCCESS",
+            _scheduledEmailId: id,
+            _templateName: templateName,
             recipients,
             meet,
           };
