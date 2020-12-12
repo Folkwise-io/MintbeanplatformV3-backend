@@ -1,6 +1,6 @@
 import config from "../util/config";
 import { EmailDao } from "../dao/EmailDao";
-import { Email, ScheduledEmail } from "../types/ScheduledEmail";
+import { Email, EmailTemplateName, ScheduledEmail } from "../types/ScheduledEmail";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { generateIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
 import { User } from "../types/User";
@@ -26,6 +26,7 @@ interface BuildErrorParams {
   message: string;
   jsError?: any;
 }
+
 const logError = (params: BuildErrorParams): void => {
   const { jsError, scheduledEmailId, message } = params;
 

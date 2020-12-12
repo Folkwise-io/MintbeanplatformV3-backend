@@ -1,6 +1,4 @@
-import { knex } from "../../db/knex";
-import { Email, EmailResponse, EmailResponseStatus, ScheduledEmail } from "../../types/ScheduledEmail";
-import { ClientResponse } from "@sendgrid/client/src/response";
+import { Email, EmailResponse, EmailResponseStatus } from "../../types/ScheduledEmail";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";
@@ -111,7 +109,7 @@ const lockJob = async (jobCb: () => Promise<void>) => {
 //   subject,
 // });
 
-interface EmailParam {
+interface EmailDataObj {
   scheduledEmailId: string;
   email: {
     to: string;
@@ -128,16 +126,15 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
       async (): Promise<void> => {
         const contexts = await context.emailService.getEmailsToBeSent();
 
-        const emailParams = contexts.flatMap((context) => {
+        const emailDataObjs = contexts.flatMap((context) => {
           return context.recipients.map(
-            (recipient): EmailParam => {
+            (recipient): EmailDataObj => {
               const { subject, body } = templateByName(context.templateName, {
                 recipient,
                 meet: context.meet,
               });
               return {
                 scheduledEmailId: context.scheduledEmailId,
-                // TODO: use templating engine to build email
                 email: {
                   to: recipient.email,
                   from: "noreply@mintbean.io",
@@ -149,69 +146,97 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
           );
         });
 
-        emailParams.forEach((email) => {
-          if (true) {
-            console.log(email);
-          } else {
-            context.emailApiDao.send(email.email);
-          }
+        const responsePromises = emailDataObjs.map(async (data) => {
+          return new Promise<EmailResponse>(async (resolve, reject) => {
+            const { email, scheduledEmailId } = data;
+            let alreadyDeleted: string[] = [];
+
+            // const response = await mockSgMailSend(email);
+            const response = await context.emailApiDao.send(email);
+            if (response.status === EmailResponseStatus.SUCCESS) {
+              resolve(response);
+            } else {
+              reject(response);
+            }
+          });
         });
-        // console.log({ emailsWithScheduledEmailId: emails });
 
-        // const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
-        //   return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
-        //     // No try/catch here because emailApiDao gracefully handles failed email sends
+        const settledResponsePromises = await Promise.allSettled<Promise<EmailResponse>>(responsePromises);
+        const settledSuccessResponses = (settledResponsePromises.filter(
+          (res) => res.status === "fulfilled",
+        ) as unknown) as PromiseFulfilledResult<EmailResponse>[];
+        const successResponses = settledSuccessResponses.map((res) => res.value);
+        console.log({ successResponses });
 
-        //     const emailResponse = await context.emailApiDao.send(email);
-        //     // const [response] = await mockSgMailSend(email);
-
-        //     const emailResponseWithScheduledEmailId = {
-        //       ...emailResponse,
-        //       scheduledEmailId,
-        //     };
-
-        //     if (emailResponse.status === EmailResponseStatus.SUCCESS) {
-        //       resolve(emailResponseWithScheduledEmailId);
-        //     } else {
-        //       reject(emailResponseWithScheduledEmailId);
-        //     }
-        //   });
-        // });
-
-        // const promises = await Promise.allSettled(emailsWithScheduledEmailIdPromises);
-        // promises.forEach(async (promise) => {
-        //   if (promise.status === "rejected") {
-        //     console.warn(`EMAIL SEND FAILED`);
-        //     console.warn(promise.reason);
-        //   } else {
-        //     // TOOD: Remove logging of success cases. Debugging only
-        //     console.log("EMAIL SEND SUCCESS");
-        //     console.log(promise.value);
-        //     // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
-        //     const { scheduledEmailId: id } = promise.value;
-        //     try {
-        //       await context.scheduledEmailDao.deleteOne(id);
-        //     } catch (e) {
-        //       console.log("Failed to delete sent scheduled email. ", e);
-        //     }
-        //   }
-        // });
+        const settledRejectedResponses = (settledResponsePromises.filter(
+          (res) => res.status === "rejected",
+        ) as unknown) as PromiseRejectedResult[];
+        const rejectResponses = settledRejectedResponses.map((res) => res.reason);
+        console.log({ rejectResponses });
       },
     );
 };
 
-// (async () => {
-//   try {
-//     await job();
-//   } catch (e) {
-//     console.log("Job failed", e);
-//   } finally {
-//     console.log("Process shutdown started");
-//     knex.destroy(() => {
-//       console.log("Knex shut down successfully. Exiting process");
-//     });
+//  if (response.status === EmailResponseStatus.SUCCESS) {
+//    console.log("[EMAIL SEND: SUCCESS] ", response);
+//    if (alreadyDeleted.includes(scheduledEmailId)) {
+//      return;
+//    } else {
+//      try {
+//        await context.scheduledEmailDao.deleteOne(scheduledEmailId);
+//        alreadyDeleted.push(scheduledEmailId);
+//      } catch (e) {
+//        console.error(
+//          `ERROR when attempting to delete successfully sent sheduled email with id ${scheduledEmailId}. `,
+//          e,
+//        );
+//      }
+//    }
+//  } else {
+//    console.error("[EMAIL SEND: FAILURE] ", response);
+//  }
+
+// old logic
+// console.log({ emailsWithScheduledEmailId: emails });
+
+// const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
+//   return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
+//     // No try/catch here because emailApiDao gracefully handles failed email sends
+
+//     const emailResponse = await context.emailApiDao.send(email);
+//     // const [response] = await mockSgMailSend(email);
+
+//     const emailResponseWithScheduledEmailId = {
+//       ...emailResponse,
+//       scheduledEmailId,
+//     };
+
+//     if (emailResponse.status === EmailResponseStatus.SUCCESS) {
+//       resolve(emailResponseWithScheduledEmailId);
+//     } else {
+//       reject(emailResponseWithScheduledEmailId);
+//     }
+//   });
+// });
+
+// const promises = await Promise.allSettled(emailsWithScheduledEmailIdPromises);
+// promises.forEach(async (promise) => {
+//   if (promise.status === "rejected") {
+//     console.warn(`EMAIL SEND FAILED`);
+//     console.warn(promise.reason);
+//   } else {
+//     // TOOD: Remove logging of success cases. Debugging only
+//     console.log("EMAIL SEND SUCCESS");
+//     console.log(promise.value);
+//     // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
+//     const { scheduledEmailId: id } = promise.value;
+//     try {
+//       await context.scheduledEmailDao.deleteOne(id);
+//     } catch (e) {
+//       console.log("Failed to delete sent scheduled email. ", e);
+//     }
 //   }
-// })();
+// });
 
 // {
 //   scheduledEmailId: 'e7a12c54-8879-4e04-ab89-161f69db4f18',
@@ -275,62 +300,31 @@ const sleep = (ms: number) => {
 };
 
 /** include "!FAIL" in the email.subject to force failed return */
-const mockSgMailSend = async (email: Email): Promise<[ClientResponse]> => {
+const mockSgMailSend = async (email: Email): Promise<EmailResponse> => {
   const shouldFail = !!email.subject.match(/!FAIL/);
   if (shouldFail) {
     console.log("FAKE SENDING FAILURE EMAIL...");
-    console.log(email);
-    await sleep(500);
+    // console.log(email);
     const failureResponse = {
-      code: 400,
-      response: {
-        body: {
-          errors: [
-            {
-              message: "A MOCKED FAIL",
-              field: null,
-              help: "save yourself",
-            },
-          ],
-        },
-        headers: {
-          server: "nginx",
-          date: new Date(),
-          "content-length": "0",
-          connection: "close",
-          "x-message-id": "LKLHvCgpSLSCUyPLlVM-Tg",
-          "access-control-allow-origin": "https://sendgrid.api-docs.io",
-          "access-control-allow-methods": "POST",
-          "access-control-allow-headers": "Authorization, Content-Type, On-behalf-of, x-sg-elas-acl",
-          "access-control-max-age": "600",
-          "x-no-cors-reason": "https://sendgrid.com/docs/Classroom/Basics/API/cors.html",
-        },
-      },
+      recipient: "claire.froelich@gmail.com",
+      sender: "noreply@mintbean.io",
+      statusCode: 400,
+      status: EmailResponseStatus.BAD_REQUEST,
+      timestamp: new Date().toISOString(),
     };
+
     throw failureResponse;
   }
 
-  const successResponse = ({
+  const successResponse = {
+    recipient: "claire.froelich@gmail.com",
+    sender: "noreply@mintbean.io",
     statusCode: 202,
-    response: {
-      body: "",
-      headers: {
-        server: "nginx",
-        date: new Date(),
-        "content-length": "0",
-        connection: "close",
-        "x-message-id": "LKLHvCgpSLSCUyPLlVM-Tg",
-        "access-control-allow-origin": "https://sendgrid.api-docs.io",
-        "access-control-allow-methods": "POST",
-        "access-control-allow-headers": "Authorization, Content-Type, On-behalf-of, x-sg-elas-acl",
-        "access-control-max-age": "600",
-        "x-no-cors-reason": "https://sendgrid.com/docs/Classroom/Basics/API/cors.html",
-      },
-    },
-  } as unknown) as ClientResponse;
-
+    status: EmailResponseStatus.SUCCESS,
+    timestamp: new Date().toISOString(),
+  };
   console.log("FAKE SENDING SUCCESS EMAIL...");
-  console.log(email);
-  await sleep(500);
-  return [successResponse];
+  // console.log(email);
+  // awaitsleep(500);
+  return successResponse;
 };

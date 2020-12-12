@@ -1,5 +1,3 @@
-import ResponseError from "@sendgrid/helpers/classes/response-error";
-import { ClientResponse } from "@sendgrid/client/src/response";
 import { User } from "./User";
 import { Meet } from "./gqlGeneratedTypes";
 
