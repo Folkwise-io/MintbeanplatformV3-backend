@@ -72,7 +72,7 @@ const meetResolver = (
                 templateName: templates.reminder1,
                 meetRecipientId: meetId,
                 meetId,
-                sendAt: reminder1SendAt,
+                // sendAt: reminder1SendAt,
               });
             } catch (e) {
               console.error(`Failed to queue email [reminder 1] for meet with id ${meetId}`, e);
@@ -89,7 +89,7 @@ const meetResolver = (
                 templateName: templates.reminder2,
                 meetRecipientId: meetId,
                 meetId,
-                sendAt: reminder2SendAt,
+                // sendAt: reminder2SendAt,
               });
             } catch (e) {
               console.error(`Failed to queue email [reminder 2] for meet with id ${meetId}`, e);
