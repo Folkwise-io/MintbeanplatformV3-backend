@@ -1,4 +1,5 @@
 import {
+  Attachment,
   Email,
   EmailResponse,
   EmailResponseStatus,
@@ -28,6 +29,7 @@ interface EmailDataObj {
     from: string;
     subject: string;
     html: string;
+    attachments: Attachment[];
   };
 }
 
@@ -133,6 +135,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
                   from: "noreply@mintbean.io",
                   subject,
                   html: body,
+                  attachments: ctx._attachments,
                 },
               };
             },

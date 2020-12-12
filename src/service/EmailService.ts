@@ -1,8 +1,8 @@
 import config from "../util/config";
 import { EmailDao } from "../dao/EmailDao";
-import { Email } from "../types/ScheduledEmail";
+import { Attachment, Email, EmailTemplateName } from "../types/ScheduledEmail";
 import { Meet } from "../types/gqlGeneratedTypes";
-import { generateIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
+import { generateMeetIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
 import { User } from "../types/User";
 import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import MeetDao from "../dao/MeetDao";
@@ -10,14 +10,16 @@ import UserDao from "../dao/UserDao";
 
 import { templateExists } from "../jobs/ScheduledEmailJob/templateUtil";
 
+// TODO: senderEmail var when ripping out old email system
 const { senderEmail } = config;
 
-/** _properties are meta data not used as templating vars */
+/** _prefixed properties are meta data not used as interpolation vars in templating */
 export interface EmailContext {
   _scheduledEmailId: string;
   _isBulk: boolean; // true if scheduled email has multiple recipients
   _type: "SUCCESS";
   _templateName: string;
+  _attachments: Attachment[];
   recipients: User[];
   meet?: Meet;
 }
@@ -83,11 +85,39 @@ export class EmailService {
             const user = await this.userDao.getOne({ id: userRecipientId });
             recipients = user ? [user] : [];
           } else {
-            throw new Error("scheduledEmail Record did not have meetRecipientId or userReceipientId.");
+            throw new Error("scheduledEmail record did not have meetRecipientId or userReceipientId.");
           }
 
           if (meetId) {
-            meet = await this.meetDao.getOne({ id: meetId });
+            console.log("trying to get meet...");
+            try {
+              meet = await this.meetDao.getOne({ id: meetId });
+              if (!meet)
+                throw new Error(
+                  `Failed to find meet with id: ${meetId} for scheduled email with id ${id}. Aborting send.`,
+                );
+            } catch (e) {
+              throw new Error(
+                `Something went wrong when attempting to fetch meet with id ${meetId} for scheduled email: ${id}. Aborting send.`,
+              );
+            }
+          }
+
+          // For now, generating calendar invite attachements in EmailService as they are not personalized and are the same for all recipients in a scheduledEmail
+          let _attachments: Attachment[] = [];
+          if (meet) {
+            switch (templateName) {
+              case EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION:
+                // Hackathon invites should only block 1hr on recipient's calendar (as opposed to 7 days)
+                _attachments = generateMeetIcsAttachments(meet, {
+                  duration: { minutes: 60 },
+                  customTitle: `Kickoff for ${meet.title}`,
+                });
+                break;
+              // TODO: workshop case
+              default:
+                _attachments = [];
+            }
           }
 
           return {
@@ -95,6 +125,7 @@ export class EmailService {
             _scheduledEmailId: id,
             _templateName: templateName,
             _isBulk,
+            _attachments,
             recipients,
             meet,
           };
@@ -147,7 +178,7 @@ export class EmailService {
       from: senderEmail,
       subject: `Registration Confirmation for ${title}`,
       html: generateJsonLdHtml(user, meet, registrationId),
-      attachments: generateIcsAttachments(meet),
+      attachments: generateMeetIcsAttachments(meet),
     };
 
     return email;

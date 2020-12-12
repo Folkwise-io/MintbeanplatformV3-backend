@@ -1,15 +1,21 @@
-import moment from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { EventAttributes } from "ics";
 import * as ics from "ics";
 import { Attachment } from "../types/ScheduledEmail";
 import { User } from "../types/User";
-const DISCORD_URL = "https://discord.gg/j7CjBAz";
 
-const generateMeetUrl = (id: string) => `https://mintbean.io/meets/${id}`;
+/** Options for meet calendar invite. If duration not specified, invite will span entire time from meet startTime to endTime */
+interface MeetIcsOptions {
+  duration?: ics.DurationObject | null;
+  customTitle?: string | null;
+  customDescription?: string | null;
+}
 
-export const generateIcsAttachments = (meet: Meet): Attachment[] => {
-  const icsEventAttribute = mapMeetToIcsEventAttributes(meet);
+export const generateMeetUrl = (id: string) => `https://mintbean.io/meets/${id}`;
+
+export const generateMeetIcsAttachments = (meet: Meet, options: MeetIcsOptions = {}): Attachment[] => {
+  const icsEventAttribute = mapMeetToIcsEventAttributes(meet, options);
   const icsFile = generateIcsFileInBase64(icsEventAttribute);
   return [
     {
@@ -21,33 +27,54 @@ export const generateIcsAttachments = (meet: Meet): Attachment[] => {
   ];
 };
 
-export const mapMeetToIcsEventAttributes = (meet: Meet): EventAttributes => {
-  const { title, description, region, id, startTime, endTime, registerLink } = meet;
-  const startTimeUTC = moment.tz(startTime, region).utc();
-  const endTimeUTC = moment.tz(endTime, region).utc();
+const momentToDateArray = (moment: Moment): ics.DateArray => {
+  return [moment.year(), moment.month() + 1, moment.date(), moment.hours(), moment.minutes()];
+};
 
-  const IcsEventAttributes: EventAttributes = {
+export const mapMeetToIcsEventAttributes = (meet: Meet, options: MeetIcsOptions = {}): EventAttributes => {
+  const { title, description, region, id, startTime, registerLink } = meet;
+  const { duration, customTitle, customDescription } = options;
+
+  const resolvedTitle = customTitle ? customTitle : title;
+  const resolvedDescription = customDescription ? customDescription : description;
+
+  const momentStartTimeUTC = moment.tz(startTime, region).utc();
+
+  const start: ics.DateArray = momentToDateArray(momentStartTimeUTC);
+
+  // shared by both invite types: with specifed duration OR end time
+  const commonAttributes: Partial<EventAttributes> = {
     startInputType: "utc",
     startOutputType: "utc",
     endInputType: "utc",
     endOutputType: "utc",
-    start: [
-      startTimeUTC.year(),
-      startTimeUTC.month() + 1,
-      startTimeUTC.date(),
-      startTimeUTC.hours(),
-      startTimeUTC.minutes(),
-    ],
-    end: [endTimeUTC.year(), endTimeUTC.month() + 1, endTimeUTC.date(), endTimeUTC.hours(), endTimeUTC.minutes()],
-    title,
-    description,
-    location: region,
+    start,
+    title: resolvedTitle,
+    description: resolvedDescription,
+    location: registerLink || generateMeetUrl(id), // link as location makes it easier for user to find
     url: registerLink || generateMeetUrl(id),
     status: "CONFIRMED",
     organizer: { name: "Mintbean", email: "info@mintbean.io" },
   };
 
-  return IcsEventAttributes;
+  // Ics invites can have a specified duration OR end time
+  if (duration) {
+    const icsWithDuration = <EventAttributes>{
+      ...commonAttributes,
+      duration,
+    };
+
+    return icsWithDuration;
+  } else {
+    const momentEndTimeUTC = moment.tz(startTime, region).utc();
+    const end: ics.DateArray = momentToDateArray(momentEndTimeUTC);
+
+    const icsWithEnd = <EventAttributes>{
+      ...commonAttributes,
+      end,
+    };
+    return icsWithEnd;
+  }
 };
 
 export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): string => {
@@ -57,6 +84,7 @@ export const generateIcsFileInBase64 = (icsEventAttribute: EventAttributes): str
   return icsFileBase64;
 };
 
+// TODO: remove below, part of old email system
 export const generateJsonLdHtml = (user: User, meet: Meet, registrationId: string): string => {
   const { id, title, description, startTime, endTime, region, coverImageUrl, registerLink } = meet;
   const { firstName, lastName } = user;
