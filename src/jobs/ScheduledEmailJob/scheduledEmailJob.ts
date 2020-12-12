@@ -14,6 +14,16 @@ const LOCKFILE_NAME = ".lock";
 const LOCKFILE_PATH = path.join(__dirname, LOCKFILE_NAME);
 const LOCKFILE_EXPIRY_SECONDS = 5;
 
+interface EmailDataObj {
+  scheduledEmailIdNonce: string;
+  email: {
+    to: string;
+    from: string;
+    subject: string;
+    html: string;
+  };
+}
+
 const doesFileExist = () => {
   try {
     fs.accessSync(LOCKFILE_PATH, fs.constants.R_OK);
@@ -52,8 +62,7 @@ const lockJob = async (jobCb: () => Promise<void>) => {
       try {
         writeLockfileSync();
       } catch (e) {
-        console.log("Problem writing lockfile. Canceling job");
-        console.log(e);
+        console.log("Problem writing lockfile. Canceling job", e);
         return;
       }
     } else {
@@ -66,8 +75,7 @@ const lockJob = async (jobCb: () => Promise<void>) => {
     try {
       writeLockfileSync();
     } catch (e) {
-      console.log("Problem writing lockfile. Canceling job.");
-      console.log(e);
+      console.log("Problem writing lockfile. Canceling job.", e);
       return;
     }
   }
@@ -80,44 +88,10 @@ const lockJob = async (jobCb: () => Promise<void>) => {
     try {
       deleteLockfileSync();
     } catch (e) {
-      console.log("Problem deleting lock file");
-      console.log(e);
+      console.log("Problem deleting lock file", e);
     }
   }
 };
-
-// const deleteScheduledEmailById = async (id: string) => {
-//   try {
-//     await knex("scheduledEmails").where({ id }).del();
-//   } catch (e) {
-//     console.error(`Error when deleting scheduled email with id ${id}: `, e);
-//   }
-// };
-
-// const getScheduledEmails = async () => {
-//   try {
-//     return await knex<ScheduledEmail>("scheduledEmails");
-//   } catch (e) {
-//     console.error("Error attempting to fetch scheduled emails: ", e);
-//   }
-// };
-
-// const generateEmailFromScheduledEmail = ({ to, from, html, subject }: ScheduledEmail) => ({
-//   to,
-//   from,
-//   html,
-//   subject,
-// });
-
-interface EmailDataObj {
-  scheduledEmailId: string;
-  email: {
-    to: string;
-    from: string;
-    subject: string;
-    html: string;
-  };
-}
 
 // Job definition =================================================================
 export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<void>) => {
@@ -134,7 +108,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
                 meet: context.meet,
               });
               return {
-                scheduledEmailId: context.scheduledEmailId,
+                scheduledEmailIdNonce: context.scheduledEmailId,
                 email: {
                   to: recipient.email,
                   from: "noreply@mintbean.io",
@@ -146,185 +120,72 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
           );
         });
 
-        const responsePromises = emailDataObjs.map(async (data) => {
-          return new Promise<EmailResponse>(async (resolve, reject) => {
-            const { email, scheduledEmailId } = data;
-            let alreadyDeleted: string[] = [];
+        /**
+         * This is a map of emails in the following shape:
+         * {
+         *   "scheduledEmailId": {
+         *
+         *   }
+         * }
+         */
+        const deletedEmails = new Set<string>();
 
-            // const response = await mockSgMailSend(email);
-            const response = await context.emailApiDao.send(email);
-            if (response.status === EmailResponseStatus.SUCCESS) {
-              resolve(response);
-            } else {
-              reject(response);
+        // send the emails
+        await Promise.allSettled(
+          emailDataObjs.map(async (data) => {
+            const scheduledEmailId = data.scheduledEmailIdNonce;
+
+            // Try to send the email
+            let emailResponse;
+            try {
+              emailResponse = await context.emailApiDao.send(data.email);
+              console.log("EMAIL RESPONSE\n", emailResponse);
+            } catch (e) {
+              // Handle network failures
+              // TODO: decrement retriesLeft
+              console.error(`Failed to send scheduledEmailId [${scheduledEmailId}].`, e);
+              return;
             }
-          });
-        });
 
-        const settledResponsePromises = await Promise.allSettled<Promise<EmailResponse>>(responsePromises);
-        const settledSuccessResponses = (settledResponsePromises.filter(
-          (res) => res.status === "fulfilled",
-        ) as unknown) as PromiseFulfilledResult<EmailResponse>[];
-        const successResponses = settledSuccessResponses.map((res) => res.value);
-        console.log({ successResponses });
+            if (emailResponse.status === EmailResponseStatus.SUCCESS) {
+              // Delete each successfully sent email from the DB
+              if (deletedEmails.has(scheduledEmailId)) {
+                // Don't delete emails that have already been sent
+                return;
+              }
 
-        const settledRejectedResponses = (settledResponsePromises.filter(
-          (res) => res.status === "rejected",
-        ) as unknown) as PromiseRejectedResult[];
-        const rejectResponses = settledRejectedResponses.map((res) => res.reason);
-        console.log({ rejectResponses });
+              try {
+                await context.scheduledEmailDao.deleteOne(scheduledEmailId);
+                deletedEmails.add(scheduledEmailId);
+                return;
+              } catch (e) {
+                try {
+                  // retry once, in case
+                  await context.scheduledEmailDao.deleteOne(scheduledEmailId);
+                  deletedEmails.add(scheduledEmailId);
+                  return;
+                } catch (e) {
+                  // something REALLY went wrong with the db
+                  console.error(
+                    `Critical failure, tried twice could not delete successfully sent scheduledEmailId [${scheduledEmailId}].`,
+                  );
+                }
+              }
+            } else {
+              // Handle the case where the email could not be sent at all
+              // TODO: update the retriesLeft column
+              // 0. migration to create the retriesLeft column
+              // 0. SELECT query must only select scheduledEmails that have retriesLeft >= 1
+              // 0. give EmailService a `decrementRetriesLeft(scheduledEmailId)` method
+              // 1. get the current object
+              // 2. if (!retriesLeft), set retriesLeft to 2
+              //      else decrement the object's retriesLeft column
+              // 3. save the object
+              // 4. Make sure you wrap `decrementRetriesLeft` in a try/catch
+              console.log("Failed to send email", emailResponse);
+            }
+          }),
+        );
       },
     );
-};
-
-//  if (response.status === EmailResponseStatus.SUCCESS) {
-//    console.log("[EMAIL SEND: SUCCESS] ", response);
-//    if (alreadyDeleted.includes(scheduledEmailId)) {
-//      return;
-//    } else {
-//      try {
-//        await context.scheduledEmailDao.deleteOne(scheduledEmailId);
-//        alreadyDeleted.push(scheduledEmailId);
-//      } catch (e) {
-//        console.error(
-//          `ERROR when attempting to delete successfully sent sheduled email with id ${scheduledEmailId}. `,
-//          e,
-//        );
-//      }
-//    }
-//  } else {
-//    console.error("[EMAIL SEND: FAILURE] ", response);
-//  }
-
-// old logic
-// console.log({ emailsWithScheduledEmailId: emails });
-
-// const emailsWithScheduledEmailIdPromises = emailsWithScheduledEmailId.map(({ scheduledEmailId, email }) => {
-//   return new Promise<EmailResponseWithScheduledEmailId>(async (resolve, reject) => {
-//     // No try/catch here because emailApiDao gracefully handles failed email sends
-
-//     const emailResponse = await context.emailApiDao.send(email);
-//     // const [response] = await mockSgMailSend(email);
-
-//     const emailResponseWithScheduledEmailId = {
-//       ...emailResponse,
-//       scheduledEmailId,
-//     };
-
-//     if (emailResponse.status === EmailResponseStatus.SUCCESS) {
-//       resolve(emailResponseWithScheduledEmailId);
-//     } else {
-//       reject(emailResponseWithScheduledEmailId);
-//     }
-//   });
-// });
-
-// const promises = await Promise.allSettled(emailsWithScheduledEmailIdPromises);
-// promises.forEach(async (promise) => {
-//   if (promise.status === "rejected") {
-//     console.warn(`EMAIL SEND FAILED`);
-//     console.warn(promise.reason);
-//   } else {
-//     // TOOD: Remove logging of success cases. Debugging only
-//     console.log("EMAIL SEND SUCCESS");
-//     console.log(promise.value);
-//     // Delete successfully sent scheduled emails (note: this works because scheduled emails are currently 1:1 with recipient)
-//     const { scheduledEmailId: id } = promise.value;
-//     try {
-//       await context.scheduledEmailDao.deleteOne(id);
-//     } catch (e) {
-//       console.log("Failed to delete sent scheduled email. ", e);
-//     }
-//   }
-// });
-
-// {
-//   scheduledEmailId: 'e7a12c54-8879-4e04-ab89-161f69db4f18',
-//   recipient: 'claire.froelich@gmail.com',
-//   sender: '2'
-//   statusCode: 400,
-//   status: 'BAD_REQUEST',
-//   response: {
-//     headers: {
-//       server: 'nginx',
-//       date: 'Wed, 09 Dec 2020 19:08:40 GMT',
-//       'content-type': 'application/json',
-//       'content-length': '185',
-//       connection: 'close',
-//       'access-control-allow-origin': 'https://sendgrid.api-docs.io',
-//       'access-control-allow-methods': 'POST',
-//       'access-control-allow-headers': 'Authorization, Content-Type, On-behalf-of, x-sg-elas-acl',
-//       'access-control-max-age': '600',
-//       'x-no-cors-reason': 'https://sendgrid.com/docs/Classroom/Basics/API/cors.html'
-//     },
-//     body: { errors: [Array] }
-//   },
-//   errors: [
-//     {
-//       message: 'The from email does not contain a valid address.',
-//       field: 'from.email',
-//       help: 'http://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html#message.from'
-//     }
-//   ]
-// }
-
-// sample resolved promise value:
-
-// {
-//   scheduledEmailId: '2ed0e215-aac9-4f2b-b3f3-6c8ebe53119f',
-//   recipient: 'claire.froelich@gmail.com',
-//   sender: 'noreply@mintbean.io',
-//   statusCode: 202,
-//   status: 'SUCCESS',
-//   response: Response {
-//     statusCode: 202,
-//     body: '',
-//     headers: {
-//       server: 'nginx',
-//       date: 'Wed, 09 Dec 2020 19:08:40 GMT',
-//       'content-length': '0',
-//       connection: 'close',
-//       'x-message-id': 'mEP4pfmxTSaIrIdEgxdAdw',
-//       'access-control-allow-origin': 'https://sendgrid.api-docs.io',
-//       'access-control-allow-methods': 'POST',
-//       'access-control-allow-headers': 'Authorization, Content-Type, On-behalf-of, x-sg-elas-acl',
-//       'access-control-max-age': '600',
-//       'x-no-cors-reason': 'https://sendgrid.com/docs/Classroom/Basics/API/cors.html'
-//     }
-//   }
-// }
-
-// TODO: remove all this below. Used for testing only to mock api call without using API credits
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
-
-/** include "!FAIL" in the email.subject to force failed return */
-const mockSgMailSend = async (email: Email): Promise<EmailResponse> => {
-  const shouldFail = !!email.subject.match(/!FAIL/);
-  if (shouldFail) {
-    console.log("FAKE SENDING FAILURE EMAIL...");
-    // console.log(email);
-    const failureResponse = {
-      recipient: "claire.froelich@gmail.com",
-      sender: "noreply@mintbean.io",
-      statusCode: 400,
-      status: EmailResponseStatus.BAD_REQUEST,
-      timestamp: new Date().toISOString(),
-    };
-
-    throw failureResponse;
-  }
-
-  const successResponse = {
-    recipient: "claire.froelich@gmail.com",
-    sender: "noreply@mintbean.io",
-    statusCode: 202,
-    status: EmailResponseStatus.SUCCESS,
-    timestamp: new Date().toISOString(),
-  };
-  console.log("FAKE SENDING SUCCESS EMAIL...");
-  // console.log(email);
-  // awaitsleep(500);
-  return successResponse;
 };

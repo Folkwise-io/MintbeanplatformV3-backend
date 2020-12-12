@@ -37,9 +37,9 @@ const logError = (params: BuildErrorParams): void => {
   }
 
   if (jsError) {
-    console.error(errorText, jsError);
+    console.error("There was an error", errorText, jsError);
   } else {
-    console.error(errorText);
+    console.error("There was an error", errorText);
   }
 };
 

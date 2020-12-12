@@ -22,13 +22,7 @@ export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
 
   async deleteOne(id: string): Promise<boolean> {
     return handleDatabaseError(async () => {
-      await this.knex("scheduledEmails")
-        .where({ id })
-        .del()
-        // TODO: remove debugger callback.
-        .asCallback((err: any) => {
-          console.log(err);
-        });
+      await this.knex("scheduledEmails").where({ id }).del();
       return true;
     });
   }

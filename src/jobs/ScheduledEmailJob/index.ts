@@ -5,14 +5,12 @@ const jobContext = jobContextBuilder();
 const scheduledEmailJob = scheduledEmailJobBuilder(jobContext);
 
 (async () => {
-  try {
-    await scheduledEmailJob();
-  } catch (e) {
-    console.log("Scheduled email job failed: ", e);
-  } finally {
-    console.log("Process shutdown started");
-    jobContext.knex.destroy(() => {
-      console.log("Knex shut down successfully. Exiting process.");
+  scheduledEmailJob()
+    .catch((e) => console.log("Scheduled email job failed: ", e))
+    .finally(() => {
+      console.log("Process shutdown started");
+      jobContext.knex.destroy(() => {
+        console.log("Knex shut down successfully. Exiting process.");
+      });
     });
-  }
 })();
