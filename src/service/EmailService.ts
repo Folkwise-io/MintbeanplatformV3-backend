@@ -15,7 +15,7 @@ const { senderEmail } = config;
 /** _properties are meta data not used as templating vars */
 export interface EmailContext {
   _scheduledEmailId: string;
-  // isBulkMember: boolean;
+  _isBulk: boolean; // true if scheduled email has multiple recipients
   _type: "SUCCESS";
   _templateName: string;
   recipients: User[];
@@ -72,6 +72,8 @@ export class EmailService {
             throw new Error(`Template [${templateName}] does not exist.`);
           }
 
+          const _isBulk = !!meetRecipientId; // <-- currently, presence of meetRecipientId is the only indicator of bulk email
+
           let recipients: User[] = [];
           let meet: Meet | undefined;
 
@@ -92,6 +94,7 @@ export class EmailService {
             _type: "SUCCESS",
             _scheduledEmailId: id,
             _templateName: templateName,
+            _isBulk,
             recipients,
             meet,
           };

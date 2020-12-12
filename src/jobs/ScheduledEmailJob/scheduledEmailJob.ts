@@ -1,4 +1,10 @@
-import { Email, EmailResponse, EmailResponseStatus } from "../../types/ScheduledEmail";
+import {
+  Email,
+  EmailResponse,
+  EmailResponseStatus,
+  EmailTemplateName,
+  ScheduledEmailInput,
+} from "../../types/ScheduledEmail";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";
@@ -15,6 +21,7 @@ const LOCKFILE_PATH = path.join(__dirname, LOCKFILE_NAME);
 const LOCKFILE_EXPIRY_SECONDS = 5;
 
 interface EmailDataObj {
+  requeueData: ScheduledEmailInput | null; // this field is populated with requeueData data with individual userRecipient if email is member of a bulk job
   scheduledEmailIdNonce: string;
   email: {
     to: string;
@@ -98,17 +105,29 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
   return () =>
     lockJob(
       async (): Promise<void> => {
-        const contexts = await context.emailService.getEmailsToBeSent();
+        const emailContexts = await context.emailService.getEmailsToBeSent();
 
-        const emailDataObjs = contexts.flatMap((context) => {
-          return context.recipients.map(
+        const emailDataObjs = emailContexts.flatMap((ctx) => {
+          return ctx.recipients.map(
             (recipient): EmailDataObj => {
-              const { subject, body } = templateByName(context._templateName, {
+              const { subject, body } = templateByName(ctx._templateName, {
                 recipient,
-                meet: context.meet,
+                meet: ctx.meet,
               });
+              let requeueData: ScheduledEmailInput | null = null;
+              // provide data for requeuing individual userRecipient if email is part of bulk job, in case send fails
+              // WARNING: if nullable fields are added to `schduledEmails` must account for them here
+              if (ctx._isBulk) {
+                requeueData = {
+                  // ensure it is requeued as individual userRecipient (no bulk recipient fields like meetRecipientId)
+                  userRecipientId: recipient.id,
+                  templateName: ctx._templateName as EmailTemplateName,
+                  meetId: ctx.meet?.id || null,
+                };
+              }
               return {
-                scheduledEmailIdNonce: context._scheduledEmailId,
+                requeueData,
+                scheduledEmailIdNonce: ctx._scheduledEmailId,
                 email: {
                   to: recipient.email,
                   from: "noreply@mintbean.io",
@@ -140,7 +159,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
             if (emailResponse.status === EmailResponseStatus.SUCCESS) {
               // Delete each successfully sent email from the DB
               if (deletedEmails.has(scheduledEmailId)) {
-                // Don't delete emails that have already been sent
+                // Don't delete scheduled emails that have already sent one member successfully
                 return;
               }
 
@@ -164,25 +183,34 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
             } else {
               // Handle the case where the email could not be sent at all
 
-              let retriesLeft = 3; // in case step below fails
-
-              try {
-                console.log("checking retries...");
-                retriesLeft = await context.scheduledEmailDao.getRetriesLeft(scheduledEmailId);
-              } catch (e) {
-                console.log("Error when getting scheduled email retries left.", e);
-              }
-
-              if (retriesLeft > 0) {
+              // If this email is a member of a bulk-recipient scheduled email (i.e requeueData is present), re-queue it as a stand-alone job with 2 tries left
+              if (data.requeueData) {
                 try {
-                  console.log("decrementing retries...");
-                  await context.scheduledEmailDao.decrementRetriesLeft(scheduledEmailId);
+                  await context.scheduledEmailDao.queue({ ...data.requeueData, retriesLeft: 2 });
                 } catch (e) {
-                  console.log("Error when decrementing scheduled email retries left.", e);
+                  console.log(`Error when requeueing failed member of scheduled email: ${scheduledEmailId}.`, e);
+                }
+              } else {
+                // this is a failed scheduld email with single recipient
+                let retriesLeft = 2; // in case step below fails
+
+                try {
+                  retriesLeft = await context.scheduledEmailDao.getRetriesLeft(scheduledEmailId);
+                } catch (e) {
+                  console.log("Error when getting scheduled email retries left.", e);
+                }
+
+                if (retriesLeft > 0) {
+                  try {
+                    await context.scheduledEmailDao.decrementRetriesLeft(scheduledEmailId);
+                  } catch (e) {
+                    console.log("Error when decrementing scheduled email retries left.", e);
+                  }
                 }
               }
 
-              console.log("Failed to send email", emailResponse);
+              // Either outcome, log the failure
+              console.log(`Failed to send email with scheduled email id: ${scheduledEmailId}`, emailResponse);
             }
           }),
         );

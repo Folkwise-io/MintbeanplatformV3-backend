@@ -37,6 +37,7 @@ export interface ScheduledEmailInput {
   meetRecipientId?: string | null;
   meetId?: string | null;
   sendAt?: string | null; // ISO string (with 'Z'). defaults to now
+  retriesLeft?: number | null;
   // in step 3:
   // icsStart: string | null; // nullable
   // icsDurationMins: number | null; //
