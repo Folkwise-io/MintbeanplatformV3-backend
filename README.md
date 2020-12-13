@@ -17,8 +17,10 @@
   - [Knex CLI Reference](#knex-cli-reference)
 - [Deployment](#deployment)
 - [Api Reference](#api-reference)
+- [Scheduled Jobs](#scheduled-jobs)
 - [Features](#features)
   - [Kanban](#kanban)
+  - [Email](#email)
   <!-- /code_chunk_output -->
 
 ## Installation
@@ -163,6 +165,22 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
 5. Click through the definitions to explore them in more detail:
    ![](docs/graphql_playground_detailed.png)
 
+## Scheduled Jobs
+
+Jobs are standalone scripts that can be run via `yarn jobs:<job-name>`.
+
+These scripts can be found in `src/jobs/`. Jobs use a separate `JobContext` to provide access to any constructed entities likes Daos/Services, such that they can run independetly of the application itself.
+
+### `yarn jobs:email`
+
+Retrieves all `scheduledEmails` due for sending, builds emails, sends, and logs and handles responses.
+
+It is suggested this job be scheduled to **run every 5 - 10 seconds**, as to provide near-immediate sending of emails queued to be sent "now", like registration confirmations.
+
+Emails that fail sending for whatever reason are left in the queue, with a maximum of 3 retries.
+
+For `scheduledEmails` with mulitple recipients (i.e the `meetRecipientId` field is present), a member email that fails sending is requeued as a single `scheduledEmail` record with a specified single `userRecipientId` and given two retries.
+
 ## Features
 
 ### Kanban
@@ -184,3 +202,32 @@ Some utilities in `cardPostionUtils.ts` help to resolve and update `cardPosition
 In this manner, no positional data is sent on the kanbanCanonCards or kanbanCards themselves, rather as a `cardPositions` object on `kanbanCanon` and `kanban` that reference kanbanCanonCard Ids. The client (ex: frontend) can then map the cards to the positoins in `cardPositions`.
 
 ![image](https://user-images.githubusercontent.com/9841162/98745006-8e3e8e00-2367-11eb-941c-48be8252bc3e.png)
+
+### Email
+
+All application emails are sent via a queue system stored in the `scheudledEmails` table in the database. The queue should be periodically checked (by cron job) for emails that need to be sent, and those emails built and dispatched.
+
+The `scheduledEmails` table provides instructions for how to build an email and resolve it's recipients. Here are the important fields(\* = not nullable):
+
+| id     | templateName | userRecipientId | meetRecipientId | meetId | sendAt      | retriesLeft |
+| ------ | ------------ | --------------- | --------------- | ------ | ----------- | ----------- |
+| \*UUID | \*text       | UUID            | UUID            | UUID   | \*timestamp | integer     |
+
+`templateName` is a string pointing to the filepath of the `.ejs` templates for this email. `templateName` entry is restricted by Typescript enum `EmailTemplateName`
+`userRecipientId` is specified if the email is for a single user (registration confirmations).
+`meetRecipientId` is specified if the email is for all registerants of a meet (meet reminders)
+`meetId` is the meet that is the topic of the email
+`sendAt` is the threshold of when to trigger sending this scheduled email job.
+`retriesLeft` number of attempts at sending remaining.
+
+When the `yarn jobs:email` job is fired, all `scheduledEmails` ready for sending (i.e. `sendAt` < now ) are selected via `EmailService#getEmailsToBeSent()` which also builds `EmailContext` by inflating the values in the table, resolving recipients, and building ics calendar attachments if necessary.
+
+Once the `EmailContext` is built, the recipients are looped over to build user-specific templated emails. These templated emails are then sent one by one via `EmailApiDao#send(email)`.
+
+`scheduledEmails` that suceed in sending to one or more recipients are deleted.
+
+Any email that fails sending is either left (in the queue in the case of single recipient `scheduledEmails`), or re-queued as single recipient `scheduledEmails` (in the case of bulk recipient `scheduledEmails`) with 2 retries remaining. They will be attempted again the next time the `yarn jobs:email` is run.
+
+Logging occurs for all email responses (including success). Keep an eye on the server logs to see whether any maintenence is required.
+
+Note: emails that fail 3 times are left in the database and will pool if not maintained. Run checks and clean periodically.
