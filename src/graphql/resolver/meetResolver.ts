@@ -124,16 +124,33 @@ const meetResolver = (
             if (disableRegistrationEmail) {
               return true;
             }
-
-            // queue confirmation email for immediate sending
+            // Try sending confirmatoin email
             try {
-              await scheduledEmailDao.queue({
-                templateName: EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION,
-                userRecipientId: userId,
-                meetId,
-              });
+              const meet = await meetDao.getOne({ id: meetId });
+              if (!meet) throw `Meet with id ${meetId} failed fetch`;
+              const isHackathon = meet.meetType === MeetType.Hackathon; // WORKSHOPS templates cover meet types: WORKSHOP, WEBINAR, LECTURE
+
+              const templates = {
+                confirmation: isHackathon
+                  ? EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION
+                  : EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION,
+              };
+
+              // queue confirmation email for immediate sending
+              try {
+                await scheduledEmailDao.queue({
+                  templateName: templates.confirmation,
+                  userRecipientId: userId,
+                  meetId,
+                });
+              } catch (e) {
+                console.log(`Failed to queue meet registration confirmation for meet registration with id: ${id}`);
+              }
             } catch (e) {
-              console.log(`Failed to queue meet registration confirmation for meet registration with id: ${id}`);
+              console.error(
+                `Error when queueing registration confirmation email of userId: ${userId} for meetId: ${meetId}`,
+                e,
+              );
             }
 
             return;
