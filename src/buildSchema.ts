@@ -51,7 +51,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectMediaAssetDao,
     projectDao,
     userDao,
-    emailScheduleDao,
+    scheduledEmailDao,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -69,7 +69,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService, userDao),
-    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, emailService, meetDao, emailScheduleDao),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, emailService, meetDao, scheduledEmailDao),
     projectResolver(
       projectResolverValidator,
       projectDao,
