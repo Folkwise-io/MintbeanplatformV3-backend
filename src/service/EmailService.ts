@@ -10,7 +10,7 @@ import UserDao from "../dao/UserDao";
 
 import { templateExists } from "../jobs/ScheduledEmailJob/templateUtil";
 
-// TODO: senderEmail var when ripping out old email system
+// TODO: remove senderEmail var when ripping out old email system
 const { senderEmail } = config;
 
 /** _prefixed properties are meta data not used as interpolation vars in templating */
@@ -107,13 +107,15 @@ export class EmailService {
           if (meet) {
             switch (templateName) {
               case EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION:
-                // Hackathon invites should only block 1hr on recipient's calendar (as opposed to 7 days)
+                // Hackathon invites should only block 1hr on recipient's calendar (as opposed to entire 7 days)
                 _attachments = generateMeetIcsAttachments(meet, {
                   duration: { minutes: 60 },
                   customTitle: `Kickoff for ${meet.title}`,
                 });
                 break;
-              // TODO: workshop case
+              case EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION:
+                _attachments = generateMeetIcsAttachments(meet);
+                break;
               default:
                 _attachments = [];
             }

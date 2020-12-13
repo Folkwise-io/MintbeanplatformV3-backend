@@ -32,7 +32,7 @@ const momentToDateArray = (moment: Moment): ics.DateArray => {
 };
 
 export const mapMeetToIcsEventAttributes = (meet: Meet, options: MeetIcsOptions = {}): EventAttributes => {
-  const { title, description, region, id, startTime, registerLink } = meet;
+  const { title, description, region, id, startTime, endTime, registerLink } = meet;
   const { duration, customTitle, customDescription } = options;
 
   const resolvedTitle = customTitle ? customTitle : title;
@@ -66,7 +66,7 @@ export const mapMeetToIcsEventAttributes = (meet: Meet, options: MeetIcsOptions 
 
     return icsWithDuration;
   } else {
-    const momentEndTimeUTC = moment.tz(startTime, region).utc();
+    const momentEndTimeUTC = moment.tz(endTime, region).utc();
     const end: ics.DateArray = momentToDateArray(momentEndTimeUTC);
 
     const icsWithEnd = <EventAttributes>{

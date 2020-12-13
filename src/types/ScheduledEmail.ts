@@ -29,10 +29,6 @@ export interface ScheduledEmailRaw extends ScheduledEmailBase {
 export interface ScheduledEmail extends ScheduledEmailBase {
   recipients?: User[] | null;
   meet?: Meet | null;
-  // in step 3:
-  // icsStart: string | null; // nullable
-  // icsDurationMins: number | null; //
-  // icsEnd: string | null;
 }
 
 // ** Input shape when queueing a scheduledEmail */
@@ -43,10 +39,6 @@ export interface ScheduledEmailInput {
   meetId?: string | null;
   sendAt?: string | null; // ISO string (with 'Z'). defaults to now
   retriesLeft?: number | null;
-  // in step 3:
-  // icsStart: string | null; // nullable
-  // icsDurationMins: number | null; //
-  // icsEnd: string | null;
 }
 
 // TODO: move all types below in this file to jobs world as Email types

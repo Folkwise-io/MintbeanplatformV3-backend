@@ -13,6 +13,7 @@ import { EmailTemplateName } from "../../types/ScheduledEmail";
 import { getISOString } from "../../util/timeUtils";
 const { disableNewMeetReminders, disableRegistrationEmail } = config;
 
+// TODO: remove unused params
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
@@ -59,9 +60,8 @@ const meetResolver = (
               reminder1: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_1 : EmailTemplateName.WORKSHOPS_REMINDER_1,
               reminder2: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_2 : EmailTemplateName.WORKSHOPS_REMINDER_2,
             };
-
+            // TODO: Move email queuing to service layer
             // queue reminder 1, only if current time is before timing of reminder 1
-            // TODO: conditional logic to skip if less than offset time
             try {
               const reminder1Timing = getISOString({
                 targetWallclock: meet.startTime,
@@ -141,6 +141,7 @@ const meetResolver = (
                 ? EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION
                 : EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION;
 
+              // TODO: Move email queuing to service layer
               // queue confirmation email for immediate sending
               try {
                 await scheduledEmailDao.queue({
