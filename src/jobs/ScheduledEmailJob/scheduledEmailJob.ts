@@ -112,10 +112,18 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
         const emailDataObjs = emailContexts.flatMap((ctx) => {
           return ctx.recipients.map(
             (recipient): EmailDataObj => {
-              const { subject, body } = templateByName(ctx._templateName, {
-                recipient,
-                meet: ctx.meet,
-              });
+              let subject: string = "";
+              let body: string = "";
+              try {
+                const { subject: templatedSubject, body: templatedBody } = templateByName(ctx._templateName, {
+                  recipient,
+                  meet: ctx.meet,
+                });
+                subject = templatedSubject;
+                body = templatedBody;
+              } catch (e) {
+                throw `Templating failed for template [${ctx._templateName}]: ${e}`;
+              }
               let requeueData: ScheduledEmailInput | null = null;
               // provide data for requeuing individual userRecipient if email is part of bulk job, in case send fails
               // WARNING: if nullable fields are added to `schduledEmails` must account for them here

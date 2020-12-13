@@ -89,7 +89,6 @@ export class EmailService {
           }
 
           if (meetId) {
-            console.log("trying to get meet...");
             try {
               meet = await this.meetDao.getOne({ id: meetId });
               if (!meet)

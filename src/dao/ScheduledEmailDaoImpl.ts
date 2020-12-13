@@ -48,7 +48,7 @@ export default class ScheduledEmailDaoImpl implements ScheduledEmailDao {
       }
 
       let retriesLeft = pluckedRetries[0];
-      if (retriesLeft <= 0) return 0; // gaurd to correct any bad data
+      if (retriesLeft <= 0) return 0; // guard to correct any bad data
 
       retriesLeft -= 1;
       const rawRecords = await this.knex<ScheduledEmailRaw>("scheduledEmails")
