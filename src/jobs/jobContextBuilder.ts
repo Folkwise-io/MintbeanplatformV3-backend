@@ -5,8 +5,7 @@ import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import ScheduledEmailDaoImpl from "../dao/ScheduledEmailDaoImpl";
 
 import EmailApiDaoImpl from "../dao/EmailApiDaoImpl";
-import { EmailService } from "../service/EmailService";
-import { EmailDao } from "../dao/EmailDao";
+import EmailService from "../service/EmailService";
 import config from "../util/config";
 import UserDaoKnex from "../dao/UserDaoKnex";
 import MeetDaoKnex from "../dao/MeetDaoKnex";
@@ -25,12 +24,10 @@ export default (): JobContext => {
 
   const scheduledEmailDao = new ScheduledEmailDaoImpl(knex);
   const emailApiDao = new EmailApiDaoImpl(); // should sendgrid api key be used in EmailApiDao constructor?
-  // TODO remove this old emailDao, required for email service for now
-  const _emailDao = new EmailDao(sendgridKey);
   const userDao = new UserDaoKnex(knex);
   const meetDao = new MeetDaoKnex(knex);
 
-  const emailService = new EmailService(_emailDao /* <- TODO: remove */, scheduledEmailDao, userDao, meetDao);
+  const emailService = new EmailService(scheduledEmailDao, userDao, meetDao);
 
   return {
     knex,

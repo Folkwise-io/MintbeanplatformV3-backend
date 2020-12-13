@@ -18,7 +18,6 @@ const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
   meetRegistrationDao: MeetRegistrationDao,
-  userDao: UserDao,
   emailService: EmailService,
   meetDao: MeetDao,
   scheduledEmailDao: ScheduledEmailDao,

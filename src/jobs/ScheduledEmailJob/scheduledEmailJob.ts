@@ -1,11 +1,4 @@
-import {
-  Attachment,
-  Email,
-  EmailResponse,
-  EmailResponseStatus,
-  EmailTemplateName,
-  ScheduledEmailInput,
-} from "../../types/ScheduledEmail";
+import { Attachment, EmailResponseStatus, EmailTemplateName, ScheduledEmailInput } from "../../types/ScheduledEmail";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";

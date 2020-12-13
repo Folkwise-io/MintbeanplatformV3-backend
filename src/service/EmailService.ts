@@ -1,8 +1,7 @@
 import config from "../util/config";
-import { EmailDao } from "../dao/EmailDao";
-import { Attachment, Email, EmailTemplateName } from "../types/ScheduledEmail";
+import { Attachment, EmailTemplateName } from "../types/ScheduledEmail";
 import { Meet } from "../types/gqlGeneratedTypes";
-import { generateMeetIcsAttachments, generateJsonLdHtml } from "../util/emailUtils";
+import { generateMeetIcsAttachments } from "../util/emailUtils";
 import { User } from "../types/User";
 import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import MeetDao from "../dao/MeetDao";
@@ -10,8 +9,7 @@ import UserDao from "../dao/UserDao";
 
 import { templateExists } from "../jobs/ScheduledEmailJob/templateUtil";
 
-// TODO: remove senderEmail var when ripping out old email system
-const { senderEmail } = config;
+const { HACKATHONS_REGISTRATION_CONFIRMATION, WORKSHOPS_REGISTRATION_CONFIRMATION } = EmailTemplateName;
 
 /** _prefixed properties are meta data not used as interpolation vars in templating */
 export interface EmailContext {
@@ -46,13 +44,8 @@ const logError = (params: BuildErrorParams): void => {
   }
 };
 
-export class EmailService {
-  constructor(
-    private emailDao: EmailDao, // TODO: remove when removing old email system
-    private scheduledEmailDao: ScheduledEmailDao,
-    private userDao: UserDao,
-    private meetDao: MeetDao,
-  ) {}
+export default class EmailService {
+  constructor(private scheduledEmailDao: ScheduledEmailDao, private userDao: UserDao, private meetDao: MeetDao) {}
 
   async getEmailsToBeSent(): Promise<EmailContext[]> {
     let records;
@@ -106,14 +99,14 @@ export class EmailService {
           let _attachments: Attachment[] = [];
           if (meet) {
             switch (templateName) {
-              case EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION:
+              case HACKATHONS_REGISTRATION_CONFIRMATION:
                 // Hackathon invites should only block 1hr on recipient's calendar (as opposed to entire 7 days)
                 _attachments = generateMeetIcsAttachments(meet, {
                   duration: { minutes: 60 },
                   customTitle: `Kickoff for ${meet.title}`,
                 });
                 break;
-              case EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION:
+              case WORKSHOPS_REGISTRATION_CONFIRMATION:
                 _attachments = generateMeetIcsAttachments(meet);
                 break;
               default:
@@ -157,35 +150,5 @@ export class EmailService {
     );
 
     return fulfilleds.map((x) => x.value);
-  }
-
-  // TODO: remove these three methods below. They belong to old email system
-  generateMeetReminderEmail(recipientEmailAddress: string, meet: Meet): Email {
-    const { title, description } = meet;
-    const email: Email = {
-      to: recipientEmailAddress,
-      from: senderEmail,
-      subject: `Reminder: ${title} is coming up!`,
-      html: `<h1>Reminder for <strong>${title}</strong><h1>`,
-    };
-
-    return email;
-  }
-
-  generateMeetRegistrationEmail(user: User, meet: Meet, registrationId: string): Email {
-    const { title, description } = meet;
-    const email: Email = {
-      to: user.email,
-      from: senderEmail,
-      subject: `Registration Confirmation for ${title}`,
-      html: generateJsonLdHtml(user, meet, registrationId),
-      attachments: generateMeetIcsAttachments(meet),
-    };
-
-    return email;
-  }
-
-  async sendEmail(email: Email): Promise<boolean> {
-    return this.emailDao.sendEmail(email);
   }
 }

@@ -13,8 +13,6 @@ import projectResolver from "./graphql/resolver/projectResolver";
 import mediaAsset from "./graphql/typedef/mediaAsset";
 import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 import meetRegistration from "./graphql/typedef/meetRegistration";
-import email from "./graphql/typedef/email";
-import emailResolver from "./graphql/resolver/emailResolver";
 import badge from "./graphql/typedef/badge";
 import badgeResolver from "./graphql/resolver/badgeResolver";
 import kanbanCanon from "./graphql/typedef/kanbanCanon";
@@ -63,7 +61,6 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     project,
     mediaAsset,
     meetRegistration,
-    email,
     badge,
     kanbanCanon,
     kanbanCanonCard,
@@ -72,15 +69,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService, userDao),
-    meetResolver(
-      meetResolverValidator,
-      meetService,
-      meetRegistrationDao,
-      userDao,
-      emailService,
-      meetDao,
-      emailScheduleDao,
-    ),
+    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, emailService, meetDao, emailScheduleDao),
     projectResolver(
       projectResolverValidator,
       projectDao,
@@ -90,7 +79,6 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
       badgeProjectService,
     ),
     mediaAssetResolver(mediaAssetDao),
-    emailResolver(emailResolverValidator, emailService, meetDao),
     badgeResolver(badgeResolverValidator, badgeService),
     kanbanCanonResolver(kanbanCanonResolverValidator, kanbanCanonService, kanbanCanonDao),
     kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService, kanbanCanonCardDao),

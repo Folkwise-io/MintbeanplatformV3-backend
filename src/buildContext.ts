@@ -17,9 +17,7 @@ import ProjectMediaAssetDaoKnex from "./dao/ProjectMediaAssetKnex";
 import ProjectMediaAssetDao from "./dao/ProjectMediaAssetDao";
 import MeetRegistrationDaoKnex from "./dao/MeetRegistrationDaoKnex";
 import MeetRegistrationDao from "./dao/MeetRegistrationDao";
-import { EmailService } from "./service/EmailService";
-import { EmailDao } from "./dao/EmailDao";
-import config from "./util/config";
+import EmailService from "./service/EmailService";
 import EmailResolverValidator from "./validator/EmailResolverValidator";
 import BadgeResolverValidator from "./validator/BadgeResolverValidator";
 import BadgeService from "./service/BadgeService";
@@ -42,8 +40,6 @@ import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
 import ScheduledEmailDao from "./dao/ScheduledEmailDao";
 import ScheduledEmailDaoImpl from "./dao/ScheduledEmailDaoImpl";
-import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
-import EmailApiDao from "./dao/EmailApiDao";
 
 /* 
 =======================================================================================
@@ -163,11 +159,8 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     meetDao,
   );
 
-  // TODO: remove sendgrid key, old emailDao and old emailService
-  const { sendgridKey } = config;
   const emailResolverValidator = new EmailResolverValidator();
-  const emailDao = new EmailDao(sendgridKey);
-  const emailService = new EmailService(emailDao, emailScheduleDao, userDao, meetDao);
+  const emailService = new EmailService(emailScheduleDao, userDao, meetDao);
   const badgeResolverValidator = new BadgeResolverValidator(badgeDao);
   const badgeService = new BadgeService(badgeDao);
   const badgeProjectService = new BadgeProjectService(badgeProjectDao, projectDao);
