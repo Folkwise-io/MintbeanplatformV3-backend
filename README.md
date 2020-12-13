@@ -231,3 +231,11 @@ Any email that fails sending is either left (in the queue in the case of single 
 Logging occurs for all email responses (including success). Keep an eye on the server logs to see whether any maintenence is required.
 
 Note: emails that fail 3 times are left in the database and will pool if not maintained. Run checks and clean periodically.
+
+We currently have 2 email flows:
+
+- When user registers for meet, send immediate **registration confirmation** with attached calendar invite
+- When a new meet is created, queue **two reminder emails** leading up to meet startTime (1: start-24hrs, 2: start-30mins)
+  \*Warning! meet reminders are currently not updated if meetTime changes. TODO.
+
+Calendar invites for hackathons are scheduled as a 1 hour Kickoff from `startTime` instead of blocking 7 whole days of a user's calendar.
