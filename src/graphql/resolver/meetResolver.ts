@@ -1,22 +1,14 @@
 import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import EmailService from "../../service/EmailService";
 import MeetService from "../../service/MeetService";
-import { Meet, MeetType, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
+import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
-import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
-import ScheduledEmailDao from "../../dao/ScheduledEmailDao";
-import { EmailTemplateName } from "../../types/ScheduledEmail";
 
-// TODO: remove unused params
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
-  meetRegistrationDao: MeetRegistrationDao,
-  emailService: EmailService,
   meetDao: MeetDao,
-  scheduledEmailDao: ScheduledEmailDao,
 ): Resolvers => {
   return {
     Query: {
@@ -39,65 +31,7 @@ const meetResolver = (
           throw new AuthenticationError("You are not authorized to create new meets!");
         }
 
-        return meetResolverValidator
-          .addOne(args, context)
-          .then((input) => meetService.addOne(input))
-          .then(async (meet) => {
-            // // queue meet reminders (unless disabled)
-            // if (disableNewMeetReminders) {
-            //   return meet;
-            // }
-
-            // const meetId = meet.id;
-
-            // const isHackathon = meet.meetType === MeetType.Hackathon; // WORKSHOPS templates cover meet types: WORKSHOP, WEBINAR, LECTURE
-            // const templates = {
-            //   reminder1: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_1 : EmailTemplateName.WORKSHOPS_REMINDER_1,
-            //   reminder2: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_2 : EmailTemplateName.WORKSHOPS_REMINDER_2,
-            // };
-            // // TODO: Move email queuing to service layer
-            // // queue reminder 1, only if current time is before timing of reminder 1
-            // try {
-            //   const reminder1Timing = getISOString({
-            //     targetWallclock: meet.startTime,
-            //     targetRegion: meet.region,
-            //     offset: { days: -1 },
-            //   });
-
-            //   const reminder1Time = new Date(reminder1Timing).getTime();
-
-            //   const nowTime = new Date().getTime();
-
-            //   if (nowTime < reminder1Time) {
-            //     await scheduledEmailDao.queue({
-            //       templateName: templates.reminder1,
-            //       meetRecipientId: meetId,
-            //       meetId,
-            //       sendAt: reminder1Timing,
-            //     });
-            //   }
-            // } catch (e) {
-            //   console.error(`Failed to queue email [reminder 1] for meet with id ${meetId}`, e);
-            // }
-
-            // // queue reminder 2 - 30 mins before meet starts
-            // try {
-            //   const reminder2Timing = getISOString({
-            //     targetWallclock: meet.startTime,
-            //     targetRegion: meet.region,
-            //     offset: { minutes: -30 },
-            //   });
-            //   await scheduledEmailDao.queue({
-            //     templateName: templates.reminder2,
-            //     meetRecipientId: meetId,
-            //     meetId,
-            //     sendAt: reminder2Timing,
-            //   });
-            // } catch (e) {
-            //   console.error(`Failed to queue email [reminder 2] for meet with id ${meetId}`, e);
-            // }
-            return meet;
-          });
+        return meetResolverValidator.addOne(args, context).then((input) => meetService.addOne(input));
       },
       editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
         if (!context.getIsAdmin()) {
@@ -121,41 +55,7 @@ const meetResolver = (
 
         return meetResolverValidator
           .registerForMeet(args, context)
-          .then(({ meetId }) => meetRegistrationDao.addOne({ userId, meetId }))
-          .then(async ({ userId, meetId, id }) => {
-            // if (disableRegistrationEmail) {
-            //   return true;
-            // }
-            // // Try sending confirmatoin email
-            // try {
-            //   const meet = await meetDao.getOne({ id: meetId });
-            //   if (!meet) throw `Meet with id ${meetId} failed fetch`;
-            //   const isHackathon = meet.meetType === MeetType.Hackathon; // WORKSHOPS templates cover meet types: WORKSHOP, WEBINAR, LECTURE
-
-            //   const template = isHackathon
-            //     ? EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION
-            //     : EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION;
-
-            //   // TODO: Move email queuing to service layer
-            //   // queue confirmation email for immediate sending
-            //   try {
-            //     await scheduledEmailDao.queue({
-            //       templateName: template,
-            //       userRecipientId: userId,
-            //       meetId,
-            //     });
-            //   } catch (e) {
-            //     console.log(`Failed to queue meet registration confirmation for meet registration with id: ${id}`);
-            //   }
-            // } catch (e) {
-            //   console.error(
-            //     `Error when queueing registration confirmation email of userId: ${userId} for meetId: ${meetId}`,
-            //     e,
-            //   );
-            // }
-
-            return;
-          })
+          .then(({ meetId }) => meetService.registerForMeet({ userId, meetId }))
           .then(() => true);
       },
     },

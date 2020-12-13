@@ -1,17 +1,25 @@
 import MeetDao, { MeetDaoAddOneInput } from "../dao/MeetDao";
-import meet from "../graphql/typedef/meet";
 import { Meet, MeetType } from "../types/gqlGeneratedTypes";
 import { EmailTemplateName } from "../types/ScheduledEmail";
 import { getISOString } from "../util/timeUtils";
 import config from "../util/config";
 import ScheduledEmailDao from "../dao/ScheduledEmailDao";
+import MeetRegistrationDao, { MeetRegistrationDaoAddOneArgs } from "../dao/MeetRegistrationDao";
+import MeetRegistration from "../types/MeetRegistration";
 
 const { disableNewMeetReminders, disableRegistrationEmail } = config;
 
 export default class MeetService {
-  constructor(private meetDao: MeetDao, private scheduledEmailDao: ScheduledEmailDao) {}
+  constructor(
+    private meetDao: MeetDao,
+    private meetRegistrationDao: MeetRegistrationDao,
+    private scheduledEmailDao: ScheduledEmailDao,
+  ) {}
+
   async addOne(input: MeetDaoAddOneInput): Promise<Meet> {
     const meet = await this.meetDao.addOne(input);
+
+    // Queue emails (fail gracefully by logging errors)
 
     // queue meet reminders (unless disabled)
     if (disableNewMeetReminders) {
@@ -72,5 +80,46 @@ export default class MeetService {
 
   async getRegisteredMeetsOfUser(userId: string): Promise<Meet[]> {
     return this.meetDao.getMany({ registrantId: userId });
+  }
+
+  async registerForMeet({ userId, meetId }: MeetRegistrationDaoAddOneArgs): Promise<MeetRegistration> {
+    const meetRegistration = await this.meetRegistrationDao.addOne({ userId, meetId });
+
+    // Queue confirmation email
+
+    if (disableRegistrationEmail) {
+      return meetRegistration;
+    }
+
+    try {
+      const meet = await this.meetDao.getOne({ id: meetId });
+      if (!meet)
+        throw `Failed to fetch meet with id ${meetId} when queueing confirmation email for meet registration ${meetRegistration.id}`;
+      const isHackathon = meet.meetType === MeetType.Hackathon; // all non-hackathon meets (WORKSHOP, WEBINAR, LECTURE) share same template
+
+      const template = isHackathon
+        ? EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION
+        : EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION;
+
+      // queue confirmation email for immediate sending
+      try {
+        await this.scheduledEmailDao.queue({
+          templateName: template,
+          userRecipientId: userId,
+          meetId,
+        });
+      } catch (e) {
+        console.log(
+          `Failed to queue meet registration confirmation for meet registration with id: ${meetRegistration.id}`,
+        );
+      }
+    } catch (e) {
+      console.error(
+        `Error when queueing registration confirmation email of userId: ${userId} for meetId: ${meetId}`,
+        e,
+      );
+    }
+
+    return meetRegistration;
   }
 }

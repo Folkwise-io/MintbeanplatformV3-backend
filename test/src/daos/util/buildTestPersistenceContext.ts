@@ -28,7 +28,7 @@ export interface TestPersistenceContext extends PersistenceContext {
   kanbanDao: TestKanbanDaoKnex;
   badgeDao: TestBadgeDaoKnex;
   badgeProjectDao: BadgeProjectDaoKnex;
-  emailScheduleDao: ScheduledEmailDao;
+  scheduledEmailDao: ScheduledEmailDao;
 }
 
 // TODO: Help Monarch! The polymophism thing didn't work (setting return type to PersistenceContext caused errors in TestManager)
@@ -46,7 +46,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const kanbanDao = new TestKanbanDaoKnex(knex);
   const badgeDao = new TestBadgeDaoKnex(knex);
   const badgeProjectDao = new BadgeProjectDaoKnex(knex);
-  const emailScheduleDao = new ScheduledEmailDaoImpl(knex);
+  const scheduledEmailDao = new ScheduledEmailDaoImpl(knex);
 
   return {
     userDao,
@@ -60,6 +60,6 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
     kanbanDao,
     badgeDao,
     badgeProjectDao,
-    emailScheduleDao,
+    scheduledEmailDao,
   };
 }
