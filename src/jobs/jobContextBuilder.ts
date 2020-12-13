@@ -1,12 +1,11 @@
 import Knex from "knex";
 import knexConfig from "../db/knexfile";
-import EmailApiDao from "../dao/EmailApiDao"; // TODO: move emailApiDao to job world
+import EmailApiDao from "./dao/EmailApiDao";
 import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import ScheduledEmailDaoImpl from "../dao/ScheduledEmailDaoImpl";
 
-import EmailApiDaoImpl from "../dao/EmailApiDaoImpl";
+import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
 import EmailService from "../service/EmailService";
-import config from "../util/config";
 import UserDaoKnex from "../dao/UserDaoKnex";
 import MeetDaoKnex from "../dao/MeetDaoKnex";
 
@@ -17,13 +16,11 @@ export interface JobContext {
   emailService: EmailService;
 }
 
-const { sendgridKey } = config;
-
 export default (): JobContext => {
   const knex = Knex(knexConfig);
 
   const scheduledEmailDao = new ScheduledEmailDaoImpl(knex);
-  const emailApiDao = new EmailApiDaoImpl(); // should sendgrid api key be used in EmailApiDao constructor?
+  const emailApiDao = new EmailApiDaoImpl();
   const userDao = new UserDaoKnex(knex);
   const meetDao = new MeetDaoKnex(knex);
 

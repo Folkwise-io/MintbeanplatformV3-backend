@@ -1,13 +1,12 @@
 import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import { EmailService } from "../../service/EmailService";
+import EmailService from "../../service/EmailService";
 import MeetService from "../../service/MeetService";
 import { Meet, MeetType, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
 import config from "../../util/config";
 import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
-import UserDao from "../../dao/UserDao";
 import ScheduledEmailDao from "../../dao/ScheduledEmailDao";
 import { EmailTemplateName } from "../../types/ScheduledEmail";
 import { getISOString } from "../../util/timeUtils";

@@ -1,8 +1,8 @@
-import { Email, EmailResponse, EmailResponseStatus } from "../types/ScheduledEmail";
+import { Email, EmailResponse, EmailResponseStatus } from "../../types/ScheduledEmail";
 
 import EmailApiDao from "./EmailApiDao";
 import sgMail from "@sendgrid/mail";
-import config from "../util/config";
+import config from "../../util/config";
 
 interface EmailResponseError {
   message?: string;
@@ -75,50 +75,3 @@ export default class EmailApiDaoImpl implements EmailApiDao {
     }
   }
 }
-
-// example sendgrid response objects:
-
-// CASE: FAILED
-
-//   [response: {
-//     headers: {
-//       server: 'nginx',
-//       date: 'Wed, 09 Dec 2020 19:08:40 GMT',
-//       'content-type': 'application/json',
-//       'content-length': '185',
-//       connection: 'close',
-//       'access-control-allow-origin': 'https://sendgrid.api-docs.io',
-//       'access-control-allow-methods': 'POST',
-//       'access-control-allow-headers': 'Authorization, Content-Type, On-behalf-of, x-sg-elas-acl',
-//       'access-control-max-age': '600',
-//       'x-no-cors-reason': 'https://sendgrid.com/docs/Classroom/Basics/API/cors.html'
-//     },
-//     body: { errors: [Array] }
-//   },
-//   errors: [
-//     {
-//       message: 'The from email does not contain a valid address.',
-//       field: 'from.email',
-//       help: 'http://sendgrid.com/docs/API_Reference/Web_API_v3/Mail/errors.html#message.from'
-//     }
-//   ]
-//  }, {}]
-
-// CASE: SUCCESS
-
-//   response: Response {
-//     statusCode: 202,
-//     body: '',
-//     headers: {
-//       server: 'nginx',
-//       date: 'Wed, 09 Dec 2020 19:08:40 GMT',
-//       'content-length': '0',
-//       connection: 'close',
-//       'x-message-id': 'mEP4pfmxTSaIrIdEgxdAdw',
-//       'access-control-allow-origin': 'https://sendgrid.api-docs.io',
-//       'access-control-allow-methods': 'POST',
-//       'access-control-allow-headers': 'Authorization, Content-Type, On-behalf-of, x-sg-elas-acl',
-//       'access-control-max-age': '600',
-//       'x-no-cors-reason': 'https://sendgrid.com/docs/Classroom/Basics/API/cors.html'
-//     }
-//   }
