@@ -137,16 +137,14 @@ const meetResolver = (
               if (!meet) throw `Meet with id ${meetId} failed fetch`;
               const isHackathon = meet.meetType === MeetType.Hackathon; // WORKSHOPS templates cover meet types: WORKSHOP, WEBINAR, LECTURE
 
-              const templates = {
-                confirmation: isHackathon
-                  ? EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION
-                  : EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION,
-              };
+              const template = isHackathon
+                ? EmailTemplateName.HACKATHONS_REGISTRATION_CONFIRMATION
+                : EmailTemplateName.WORKSHOPS_REGISTRATION_CONFIRMATION;
 
               // queue confirmation email for immediate sending
               try {
                 await scheduledEmailDao.queue({
-                  templateName: templates.confirmation,
+                  templateName: template,
                   userRecipientId: userId,
                   meetId,
                 });
