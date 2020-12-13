@@ -15,29 +15,34 @@ interface OffsetTimeUTCArgs {
     days?: number;
   };
 }
-
-export const offsetTimeUTC = ({ targetWallclock, targetRegion, offset = {} }: OffsetTimeUTCArgs): string => {
+/** Converts wallclock/region to UTC ISO string. Pass optional offset option to add/subtract time from target  */
+export const getISOString = ({ targetWallclock, targetRegion, offset = {} }: OffsetTimeUTCArgs): string => {
   const days = offset.days || 0;
   const hours = offset.hours || 0;
   const minutes = offset.minutes || 0;
 
-  let targetDate: Date;
-  let offsetDate: Date;
+  const targetDate = moment.tz(targetWallclock, targetRegion).utc().toDate();
 
-  try {
-    targetDate = moment.tz(targetWallclock, targetRegion).utc().toDate();
-    offsetDate = moment.tz(targetWallclock, targetRegion).utc().toDate(); // must make a copy of target to mutate time later
-  } catch (e) {
-    // in case bad date string inputs were given
-    throw new Error("Problem calculating offset time, probably bad wallclocktime or region strings passed." + e);
+  const hasOffsetOption = Object.keys(offset).length > 0;
+
+  if (hasOffsetOption) {
+    let offsetDate: Date;
+    try {
+      offsetDate = moment.tz(targetWallclock, targetRegion).utc().toDate(); // must make a copy of target to mutate time later
+    } catch (e) {
+      // in case bad date string inputs were given
+      throw new Error("Problem calculating offset time, probably bad wallclocktime or region strings passed." + e);
+    }
+
+    const totalMillisecondsOffset =
+      days * MILLISECONDS_IN_ONE_DAY + hours * MILLISECONDS_IN_ONE_HOUR + minutes * MILLISECONDS_IN_ONE_MINUTE;
+
+    offsetDate.setTime(targetDate.getTime() + totalMillisecondsOffset);
+
+    return offsetDate.toISOString();
+  } else {
+    return targetDate.toISOString();
   }
-
-  const totalMillisecondsOffset =
-    days * MILLISECONDS_IN_ONE_DAY + hours * MILLISECONDS_IN_ONE_HOUR + minutes * MILLISECONDS_IN_ONE_MINUTE;
-
-  offsetDate.setTime(targetDate.getTime() + totalMillisecondsOffset);
-
-  return offsetDate.toISOString();
 };
 
 export const nDaysAndHoursFromNowInWallClockTime = (days: number, hour: number = 0): string => {

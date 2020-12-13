@@ -10,7 +10,7 @@ import MeetDao from "../../dao/MeetDao";
 import UserDao from "../../dao/UserDao";
 import ScheduledEmailDao from "../../dao/ScheduledEmailDao";
 import { EmailTemplateName } from "../../types/ScheduledEmail";
-import { offsetTimeUTC } from "../../util/timeUtils";
+import { getISOString } from "../../util/timeUtils";
 const { disableNewMeetReminders, disableRegistrationEmail } = config;
 
 const meetResolver = (
@@ -60,27 +60,34 @@ const meetResolver = (
               reminder2: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_2 : EmailTemplateName.WORKSHOPS_REMINDER_2,
             };
 
-            // queue reminder 1,  if (remind time - meet start time) is greater than reminder 1 offset from now
+            // queue reminder 1, only if current time is before timing of reminder 1
             // TODO: conditional logic to skip if less than offset time
             try {
-              const reminder1SendAt = offsetTimeUTC({
+              const reminder1Timing = getISOString({
                 targetWallclock: meet.startTime,
                 targetRegion: meet.region,
                 offset: { days: -1 },
               });
-              await scheduledEmailDao.queue({
-                templateName: templates.reminder1,
-                meetRecipientId: meetId,
-                meetId,
-                // sendAt: reminder1SendAt,
-              });
+
+              const reminder1Time = new Date(reminder1Timing).getTime();
+
+              const nowTime = new Date().getTime();
+
+              if (nowTime < reminder1Time) {
+                await scheduledEmailDao.queue({
+                  templateName: templates.reminder1,
+                  meetRecipientId: meetId,
+                  meetId,
+                  sendAt: reminder1Timing,
+                });
+              }
             } catch (e) {
               console.error(`Failed to queue email [reminder 1] for meet with id ${meetId}`, e);
             }
 
             // queue reminder 2 - 30 mins before meet starts
             try {
-              const reminder2SendAt = offsetTimeUTC({
+              const reminder2Timing = getISOString({
                 targetWallclock: meet.startTime,
                 targetRegion: meet.region,
                 offset: { minutes: -30 },
@@ -89,7 +96,7 @@ const meetResolver = (
                 templateName: templates.reminder2,
                 meetRecipientId: meetId,
                 meetId,
-                // sendAt: reminder2SendAt,
+                sendAt: reminder2Timing,
               });
             } catch (e) {
               console.error(`Failed to queue email [reminder 2] for meet with id ${meetId}`, e);
