@@ -1,4 +1,5 @@
 import MeetRegistration from "../types/MeetRegistration";
+import { User } from "../types/User";
 
 export interface MeetRegistrationDaoAddOneArgs {
   userId: string;

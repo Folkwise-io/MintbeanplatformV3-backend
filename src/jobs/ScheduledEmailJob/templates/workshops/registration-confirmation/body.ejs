@@ -1,0 +1,13 @@
+<%# WARNING!!!! Do Not Move Or Delete, see the file named IMPORTANT-WARNING.md %>
+<% const generateMeetLink = (meet) => `https://www.mintbean.io/meets/${meet.id}` %>
+<div>
+  <p>You’re in! Get excited to get your knowledge growth on! 🧠</p>
+  <p>We’re stoked to have you attend this week’s Mintbean Meetup event. Some important next steps:</p>
+  <ol>
+    <li>Join our <a href="https://discord.gg/y6w3FFE">Dev Discord community</a> (our main communication channel)</li>
+    <li>Say hello and drop a quick bio in the <strong>#introduce-yourself</strong> channel on discord </li>
+    <li>To join our live event, you’ll find the Zoom link attached to your calendar invite (or <a href="<%= meet.registerLink ? meet.registerLink : generateMeetLink(meet) %>">here</a>). It will also be dropped in our discord channel 10mins before the hackathon starts </li>
+  </ol>
+    <p>If you have any questions or concerns, please do not hesitate to message any of the organizers on <a href="https://discord.gg/y6w3FFE">Discord</a> (our names are highlighted in green!) </p>
+    <p>See you on the flipside!</p>
+</div>

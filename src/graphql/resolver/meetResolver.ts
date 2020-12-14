@@ -1,22 +1,13 @@
 import { ApolloError, AuthenticationError } from "apollo-server-express";
 import { ServerContext } from "../../buildServerContext";
-import { EmailService } from "../../service/EmailService";
 import MeetService from "../../service/MeetService";
 import { Meet, PrivateUser, PublicUser, Resolvers } from "../../types/gqlGeneratedTypes";
 import MeetResolverValidator from "../../validator/MeetResolverValidator";
-import config from "../../util/config";
-import { User } from "../../types/User";
-import MeetRegistrationDao from "../../dao/MeetRegistrationDao";
 import MeetDao from "../../dao/MeetDao";
-import UserDao from "../../dao/UserDao";
-const { disableRegistrationEmail } = config;
 
 const meetResolver = (
   meetResolverValidator: MeetResolverValidator,
   meetService: MeetService,
-  meetRegistrationDao: MeetRegistrationDao,
-  userDao: UserDao,
-  emailService: EmailService,
   meetDao: MeetDao,
 ): Resolvers => {
   return {
@@ -26,7 +17,7 @@ const meetResolver = (
         return meetResolverValidator.getMany(args, context).then((args) => meetDao.getMany(args));
       },
 
-      meet: (_root, args, context: ServerContext): Promise<Meet> => {
+      meet: async (_root, args, context: ServerContext): Promise<Meet> => {
         return meetDao.getOne(args).then((result) => {
           if (!result) throw new ApolloError("Meet not found");
           return result;
@@ -40,7 +31,7 @@ const meetResolver = (
           throw new AuthenticationError("You are not authorized to create new meets!");
         }
 
-        return meetResolverValidator.addOne(args, context).then((input) => meetDao.addOne(input));
+        return meetResolverValidator.addOne(args, context).then((input) => meetService.addOne(input));
       },
       editMeet: (_root, args, context: ServerContext): Promise<Meet> => {
         if (!context.getIsAdmin()) {
@@ -64,18 +55,7 @@ const meetResolver = (
 
         return meetResolverValidator
           .registerForMeet(args, context)
-          .then(({ meetId }) => meetRegistrationDao.addOne({ userId, meetId }))
-          .then(async ({ userId, meetId, id }) => {
-            if (disableRegistrationEmail) {
-              return true;
-            }
-
-            const user = ((await userDao.getOne({ id: userId })) as unknown) as User; // temporary casting as we know user exists bc logged in user exists.
-            const meet = await meetDao.getOne({ id: meetId });
-            const email = emailService.generateMeetRegistrationEmail(user, meet as Meet, id);
-
-            return emailService.sendEmail(email); // TODO: How to handle when user is registered but email errors out?
-          })
+          .then(({ meetId }) => meetService.registerForMeet({ userId, meetId }))
           .then(() => true);
       },
     },

@@ -58,3 +58,21 @@ throw new AuthenticationError('This in an error message')
 
 Meet entities are missing validations in backend. Align with frontend meet create/edit forms.
 \*Note: only do this after an upper character limit for short description has been established.
+
+### yarn jest is dangerous
+
+Running `jest` or `yarn jest` clobbers the database that is defined in the root `.env` file.
+
+Expected behaviour:
+`yarn jest` or `jest` work on a test version of the database.
+
+Actual behaviour:
+`yarn jest` and `jest` work on the database defined in `/.env`. This is dangerous.
+
+Repro steps:
+
+1. Open up the UI and do something that affects the DB
+2. Run `yarn test`. Everything is fine.
+3. Now, run `jest`. You'll see that the database was wiped by the tests.
+
+There must be a better way of definining DB variables in test mode.
