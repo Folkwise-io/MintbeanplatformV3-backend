@@ -205,7 +205,7 @@ In this manner, no positional data is sent on the kanbanCanonCards or kanbanCard
 
 ### Email
 
-All application emails are sent via a queue system stored in the `scheudledEmails` table in the database. The queue should be periodically checked (by cron job) for emails that need to be sent, and those emails built and dispatched.
+All application emails are sent via a queue system stored in the `scheduledEmails` table in the database. The queue should be periodically checked (by cron job) for emails that need to be sent, and those emails built and dispatched.
 
 The `scheduledEmails` table provides instructions for how to build an email and resolve it's recipients. Here are the important fields(\* = not nullable):
 
