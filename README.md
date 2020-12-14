@@ -171,6 +171,30 @@ Jobs are standalone scripts that can be run via `yarn jobs:<job-name>`.
 
 These scripts can be found in `src/jobs/`. Jobs use a separate `JobContext` to provide access to any constructed entities likes Daos/Services, such that they can run independently of the application itself.
 
+### Scheduling cron jobs
+
+We use the server's `pm2` built in cron job scheduler to start jobs that need to be automatically run on a regular schedule.
+
+After learning [cron syntax](https://cloud.google.com/scheduler/docs/configuring/cron-job-schedules) you can test your cron expressions [here](https://crontab.guru/#*/1_*_*_*_*).
+
+example:
+
+```
+pm2 start cron.myCronJob.js --cron "*/1 * * * *"
+```
+
+^ "Run `cron.myCronJob.js` every minute"
+
+#### Scheduled emails job
+
+Since cron syntax only allows minimum scheduling granularity of 1 minute and we want to run the email job every 5 seconds, we run a script `cron.email.js` that itself allows running a script every n seconds using `setTimeout()`. The interval is currently set to every 5 seconds
+
+```
+pm2 start cron.email.js --cron "*/1 * * * *"
+```
+
+^ runs `cron.email.js` every minute, which itself runs `yarn jobs:email` every 5 seconds
+
 ### `yarn jobs:email`
 
 Retrieves all `scheduledEmails` due for sending, builds emails, sends, and logs and handles responses.
