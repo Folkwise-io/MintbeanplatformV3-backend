@@ -11,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp("createdAt").notNullable().defaultTo(knex.fn.now());
     table.timestamp("updatedAt").notNullable().defaultTo(knex.fn.now());
 
-    // Constraints and indicesyarn p
+    // Constraints and indices
     table.primary(["id"]);
     table.foreign("userRecipientId").references("users.id").onDelete("CASCADE");
     table.foreign("meetRecipientId").references("meets.id").onDelete("CASCADE");
