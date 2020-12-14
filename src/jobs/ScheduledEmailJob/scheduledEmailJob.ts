@@ -26,7 +26,7 @@ interface EmailDataObj {
   };
 }
 
-// FUTURE: Lockfile log: if more jobs added in the future that need lockfiles, this logic can be encapsulated in anoter file. Warning: must consider filepath resolution if calling from another file
+// FUTURE: Lockfile log: if more jobs added in the future that need lockfiles, this logic can be encapsulated in another file. Warning: must consider filepath resolution if calling from another file
 const doesFileExist = () => {
   try {
     fs.accessSync(LOCKFILE_PATH, fs.constants.R_OK);
