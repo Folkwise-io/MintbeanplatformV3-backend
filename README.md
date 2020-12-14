@@ -169,7 +169,7 @@ Prepend commands below with either `yarn knex` to target the default db (specifi
 
 Jobs are standalone scripts that can be run via `yarn jobs:<job-name>`.
 
-These scripts can be found in `src/jobs/`. Jobs use a separate `JobContext` to provide access to any constructed entities likes Daos/Services, such that they can run independetly of the application itself.
+These scripts can be found in `src/jobs/`. Jobs use a separate `JobContext` to provide access to any constructed entities likes Daos/Services, such that they can run independently of the application itself.
 
 ### `yarn jobs:email`
 
