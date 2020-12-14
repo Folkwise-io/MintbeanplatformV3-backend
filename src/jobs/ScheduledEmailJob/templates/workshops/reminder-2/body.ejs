@@ -1,0 +1,10 @@
+<%# WARNING!!!! Do Not Move Or Delete, see the file named IMPORTANT-WARNING.md %>
+<div>
+  <p>Grab some brain juice (aka coffee, tea, beer, wine...we don’t judge it 5PM somewhere!) and join us in 30 minutes for "<% meet.title %>"🚀 :</p>
+  <% if(meet.registerLink){ %>
+    <p><a href="<%= meet.registerLink %>"><%= meet.registerLink %></a></p>
+    <% } else { %>
+      <p>Find out how to join from our <a href="https://discord.gg/y6w3FFE">Discord</a></p>
+  <% } %>
+  <p>See you in a jiffy! 🔥</p>
+</div>

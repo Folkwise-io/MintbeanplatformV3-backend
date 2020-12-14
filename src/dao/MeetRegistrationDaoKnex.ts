@@ -1,5 +1,6 @@
 import Knex from "knex";
 import MeetRegistration from "../types/MeetRegistration";
+import { User } from "../types/User";
 import handleDatabaseError from "../util/handleDatabaseError";
 import MeetRegistrationDao, { MeetRegistrationDaoAddOneArgs } from "./MeetRegistrationDao";
 

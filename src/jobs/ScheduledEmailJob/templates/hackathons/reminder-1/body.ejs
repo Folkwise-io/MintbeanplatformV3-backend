@@ -1,0 +1,11 @@
+<%# WARNING!!!! Do Not Move Or Delete, see the file named IMPORTANT-WARNING.md %>
+<% const generateMeetLink = (meet) => `https://www.mintbean.io/meets/${meet.id}` %>
+<div>
+  <p>Get your coding fingers warmed up! <%= meet.title %> starts in 24hrs! </p>
+  <p><strong>How to Join:</strong></p> 
+  <ol>
+      <li>Zoom link on your calendar invite, also found <a href="<%= meet.registerLink ? meet.registerLink : generateMeetLink(meet) %>">here</a>.</li>
+      <li>Join our <a href="https://discord.gg/y6w3FFE">Mintbean Discord Server</a>. We drop the link 10 mins before we go live in the <strong>#current-event channel</strong>.</li>
+  </ol>
+  <p>Come say hello to your fellow minty beans on discord! 👋🏼</p> 
+</div>
