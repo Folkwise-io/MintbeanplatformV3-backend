@@ -12,7 +12,7 @@ sgMail.setApiKey(sendgridKey);
 
 const LOCKFILE_NAME = ".lock";
 const LOCKFILE_PATH = path.join(__dirname, LOCKFILE_NAME);
-const LOCKFILE_EXPIRY_SECONDS = 5;
+const LOCKFILE_EXPIRY_SECONDS = 300;
 
 interface EmailDataObj {
   requeueData: ScheduledEmailInput | null; // this field is populated with requeueData data with individual userRecipient if email is member of a bulk job
