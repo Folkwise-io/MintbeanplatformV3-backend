@@ -259,7 +259,7 @@ Note: emails that fail 3 times are left in the database and will pool if not mai
 We currently have 2 email flows:
 
 - When user registers for meet, send immediate **registration confirmation** with attached calendar invite
-- When a new meet is created, queue **two reminder emails** leading up to meet startTime (1: start-24hrs, 2: start-30mins). If meet is a hackathon, queue two additional emails for submission deadline reminders (submission remider 1: (only sent if meet > 3 days long) endTime - 2 days; submission reminder 2: (if meet > 1 day long): endTime - 3 hours, otherwise endTime - 30 mins)
+- When a new meet is created, queue **two reminder emails** leading up to meet startTime (1: start-24hrs, 2: start-30mins). **If meet is a hackathon**, queue **two additional emails** for submission deadline reminders (submission remider 1: (only sent if meet > 3 days long) endTime - 2 days; submission reminder 2: (if meet > 1 day long): endTime - 3 hours, otherwise endTime - 30 mins)
   \*Warning! meet reminder timing is currently not updated if meet startTime or endTime changes. TODO.
 
 Calendar invites for hackathons are scheduled as a 1 hour Kickoff from `startTime` instead of blocking 7 whole days of a user's calendar.
