@@ -9,6 +9,17 @@ import MeetRegistration from "../types/MeetRegistration";
 
 const { disableNewMeetReminders, disableRegistrationEmail } = config;
 
+const {
+  HACKATHONS_REGISTRATION_CONFIRMATION,
+  HACKATHONS_REMINDER_1,
+  HACKATHONS_REMINDER_2,
+  WORKSHOPS_REGISTRATION_CONFIRMATION,
+  WORKSHOPS_REMINDER_1,
+  WORKSHOPS_REMINDER_2,
+  HACKATHONS_SUBMISSION_REMINDER_1,
+  HACKATHONS_SUBMISSION_REMINDER_2,
+} = EmailTemplateName;
+
 export default class MeetService {
   constructor(
     private meetDao: MeetDao,
@@ -30,8 +41,8 @@ export default class MeetService {
 
     const isHackathon = meet.meetType === MeetType.Hackathon; // WORKSHOPS templates cover meet types: WORKSHOP, WEBINAR, LECTURE
     const templates = {
-      reminder1: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_1 : EmailTemplateName.WORKSHOPS_REMINDER_1,
-      reminder2: isHackathon ? EmailTemplateName.HACKATHONS_REMINDER_2 : EmailTemplateName.WORKSHOPS_REMINDER_2,
+      reminder1: isHackathon ? HACKATHONS_REMINDER_1 : WORKSHOPS_REMINDER_1,
+      reminder2: isHackathon ? HACKATHONS_REMINDER_2 : WORKSHOPS_REMINDER_2,
     };
 
     // queue reminder 1, only if current time is before timing of reminder 1
@@ -73,6 +84,44 @@ export default class MeetService {
       });
     } catch (e) {
       console.error(`Failed to queue email [reminder 2] for meet with id ${meetId}`, e);
+    }
+    // hackathons queue an additional two scheduled emails as submission deadline reminders
+    if (isHackathon) {
+      // TODO: do no queue reminder 1 if meet is less than 3 days long
+      // submission reminder 1:
+      try {
+        const submissionReminder1Timing = getISOString({
+          targetWallclock: meet.endTime,
+          targetRegion: meet.region,
+          offset: { days: -2 },
+        });
+        await this.scheduledEmailDao.queue({
+          templateName: HACKATHONS_SUBMISSION_REMINDER_1,
+          meetRecipientId: meetId,
+          meetId,
+          // sendAt: submissionReminder1Timing,
+          sendAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error(`Failed to queue email [submission deadline reminder 1] for meet with id ${meetId}`, e);
+      }
+      // TODO: ( 3 hours before event ends) (if event is less than a day email is triggered 30 mins before event ends)
+      try {
+        const submissionReminder2Timing = getISOString({
+          targetWallclock: meet.endTime,
+          targetRegion: meet.region,
+          offset: { hours: -3 },
+        });
+        await this.scheduledEmailDao.queue({
+          templateName: HACKATHONS_SUBMISSION_REMINDER_2,
+          meetRecipientId: meetId,
+          meetId,
+          // sendAt: submissionReminder2Timing,
+          sendAt: new Date().toISOString(),
+        });
+      } catch (e) {
+        console.error(`Failed to queue email [submission deadline reminder 2] for meet with id ${meetId}`, e);
+      }
     }
 
     return meet;

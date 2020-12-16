@@ -22,8 +22,8 @@ interface TemplateResult {
 export const templateByName = (templateName: string, data: TemplateData): TemplateResult => {
   const subjectTemplate = fs.readFileSync(pathToTemplate(templateName, "subject.ejs"), "utf-8");
   const bodyTemplate = fs.readFileSync(pathToTemplate(templateName, "body.ejs"), "utf-8");
-  const subject = ejs.render(subjectTemplate, data);
-  const body = ejs.render(bodyTemplate, data);
+  const subject = ejs.render(subjectTemplate, { ...data, require }); // add 'require' as a prop so that modules can be imported in ejs tmeplate (like moment)
+  const body = ejs.render(bodyTemplate, { ...data, require }); // add 'require' as a prop so that modules can be imported in ejs tmeplate (like moment)
 
   return { subject, body };
 };
