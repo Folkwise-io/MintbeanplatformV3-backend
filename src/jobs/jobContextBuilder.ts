@@ -1,11 +1,11 @@
 import Knex from "knex";
 import knexConfig from "../db/knexfile";
-import EmailApiDao from "./dao/EmailApiDao";
 import ScheduledEmailDao from "../dao/ScheduledEmailDao";
 import ScheduledEmailDaoImpl from "../dao/ScheduledEmailDaoImpl";
-
-import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
+import EmailApiDao from "../dao/EmailApiDao";
+import EmailApiDaoImpl from "../dao/EmailApiDaoImpl";
 import EmailService from "../service/EmailService";
+
 import UserDaoKnex from "../dao/UserDaoKnex";
 import MeetDaoKnex from "../dao/MeetDaoKnex";
 

@@ -41,7 +41,6 @@ export interface ScheduledEmailInput {
   retriesLeft?: number | null;
 }
 
-// TODO: move all types below in this file to jobs world as Email types
 export interface Email {
   to: string;
   from: string;

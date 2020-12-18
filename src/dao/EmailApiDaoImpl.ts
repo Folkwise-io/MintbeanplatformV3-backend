@@ -1,8 +1,7 @@
-import { Email, EmailResponse, EmailResponseStatus } from "../../types/ScheduledEmail";
-
 import EmailApiDao from "./EmailApiDao";
 import sgMail from "@sendgrid/mail";
-import config from "../../util/config";
+import config from "../util/config";
+import { EmailResponseStatus, Email, EmailResponse } from "../types/ScheduledEmail";
 
 interface EmailResponseError {
   message?: string;
