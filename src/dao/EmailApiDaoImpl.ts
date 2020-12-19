@@ -93,11 +93,11 @@ export default class EmailApiDaoImpl implements EmailApiDao {
   async sendContactFormEmail(input: SendContactFormEmailInput): Promise<EmailResponse> {
     const to = parseMultipleRecipients(contactFormRecipientEmails);
     // Must use verified email as sender, not contactor's email. Contactor's email will be in body of email.
-    const meta = { sender: "foo", recipient: contactFormRecipientEmails };
+    const meta = { sender: senderEmail, recipient: contactFormRecipientEmails };
 
     const email = {
       ...input,
-      from: "foo",
+      from: senderEmail,
       to,
     };
 
