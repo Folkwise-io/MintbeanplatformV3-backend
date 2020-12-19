@@ -93,11 +93,11 @@ export default class EmailApiDaoImpl implements EmailApiDao {
   async sendContactFormEmail(input: SendContactFormEmailInput): Promise<EmailResponse> {
     const to = parseMultipleRecipients(contactFormRecipientEmails);
     // Must use verified email as sender, not contactor's email. Contactor's email will be in body of email.
-    const meta = { sender: senderEmail, recipient: contactFormRecipientEmails };
+    const meta = { sender: "foo", recipient: contactFormRecipientEmails };
 
     const email = {
       ...input,
-      from: senderEmail,
+      from: "foo",
       to,
     };
 
@@ -112,7 +112,10 @@ export default class EmailApiDaoImpl implements EmailApiDao {
         timestamp: new Date(response.headers.date).toISOString(),
       };
     } catch (e) {
-      return mapEmailApiError(e, meta);
+      // Log error as this method is used directly in resolver (as opposed to in service like #send).
+      const errorResponse = mapEmailApiError(e, meta);
+      console.error("[EMAIL ERROR: CONTACT FORM]", errorResponse);
+      return errorResponse;
     }
   }
 }
