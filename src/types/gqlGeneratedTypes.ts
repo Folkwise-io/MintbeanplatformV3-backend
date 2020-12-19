@@ -195,12 +195,6 @@ export type Mutation = {
   awardBadgesToProject?: Maybe<Project>;
   /** Registers the current logged-in user for a meet. */
   registerForMeet: Scalars['Boolean'];
-  /** Sends a test email (admin-only) */
-  sendTestEmail: Scalars['Boolean'];
-  /** Sends a reminder email to registrants of a meet (admin-only) */
-  sendReminderEmailForMeet: Scalars['Boolean'];
-  /** Sends a sample registration email with json-ld for Google whitelist approval (admin-only) */
-  sendSampleRegistrationEmailForMeet: Scalars['Boolean'];
   /** Creates a new badge (requires admin privileges */
   createBadge: Badge;
   /** Edits a badge (requires admin privileges) */
@@ -224,6 +218,8 @@ export type Mutation = {
   /** Update the position of a card on a kanban, and get updated card positions object */
   updateKanbanCardPositions: KanbanCardPositions;
   deleteKanban: Scalars['Boolean'];
+  /** For sending light client emails, like contact form emails. By-passes scheduledEmail queue. */
+  sendContactFormEmail: EmailResponse;
 };
 
 
@@ -271,21 +267,6 @@ export type MutationAwardBadgesToProjectArgs = {
 
 
 export type MutationRegisterForMeetArgs = {
-  meetId: Scalars['UUID'];
-};
-
-
-export type MutationSendTestEmailArgs = {
-  input: TestEmailInput;
-};
-
-
-export type MutationSendReminderEmailForMeetArgs = {
-  input: MeetReminderEmailInput;
-};
-
-
-export type MutationSendSampleRegistrationEmailForMeetArgs = {
   meetId: Scalars['UUID'];
 };
 
@@ -352,6 +333,11 @@ export type MutationUpdateKanbanCardPositionsArgs = {
 
 export type MutationDeleteKanbanArgs = {
   id: Scalars['UUID'];
+};
+
+
+export type MutationSendContactFormEmailArgs = {
+  input: SendContactFormEmailInput;
 };
 
 export type Post = {
@@ -523,17 +509,6 @@ export type MediaAsset = {
   createdAt: Scalars['DateTime'];
   /** DateTime that the MediaAsset was saved to the database */
   updatedAt: Scalars['DateTime'];
-};
-
-export type TestEmailInput = {
-  subject: Scalars['String'];
-  body: Scalars['String'];
-};
-
-export type MeetReminderEmailInput = {
-  meetId: Scalars['UUID'];
-  subject: Scalars['String'];
-  body: Scalars['String'];
 };
 
 export enum BadgeShape {
@@ -734,6 +709,40 @@ export type CreateKanbanInput = {
   meetId?: Maybe<Scalars['UUID']>;
 };
 
+export enum EmailResponseStatus {
+  Success = 'SUCCESS',
+  BadRequest = 'BAD_REQUEST',
+  ApiServerError = 'API_SERVER_ERROR',
+  UnknownError = 'UNKNOWN_ERROR'
+}
+
+export type EmailResponseError = {
+  __typename?: 'EmailResponseError';
+  message: Scalars['String'];
+  info?: Maybe<Scalars['String']>;
+};
+
+/** Normalized response from email API */
+export type EmailResponse = {
+  __typename?: 'EmailResponse';
+  /** Email address of one or more recipients */
+  recipient: Scalars['String'];
+  sender: Scalars['String'];
+  statusCode: Scalars['Int'];
+  status: EmailResponseStatus;
+  timestamp: Scalars['String'];
+  meetId?: Maybe<Scalars['UUID']>;
+  errors?: Maybe<Array<Maybe<EmailResponseError>>>;
+};
+
+/** The input needed to send an contact form email. Inlude all information relevant to the contact (such as sender name and email) in html body. */
+export type SendContactFormEmailInput = {
+  /** Email subject */
+  subject: Scalars['String'];
+  /** HTML body of email, including sender details */
+  html: Scalars['String'];
+};
+
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -831,8 +840,6 @@ export type ResolversTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: ResolverTypeWrapper<MediaAsset>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
-  TestEmailInput: TestEmailInput;
-  MeetReminderEmailInput: MeetReminderEmailInput;
   BadgeShape: BadgeShape;
   Badge: ResolverTypeWrapper<Badge>;
   CreateBadgeInput: CreateBadgeInput;
@@ -848,6 +855,10 @@ export type ResolversTypes = {
   KanbanCardPositions: ResolverTypeWrapper<KanbanCardPositions>;
   Kanban: ResolverTypeWrapper<Kanban>;
   CreateKanbanInput: CreateKanbanInput;
+  EmailResponseStatus: EmailResponseStatus;
+  EmailResponseError: ResolverTypeWrapper<EmailResponseError>;
+  EmailResponse: ResolverTypeWrapper<EmailResponse>;
+  SendContactFormEmailInput: SendContactFormEmailInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -869,8 +880,6 @@ export type ResolversParentTypes = {
   CreateProjectInput: CreateProjectInput;
   MediaAsset: MediaAsset;
   Int: Scalars['Int'];
-  TestEmailInput: TestEmailInput;
-  MeetReminderEmailInput: MeetReminderEmailInput;
   Badge: Badge;
   CreateBadgeInput: CreateBadgeInput;
   EditBadgeInput: EditBadgeInput;
@@ -884,6 +893,9 @@ export type ResolversParentTypes = {
   KanbanCardPositions: KanbanCardPositions;
   Kanban: Kanban;
   CreateKanbanInput: CreateKanbanInput;
+  EmailResponseError: EmailResponseError;
+  EmailResponse: EmailResponse;
+  SendContactFormEmailInput: SendContactFormEmailInput;
 };
 
 export interface UuidScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['UUID'], any> {
@@ -952,9 +964,6 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   deleteProject?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>;
   awardBadgesToProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationAwardBadgesToProjectArgs, 'projectId' | 'badgeIds'>>;
   registerForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRegisterForMeetArgs, 'meetId'>>;
-  sendTestEmail?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendTestEmailArgs, 'input'>>;
-  sendReminderEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendReminderEmailForMeetArgs, 'input'>>;
-  sendSampleRegistrationEmailForMeet?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSendSampleRegistrationEmailForMeetArgs, 'meetId'>>;
   createBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationCreateBadgeArgs, 'input'>>;
   editBadge?: Resolver<ResolversTypes['Badge'], ParentType, ContextType, RequireFields<MutationEditBadgeArgs, 'id' | 'input'>>;
   deleteBadge?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteBadgeArgs, 'id'>>;
@@ -967,6 +976,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createKanban?: Resolver<ResolversTypes['Kanban'], ParentType, ContextType, RequireFields<MutationCreateKanbanArgs, 'input'>>;
   updateKanbanCardPositions?: Resolver<ResolversTypes['KanbanCardPositions'], ParentType, ContextType, RequireFields<MutationUpdateKanbanCardPositionsArgs, 'id' | 'input'>>;
   deleteKanban?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteKanbanArgs, 'id'>>;
+  sendContactFormEmail?: Resolver<ResolversTypes['EmailResponse'], ParentType, ContextType, RequireFields<MutationSendContactFormEmailArgs, 'input'>>;
 };
 
 export type PostResolvers<ContextType = any, ParentType extends ResolversParentTypes['Post'] = ResolversParentTypes['Post']> = {
@@ -1086,6 +1096,23 @@ export type KanbanResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType>;
 };
 
+export type EmailResponseErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['EmailResponseError'] = ResolversParentTypes['EmailResponseError']> = {
+  message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  info?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
+export type EmailResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['EmailResponse'] = ResolversParentTypes['EmailResponse']> = {
+  recipient?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sender?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  statusCode?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['EmailResponseStatus'], ParentType, ContextType>;
+  timestamp?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  meetId?: Resolver<Maybe<ResolversTypes['UUID']>, ParentType, ContextType>;
+  errors?: Resolver<Maybe<Array<Maybe<ResolversTypes['EmailResponseError']>>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType>;
+};
+
 export type Resolvers<ContextType = any> = {
   UUID?: GraphQLScalarType;
   DateTime?: GraphQLScalarType;
@@ -1102,6 +1129,8 @@ export type Resolvers<ContextType = any> = {
   KanbanCanonCard?: KanbanCanonCardResolvers<ContextType>;
   KanbanCardPositions?: KanbanCardPositionsResolvers<ContextType>;
   Kanban?: KanbanResolvers<ContextType>;
+  EmailResponseError?: EmailResponseErrorResolvers<ContextType>;
+  EmailResponse?: EmailResponseResolvers<ContextType>;
 };
 
 

@@ -1,4 +1,4 @@
-import { Attachment, EmailResponseStatus, EmailTemplateName, ScheduledEmailInput } from "../../types/ScheduledEmail";
+import { Attachment, EmailTemplateName, ScheduledEmailInput } from "../../types/ScheduledEmail";
 import config from "../../util/config";
 import sgMail from "@sendgrid/mail";
 import * as fs from "fs";
@@ -6,6 +6,7 @@ import path from "path";
 
 import { JobContext } from "../jobContextBuilder";
 import { templateByName } from "./templateUtil";
+import { EmailResponseStatus } from "../../types/gqlGeneratedTypes";
 
 const { sendgridKey } = config;
 sgMail.setApiKey(sendgridKey);
@@ -160,7 +161,7 @@ export const scheduledEmailJobBuilder = (context: JobContext): (() => Promise<vo
               console.error(`Failed to send scheduled email: [${scheduledEmailId}].`, e);
               return;
             }
-            if (emailResponse.status === EmailResponseStatus.SUCCESS) {
+            if (emailResponse.status === EmailResponseStatus.Success) {
               // Delete each successfully sent email from the DB
               if (deletedEmails.has(scheduledEmailId)) {
                 // Don't delete scheduled emails that have already sent one member successfully

@@ -1,4 +1,3 @@
-import config from "../util/config";
 import { Attachment, EmailTemplateName } from "../types/ScheduledEmail";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { generateMeetIcsAttachments } from "../util/emailUtils";
@@ -151,4 +150,5 @@ export default class EmailService {
 
     return fulfilleds.map((x) => x.value);
   }
+  // async sendContactFormEmail(emailInput: SendContactFormEmailInput): Promise<EmailResponse> {}
 }
