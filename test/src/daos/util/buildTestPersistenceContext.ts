@@ -14,6 +14,8 @@ import TestBadgeDaoKnex from "../TestBadgeDaoKnex";
 import BadgeProjectDaoKnex from "../../../../src/dao/BadgeProjectDaoKnex";
 import ScheduledEmailDaoImpl from "../../../../src/dao/ScheduledEmailDaoImpl";
 import ScheduledEmailDao from "../../../../src/dao/ScheduledEmailDao";
+import EmailApiDao from "../../../../src/dao/EmailApiDao";
+import EmailApiDaoImpl from "../../../../src/dao/EmailApiDaoImpl";
 
 // for use in test daos to ensure strict typing of additional methods
 export interface TestPersistenceContext extends PersistenceContext {
@@ -29,6 +31,7 @@ export interface TestPersistenceContext extends PersistenceContext {
   badgeDao: TestBadgeDaoKnex;
   badgeProjectDao: BadgeProjectDaoKnex;
   scheduledEmailDao: ScheduledEmailDao;
+  emailApiDao: EmailApiDao;
 }
 
 // TODO: Help Monarch! The polymophism thing didn't work (setting return type to PersistenceContext caused errors in TestManager)
@@ -47,6 +50,7 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
   const badgeDao = new TestBadgeDaoKnex(knex);
   const badgeProjectDao = new BadgeProjectDaoKnex(knex);
   const scheduledEmailDao = new ScheduledEmailDaoImpl(knex);
+  const emailApiDao = new EmailApiDaoImpl();
 
   return {
     userDao,
@@ -61,5 +65,6 @@ export function buildTestPersistenceContext(): TestPersistenceContext {
     badgeDao,
     badgeProjectDao,
     scheduledEmailDao,
+    emailApiDao,
   };
 }
