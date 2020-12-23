@@ -1,5 +1,6 @@
 import { Meet, RegisterLinkStatus } from "../types/gqlGeneratedTypes";
 import moment from "moment-timezone";
+import { string } from "yup";
 
 const MILLISECONDS_IN_ONE_MINUTE = 60 * 1000;
 const MILLISECONDS_IN_ONE_HOUR = 60 * MILLISECONDS_IN_ONE_MINUTE;
@@ -43,6 +44,12 @@ export const getISOString = ({ targetWallclock, targetRegion, offset = {} }: Off
   } else {
     return targetDate.toISOString();
   }
+};
+
+export const msDifference = (startTime: string, endTime: string, region: string): number => {
+  const start = moment.tz(startTime, region).utc().toDate().getTime();
+  const end = moment.tz(endTime, region).utc().toDate().getTime();
+  return end - start;
 };
 
 export const nDaysAndHoursFromNowInWallClockTime = (days: number, hour: number = 0): string => {
