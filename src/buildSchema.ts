@@ -13,8 +13,6 @@ import projectResolver from "./graphql/resolver/projectResolver";
 import mediaAsset from "./graphql/typedef/mediaAsset";
 import mediaAssetResolver from "./graphql/resolver/mediaAssetResolver";
 import meetRegistration from "./graphql/typedef/meetRegistration";
-import email from "./graphql/typedef/email";
-import emailResolver from "./graphql/resolver/emailResolver";
 import badge from "./graphql/typedef/badge";
 import badgeResolver from "./graphql/resolver/badgeResolver";
 import kanbanCanon from "./graphql/typedef/kanbanCanon";
@@ -24,6 +22,8 @@ import kanbanCanonCardResolver from "./graphql/resolver/kanbanCanonCardResolver"
 import kanban from "./graphql/typedef/kanban";
 import kanbanResolver from "./graphql/resolver/kanbanResolver";
 import kanbanCardResolver from "./graphql/resolver/kanbanCardResolver";
+import email from "./graphql/typedef/email";
+import emailResolver from "./graphql/resolver/emailResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -53,6 +53,8 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectMediaAssetDao,
     projectDao,
     userDao,
+    scheduledEmailDao,
+    emailApiDao,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -62,16 +64,16 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     project,
     mediaAsset,
     meetRegistration,
-    email,
     badge,
     kanbanCanon,
     kanbanCanonCard,
     kanban,
+    email,
   ];
   const resolvers = [
     customScalarsResolver,
     userResolver(userResolverValidator, userService, userDao),
-    meetResolver(meetResolverValidator, meetService, meetRegistrationDao, userDao, emailService, meetDao),
+    meetResolver(meetResolverValidator, meetService, meetDao),
     projectResolver(
       projectResolverValidator,
       projectDao,
@@ -81,12 +83,12 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
       badgeProjectService,
     ),
     mediaAssetResolver(mediaAssetDao),
-    emailResolver(emailResolverValidator, emailService, meetDao),
     badgeResolver(badgeResolverValidator, badgeService),
     kanbanCanonResolver(kanbanCanonResolverValidator, kanbanCanonService, kanbanCanonDao),
     kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService, kanbanCanonCardDao),
     kanbanResolver(kanbanResolverValidator, kanbanService, kanbanDao),
     kanbanCardResolver(kanbanCanonCardDao),
+    emailResolver(emailResolverValidator, emailApiDao),
   ];
 
   return makeExecutableSchema({
