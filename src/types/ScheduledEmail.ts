@@ -6,8 +6,6 @@ export enum EmailTemplateName {
   HACKATHONS_REGISTRATION_CONFIRMATION = "hackathons/registration-confirmation",
   HACKATHONS_REMINDER_1 = "hackathons/reminder-1",
   HACKATHONS_REMINDER_2 = "hackathons/reminder-2",
-  HACKATHONS_SUBMISSION_REMINDER_1 = "hackathons/submission-reminder-1",
-  HACKATHONS_SUBMISSION_REMINDER_2 = "hackathons/submission-reminder-2",
   WORKSHOPS_REGISTRATION_CONFIRMATION = "workshops/registration-confirmation",
   WORKSHOPS_REMINDER_1 = "workshops/reminder-1",
   WORKSHOPS_REMINDER_2 = "workshops/reminder-2",
