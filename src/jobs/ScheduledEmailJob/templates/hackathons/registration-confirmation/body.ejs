@@ -1,4 +1,5 @@
 <%# WARNING!!!! Do Not Move Or Delete, see the file named IMPORTANT-WARNING.md %>
+<% const moment = require('moment-timezone') %>
 <div>
   <p>Hey <%= recipient.firstName %>,</p>
   <p>You’re in! Get excited to get your hack on! 🚀</p>
@@ -25,5 +26,7 @@
     </li>
   </ol>
 
+  <p>We can’t wait to see your solution - remember the deadline to submit is <strong><%= moment.tz(meet.endTime, meet.region).format("lll z") %></strong>.</p>
+  
   <p>Got questions? Please do not hesitate to message any of the organizers on <a href="https://discord.gg/y6w3FFE">Discord</a> (our names are highlighted in green!) </p>
 </div>
