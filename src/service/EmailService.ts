@@ -150,5 +150,4 @@ export default class EmailService {
 
     return fulfilleds.map((x) => x.value);
   }
-  // async sendContactFormEmail(emailInput: SendContactFormEmailInput): Promise<EmailResponse> {}
 }
