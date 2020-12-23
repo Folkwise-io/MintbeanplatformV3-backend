@@ -38,6 +38,9 @@ export default {
   jwtSecret: hoc("JWT_SECRET"),
   sendgridKey: hoc("SENDGRID_KEY"),
   senderEmail: hoc("SENDER_EMAIL"),
+  contactFormRecipientEmails: hoc("CONTACT_FORM_RECIPIENT_EMAILS", {
+    defaultValue: "info@mintbean.io",
+  }),
   disableRegistrationEmail: hoc("DISABLE_REGISTRATION_EMAILS", { defaultValue: false, required: false }),
   disableNewMeetReminders: hoc("DISABLE_NEW_MEET_REMINDERS", { defaultValue: false, required: false }), // disable queuing of meet email reminders for newly created meets
 };

@@ -1,4 +1,3 @@
-import config from "../util/config";
 import { Attachment, EmailTemplateName } from "../types/ScheduledEmail";
 import { Meet } from "../types/gqlGeneratedTypes";
 import { generateMeetIcsAttachments } from "../util/emailUtils";

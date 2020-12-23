@@ -40,6 +40,8 @@ import KanbanResolverValidator from "./validator/KanbanResolverValidator";
 import KanbanCanonResolverValidator from "./validator/KanbanCanonResolverValidator";
 import ScheduledEmailDao from "./dao/ScheduledEmailDao";
 import ScheduledEmailDaoImpl from "./dao/ScheduledEmailDaoImpl";
+import EmailApiDao from "./dao/EmailApiDao";
+import EmailApiDaoImpl from "./dao/EmailApiDaoImpl";
 
 /* 
 =======================================================================================
@@ -59,6 +61,7 @@ export interface PersistenceContext {
   kanbanCanonCardDao: KanbanCanonCardDao;
   kanbanDao: KanbanDao;
   scheduledEmailDao: ScheduledEmailDao;
+  emailApiDao: EmailApiDao;
 }
 
 export function buildPersistenceContext(): PersistenceContext {
@@ -75,6 +78,7 @@ export function buildPersistenceContext(): PersistenceContext {
   const kanbanCanonCardDao = new KanbanCanonCardDaoKnex(knex);
   const kanbanDao = new KanbanDaoKnex(knex);
   const scheduledEmailDao = new ScheduledEmailDaoImpl(knex);
+  const emailApiDao = new EmailApiDaoImpl();
 
   return {
     userDao,
@@ -89,6 +93,7 @@ export function buildPersistenceContext(): PersistenceContext {
     kanbanCanonCardDao,
     kanbanDao,
     scheduledEmailDao,
+    emailApiDao,
   };
 }
 /* 
@@ -124,6 +129,7 @@ export interface ResolverContext {
   projectDao: ProjectDao;
   userDao: UserDao;
   scheduledEmailDao: ScheduledEmailDao;
+  emailApiDao: EmailApiDao;
 }
 
 export function buildResolverContext(persistenceContext: PersistenceContext): ResolverContext {
@@ -140,6 +146,7 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     kanbanCanonCardDao,
     kanbanDao,
     scheduledEmailDao,
+    emailApiDao,
   } = persistenceContext;
   const userResolverValidator = new UserResolverValidator(userDao);
   const userService = new UserService(userDao);
@@ -193,5 +200,6 @@ export function buildResolverContext(persistenceContext: PersistenceContext): Re
     projectDao,
     userDao,
     scheduledEmailDao,
+    emailApiDao,
   };
 }

@@ -22,6 +22,8 @@ import kanbanCanonCardResolver from "./graphql/resolver/kanbanCanonCardResolver"
 import kanban from "./graphql/typedef/kanban";
 import kanbanResolver from "./graphql/resolver/kanbanResolver";
 import kanbanCardResolver from "./graphql/resolver/kanbanCardResolver";
+import email from "./graphql/typedef/email";
+import emailResolver from "./graphql/resolver/emailResolver";
 
 export default function buildSchema(resolverContext: ResolverContext): GraphQLSchema {
   const {
@@ -52,6 +54,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     projectDao,
     userDao,
     scheduledEmailDao,
+    emailApiDao,
   } = resolverContext;
   const typeDefs = [
     customScalars,
@@ -65,6 +68,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCanon,
     kanbanCanonCard,
     kanban,
+    email,
   ];
   const resolvers = [
     customScalarsResolver,
@@ -84,6 +88,7 @@ export default function buildSchema(resolverContext: ResolverContext): GraphQLSc
     kanbanCanonCardResolver(kanbanCanonCardResolverValidator, kanbanCanonCardService, kanbanCanonCardDao),
     kanbanResolver(kanbanResolverValidator, kanbanService, kanbanDao),
     kanbanCardResolver(kanbanCanonCardDao),
+    emailResolver(emailResolverValidator, emailApiDao),
   ];
 
   return makeExecutableSchema({
