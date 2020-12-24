@@ -23,7 +23,9 @@ const hoc = (key: string, _opts = {}) => {
   const val = opts.convert(getValue(key));
 
   if (opts.required && !val) {
-    throw new Error(`CRITICAL ERROR: Value for config variable [${key}] was not provided. Check env file.`);
+    throw new Error(
+      `CRITICAL ERROR: Value for config variable [${key}] was not provided. Check env file. (Hint: did you update the test env also?)`,
+    );
   }
 
   return val || opts.defaultValue;
