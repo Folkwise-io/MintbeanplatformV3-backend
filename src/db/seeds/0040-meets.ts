@@ -2,6 +2,60 @@ import * as Knex from "knex";
 import { MeetType } from "../../types/gqlGeneratedTypes";
 import { nDaysAndHoursFromNowInWallClockTime } from "../../util/timeUtils";
 
+const sampleMd = `
+## Et agmine
+
+Lorem markdownum ripis quam est. Alterius infregit, scilicet *et* factas
+voragine reccidimus arborea altis studio certans si quod domos promisistis
+prodidit et. Tuetur inquit ad semper et intrarit arcus mi mora virgo est!
+
+\`\`\`js
+console.log('testing');
+const test = () => 'somethin'
+const AHHHHH = 2;
+ \`\`\`
+
+- Herbas mihi ad
+- Neque templa semper pectora et tamen
+- Notam tamen cultor esset
+- Qua sagitta Chrysenque sanguine tamen falsa fatemur
+- Diu relicto saevit ilicet huic posset adplicat
+- Ossaque sua linguaque dixit
+
+## Mihi avis
+
+Sua notus petitos, hic flavus furentem Ithaceque mihi conposito gemina. Cumque
+discordia sentit proiecto spectabat petiere; mutare sensit hanc penetrale moles.
+
+- In notam contulit detur canem tamen
+- Tamen passu doque et domum ab me
+- Nusquam medio
+- Feroci quis arti munus armenta misit
+
+## Omnis in antiquum
+
+Mihi algae lumen eodem **tandem nec** locus arduus des nulla ut tertius dum
+stant Amphitryon reddunt. Tantae et fidis reverentia potuit servare, sic tua
+insidias, pars unam ibimus probant; mei?
+
+ \`\`\`python
+halftone_ipv = 1;
+process_leak_wildcard = shareware_compiler + rdfParity;
+pastePop *= 27;
+ \`\`\`
+Hanc quod celebrare restabat dolor, quarum sic perterrita utero mirabile
+*deceptam* claudit, alis in sepulti linguae succiso lacertis. Ortas et spectari
+sanguine Aegides contenta virgo inani, munus frondes voverat modo;
+
+\`\`\`js
+console.log('testing');
+const test = () => 'somethin'
+const AHHHHH = 2;
+ \`\`\`
+suos deciperetur manu. Postibus nunc perdidit nullos lacrimas diu ipsam aera si quam
+linguam litora timor ultra aut inque est in factis, tarda.
+`;
+
 export async function seed(knex: Knex): Promise<void> {
   await knex("meets").del();
 
@@ -84,6 +138,20 @@ export async function seed(knex: Knex): Promise<void> {
       instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
       registerLink: "http://eventbrite.com",
       coverImageUrl: "https://i.pinimg.com/originals/9c/12/84/9c128435562961b0c9ff32d1072b6f80.png",
+      startTime: nDaysAndHoursFromNowInWallClockTime(12),
+      endTime: nDaysAndHoursFromNowInWallClockTime(12),
+      createdAt: "2020-09-01",
+    },
+    {
+      id: "e6c1a3b7-5f53-45db-9679-9883d30d6484",
+      meetType: MeetType.Hackathon,
+      title: "JS GameHacks: Build Your Own Virtual Board Game",
+      description:
+        "Level up your Javascript and use an in-demand framework in the Vue.js Hackathon! Vue.js is an open source framework that emphasizes approachability, versatility and performance.",
+      instructions: "See https://sites.google.com/mintbean.io/2020-06-03-algolia-gives-you-s/home",
+      detailedDescription: sampleMd,
+      registerLink: "http://eventbrite.com",
+      coverImageUrl: "http://res.cloudinary.com/mintbean/image/upload/v1608315883/fjhqhhgal8giqzkwq6rb.png",
       startTime: nDaysAndHoursFromNowInWallClockTime(12),
       endTime: nDaysAndHoursFromNowInWallClockTime(12),
       createdAt: "2020-09-01",
