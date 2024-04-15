@@ -71,10 +71,6 @@ const userResolver = (
     Mutation: {
       login: (_root, args, context: ServerContext): Promise<PrivateUserDto> => {
         return userResolverValidator.login(args, context).then(async (args) => {
-          const isValidPassword = await userService.checkPassword(args);
-          if (!isValidPassword) {
-            throw new AuthenticationError("Login failed!");
-          }
           // TODO: Move below into jwt auth service
           // Make a JWT and return it in the body as well as the cookie
           const rawUser = ensureExists<User>("User")(await userDao.getOne({ email: args.email }));
@@ -112,6 +108,11 @@ const userResolver = (
             context.setJwt(token);
             return { ...user, token };
           });
+      },
+      editUser: (_root, { id, input }, context: ServerContext): Promise<User> => {
+        return userResolverValidator
+          .editOne({ id, input }, context)
+          .then(({ id, input }) => userDao.editOne(id, input));
       },
     },
     Project: {

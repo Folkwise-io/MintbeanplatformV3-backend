@@ -63,6 +63,14 @@ const user = gql`
     passwordConfirmation: String!
   }
 
+  "The fields supported for editing a user"
+  input EditUserInput {
+    "User first name"
+    firstName: String
+    "User last name"
+    lastName: String
+  }
+
   type Mutation {
     "Login using email and password"
     login(email: String!, password: String!): PrivateUser!
@@ -72,6 +80,9 @@ const user = gql`
 
     "Register a user"
     register(input: UserRegistrationInput!): PrivateUser!
+
+    "Edit a user by id"
+    editUser(id: UUID!, input: EditUserInput!): PrivateUser!
   }
 `;
 

@@ -3,11 +3,13 @@ import jwt from "jsonwebtoken";
 
 import config from "../src/util/config";
 import { ParsedToken } from "../src/util/jwtUtils";
-import { getCurrentUnixTime } from "./src/util";
+import { getAdminCookies, getBobCookies, getCookies, getCurrentUnixTime } from "./src/util";
 import {
   AMY,
   AMY_CREDENTIALS,
   BOB,
+  EDIT_USER,
+  EDIT_USER_INPUT,
   GET_ALL_USERS_QUERY,
   GET_USER_QUERY,
   LOGIN,
@@ -18,6 +20,7 @@ import {
   REGISTER,
 } from "./src/constants/userConstants";
 import { User } from "../src/types/User";
+import { Console } from "console";
 const { jwtSecret } = config;
 
 const testManager = TestManager.build();
@@ -324,6 +327,72 @@ describe("User registration", () => {
 
       expect(parsedToken.sub).toBe(id);
     });
+  });
+});
+
+describe("Editing a user", () => {
+  let bobCookies: string[];
+  let adminCookies: string[];
+
+  beforeAll(async () => {
+    bobCookies = await getBobCookies();
+    adminCookies = await getAdminCookies();
+  });
+
+  beforeEach(async () => {
+    await testManager.addUsers([AMY, BOB]);
+  });
+
+  it("allows a user, when logged in, to edit their first and last name", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_USER,
+        variables: { id: BOB.id, input: EDIT_USER_INPUT },
+        cookies: bobCookies,
+      })
+      .then(testManager.parseData)
+      .then(({ editUser }) => {
+        expect(editUser).toMatchObject(EDIT_USER_INPUT);
+      });
+  });
+
+  it("doesn't let a user edit if cookies don't match target user id", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_USER,
+        variables: { id: BOB.id, input: EDIT_USER_INPUT },
+        cookies: adminCookies,
+      })
+      .then(testManager.parseError)
+      .then(({ message }) => {
+        expect(message).toMatch(/authorized/i);
+      });
+  });
+
+  it("doesn't let a user edit if not logged in", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_USER,
+        variables: { id: BOB.id, input: EDIT_USER_INPUT },
+        cookies: [],
+      })
+      .then(testManager.parseError)
+      .then(({ message }) => {
+        expect(message).toMatch(/logged in/i);
+      });
+  });
+
+  it("throws an error if not given a valid id", async () => {
+    await testManager
+      .getGraphQLResponse({
+        query: EDIT_USER,
+        variables: { id: "abcdefg", input: EDIT_USER_INPUT },
+        cookies: bobCookies,
+      })
+      .then(testManager.parseError)
+      .then(({ message }) => {
+        expect(message).toMatch(/invalid/);
+      });
   });
 });
 

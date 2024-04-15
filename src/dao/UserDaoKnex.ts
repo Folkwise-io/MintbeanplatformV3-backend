@@ -1,8 +1,7 @@
 import { User } from "../types/User";
 import Knex from "knex";
-import UserDao, { UserDaoAddOneArgs, UserDaoGetManyArgs, UserDaoGetOneArgs } from "./UserDao";
+import UserDao, { UserDaoAddOneArgs, UserDaoEditOneInput, UserDaoGetManyArgs, UserDaoGetOneArgs } from "./UserDao";
 import handleDatabaseError from "../util/handleDatabaseError";
-import { ensureExists } from "../util/ensureExists";
 
 export default class UserDaoKnex implements UserDao {
   knex: Knex;
@@ -42,6 +41,16 @@ export default class UserDaoKnex implements UserDao {
     return handleDatabaseError(async () => {
       const insertedUsers = (await this.knex<User>("users").insert(args).returning("*")) as User[];
       return insertedUsers[0];
+    });
+  }
+
+  async editOne(id: string, input: UserDaoEditOneInput): Promise<User> {
+    return handleDatabaseError(async () => {
+      const updatedUser = (await this.knex("users")
+        .where({ id })
+        .update({ ...input, updatedAt: this.knex.fn.now() })
+        .returning("*")) as User[];
+      return updatedUser[0];
     });
   }
 }

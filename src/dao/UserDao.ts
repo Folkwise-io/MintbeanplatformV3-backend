@@ -1,3 +1,4 @@
+import { EditUserInput, MutationLoginArgs } from "../types/gqlGeneratedTypes";
 import { User } from "../types/User";
 
 export interface UserDaoAddOneArgs {
@@ -18,13 +19,13 @@ export interface UserDaoGetManyArgs {
   meetId?: string;
 }
 
-export interface UserDaoLoginArgs {
-  email: string;
-  password: string;
-}
+export interface UserDaoLoginArgs extends MutationLoginArgs {}
+
+export interface UserDaoEditOneInput extends EditUserInput {}
 
 export default interface UserDao {
   getOne(args: UserDaoGetOneArgs): Promise<User | undefined>;
   getMany(args: UserDaoGetManyArgs): Promise<User[]>;
   addOne(args: UserDaoAddOneArgs): Promise<User>;
+  editOne(id: string, input: UserDaoEditOneInput): Promise<User>;
 }

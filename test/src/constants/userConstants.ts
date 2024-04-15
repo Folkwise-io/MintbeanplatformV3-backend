@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { UserRegistrationInput } from "../../../src/types/gqlGeneratedTypes";
+import { EditUserInput, UserRegistrationInput } from "../../../src/types/gqlGeneratedTypes";
 import { User } from "../../../src/types/User";
 
 const PASSWORD_HASH = "$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u."; // literally a hash of password
@@ -111,6 +111,11 @@ export const NEW_USER_INPUT: UserRegistrationInput = {
   passwordConfirmation: "password",
 };
 
+export const NEW_USER_CREDENTIALS = {
+  email: "d@d.com",
+  password: "password",
+};
+
 export const REGISTER = gql`
   mutation register($input: UserRegistrationInput!) {
     register(input: $input) {
@@ -118,6 +123,21 @@ export const REGISTER = gql`
       firstName
       lastName
       isAdmin
+    }
+  }
+`;
+
+export const EDIT_USER_INPUT: EditUserInput = {
+  firstName: "Bobby",
+  lastName: "Bark",
+};
+
+export const EDIT_USER = gql`
+  mutation editUser($id: UUID!, $input: EditUserInput!) {
+    editUser(id: $id, input: $input) {
+      firstName
+      lastName
+      email
     }
   }
 `;
